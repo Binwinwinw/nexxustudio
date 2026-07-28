@@ -1,0 +1,10 @@
+{
+  "id": "PR-008",
+  "scope": "infra",
+  "status": "accepted",
+  "rule": "Interrompre immédiatement tout flux répétitif via stopAll() dès la détection de répétition sémantique.",
+  "rationale": "Économie d'énergie GPU et temps utilisateur.",
+  "confidence": "confirmed",
+  "source_type": "incident_recovery",
+  "promoted_at": "2026-05-01"
+}

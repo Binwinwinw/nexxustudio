@@ -1,0 +1,18 @@
+{
+  "documentId": "doc-1780368008800-2e3f2108",
+  "mode": "summary",
+  "query": null,
+  "result": "## Résumé du document Diapos_Teams_365_20_slides.txt\n\n### Objectif\nPrésenter les fonctionnalités clés de Teams 365 lors d'un atelier complet, couvrant l'interface utilisateur, la collaboration en temps réel, les outils intégrés et les meilleures pratiques pour une utilisation efficace.\n\n### Sections Clés\n- **Interface & Navigation**  \n  - Vue d’ensemble des équipes et canaux.\n  - Interaction via chats et @mentions.  \n\n- **Fonctionnalités de Réunion**  \n  - Création et gestion des réunions.  \n  - Outils avancés : chat, partage d’écran, sondages intégrés.  \n  - Copilot pour l’assistance en temps réel et sous-titrage automatique.\n\n- **Collaboration & Partage de Données**  \n  - Utilisation conjointe des applications Office (Word, Excel).  \n  - Intégration avec OneDrive pour le partage de fichiers.  \n\n- **Gestion des Tâches & Automatisation**  \n  - \n  - Utilisation de Power Automate pour créer des flux automatisés.\n\n- **Intégration avec Outlook & Sécurité**  \n  - Liaison transparente entre Teams et Outlook.  \n  - Contrôles de sécurité sur permissions utilisateur.\n\n- **Ressources & Certification**  \n  - Checklist d’actions recommandées (10 actions).  \n  - Quiz interactif pour validation des connaissances.  \n  - Obtention du badge Credly après formation.  \n\n### Conclusions\nLe document fournit une vue complète et structurée de l'atelier Teams 365, couvrant tous les aspects essentiels pour maximiser la productivité et le travail collaboratif au sein des équipes utilisant cette plateforme. Il inclut également des éléments d'évaluation (quiz) et de certification pour encourager une adoption active et mesurable du savoir-faire acquise",
+  "metadata": {
+    "mode": "DOCUMENT",
+    "steps": 1,
+    "hasAttachedDocument": true,
+    "usedFallback": false,
+    "streamed": true,
+    "intent_contract_id": "DOCUMENT_ANALYSIS",
+    "response_mode": "DOCUMENT",
+    "originalName": "Diapos_Teams_365_20_slides.txt",
+    "trace_id": "ab9fc06d-9bf4-46e6-83d2-d7f21b8f9b62",
+    "analyzedAt": "2026-06-02T02:40:50.486Z"
+  }
+}

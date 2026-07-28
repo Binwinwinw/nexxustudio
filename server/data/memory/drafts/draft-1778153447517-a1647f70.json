@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778153447517-a1647f70",
+  "timestamp": "2026-05-07T11:30:47.517Z",
+  "trigger": "Comment optimiser les schémas de collection ChromaDB pour une recherche sémantique multi-projets ?",
+  "scope": "general",
+  "runId": "run-1778153316258",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 131259,
+  "evidence": {
+    "logs": "Full Draft: <think>Okay, the user is asking about optimizing ChromaDB collection schemas for multi-project seman...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

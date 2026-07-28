@@ -1,0 +1,21 @@
+{
+  "id": "draft-1778130340235-0d9e670e",
+  "timestamp": "2026-05-07T05:05:40.235Z",
+  "trigger": "Nexxus, fais une analyse complète de l'état actuel de la Citadelle (Maturité, Phase, Sécurité) et propose un plan d'action stratégique pour la Forge",
+  "scope": [
+    "Cadrage stratégique, gestion des risques systémiques et roadmap de crise."
+  ],
+  "runId": "run-1778129513625",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_persona_leak",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 826609,
+  "evidence": {
+    "logs": "Failed Validation: persona_leak\nResponse: ### Analyse de l'État Actuel de la Citadelle (Maturité, Phase, Sécurité) #### 1. État de Maturité : ...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

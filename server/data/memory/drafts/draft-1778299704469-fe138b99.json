@@ -1,0 +1,21 @@
+{
+  "id": "draft-1778299704469-fe138b99",
+  "timestamp": "2026-05-09T04:08:24.468Z",
+  "trigger": "Nexxus, initie le projet Pulse...",
+  "scope": [
+    "Cognition systémique, arbitrage identitaire, planification stratégique d'architectures IA. Spécialiste du déploiement souverain et des frameworks agentiques."
+  ],
+  "runId": "run-1778299528331",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 176137,
+  "evidence": {
+    "logs": "Full Draft: <think>Okay, the user is asking me to initiate the project Pulse. Let me check the context and the r...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

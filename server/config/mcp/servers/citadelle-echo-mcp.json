@@ -1,0 +1,7 @@
+{
+  "name": "citadelle-echo-mcp",
+  "version": "1.0.0",
+  "description": "Serveur MCP local de test (echo JSON-lines).",
+  "entry": "echo-server.js",
+  "tools": ["echo", "ping"]
+}

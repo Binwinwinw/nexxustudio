@@ -1,0 +1,19 @@
+{
+  "documentId": "doc-1780641045314-056fee4d",
+  "mode": "summary",
+  "query": null,
+  "result": "### Résumé Structuré\n\n#### Objectif du Document  \nLe document fourni est une blueprint pour la phase P0 d'EasyLocalAI, axée sur l'amélioration de la fiabilité et des mécanismes de sécurité associés aux outils et à la génération de réponses. Il décrit les composants nécessaires, les modifications de code requises, ainsi que le \n\n#### Sections Clés  \n\n1. **Components**  \n   - `TraceContext`: Gestion des identifiants trace_id, span_id et requestId pour un tracé end‑to‑end.\n   - `TelemetryLogger`: Journalisation de données structurées au format JSONL pour les traces d'agents.\n   - `ToolPolicyEngine`: Contrôle des permissions, budgets et limites de chaîne d’actions pour chaque outil.\n   - `PolicyDecision`: Représentation décisionnelle liée à une politique d’outil.\n\n2. **Files to Create**  \n   ```text\n   src/Core/Observability/TraceContext.php\n   src/Core/Observability/TelemetryLogger.php\n   src/Tools/Policy/ToolPolicyEngine.php\n   src/Tools/Policy/PolicyDecision.php\n   src/Core/Safety/HitlGate.php\n   src/Core/Safety/HitlRequiredException.php\n   src/Core/Safety/GroundingVerifier.php\n   ```\n\n3. **Files to Modify**  \n   ```text\n   bootstrap.php\n   ToolRegistry.php\n   Agent.php\n   RAG.php\n   stream.php\n   Conventions.md\n   ```\n   \n4. **Endpoints to Create**  \n   - `public/api_hitl_request.php`\n   - `public/api_hitl_decision.php`\n   - `public/api_hitl_pending.php`\n   - `public/api_trace.php`\n   - `public/api_tool_policy_status.php`\n\n5. **Implementation Order**  \n   1. Tracing first: TraceContext + TelemetryLogger + stream.php\n   2. Tool policy en audit: ToolPolicyEngine + ToolRegistry.php (enforce=false)\n   3. HITL critical: HitlGate + endpoints HITL\n   4. Grounding en audit: GroundingVerifier + Agent.php\n\n6. **API Endpoints**  \n   ```text\n   public/api_hitl_request.php\n   public/api_hitl_decision.php\n   public/api_hitl_pending.php\n   public/api_trace.php\n   public/api_tool_policy_status.php\n   ```\n\n7. **Implementation Checklist (Semaines 1 à 4)**  \n   - Semaine 1: Configuration du tracé E2E.\n   - Semaine 2: Audit des politiques d’outils avec `enforce=false`.\n   - Semaine 3: Gestion critique de l’intervention humaine en temps réel (HITL).\n   - Semaine 4: Vérification de la solidité des réponses factuelles.\n\n8. **KPIs et Critères de Succès**  \n   - Tous les requêtes doivent inclure un `trace_id`.\n   - 100% des outils disposent d’une politique.\n   - 0 régression observée après chaque phase.\n   - 100% des actions critiques passent par HITL.\n   - Support ratio pour la vérification de solidité ≥95%.\n\n#### Conclusions  \nLe document fournit un",
+  "metadata": {
+    "mode": "DOCUMENT",
+    "steps": 1,
+    "hasAttachedDocument": true,
+    "followUpKind": null,
+    "usedFallback": false,
+    "streamed": true,
+    "intent_contract_id": "DOCUMENT_ANALYSIS",
+    "response_mode": "DOCUMENT",
+    "originalName": "easylocalai_p0_blueprint.zip",
+    "trace_id": "246afdd9-f052-4dc0-92e7-ec0646d8aece",
+    "analyzedAt": "2026-06-05T06:31:49.735Z"
+  }
+}

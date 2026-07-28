@@ -1,0 +1,39 @@
+{
+  "id": "CERT-MCS3-REFACTOR-001",
+  "name": "Certification Refactor Gouverné - MonCoachScolaire",
+  "description": "Valide la modularisation de LandingPage.tsx et l'existence de FeaturesSection.tsx.",
+  "project": "MonCoachScolaire.v3",
+  "steps": [
+    {
+      "name": "Vérification Existence Composant",
+      "action": "check_file_exists",
+      "params": { "path": "moncoachscolaire.v3/src/components/landing/FeaturesSection.tsx" },
+      "critical": true
+    },
+    {
+      "name": "Vérification Refactor LandingPage",
+      "action": "check_file_content",
+      "params": { 
+        "path": "moncoachscolaire.v3/src/pages/LandingPage.tsx",
+        "regex": "<FeaturesSection />"
+      },
+      "critical": true
+    },
+    {
+      "name": "Validation Imports Lucide",
+      "action": "check_file_content",
+      "params": { 
+        "path": "moncoachscolaire.v3/src/pages/LandingPage.tsx",
+        "regex": "Zap,\\s*CheckCircle2"
+      },
+      "critical": true
+    },
+    {
+      "name": "Validation Lint",
+      "action": "validateLint",
+      "params": { "path": "moncoachscolaire.v3/src/pages/LandingPage.tsx" },
+      "critical": false
+    }
+  ],
+  "ltm_reference": "EPISODE-MCS3-METHODOLOGY-001"
+}

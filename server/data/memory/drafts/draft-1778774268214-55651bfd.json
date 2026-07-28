@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778774268214-55651bfd",
+  "timestamp": "2026-05-14T15:57:48.213Z",
+  "trigger": "Comment tes réponses sont-elles sécurisées ?",
+  "scope": "general",
+  "runId": "run-1778774205527",
+  "selectedModel": "qwen3.5:4b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_loop_detected",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 62685,
+  "evidence": {
+    "logs": "Failed Validation: loop_detected\nResponse: Je suis Nexxus, le coordinateur souverain de la Nexxus Citadelle. Ma mission est d'orchestrer les ex...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

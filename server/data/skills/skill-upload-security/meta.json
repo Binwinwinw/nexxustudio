@@ -1,0 +1,36 @@
+{
+  "name": "Upload Security",
+  "version": "1.0.0",
+  "description": "Garde-fous upload Multer, double extension, MIME, messages UPLOAD_REJECTED et fail-closed.",
+  "enabled": true,
+  "requiresRuntime": true,
+  "priority": 880,
+  "intentIds": ["DOCUMENT_ATTACHED"],
+  "triggers": [
+    "upload refusé",
+    "upload rejected",
+    "double extension",
+    "extension multiple",
+    "UPLOAD_REJECTED",
+    "multer",
+    "pièce jointe sécurité",
+    "fichier rejeté"
+  ],
+  "runtimeModules": [
+    {
+      "path": "shared/uploadGuards.js",
+      "exportName": "validateDoubleExtension",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/agent/utils/conversationGuards.js",
+      "exportName": "isPureSocial",
+      "required": false,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/upload-guards.test.js"
+  ]
+}

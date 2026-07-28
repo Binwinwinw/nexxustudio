@@ -1,0 +1,21 @@
+{
+  "id": "draft-1778395742656-0861f5f8",
+  "timestamp": "2026-05-10T06:49:02.656Z",
+  "trigger": "oui nous allons partir d'une page vierge, c'est pour moi un moyen de vérifier la véracité de tes propos, car toi en tant qu'assistant nexxus tu dois me faire augmenter le pourcentage de validation \nTu dois générer toute la structure tu as mon approbation si tu as besoin d'outils ou quoique ce soit crée le pour mener à terme de projet s'il faut mettre des sous menus, une sidebar ou tout ce dont tu as besoin pour finaliser le projet sera accepter il doit tourner en local dans un premier temps après nous verrons pour l'hebergement ",
+  "scope": [
+    "Cognition systémique, arbitrage identitaire, planification stratégique d'architectures IA. Spécialiste du déploiement souverain et des frameworks agentiques."
+  ],
+  "runId": "run-1778395570092",
+  "selectedModel": "qwen-coder:7b-elite",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_unsolicited_code_injection",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 172564,
+  "evidence": {
+    "logs": "Failed Validation: unsolicited_code_injection\nResponse: D'accord, je vais vous aider à créer la structure du projet. Voici les étapes que nous allons suivre...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "IntentContractRegistryEntry",
+  "description": "Contrat d'intention Citadelle — routage, mode de réponse, validation et observabilité.",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "label",
+    "responseMode",
+    "routing",
+    "priority"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]*$",
+      "description": "Identifiant stable (ex: IDEATION_OPEN, FACTUAL_RESEARCH)"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "label": {
+      "type": "string",
+      "description": "Libellé humain en français"
+    },
+    "description": {
+      "type": "string"
+    },
+    "orchestratorIntents": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Intents SovereignOrchestrator (EXPERT_MATRIX) compatibles"
+    },
+    "responseMode": {
+      "type": "string",
+      "enum": [
+        "INSTANT",
+        "SIMPLE_FAST",
+        "DOCUMENT",
+        "CRITICAL",
+        "COMPOSER",
+        "OPEN_PROPOSITION"
+      ]
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000,
+      "description": "Plus élevé = résolution prioritaire en cas de conflit"
+    },
+    "routing": {
+      "type": "object",
+      "properties": {
+        "bypassSimpleFast": {
+          "type": "boolean",
+          "default": false,
+          "description": "Ne pas court-circuiter via SIMPLE_FAST amont"
+        },
+        "skipWebSearch": {
+          "type": "boolean",
+          "default": false,
+          "description": "Contourner expert_web_search (ex: idéation ouverte)"
+        },
+        "stages": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["routing", "context", "prompt", "execution", "security"]
+          },
+          "description": "Override optionnel des stages EXPERT_MATRIX"
+        },
+        "maxActiveExperts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2,
+          "default": 2
+        },
+        "orchestratorMode": {
+          "type": "string",
+          "enum": ["SOCIAL", "IDEATION", "OPERATIONAL", "EPISTEMIC", "VISION"]
+        },
+        "asyncJob": {
+          "type": "boolean",
+          "default": false,
+          "description": "Exécution job background (ex: Nexxus Video) — pas de réponse chat synchrone."
+        },
+        "skillId": {
+          "type": "string",
+          "pattern": "^skill-[a-z0-9-]+$",
+          "description": "Skill lazy-loaded pour job async."
+        }
+      },
+      "additionalProperties": false
+    },
+    "detection": {
+      "type": "object",
+      "properties": {
+        "guard": {
+          "type": "string",
+          "enum": [
+            "isIdeationRequest",
+            "isOpenProjectIdeation",
+            "isAnalyticalTechnicalRequest",
+            "isExplicitSourceCompilationRequest",
+            "isSocialQuery",
+            "isInstantCommand",
+            "hasAttachedDocumentContext",
+            "hasAttachedVisionContext",
+            "hasAttachedVideoContext",
+            "isVideoAnalysisIntent",
+            "isDesignExtractIntent",
+            "isDesignAuditIntent",
+            "isDesignCreateIntent",
+            "isArchitectureDesignIntent"
+          ]
+        },
+        "excludeGuard": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "observability": {
+      "type": "object",
+      "properties": {
+        "logTag": { "type": "string" },
+        "fallbackReasonPrefix": { "type": "string" },
+        "recordFallbackIncident": { "type": "boolean", "default": true }
+      },
+      "additionalProperties": false
+    },
+    "smoke": {
+      "type": "object",
+      "properties": {
+        "sampleQuery": { "type": "string" },
+        "mustNotContain": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "mustMatch": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Patterns RegExp sérialisés (sans delimiters)"
+        },
+        "expectedResponseMode": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "adrRef": {
+      "type": "string",
+      "description": "WikiLink ADR associé (ex: ADR-20260527-Intent-Contract-Registry)"
+    }
+  },
+  "additionalProperties": false
+}

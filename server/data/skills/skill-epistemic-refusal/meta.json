@@ -1,0 +1,89 @@
+{
+  "name": "Epistemic Refusal",
+  "version": "1.0.0",
+  "description": "Dire « je ne sais pas » vs fallback document — complète conversation-stability (fail-closed).",
+  "enabled": true,
+  "requiresRuntime": true,
+  "priority": 830,
+  "intentIds": ["DIAGNOSTIC"],
+  "triggers": [
+    "je ne sais pas",
+    "signal insuffisant",
+    "pas assez d'informations",
+    "incertain",
+    "manque de données",
+    "refus épistémique",
+    "éléments fiables"
+  ],
+  "doNotUseWhen": [
+    {
+      "type": "queryContains",
+      "patterns": [
+        "idéation",
+        "idées créatives",
+        "proposition créative",
+        "brainstorm",
+        "OPEN_PROPOSITION"
+      ]
+    },
+    {
+      "type": "intentId",
+      "value": "IDEATION_OPEN"
+    },
+    {
+      "type": "queryContains",
+      "patterns": [
+        "salut",
+        "bonjour",
+        "bonsoir",
+        "coucou",
+        "hey",
+        "hello",
+        "comment ça va",
+        "ça va"
+      ]
+    },
+    {
+      "type": "queryContains",
+      "patterns": [
+        "qui es-tu",
+        "qui êtes-vous",
+        "qui tu es",
+        "présente-toi",
+        "présente toi",
+        "ton nom",
+        "ta name",
+        "votre nom"
+      ]
+    },
+    {
+      "type": "intentId",
+      "value": "intent-greeting"
+    },
+    {
+      "type": "intentId",
+      "value": "intent-introduction"
+    }
+  ],
+  "fallbackSkillId": "skill-document-analysis",
+  "runtimeModules": [
+    {
+      "path": "server/src/agent/config/modeResponseContracts.js",
+      "exportName": "INSUFFICIENT_SIGNAL_REFUSAL",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/agent/config/modeResponseContracts.js",
+      "exportName": "evaluateEpistemicRefusal",
+      "required": true,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": ["server/tests/mode-response-contracts.test.js"],
+  "kpis": {
+    "triggerAccuracyTarget": 0.85,
+    "fallbackRateMax": 0.1,
+    "notes": "Refus canonique vs fallback document-analysis si pièce jointe"
+  }
+}

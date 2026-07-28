@@ -1,0 +1,59 @@
+{
+  "name": "Micro-délestage conversationnel",
+  "version": "1.2.0",
+  "description": "Couche micro P1–P4 : short-circuit identité, idéation, familiarité ; subject understanding, lexique vivant, P3 borné, interprète requête P4.",
+  "enabled": true,
+  "requiresRuntime": true,
+  "priority": 880,
+  "intentIds": ["IDEATION_OPEN", "SOCIAL", "INSTANT"],
+  "triggers": [
+    "micro délestage",
+    "intentShortCircuit",
+    "runConversationShortCircuit",
+    "familiarity_deterministic",
+    "ideation_deterministic",
+    "social_deterministic",
+    "surfaceFormNormalizer",
+    "identityIntentGuards",
+    "familiarityIntentGuards",
+    "interpretRequest",
+    "request_interpreter_clarify"
+  ],
+  "runtimeModules": [
+    {
+      "path": "server/src/agent/micro/index.js",
+      "exportName": "runConversationShortCircuit",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/agent/micro/classifiers/intentShortCircuit.js",
+      "exportName": "runConversationShortCircuit",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/agent/utils/familiarityIntentGuards.js",
+      "exportName": "getFamiliarityDeterministicReply",
+      "required": false,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/micro-conversation-shortcircuit.test.js",
+    "server/tests/agent-social-identity.test.js",
+    "server/tests/agent-ideation-contract.test.js",
+    "server/tests/agent-familiarity-contract.test.js",
+    "server/tests/subject-understanding.test.js",
+    "server/tests/lexicon-learning.test.js",
+    "server/tests/subject-deepening-p3.test.js",
+    "server/tests/request-interpreter-p4.test.js"
+  ],
+  "vaultRefs": [
+    "citadelle-vault/Citadelle/02-Architecture/adr/ADR-20260601-Micro-Conversation-Delestage.md",
+    "citadelle-vault/Citadelle/02-Architecture/adr/ADR-20260527-Stack-Familiarite-Trois-Temps.md",
+    "citadelle-vault/Citadelle/02-Architecture/modules/Micro-Conversation-Delestage.md",
+    "citadelle-vault/Citadelle/04-Operations/procedures/Playbook-Micro-Delestage-Conversationnel.md",
+    "citadelle-vault/Citadelle/04-Operations/procedures/Regle-Ancrage-Micro-Outils.md"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "Intent Routing",
+  "version": "1.0.0",
+  "description": "Routage d'intention, contrats v1.2, bypass SIMPLE_FAST et sélection orchestrateur vs fast path.",
+  "enabled": true,
+  "requiresRuntime": true,
+  "priority": 850,
+  "intentIds": ["IDEATION_OPEN", "DIAGNOSTIC", "FACTUAL_RESEARCH"],
+  "triggers": [
+    "contrat d'intention",
+    "intent contract",
+    "simple fast",
+    "bypass",
+    "routage",
+    "intent registry",
+    "shouldBypassSimpleFast"
+  ],
+  "runtimeModules": [
+    {
+      "path": "server/src/agent/utils/skillLoader.js",
+      "exportName": "default",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/agent/config/intentContractRegistry.js",
+      "exportName": "resolveIntentContract",
+      "required": false,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/skillLoader.test.js",
+    "server/tests/skillTriggerMatrix.test.js",
+    "server/tests/intent-contract-registry.test.js"
+  ]
+}

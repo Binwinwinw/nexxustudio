@@ -1,0 +1,136 @@
+[
+  {
+    "knowledge_id": "kh-1781336484261-6f2f1861",
+    "kind": "project_fact",
+    "subject": "stack backend du projet",
+    "statement_canonical": "Le projet utilise Ruby on Rails.",
+    "aliases": [],
+    "scope": "project",
+    "namespace": "code",
+    "status": "superseded",
+    "confidence": 0.95,
+    "sources": [
+      {
+        "candidate_id": "cand-old",
+        "episode_id": "ep-old",
+        "session_id": "sess-1",
+        "validated_by_user": true,
+        "source_type": "candidate_promoted",
+        "timestamp": "2026-06-13T07:41:24.259Z"
+      },
+      {
+        "source_type": "superseded_by_newer_fact",
+        "timestamp": "2026-06-13T07:41:24.264Z"
+      }
+    ],
+    "created_at": "2026-06-13T07:41:24.261Z",
+    "updated_at": "2026-06-13T07:41:24.264Z",
+    "last_validated_at": "2026-06-13T07:41:24.261Z",
+    "supersedes": null,
+    "superseded_by": "kh-1781336484264-cb4d1a32",
+    "tags": [
+      "backend",
+      "database"
+    ]
+  },
+  {
+    "knowledge_id": "kh-1781336484264-cb4d1a32",
+    "kind": "project_fact",
+    "subject": "stack backend du projet",
+    "statement_canonical": "Le projet utilise Node.js avec PostgreSQL.",
+    "aliases": [],
+    "scope": "project",
+    "namespace": "code",
+    "status": "active",
+    "confidence": 0.95,
+    "sources": [
+      {
+        "candidate_id": "cand-new",
+        "episode_id": "ep-new",
+        "session_id": "sess-1",
+        "validated_by_user": true,
+        "source_type": "candidate_promoted",
+        "timestamp": "2026-06-13T07:41:24.263Z"
+      },
+      {
+        "candidate_id": "cand-1781337555025-e85048ba",
+        "episode_id": "ep-real-1",
+        "session_id": "sess-int-1",
+        "validated_by_user": true,
+        "source_type": "candidate_promoted",
+        "timestamp": "2026-06-13T07:59:15.029Z"
+      },
+      {
+        "candidate_id": "cand-1781337589285-c7b44425",
+        "episode_id": "ep-real-1",
+        "session_id": "sess-int-1",
+        "validated_by_user": true,
+        "source_type": "candidate_promoted",
+        "timestamp": "2026-06-13T07:59:49.295Z"
+      }
+    ],
+    "created_at": "2026-06-13T07:41:24.264Z",
+    "updated_at": "2026-06-13T07:59:49.295Z",
+    "last_validated_at": "2026-06-13T07:59:49.295Z",
+    "supersedes": null,
+    "superseded_by": null,
+    "tags": [
+      "backend",
+      "database"
+    ]
+  },
+  {
+    "knowledge_id": "kh-1781337076977-ca298521",
+    "kind": "project_fact",
+    "subject": "Le projet utilise Node.js avec PostgreSQL.",
+    "statement_canonical": "Le projet utilise Node.js avec PostgreSQL.",
+    "aliases": [],
+    "scope": "project",
+    "namespace": null,
+    "status": "active",
+    "confidence": 0.92,
+    "sources": [
+      {
+        "candidate_id": "cand-1781337076970-1ec0c224",
+        "episode_id": "ep-real-1",
+        "session_id": "sess-int-1",
+        "validated_by_user": true,
+        "source_type": "candidate_promoted",
+        "timestamp": "2026-06-13T07:51:16.976Z"
+      }
+    ],
+    "created_at": "2026-06-13T07:51:16.977Z",
+    "updated_at": "2026-06-13T07:51:16.977Z",
+    "last_validated_at": "2026-06-13T07:51:16.977Z",
+    "supersedes": null,
+    "superseded_by": null,
+    "tags": []
+  },
+  {
+    "knowledge_id": "kh-1781337076991-f293b09d",
+    "kind": "project_fact",
+    "subject": "Le projet utilise Ruby on Rails.",
+    "statement_canonical": "Le projet utilise Ruby on Rails.",
+    "aliases": [],
+    "scope": "project",
+    "namespace": null,
+    "status": "active",
+    "confidence": 0.94,
+    "sources": [
+      {
+        "candidate_id": "cand-1781337076984-51b1edce",
+        "episode_id": "ep-real-2",
+        "session_id": "sess-int-1",
+        "validated_by_user": true,
+        "source_type": "candidate_promoted",
+        "timestamp": "2026-06-13T07:51:16.990Z"
+      }
+    ],
+    "created_at": "2026-06-13T07:51:16.991Z",
+    "updated_at": "2026-06-13T07:51:16.991Z",
+    "last_validated_at": "2026-06-13T07:51:16.991Z",
+    "supersedes": null,
+    "superseded_by": null,
+    "tags": []
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "name": "Sentinel Verify",
+  "version": "1.0.0",
+  "description": "Protocole de vérification post-modification pour garantir l'intégrité technique.",
+  "enabled": true,
+  "requiresRuntime": false,
+  "runtimeModules": [],
+  "triggers": ["vérifier", "contrôler", "audit technique", "test", "check", "validation", "correction"]
+}

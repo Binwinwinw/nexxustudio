@@ -1,0 +1,245 @@
+{
+  "generatedAt": "2026-05-28T22:36:12.180Z",
+  "dateFr": "28/05/2026",
+  "day": "2026-05-28",
+  "conversation": {
+    "status": "OK",
+    "score": 100,
+    "metrics": {
+      "streams": 0,
+      "noVisibleTokens": 0,
+      "fallbackTriggered": 0,
+      "streamErrors": 0,
+      "fallbackRatePct": 0,
+      "streamErrorCount": 0
+    },
+    "qualityGateReady": true,
+    "trendLabel": "Données insuffisantes",
+    "trendDelta": 0,
+    "incidents": [
+      {
+        "ts": "2026-05-28T22:27:34.889Z",
+        "type": "fallback_triggered",
+        "reason": "test"
+      },
+      {
+        "ts": "2026-05-28T22:27:34.889Z",
+        "type": "no_visible_tokens",
+        "sessionId": "test"
+      },
+      {
+        "ts": "2026-05-28T22:23:53.402Z",
+        "type": "fallback_triggered",
+        "reason": "test"
+      },
+      {
+        "ts": "2026-05-28T22:23:53.401Z",
+        "type": "no_visible_tokens",
+        "sessionId": "test"
+      },
+      {
+        "ts": "2026-05-28T22:17:47.950Z",
+        "type": "fallback_triggered",
+        "reason": "test"
+      },
+      {
+        "ts": "2026-05-28T22:17:47.949Z",
+        "type": "no_visible_tokens",
+        "sessionId": "test"
+      },
+      {
+        "ts": "2026-05-28T22:15:10.027Z",
+        "type": "fallback_triggered",
+        "reason": "test"
+      },
+      {
+        "ts": "2026-05-28T22:15:10.027Z",
+        "type": "no_visible_tokens",
+        "sessionId": "test"
+      },
+      {
+        "ts": "2026-05-28T22:14:52.422Z",
+        "type": "fallback_triggered",
+        "reason": "test"
+      },
+      {
+        "ts": "2026-05-28T22:14:52.421Z",
+        "type": "no_visible_tokens",
+        "sessionId": "test"
+      },
+      {
+        "ts": "2026-05-28T04:37:42.463Z",
+        "type": "fallback_triggered",
+        "reason": "test"
+      },
+      {
+        "ts": "2026-05-28T04:37:42.463Z",
+        "type": "no_visible_tokens",
+        "sessionId": "test"
+      },
+      {
+        "ts": "2026-05-28T04:35:44.600Z",
+        "type": "fallback_triggered",
+        "reason": "test"
+      },
+      {
+        "ts": "2026-05-28T04:35:44.600Z",
+        "type": "no_visible_tokens",
+        "sessionId": "test"
+      },
+      {
+        "ts": "2026-05-28T04:35:37.561Z",
+        "type": "fallback_triggered",
+        "reason": "test"
+      },
+      {
+        "ts": "2026-05-28T04:35:37.559Z",
+        "type": "no_visible_tokens",
+        "sessionId": "test"
+      },
+      {
+        "ts": "2026-05-28T04:32:59.019Z",
+        "type": "fallback_triggered",
+        "reason": "test"
+      },
+      {
+        "ts": "2026-05-28T04:32:59.018Z",
+        "type": "no_visible_tokens",
+        "sessionId": "test"
+      },
+      {
+        "ts": "2026-05-28T04:30:51.503Z",
+        "type": "fallback_triggered",
+        "reason": "test"
+      },
+      {
+        "ts": "2026-05-28T04:30:51.502Z",
+        "type": "no_visible_tokens",
+        "sessionId": "test"
+      },
+      {
+        "ts": "2026-05-28T04:24:44.025Z",
+        "type": "fallback_triggered",
+        "reason": "test"
+      },
+      {
+        "ts": "2026-05-28T04:24:44.025Z",
+        "type": "no_visible_tokens",
+        "sessionId": "test"
+      },
+      {
+        "ts": "2026-05-28T04:02:47.948Z",
+        "type": "fallback_triggered",
+        "reason": "test"
+      },
+      {
+        "ts": "2026-05-28T04:02:47.948Z",
+        "type": "no_visible_tokens",
+        "sessionId": "test"
+      }
+    ],
+    "recommendation": "Conversation stable."
+  },
+  "memory": {
+    "status": "OK",
+    "score": 90,
+    "today": {
+      "ingestAttempts": 1,
+      "committed": 0,
+      "skipped": 0,
+      "precheckRefused": 1,
+      "promotionRefused": 0,
+      "promoted": 0,
+      "contractViolations": 0,
+      "staleRefusals": 0,
+      "streamLikeErrors": 0,
+      "promotionRatePct": 0,
+      "staleInStore": 0
+    },
+    "distribution": {
+      "storeActive": 0,
+      "episodicFiles": 4,
+      "semanticFacts": 0,
+      "heritageProposed": 0,
+      "proceduralTotal": 11,
+      "promotedToday": {
+        "episodic": 0,
+        "semantic": 0,
+        "heritage": 0
+      }
+    },
+    "refusalReasons": [
+      {
+        "reason": "test_probe",
+        "count": 1
+      }
+    ],
+    "kpis": {
+      "memoryGateHealthy": true,
+      "promotionFlowActive": false,
+      "noStaleActive": true,
+      "governanceReady": true
+    },
+    "trendLabel": "Données insuffisantes",
+    "trendDelta": 0,
+    "recommendation": "Gouvernance mémoire stable. Continuer le suivi quotidien promotions/refus."
+  },
+  "ops": {
+    "status": "OK",
+    "score": 95,
+    "verdict": "Système gouverné stable. Conserver quality:gate et ops:daily-report en routine."
+  },
+  "security": {
+    "auditPassRate": 100,
+    "auditTotalRuns": 2
+  },
+  "memoryTodayEvents": [
+    {
+      "at": "2026-05-28T22:15:20.235Z",
+      "status": "rejected_precheck",
+      "reasons": [
+        "test_probe"
+      ],
+      "pipelineMode": "COMPOSER"
+    }
+  ],
+  "executiveActions": [
+    "Aucune action urgente. Continuer le suivi quotidien."
+  ],
+  "alerts": [],
+  "thresholds": {
+    "version": "ops_alert_thresholds_v1",
+    "conversation": {
+      "incident": {
+        "noVisibleTokensMin": 1,
+        "streamErrorsMin": 1
+      },
+      "degrade": {
+        "fallbackRatePctMin": 1,
+        "minScore": 85,
+        "qualityGateMustPass": true
+      }
+    },
+    "memory": {
+      "incident": {
+        "contractViolationsMin": 1
+      },
+      "stale": {
+        "staleInStoreMin": 1
+      },
+      "degrade": {
+        "minScore": 85,
+        "maxPromotionRefusedRatePct": 80,
+        "maxPrecheckRefusedRatePct": 90,
+        "minIngestAttemptsForRates": 3
+      },
+      "inactif": {
+        "minIngestAttempts": 1
+      }
+    },
+    "opsGlobal": {
+      "degradeScoreBelow": 85,
+      "incidentScoreBelow": 70
+    }
+  }
+}

@@ -1,0 +1,36 @@
+[
+  {
+    "name": "Scenario 01: Hysteresis stability",
+    "steps": [
+      {
+        "id": "STEP_01",
+        "query": "Je veux créer un projet nommé 'Sentinel Auditor'. C'est une plateforme d'audit de sécurité automatisée pour les applications Node.js. On va utiliser une stack React, Express et MySQL. Les livrables sont un dashboard, un moteur de scan et un rapport PDF.",
+        "category": "Phase",
+        "required_patterns": ["Validation", "Score"]
+      },
+      {
+        "id": "STEP_02",
+        "query": "C'est prêt. [READY]",
+        "category": "Phase",
+        "required_patterns": ["FORGERON", "80%"]
+      },
+      {
+        "id": "STEP_03",
+        "query": "En fait, retire le support MySQL, on utilisera SQLite. Ça change beaucoup de choses ?",
+        "category": "Hysteresis",
+        "required_patterns": ["FORGERON"] 
+      }
+    ]
+  },
+  {
+    "name": "Scenario 02: Semantic Density Rejection",
+    "steps": [
+      {
+        "id": "STEP_01",
+        "query": "Projet: Test. Objectif: Faire un truc. Stack: Node. Livrable: Logo, CSS, HTML. C'est prêt. [READY]",
+        "category": "Density",
+        "required_patterns": ["échec", "manquant", "objectif", "titre"]
+      }
+    ]
+  }
+]

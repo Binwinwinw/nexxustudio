@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778723827300-17e36758",
+  "timestamp": "2026-05-14T01:57:07.300Z",
+  "trigger": "Quelles sont tes spécialités techniques ?",
+  "scope": "general",
+  "runId": "run-1778721777512",
+  "selectedModel": "qwen3.5:4b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 2049788,
+  "evidence": {
+    "logs": "Full Draft: <think>Thinking Process:\n\n1.  **Analyze the Request:**\n    *   User Question: \"Quelles sont tes spéc...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

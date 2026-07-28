@@ -1,0 +1,85 @@
+{
+  "name": "Browser Harness",
+  "version": "0.4.0",
+  "description": "Navigation web instrumentée gouvernée — Observe, Trace, getComputedStyle (Phase C). C1–C7 golden tests certifiés.",
+  "enabled": false,
+  "requiresRuntime": true,
+  "tier": "specialized",
+  "priority": 750,
+  "intentIds": [],
+  "triggers": [
+    "browser harness",
+    "nexxus browser",
+    "web operator observe"
+  ],
+  "runtimeModules": [
+    {
+      "path": "server/src/services/browser-harness/browserPolicy.js",
+      "exportName": "validateBrowserNavigationUrl",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/browser-harness/browserHarnessContract.js",
+      "exportName": "validateObserveInput",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/browser-harness/browserHarnessContract.js",
+      "exportName": "buildObservationEnvelope",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/browser-harness/browserHarnessObservability.js",
+      "exportName": "createBrowserCorrelationIds",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/browser-harness/browserSessionService.js",
+      "exportName": "withBrowserSession",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/browser-harness/browserObservationService.js",
+      "exportName": "observePage",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/browser-harness/browserStyleSampler.js",
+      "exportName": "summarizeComputedStyles",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/browser-harness/browserTraceArtifacts.js",
+      "exportName": "writeBrowserTraceArtifacts",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/browser-harness/browserHarnessWorker.js",
+      "exportName": "runBrowserObserveWorker",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/browser-harness/BrowserHarnessJobManager.js",
+      "exportName": "default",
+      "required": true,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/browser-harness-contract.test.js",
+    "server/tests/browser-harness-session.test.js",
+    "server/tests/browser-harness-observation.test.js",
+    "server/tests/browser-harness-worker.test.js",
+    "server/tests/browser-harness-api.test.js",
+    "server/tests/golden/browser-harness/browser-harness-golden.test.js"
+  ]
+}

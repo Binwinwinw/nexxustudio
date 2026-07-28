@@ -1,0 +1,94 @@
+{
+  "version": "1.0.0",
+  "kind": "nexxus.design.audit_result",
+  "skill_id": "skill-impeccable",
+  "score_global": 76,
+  "merge_ok": false,
+  "dimensions": {
+    "coherence": 80,
+    "hierarchy": 100,
+    "rhythm": 80,
+    "readability": 85,
+    "accessibility": 45,
+    "affordance": 80,
+    "density": 75,
+    "contrast": 45,
+    "continuity": 90
+  },
+  "issues": [
+    {
+      "severity": "major",
+      "dimension": "coherence",
+      "message": "Couleur texte identique au primary — hiérarchie visuelle affaiblie.",
+      "recommendation": "Distinguer text et primary dans les tokens."
+    },
+    {
+      "severity": "blocker",
+      "dimension": "contrast",
+      "message": "Contraste texte/surface insuffisant (4.19:1, minimum 4.5:1).",
+      "recommendation": "Assombrir le texte ou éclaircir le fond surface."
+    }
+  ],
+  "quick_wins": [],
+  "blockers": [
+    {
+      "severity": "blocker",
+      "dimension": "contrast",
+      "message": "Contraste texte/surface insuffisant (4.19:1, minimum 4.5:1).",
+      "recommendation": "Assombrir le texte ou éclaircir le fond surface."
+    }
+  ],
+  "checklist_pre_merge": [
+    {
+      "id": "palette",
+      "label": "Palette ≥ 3 couleurs distinctes",
+      "ok": true,
+      "required": true
+    },
+    {
+      "id": "contrast",
+      "label": "Contraste texte/surface WCAG AA (4.5:1)",
+      "ok": false,
+      "required": true
+    },
+    {
+      "id": "components",
+      "label": "≥ 2 composants déclarés",
+      "ok": true,
+      "required": true
+    },
+    {
+      "id": "structure",
+      "label": "Structure de page documentée",
+      "ok": true,
+      "required": true
+    },
+    {
+      "id": "headings",
+      "label": "Hiérarchie titres dans App.jsx",
+      "ok": true,
+      "required": false
+    },
+    {
+      "id": "spacing",
+      "label": "Rythme espacement Tailwind",
+      "ok": true,
+      "required": false
+    },
+    {
+      "id": "score",
+      "label": "Score global ≥ 72 (actuel 76)",
+      "ok": true,
+      "required": true
+    },
+    {
+      "id": "blockers",
+      "label": "Aucun blocker",
+      "ok": false,
+      "required": true
+    }
+  ],
+  "source": "artifact_dir",
+  "pipeline_job_id": null,
+  "generated_at": "2026-06-01T02:40:36.574Z"
+}

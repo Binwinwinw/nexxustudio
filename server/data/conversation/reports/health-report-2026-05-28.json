@@ -1,0 +1,260 @@
+{
+  "generatedAt": "2026-05-28T04:02:49.323Z",
+  "dateFr": "28/05/2026",
+  "day": "2026-05-28",
+  "status": "OK",
+  "score": 100,
+  "globalScore": 100,
+  "metrics": {
+    "streams": 0,
+    "noVisibleTokens": 0,
+    "fallbackTriggered": 0,
+    "streamErrors": 0,
+    "fallbackRatePct": 0,
+    "streamErrorCount": 0
+  },
+  "metricsSource": "persisted_or_baseline",
+  "qualityGateReady": true,
+  "trend": {
+    "direction": "stable",
+    "delta": 0,
+    "label": "Données insuffisantes"
+  },
+  "dailyTrend": [],
+  "incidents": [
+    {
+      "ts": "2026-05-28T04:02:47.948Z",
+      "type": "fallback_triggered",
+      "reason": "test"
+    },
+    {
+      "ts": "2026-05-28T04:02:47.948Z",
+      "type": "no_visible_tokens",
+      "sessionId": "test"
+    }
+  ],
+  "gateRuns": [
+    {
+      "ts": "2026-05-28T04:02:47.728Z",
+      "verdict": "PASS",
+      "globalScore": 100,
+      "steps": [
+        {
+          "id": "test_stability",
+          "pass": true
+        },
+        {
+          "id": "kpi_thresholds",
+          "pass": true,
+          "score": 100
+        }
+      ],
+      "failures": []
+    }
+  ],
+  "security": {
+    "generatedAt": "2026-05-28T04:02:49.326Z",
+    "memoire": {
+      "path": "citadelle-vault/Citadelle/05-Knowledge/heritage/Memoire-des-Erreurs.md",
+      "totalIncidents": 8,
+      "securityIncidents": 1,
+      "recentIncidents": [
+        {
+          "dateLabel": "23 Mai 2026",
+          "title": "Prescription prématurée sur analyse architecturale",
+          "isSecurity": true,
+          "commit": null,
+          "motifs": [
+            "premature_code_prescription",
+            "missing_code_triage"
+          ]
+        },
+        {
+          "dateLabel": "23 Mai 2026",
+          "title": "Dérive progressive (Progressive Drift) après cadrage expert",
+          "isSecurity": false,
+          "commit": null,
+          "motifs": [
+            "progressive_drift"
+          ]
+        },
+        {
+          "dateLabel": "23 Mai 2026",
+          "title": "Perte de continuité et erreur de routage d'intention",
+          "isSecurity": false,
+          "commit": null,
+          "motifs": [
+            "intent_misdirection",
+            "context_breakage"
+          ]
+        },
+        {
+          "dateLabel": "22 Mai 2026",
+          "title": "Survol pédagogique et catalogue d'outils",
+          "isSecurity": false,
+          "commit": null,
+          "motifs": [
+            "pedagogical_overbreadth",
+            "missing_learning_path"
+          ]
+        },
+        {
+          "dateLabel": "22 Mai 2026",
+          "title": "Prescription prématurée sur correctif de code",
+          "isSecurity": false,
+          "commit": null,
+          "motifs": [
+            "premature_code_prescription",
+            "missing_code_triage"
+          ]
+        },
+        {
+          "dateLabel": "22 Mai 2026",
+          "title": "Prescription prématurée sur optimisation de performance",
+          "isSecurity": false,
+          "commit": null,
+          "motifs": [
+            "premature_performance_prescription",
+            "missing_performance_triage"
+          ]
+        },
+        {
+          "dateLabel": "22 Mai 2026",
+          "title": "Prescription prématurée sur analyse de sécurité",
+          "isSecurity": false,
+          "commit": null,
+          "motifs": [
+            "premature_security_prescription",
+            "missing_security_triage"
+          ]
+        },
+        {
+          "dateLabel": "22 Mai 2026",
+          "title": "Prescription prématurée sur erreur d'infrastructure",
+          "isSecurity": false,
+          "commit": null,
+          "motifs": [
+            "premature_prescription",
+            "missing_environment_triage"
+          ]
+        }
+      ]
+    },
+    "audit": {
+      "passRate": 100,
+      "totalRuns": 2,
+      "passCount": 2,
+      "failCount": 0,
+      "lastPass": {
+        "ts": "2026-05-27T23:36:26.395Z",
+        "pass": true,
+        "git": {
+          "sha": "non-git",
+          "branch": "unknown"
+        },
+        "steps": [
+          {
+            "label": "citadel:audit",
+            "ok": true,
+            "status": 0
+          },
+          {
+            "label": "test:security",
+            "ok": true,
+            "status": 0
+          }
+        ]
+      },
+      "lastFail": null,
+      "recentRuns": [
+        {
+          "ts": "2026-05-27T23:36:26.395Z",
+          "pass": true,
+          "git": {
+            "sha": "non-git",
+            "branch": "unknown"
+          },
+          "steps": [
+            {
+              "label": "citadel:audit",
+              "ok": true,
+              "status": 0
+            },
+            {
+              "label": "test:security",
+              "ok": true,
+              "status": 0
+            }
+          ]
+        },
+        {
+          "ts": "2026-05-27T23:35:48.797Z",
+          "pass": true,
+          "git": {
+            "sha": "non-git",
+            "branch": "unknown"
+          },
+          "steps": [
+            {
+              "label": "citadel:audit",
+              "ok": true,
+              "status": 0
+            },
+            {
+              "label": "test:security",
+              "ok": true,
+              "status": 0
+            }
+          ]
+        }
+      ]
+    },
+    "charts": {
+      "topMotifs": [
+        {
+          "name": "premature_code_prescription",
+          "value": 2
+        },
+        {
+          "name": "missing_code_triage",
+          "value": 2
+        },
+        {
+          "name": "premature_prescription",
+          "value": 1
+        },
+        {
+          "name": "missing_environment_triage",
+          "value": 1
+        },
+        {
+          "name": "premature_security_prescription",
+          "value": 1
+        },
+        {
+          "name": "missing_security_triage",
+          "value": 1
+        },
+        {
+          "name": "premature_performance_prescription",
+          "value": 1
+        },
+        {
+          "name": "missing_performance_triage",
+          "value": 1
+        }
+      ],
+      "securityMotifs": [
+        {
+          "name": "premature_security_prescription",
+          "value": 1
+        },
+        {
+          "name": "missing_security_triage",
+          "value": 1
+        }
+      ]
+    }
+  },
+  "recommendation": "Système stable. Continuer le suivi quotidien et conserver quality:gate dans la chaîne pre-commit."
+}

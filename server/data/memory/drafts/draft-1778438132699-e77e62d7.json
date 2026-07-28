@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778438132699-e77e62d7",
+  "timestamp": "2026-05-10T18:35:32.699Z",
+  "trigger": "tu peux continuer avec la règle de \"la suite au message suivant\" tu la connais cette règle ???",
+  "scope": "general",
+  "runId": "run-1778437660758",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_unauthorized_language",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 471941,
+  "evidence": {
+    "logs": "Failed Validation: unauthorized_language\nResponse: **Step-by-Step Explanation:** 1. **Understanding Current Project Structure:** - The project is organ...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

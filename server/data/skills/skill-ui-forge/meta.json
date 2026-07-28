@@ -1,0 +1,11 @@
+{
+  "name": "UI Forge",
+  "version": "1.0.0",
+  "description": "Expertise en design SOTA, anti-slop UI et polissage esthétique.",
+  "enabled": false,
+  "deprecated": true,
+  "replacedBy": "skill-nexxus-design",
+  "requiresRuntime": false,
+  "runtimeModules": [],
+  "triggers": ["ui", "design", "style", "tailwind", "framer", "/audit", "/polish", "/normalize"]
+}

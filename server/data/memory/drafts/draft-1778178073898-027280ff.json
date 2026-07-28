@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778178073898-027280ff",
+  "timestamp": "2026-05-07T18:21:13.898Z",
+  "trigger": "Comment optimiser les schémas de collection ChromaDB pour une recherche sémantique multi-projets ?",
+  "scope": "general",
+  "runId": "run-1778177979073",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_unsolicited_code_injection",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 94824,
+  "evidence": {
+    "logs": "Failed Validation: unsolicited_code_injection\nResponse: # OPTIMISATION CHROMADB MULTI-PROJETS ## 1. ARCHITECTURE DE COLLECTION **Séparation physique** - Cré...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

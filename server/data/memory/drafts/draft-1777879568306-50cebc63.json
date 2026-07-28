@@ -1,0 +1,19 @@
+{
+  "id": "draft-1777879568306-50cebc63",
+  "timestamp": "2026-05-04T07:26:08.306Z",
+  "trigger": "Recommence proprement le fichier HTML de formation Teams 365, en utilisant le protocole de pause tous les 3 chapitres pour ne pas être coupé.",
+  "scope": "general",
+  "runId": "run-1777879460472",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_unsolicited_code_injection",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 107834,
+  "evidence": {
+    "logs": "Failed Validation: unsolicited_code_injection\nResponse: Bonjour. Je suis Nexxus, l'assistant de Nexxus Citadel. Je coordonne les expertises, je structure le...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

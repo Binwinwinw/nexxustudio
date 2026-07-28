@@ -1,0 +1,46 @@
+{
+  "name": "Memory Governance",
+  "version": "1.0.0",
+  "description": "Promotion mémoire, curated gate, TTL, conflits et décisions autoritaires — gouvernance mémoire long terme.",
+  "enabled": true,
+  "priority": 860,
+  "intentIds": [],
+  "triggers": [
+    "gouvernance mémoire",
+    "memory governance",
+    "promotion mémoire",
+    "curated memory",
+    "conflit mémoire",
+    "decision memory"
+  ],
+  "doNotUseWhen": [
+    {
+      "type": "queryContains",
+      "patterns": ["salut", "bonjour", "merci"]
+    }
+  ],
+  "requiresRuntime": true,
+  "runtimeModules": [
+    {
+      "path": "server/src/agent/memory/guardianship/curatedMemoryGate.js",
+      "exportName": "assessMemoryEligibility",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/agent/memory/guardianship/memoryPromotionPolicy.js",
+      "exportName": "assessPromotionEligibility",
+      "required": false,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/curated-memory-gate.test.js",
+    "server/tests/memory-promotion-policy.test.js"
+  ],
+  "kpis": {
+    "triggerAccuracyTarget": 0.85,
+    "maxFalsePositiveRate": 0.1,
+    "notes": "Suivre taux promotion rejetée vs hard-fail MemoryStoreService"
+  }
+}

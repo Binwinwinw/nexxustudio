@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778720140102-b7a020e0",
+  "timestamp": "2026-05-14T00:55:40.100Z",
+  "trigger": "Peux-tu m'aider à créer un smart contract sur Ethereum ?",
+  "scope": "general",
+  "runId": "run-1778716882430",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_unsolicited_code_injection",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 3257670,
+  "evidence": {
+    "logs": "Failed Validation: unsolicited_code_injection\nResponse: ### Guide Complexe Pour Créer Un Contrat Intelligent Sur Ethereum #### Structure De Réponse: 1. **[O...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778638218709-a0bebea2",
+  "timestamp": "2026-05-13T02:10:18.709Z",
+  "trigger": "qu'est-ce qu'on pourrait lancer ???",
+  "scope": "general",
+  "runId": "run-1778637813252",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_persona_leak",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 405456,
+  "evidence": {
+    "logs": "Failed Validation: persona_leak\nResponse: Voici quelques idées de projets ou initiatives que nous pourrions lancer : 1. **Développement Web** ...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

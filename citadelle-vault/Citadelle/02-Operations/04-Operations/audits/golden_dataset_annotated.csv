@@ -1,0 +1,19 @@
+session_id,turn_index,raw_query,ground_truth_intent,is_multi_turn,is_ambiguous,context_failure
+"f4b8509d-6301-470f-9de1-601598d2dc39",0,"bonjour ","social",false,false,true
+"f4b8509d-6301-470f-9de1-601598d2dc39",2,"bonjour","social",false,false,false
+"f4b8509d-6301-470f-9de1-601598d2dc39",4,"bonjour","social",false,false,false
+"f4b8509d-6301-470f-9de1-601598d2dc39",6,"salut salut comment vas tu???","social",false,false,false
+"542aae98-a7fa-4b12-a35d-ec9aeb8d1355",0,"salut","social",false,false,true
+"1e557a11-35a9-4a81-9699-8bc95e89ba80",0,"Bonjour comment vas tu ??","social",false,false,true
+"7ae54ca3-6e6f-4ff3-a79e-f0c2a37b2910",0,"salut bonjour à toi","social",false,false,false
+"7a743f6a-af20-4895-a727-1f5142065f32",0,"bonjour tu vas bien ?","social",false,false,false
+"ee9db614-1aaf-45e8-bf0a-55c865a924e3",0,"bienvenue à toi ","social",false,false,true
+"b2146167-812b-45b0-a820-59087212776a",0,"salut","social",false,false,true
+"4a047f4b-ec97-4fa5-a252-ee5fbb1192c3",0,"salut salut comment vas tu ???","social",false,false,true
+"f996fe62-9f62-4cac-8ef0-b9cc018f95ed",0,"salut salut comment ca va ???","social",false,false,true
+"761d54c3-e42b-44f2-8d6a-20bb036d9d2b",0,"salut salut comment vas tu ???","social",false,false,true
+"5e12552f-6f0e-4109-a9d9-ec1ddbc4c898",0,"salut comment vas tu ?","social",false,false,true
+"118cb2e4-1e4c-4e66-a654-c719cbe37825",0,"salut salut comment t'appelles tu et quelles sont tes fonctionnalités?","social",true,false,true
+"9fd0c0d2-e4c5-4377-b8da-ccf45b332ece",0,"salut salut comment vas tu ??","social",false,false,false
+"9fd0c0d2-e4c5-4377-b8da-ccf45b332ece",2,"salut salut comment t'appelles et quelles sont tes fopnctionnalités","social",true,false,true
+"9fd0c0d2-e4c5-4377-b8da-ccf45b332ece",4,"salut salut comment t'appelles tu et quelles sont tes fonctionnalités?""","social",true,false,true

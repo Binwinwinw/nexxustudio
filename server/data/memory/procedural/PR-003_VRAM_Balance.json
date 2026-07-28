@@ -1,0 +1,15 @@
+{
+  "id": "PR-003",
+  "scope": "infra",
+  "status": "accepted",
+  "rule": "Sur GPU 8Go (RTX 4060), privilégier le couple 4B (Orchestrateur) + 8B (Thinker) en VRAM pour maintenir une réponse sous les 30 secondes sans swap système.",
+  "rationale": "Garantit la fluidité de l'interface en évitant le déchargement incessant des modèles entre le routage et la réponse.",
+  "applicability": {
+    "when": "Phase de discussion ou de validation.",
+    "not_when": "Phase de production lourde (Forge) où le 14B+ est requis."
+  },
+  "confidence": "confirmed",
+  "source_type": "telemetry_analysis",
+  "promoted_at": "2026-05-01",
+  "version": 1
+}

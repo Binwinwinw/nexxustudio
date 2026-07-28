@@ -1,0 +1,171 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "answerDraft.schema.json",
+  "title": "AnswerDraft",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draft_id",
+    "query_id",
+    "status",
+    "question_reformulated",
+    "answer_summary",
+    "confirmed_section",
+    "probable_section",
+    "unknown_section",
+    "next_checks",
+    "claim_map"
+  ],
+  "properties": {
+    "draft_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "query_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ok",
+        "needs_clarification",
+        "insufficient_evidence",
+        "failed"
+      ]
+    },
+    "question_reformulated": {
+      "type": "string",
+      "minLength": 5
+    },
+    "answer_summary": {
+      "type": "string",
+      "minLength": 5
+    },
+    "confirmed_section": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["text", "fact_ids"],
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 5
+          },
+          "fact_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "probable_section": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["text", "hypothesis_ids"],
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 5
+          },
+          "hypothesis_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "unknown_section": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["text"],
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 5
+          },
+          "missing_proof_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "next_checks": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 5
+      }
+    },
+    "claim_map": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "claim_id",
+          "section",
+          "text"
+        ],
+        "properties": {
+          "claim_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "section": {
+            "type": "string",
+            "enum": ["confirmed", "probable", "unknown"]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 5
+          },
+          "fact_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "hypothesis_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "missing_proof_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    }
+  }
+}

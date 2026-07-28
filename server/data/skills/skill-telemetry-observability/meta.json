@@ -1,0 +1,52 @@
+{
+  "name": "Telemetry Observability",
+  "version": "1.0.0",
+  "description": "Monitoring agent, métriques runtime, alertes — production ops.",
+  "enabled": true,
+  "requiresRuntime": true,
+  "priority": 820,
+  "intentIds": ["DIAGNOSTIC"],
+  "triggers": [
+    "télémétrie",
+    "telemetrie",
+    "observabilité",
+    "observabilite",
+    "monitoring agent",
+    "métriques ops",
+    "metriques ops",
+    "alertes runtime",
+    "dashboard ops"
+  ],
+  "runtimeModules": [
+    {
+      "path": "server/src/ops/telemetry-observability.js",
+      "exportName": "TelemetryObservability",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/ops/telemetry-observability.js",
+      "exportName": "generateAlerts",
+      "required": false,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/agent/telemetry/telemetryPersistor.js",
+      "exportName": "default",
+      "required": false,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/agent/telemetry/conversationHealthScore.js",
+      "exportName": "computeHealthScore",
+      "required": false,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": ["server/tests/telemetry-observability.test.js"],
+  "kpis": {
+    "triggerAccuracyTarget": 0.85,
+    "fallbackRateMax": 0.15,
+    "notes": "Taux erreur ops < 5% ; accuracy skills ≥ 0.85 sur fenêtre 24h"
+  }
+}

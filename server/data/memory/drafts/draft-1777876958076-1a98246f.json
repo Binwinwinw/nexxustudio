@@ -1,0 +1,21 @@
+{
+  "id": "draft-1777876958076-1a98246f",
+  "timestamp": "2026-05-04T06:42:38.076Z",
+  "trigger": "Le test de charge physique a été interrompu après validation de la faisabilité technique. En mode local, nous adoptons l'arbitrage séquentiel. Le système est officiellement prêt pour la production asynchrone sur MonCoachScolaire. Fin de mission.\"",
+  "scope": [
+    "Cognition systémique, arbitrage identitaire, planification stratégique d'architectures IA. Spécialiste du déploiement souverain et des frameworks agentiques."
+  ],
+  "runId": "run-1777876863997",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 94079,
+  "evidence": {
+    "logs": "Full Draft: <think>Okay, let's tackle this query. The user is saying that the physical load test was interrupted...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

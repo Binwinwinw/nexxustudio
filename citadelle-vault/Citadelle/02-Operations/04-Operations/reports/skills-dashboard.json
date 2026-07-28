@@ -1,0 +1,490 @@
+{
+  "summary": {
+    "totalSkills": 26,
+    "runtimeBacked": 18,
+    "promptOnly": 8,
+    "fullyImplemented": 18,
+    "partiallyImplemented": 0,
+    "subSkills": 4,
+    "parentSkills": 1,
+    "warnings": 0,
+    "errors": 0
+  },
+  "runtimeBacked": [
+    {
+      "id": "skill-007-orchestrator",
+      "name": "Coding Protocol",
+      "modules": [
+        {
+          "path": "server/src/agent/orchestrator/SovereignOrchestrator.js",
+          "exportName": "SovereignOrchestrator",
+          "required": true,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    },
+    {
+      "id": "skill-conversation-stability",
+      "name": "Conversation Stability",
+      "modules": [
+        {
+          "path": "server/src/agent/telemetry/conversationHealthScore.js",
+          "exportName": "computeHealthScore",
+          "required": true,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    },
+    {
+      "id": "skill-document-analysis",
+      "name": "Document Analysis",
+      "modules": [
+        {
+          "path": "citadelle-vault/Citadelle/03-Forge/document-analysis.js",
+          "exportName": "documentAnalysis",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/agent/utils/contextAgent.js",
+          "exportName": "default",
+          "required": true,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    },
+    {
+      "id": "skill-egress-security",
+      "name": "Egress Security",
+      "modules": [
+        {
+          "path": "server/src/services/tool-output-sanitizer.js",
+          "exportName": "sanitizeToolOutput",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/agent/agents/expertWebSearch.js",
+          "exportName": "expertWebSearch",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/services/webSummarizer.js",
+          "exportName": "summarizeWebPage",
+          "required": false,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    },
+    {
+      "id": "skill-epistemic-refusal",
+      "name": "Epistemic Refusal",
+      "modules": [
+        {
+          "path": "server/src/agent/config/modeResponseContracts.js",
+          "exportName": "INSUFFICIENT_SIGNAL_REFUSAL",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/agent/config/modeResponseContracts.js",
+          "exportName": "evaluateEpistemicRefusal",
+          "required": true,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    },
+    {
+      "id": "skill-hybrid-retrieval",
+      "name": "Hybrid Retrieval",
+      "modules": [
+        {
+          "path": "server/src/retrieval/hybrid-retrieval.js",
+          "exportName": "HybridRetrieval",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/retrieval/hybrid-retrieval.js",
+          "exportName": "reciprocalRankFusion",
+          "required": false,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/retrieval/hybrid-retrieval.js",
+          "exportName": "default",
+          "required": true,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    },
+    {
+      "id": "skill-intent-routing",
+      "name": "Intent Routing",
+      "modules": [
+        {
+          "path": "server/src/agent/utils/skillLoader.js",
+          "exportName": "default",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/agent/config/intentContractRegistry.js",
+          "exportName": "resolveIntentContract",
+          "required": false,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    },
+    {
+      "id": "skill-makers-checker",
+      "name": "Makers Checker",
+      "modules": [
+        {
+          "path": "server/src/verification/makersChecker.js",
+          "exportName": "MakersChecker",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/verification/makersChecker.js",
+          "exportName": "default",
+          "required": true,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    },
+    {
+      "id": "skill-mcp-bridge",
+      "name": "MCP Bridge",
+      "modules": [
+        {
+          "path": "server/src/mcp/mcp-bridge.js",
+          "exportName": "connectMcpServer",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/mcp/mcp-bridge.js",
+          "exportName": "callMcpTool",
+          "required": false,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/mcp/mcp-bridge.js",
+          "exportName": "registerMcpServers",
+          "required": false,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/mcp/mcp-bridge.js",
+          "exportName": "validateMcpManifest",
+          "required": false,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    },
+    {
+      "id": "skill-memory-governance",
+      "name": "Memory Governance",
+      "modules": [
+        {
+          "path": "server/src/agent/memory/guardianship/curatedMemoryGate.js",
+          "exportName": "assessMemoryEligibility",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/agent/memory/guardianship/memoryPromotionPolicy.js",
+          "exportName": "assessPromotionEligibility",
+          "required": false,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    },
+    {
+      "id": "skill-obsidian-governance",
+      "name": "Obsidian Governance",
+      "modules": [
+        {
+          "path": "server/src/wiki/ingest_wiki_adrs.js",
+          "exportName": "ingestAdr",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/wiki/ingest_wiki_adrs.js",
+          "exportName": "batchIngestAdr",
+          "required": false,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/wiki/wiki_compiler.js",
+          "exportName": "compileWikiFromVault",
+          "required": false,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": [
+        "skill-obsidian-markdown",
+        "skill-obsidian-canvas",
+        "skill-obsidian-cli"
+      ]
+    },
+    {
+      "id": "skill-pdf-extraction",
+      "name": "PDF Extraction",
+      "modules": [
+        {
+          "path": "server/src/services/pdf-extractor.js",
+          "exportName": "extractTextFromPdf",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/agent/utils/contextAgent.js",
+          "exportName": "default",
+          "required": true,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    },
+    {
+      "id": "skill-quality-gate",
+      "name": "Quality Gate",
+      "modules": [
+        {
+          "path": "server/src/quality/quality-gate.js",
+          "exportName": "runQualityGate",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/quality/quality-gate.js",
+          "exportName": "generateGateReport",
+          "required": false,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/quality/conversationHealthScore.js",
+          "exportName": "conversationHealthScore",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/quality/skillTriggerMatrixData.js",
+          "exportName": "evaluateSkillTriggerAccuracy",
+          "required": false,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    },
+    {
+      "id": "skill-rag-ingestion",
+      "name": "RAG Ingestion",
+      "modules": [
+        {
+          "path": "server/src/wiki/ingest_wiki_adrs.js",
+          "exportName": "ingestWikiChunksToHub",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/wiki/ingest_wiki_adrs.js",
+          "exportName": "loadWikiRagChunks",
+          "required": false,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    },
+    {
+      "id": "skill-telemetry-observability",
+      "name": "Telemetry Observability",
+      "modules": [
+        {
+          "path": "server/src/ops/telemetry-observability.js",
+          "exportName": "TelemetryObservability",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/ops/telemetry-observability.js",
+          "exportName": "generateAlerts",
+          "required": false,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/agent/telemetry/telemetryPersistor.js",
+          "exportName": "default",
+          "required": false,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/agent/telemetry/conversationHealthScore.js",
+          "exportName": "computeHealthScore",
+          "required": false,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    },
+    {
+      "id": "skill-upload-security",
+      "name": "Upload Security",
+      "modules": [
+        {
+          "path": "shared/uploadGuards.js",
+          "exportName": "validateDoubleExtension",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/agent/utils/conversationGuards.js",
+          "exportName": "isPureSocial",
+          "required": false,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    },
+    {
+      "id": "skill-vision-sota",
+      "name": "Vision SOTA",
+      "modules": [
+        {
+          "path": "server/src/services/pdf-extractor.js",
+          "exportName": "processPdfAttachment",
+          "required": false,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    },
+    {
+      "id": "skill-wiki-compiler",
+      "name": "Wiki Compiler",
+      "modules": [
+        {
+          "path": "server/src/wiki/wiki_compiler.js",
+          "exportName": "compileWiki",
+          "required": true,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/wiki/wiki_compiler.js",
+          "exportName": "generateIndex",
+          "required": false,
+          "status": "implemented"
+        },
+        {
+          "path": "server/src/wiki/wiki_compiler.js",
+          "exportName": "compileWikiFromVault",
+          "required": false,
+          "status": "implemented"
+        }
+      ],
+      "subSkills": []
+    }
+  ],
+  "promptOnly": [
+    {
+      "id": "skill-architecture-review",
+      "name": "Architecture Review",
+      "requiresRuntime": false,
+      "parentSkillId": null
+    },
+    {
+      "id": "skill-audit-sota",
+      "name": "Audit SOTA",
+      "requiresRuntime": false,
+      "parentSkillId": null
+    },
+    {
+      "id": "skill-industrial-maturation",
+      "name": "Maturation Industrielle",
+      "requiresRuntime": false,
+      "parentSkillId": null
+    },
+    {
+      "id": "skill-obsidian-canvas",
+      "name": "Obsidian Canvas",
+      "requiresRuntime": false,
+      "parentSkillId": "skill-obsidian-governance"
+    },
+    {
+      "id": "skill-obsidian-cli",
+      "name": "Obsidian CLI",
+      "requiresRuntime": false,
+      "parentSkillId": "skill-obsidian-governance"
+    },
+    {
+      "id": "skill-obsidian-markdown",
+      "name": "Obsidian Markdown",
+      "requiresRuntime": false,
+      "parentSkillId": "skill-obsidian-governance"
+    },
+    {
+      "id": "skill-sentinel-verify",
+      "name": "Sentinel Verify",
+      "requiresRuntime": false,
+      "parentSkillId": null
+    },
+    {
+      "id": "skill-ui-forge",
+      "name": "UI Forge",
+      "requiresRuntime": false,
+      "parentSkillId": null
+    }
+  ],
+  "wave2": {
+    "critical": [
+      {
+        "id": "skill-pdf-extraction",
+        "present": true,
+        "runtimeBacked": true,
+        "fullyImplemented": true
+      },
+      {
+        "id": "skill-egress-security",
+        "present": true,
+        "runtimeBacked": true,
+        "fullyImplemented": true
+      },
+      {
+        "id": "skill-memory-governance",
+        "present": true,
+        "runtimeBacked": true,
+        "fullyImplemented": true
+      },
+      {
+        "id": "skill-quality-gate",
+        "present": true,
+        "runtimeBacked": true,
+        "fullyImplemented": true
+      }
+    ]
+  },
+  "coverage": {
+    "pdf": "✅",
+    "egress": "✅",
+    "memory": "✅",
+    "quality": "✅"
+  },
+  "warnings": [],
+  "errors": [],
+  "generatedAt": "2026-05-30T06:41:20.509Z"
+}

@@ -1,0 +1,96 @@
+[
+  {
+    "id": "forge-overview",
+    "title": "Fonctionnement de la Forge",
+    "fileName": "forge.md",
+    "authority": "Nexxus Citadel Product",
+    "owner": "studio-core",
+    "lastReviewedAt": "2026-04-23",
+    "updatedAt": "2026-04-23",
+    "status": "active",
+    "priority": 100,
+    "mode": "direct_answer",
+    "allowedModes": ["direct_answer"],
+    "fallbackPolicy": "strict_decline",
+    "tags": ["forge", "pipeline", "qa", "architecture", "development"],
+    "canonicalQuestions": [
+      "comment fonctionne la forge",
+      "comment marche la forge",
+      "c'est quoi la forge",
+      "a quoi sert la forge",
+      "quand envoyer le projet a la forge",
+      "a quel moment envoyer le projet a la forge",
+      "quand la forge prend le relais",
+      "a quel moment la forge prend le relais"
+    ],
+    "synonyms": ["forge", "pipeline forge", "production forge", "workflow forge", "ready for forge", "validation forge", "envoyer a la forge"]
+  },
+  {
+    "id": "nexxus-identity",
+    "title": "Identité de Nexxus",
+    "fileName": "nexxus_identity.md",
+    "authority": "Nexxus Citadel Product",
+    "owner": "studio-core",
+    "lastReviewedAt": "2026-04-23",
+    "updatedAt": "2026-04-23",
+    "status": "active",
+    "priority": 90,
+    "mode": "direct_answer",
+    "allowedModes": ["direct_answer"],
+    "fallbackPolicy": "strict_decline",
+    "tags": ["nexxus", "identity", "assistant", "scope"],
+    "canonicalQuestions": [
+      "qui es tu",
+      "tu es qui",
+      "comment t'appelles tu",
+      "quelles sont tes fonctionnalités",
+      "c'est quoi ton rôle",
+      "quel est ton rôle"
+    ],
+    "synonyms": ["nexxus", "assistant", "identité", "fonctionnalités", "rôle", "role"]
+  },
+  {
+    "id": "assistant-scope",
+    "title": "Périmètre de l'assistant",
+    "fileName": "assistant_scope.md",
+    "authority": "Nexxus Citadel Product",
+    "owner": "studio-core",
+    "lastReviewedAt": "2026-04-23",
+    "updatedAt": "2026-04-23",
+    "status": "active",
+    "priority": 80,
+    "mode": "direct_answer",
+    "allowedModes": ["direct_answer"],
+    "fallbackPolicy": "strict_decline",
+    "tags": ["assistant", "scope", "studio", "phase", "handoff"],
+    "canonicalQuestions": [
+      "que peux tu faire",
+      "comment peux tu m'aider",
+      "quel est ton rôle",
+      "quelles sont tes fonctionnalités"
+    ],
+    "synonyms": ["rôle", "périmètre", "capacité", "aide"]
+  },
+  {
+    "id": "nexxus-workings",
+    "title": "Fonctionnement de Nexxus",
+    "fileName": "nexxus_workings.md",
+    "authority": "Nexxus Citadel Product",
+    "owner": "studio-core",
+    "lastReviewedAt": "2026-04-23",
+    "updatedAt": "2026-04-23",
+    "status": "active",
+    "priority": 85,
+    "mode": "direct_answer",
+    "allowedModes": ["direct_answer"],
+    "fallbackPolicy": "strict_decline",
+    "tags": ["nexxus", "fonctionnement", "raisonnement", "assistant", "orchestration"],
+    "canonicalQuestions": [
+      "comment tu fais pour réfléchir",
+      "comment tu fais pour reflechir",
+      "comment fonctionne nexxus",
+      "comment tu fonctionnes"
+    ],
+    "synonyms": ["réfléchir", "reflechir", "fonctionnes", "orchestration", "fonctionnement"]
+  }
+]

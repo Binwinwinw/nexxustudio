@@ -1,0 +1,18 @@
+{
+  "documentId": "doc-1780370825347-89b23158",
+  "mode": "summary",
+  "query": null,
+  "result": "## Objectif du document\n- Créer la table `code_postale` dans la base de données `gestionepn`.\n- Stocker les informations relatives aux codes postaux, y compris l'ID unique (`id`), le code postal lui-même (`cp`) et les références vers une commune (`id_commune`) et/ou une ville (`id_ville`).\n\n## Sections clés\n- **Structure de la table `code_postale`:**\n  - Colonnes:\n    - `id`: Identifiant unique, type entier (11 bits), non nul.\n    - `cp`: Code postal, type medium integer (11 bits).\n    - `id_commune`: Référence vers une commune, type entier (11 bits).\n    - `id_ville`: Référence vers une ville, type entier (11 bits).\n\n- **Index et clés étrangères:**\n  - Index primaire sur la colonne `id`.\n  - Contrainte de clé étrangère `codepostale_ibfk_1` liant `id_commune` à la table `commune.id_commune`.\n  - Contrainte de clé étrangère `codepostale_ibfk_2` liant `id_ville` à la table `ville.id_ville`.\n\n## Conclusions\nLe document définit une structure de base de données pour gérer les codes postaux en relation avec des entités géographiques (communes et villes). Il est conçu pour assurer l'intégrité référentielle grâce aux contraintes de clés étrangères, permettant ainsi un accès structuré et une gestion précise des données liées à la postalisation",
+  "metadata": {
+    "mode": "DOCUMENT",
+    "steps": 1,
+    "hasAttachedDocument": true,
+    "usedFallback": false,
+    "streamed": true,
+    "intent_contract_id": "DOCUMENT_ANALYSIS",
+    "response_mode": "DOCUMENT",
+    "originalName": "code_postale.sql",
+    "trace_id": "c1522c3d-8258-4b8d-a87c-9a85c400d424",
+    "analyzedAt": "2026-06-02T03:27:33.199Z"
+  }
+}

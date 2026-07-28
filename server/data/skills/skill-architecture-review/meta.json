@@ -1,0 +1,9 @@
+{
+  "name": "Architecture Review",
+  "version": "1.0.0",
+  "description": "Compétence d'inventaire et de priorisation de la dette technique par module.",
+  "enabled": true,
+  "requiresRuntime": false,
+  "runtimeModules": [],
+  "triggers": ["architecture", "dette", "refactoring", "revue", "arbitrage", "roadmap", "priorité"]
+}

@@ -1,0 +1,65 @@
+{
+  "version": "1.0.0",
+  "kind": "nexxus.browser.observation_result",
+  "source": {
+    "url": "http://127.0.0.1:5173/dashboard",
+    "response_status": 200,
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    }
+  },
+  "style_summary": {
+    "samples_count": 4,
+    "unique_colors": 4,
+    "unique_font_families": 0
+  },
+  "computed_styles_count": 4,
+  "computed_style_keys": [
+    {
+      "selector": ".kpi",
+      "tag": "div",
+      "classes": [
+        "kpi"
+      ],
+      "color": "rgb(226, 232, 240)",
+      "background": "rgb(30, 41, 59)",
+      "font_family": null
+    },
+    {
+      "selector": ".kpi-value",
+      "tag": "div",
+      "classes": [
+        "kpi-value"
+      ],
+      "color": "rgb(56, 189, 248)",
+      "background": null,
+      "font_family": null
+    },
+    {
+      "selector": "table",
+      "tag": "table",
+      "classes": [],
+      "color": null,
+      "background": "rgb(30, 41, 59)",
+      "font_family": null
+    },
+    {
+      "selector": "body",
+      "tag": "body",
+      "classes": [],
+      "color": "rgb(226, 232, 240)",
+      "background": "rgb(15, 23, 42)",
+      "font_family": null
+    }
+  ],
+  "dom_snapshot": {
+    "title": "Golden Mock"
+  },
+  "artifact_kinds": [
+    "observation_json",
+    "computed_styles_json",
+    "trace_jsonl"
+  ],
+  "uncertainties_count": 1
+}

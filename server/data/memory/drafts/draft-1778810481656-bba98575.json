@@ -1,0 +1,21 @@
+{
+  "id": "draft-1778810481656-bba98575",
+  "timestamp": "2026-05-15T02:01:21.656Z",
+  "trigger": "Je veux créer une plateforme e-commerce complète avec gestion de stock et paiement Stripe. Commence maintenant.",
+  "scope": [
+    "Cadrage stratégique, gestion des risques systémiques et roadmap de crise."
+  ],
+  "runId": "run-1778809850530",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_unauthorized_language",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 631126,
+  "evidence": {
+    "logs": "Failed Validation: unauthorized_language\nResponse: Creating a complete e-commerce platform with inventory management and Stripe payment integration inv...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "executionBrief.schema.json",
+  "title": "ExecutionBrief",
+  "description": "Cadre d'exécution structuré produit par Zephyr (semantic preprocessor) pour Ornith, R1 ou experts lazy. Pas de meta-prompt narratif.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "source",
+    "canonical_query",
+    "intent_family",
+    "rigor_level",
+    "recommended_actor",
+    "execution_brief",
+    "do_not",
+    "confidence"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Version du contrat (actuellement 1.0.0)"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "zephyr_semantic_preprocessor",
+        "deterministic_fallback",
+        "heuristic_bridge"
+      ]
+    },
+    "canonical_query": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "description": "Requête autonome sans anaphore"
+    },
+    "intent_family": {
+      "type": "string",
+      "enum": [
+        "social",
+        "follow_up",
+        "general_explain",
+        "how_to",
+        "code",
+        "meta_system",
+        "meta_assistant_behavior",
+        "architecture",
+        "ambiguous",
+        "clarification_needed",
+        "search",
+        "vision",
+        "ocr",
+        "translation",
+        "warm_tone_semi_social",
+        "unknown"
+      ]
+    },
+    "rigor_level": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "recommended_actor": {
+      "type": "string",
+      "enum": [
+        "deterministic_only",
+        "ornith",
+        "ornith_only",
+        "expert_lazy_code",
+        "expert_lazy_vision",
+        "expert_lazy_ocr",
+        "clarify_then_ornith"
+      ]
+    },
+    "stance": {
+      "type": ["string", "null"],
+      "enum": [
+        "assistant",
+        "system_architect",
+        "teacher",
+        "code_executor",
+        "router_analyst",
+        "companion",
+        null
+      ]
+    },
+    "template_id": {
+      "type": "string",
+      "enum": [
+        "TEMPLATE_DIRECT_CHAT",
+        "TEMPLATE_FOLLOW_UP_RESOLVE",
+        "TEMPLATE_META_SYSTEM_ARCH",
+        "TEMPLATE_AMBIGUOUS_CLARIFY",
+        "TEMPLATE_EXPLAIN_STRUCTURED",
+        "TEMPLATE_CODE_HANDOFF",
+        "TEMPLATE_ASSISTANT_BEHAVIOR",
+        "TEMPLATE_WARM_TONE"
+      ]
+    },
+    "execution_brief": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objective", "deliverable", "reflection_mode"],
+      "properties": {
+        "objective": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "vram_8gb",
+              "profil_B",
+              "tiering_lazy_experts",
+              "local_first",
+              "no_web_search",
+              "no_forge_code",
+              "no_vision",
+              "fail_open",
+              "timeout_2s"
+            ]
+          },
+          "maxItems": 8,
+          "uniqueItems": true
+        },
+        "deliverable": {
+          "type": "string",
+          "enum": [
+            "direct_answer",
+            "steps_3",
+            "decision_table",
+            "outline",
+            "clarification",
+            "handoff_r1",
+            "handoff_forge",
+            "policy_recommendation"
+          ]
+        },
+        "reflection_mode": {
+          "type": "string",
+          "enum": ["none", "structured_steps", "cot_delegate"]
+        }
+      }
+    },
+    "do_not": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "comparatif_web",
+          "forge_code",
+          "vision",
+          "ocr",
+          "orchestrator_heavy",
+          "meta_prompt_narrative",
+          "invent_sources",
+          "override_short_circuit",
+          "excessive_clarification",
+          "commercial_flattery"
+        ]
+      },
+      "maxItems": 8,
+      "uniqueItems": true
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "current_subject": { "type": ["string", "null"], "maxLength": 200 },
+        "follow_up_reference": { "type": ["string", "null"], "maxLength": 120 },
+        "ambiguity_level": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        },
+        "trigger_id": { "type": ["string", "null"], "maxLength": 64 }
+      }
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["high", "medium", "low"]
+    },
+    "needs_clarification": {
+      "type": "boolean",
+      "default": false
+    },
+    "clarification_question": {
+      "type": ["string", "null"],
+      "maxLength": 200
+    }
+  }
+}

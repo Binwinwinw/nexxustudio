@@ -1,0 +1,252 @@
+{
+  "version": "1.0.0",
+  "description": "Matrice intent → trigger → actor → template pour Zephyr ExecutionBrief. Évaluée APRÈS policies déterministes (RequestIntentFrame, intentShortCircuit).",
+  "doctrine": {
+    "zephyr_role": "structured_json_only",
+    "fail_open": true,
+    "timeout_ms": 2000,
+    "default_model": "zephyr:latest",
+    "never_invoke_when_short_circuit": true
+  },
+  "skip_triggers": {
+    "description": "Zephyr NE DOIT PAS être invoqué si une de ces conditions est vraie",
+    "conditions": [
+      { "id": "SKIP_SHORT_CIRCUIT", "signal": "short_circuit_matched", "value": true },
+      { "id": "SKIP_SOCIAL_ONLY", "signal": "social_only", "value": true },
+      { "id": "SKIP_TIME_LOOKUP", "signal": "time_lookup", "value": true },
+      { "id": "SKIP_GRATITUDE", "signal": "gratitude_closure", "value": true },
+      { "id": "SKIP_QUERY_TOO_SHORT", "signal": "query_length_below", "value": 5 },
+      { "id": "SKIP_DETERMINISTIC_FAMILY", "signal": "deterministic_family_resolved", "value": true }
+    ]
+  },
+  "invoke_triggers": [
+    {
+      "id": "TRG_WARM_TONE_SEMI_SOCIAL",
+      "priority": 91,
+      "description": "Relances semi-sociales et transitions (« ok et sinon », « t'en penses quoi », micro-déception)",
+      "when": {
+        "all": [{ "signal": "is_warm_tone_semi_social", "value": true }],
+        "none": [
+          { "signal": "short_circuit_matched", "value": true },
+          { "signal": "social_only", "value": true },
+          { "signal": "gratitude_closure", "value": true }
+        ]
+      },
+      "intent_family": "warm_tone_semi_social",
+      "template_id": "TEMPLATE_WARM_TONE",
+      "rigor_level": "low",
+      "recommended_actor": "ornith",
+      "stance": "companion",
+      "execution_brief": {
+        "objective": "Rebondir naturellement sur la transition conversationnelle sans surclarifier",
+        "constraints": ["local_first", "fail_open"],
+        "deliverable": "direct_answer",
+        "reflection_mode": "none"
+      },
+      "do_not": [
+        "orchestrator_heavy",
+        "meta_prompt_narrative",
+        "excessive_clarification",
+        "commercial_flattery"
+      ]
+    },
+    {
+      "id": "TRG_FOLLOW_UP_ELLIPSIS",
+      "priority": 90,
+      "description": "Relance courte ou référence contextuelle (« et le poker », « de football », « tu te rappelles »)",
+      "when": {
+        "any": [
+          { "signal": "is_follow_up_ellipsis", "value": true },
+          { "signal": "is_context_reference", "value": true }
+        ],
+        "none": [
+          { "signal": "short_circuit_matched", "value": true },
+          { "signal": "is_warm_tone_semi_social", "value": true }
+        ]
+      },
+      "intent_family": "follow_up",
+      "template_id": "TEMPLATE_FOLLOW_UP_RESOLVE",
+      "rigor_level": "low",
+      "recommended_actor": "ornith",
+      "stance": "assistant",
+      "execution_brief": {
+        "objective": "Répondre à la relance en restaurant le sujet et l'intention du tour précédent",
+        "constraints": ["fail_open", "local_first"],
+        "deliverable": "direct_answer",
+        "reflection_mode": "none"
+      },
+      "do_not": ["orchestrator_heavy", "meta_prompt_narrative", "override_short_circuit"]
+    },
+    {
+      "id": "TRG_META_SYSTEM_ARCH",
+      "priority": 85,
+      "description": "Questions archi système : modèles, policies, routing, Zephyr, tiering, VRAM",
+      "when": {
+        "any": [
+          { "signal": "is_meta_system_query", "value": true },
+          { "signal": "is_stack_model_query", "value": true }
+        ]
+      },
+      "intent_family": "meta_system",
+      "template_id": "TEMPLATE_META_SYSTEM_ARCH",
+      "rigor_level": "high",
+      "recommended_actor": "ornith_only",
+      "stance": "system_architect",
+      "execution_brief": {
+        "objective": "Proposer une stratégie implémentable alignée sur la doctrine La Citadelle",
+        "constraints": ["vram_8gb", "profil_B", "tiering_lazy_experts", "local_first"],
+        "deliverable": "policy_recommendation",
+        "reflection_mode": "cot_delegate"
+      },
+      "do_not": ["comparatif_web", "forge_code", "vision", "meta_prompt_narrative"]
+    },
+    {
+      "id": "TRG_META_ASSISTANT_BEHAVIOR",
+      "priority": 92,
+      "description": "Critique comportement assistant / rails / réflexion perçue",
+      "when": {
+        "all": [{ "signal": "is_meta_assistant_behavior", "value": true }]
+      },
+      "intent_family": "meta_assistant_behavior",
+      "template_id": "TEMPLATE_ASSISTANT_BEHAVIOR",
+      "rigor_level": "medium",
+      "recommended_actor": "ornith",
+      "stance": "router_analyst",
+      "execution_brief": {
+        "objective": "Expliquer le rail pris et proposer un ajustement concret sans défense générique",
+        "constraints": ["local_first", "no_forge_code"],
+        "deliverable": "steps_3",
+        "reflection_mode": "structured_steps"
+      },
+      "do_not": ["orchestrator_heavy", "invent_sources", "meta_prompt_narrative"]
+    },
+    {
+      "id": "TRG_AMBIGUOUS_RESIDUAL",
+      "priority": 70,
+      "description": "Ambiguïté résiduelle après RequestIntentFrame",
+      "when": {
+        "any": [
+          { "signal": "ambiguity_level", "value": "medium" },
+          { "signal": "ambiguity_level", "value": "high" },
+          { "signal": "request_frame_confidence", "value": "low" }
+        ]
+      },
+      "intent_family": "ambiguous",
+      "template_id": "TEMPLATE_AMBIGUOUS_CLARIFY",
+      "rigor_level": "medium",
+      "recommended_actor": "clarify_then_ornith",
+      "stance": "assistant",
+      "execution_brief": {
+        "objective": "Lever l'ambiguïté ou répondre avec hypothèse explicite",
+        "constraints": ["fail_open", "timeout_2s"],
+        "deliverable": "clarification",
+        "reflection_mode": "structured_steps"
+      },
+      "do_not": ["orchestrator_heavy", "override_short_circuit"]
+    },
+    {
+      "id": "TRG_EXPLAIN_STRUCTURED",
+      "priority": 60,
+      "description": "Explication technique sans short-circuit dédié, sujet identifiable",
+      "when": {
+        "all": [
+          { "signal": "task_kind", "value": "explain" },
+          { "signal": "domain_kind", "value": "technical" }
+        ],
+        "none": [{ "signal": "deterministic_family_resolved", "value": true }]
+      },
+      "intent_family": "general_explain",
+      "template_id": "TEMPLATE_EXPLAIN_STRUCTURED",
+      "rigor_level": "medium",
+      "recommended_actor": "ornith",
+      "stance": "teacher",
+      "execution_brief": {
+        "objective": "Expliquer le concept de façon structurée et exploitable",
+        "constraints": ["local_first"],
+        "deliverable": "outline",
+        "reflection_mode": "structured_steps"
+      },
+      "do_not": ["forge_code", "orchestrator_heavy"]
+    },
+    {
+      "id": "TRG_CODE_HANDOFF",
+      "priority": 55,
+      "description": "Demande code explicite sans rail Forge déterministe",
+      "when": {
+        "any": [
+          { "signal": "task_kind", "value": "build" },
+          { "signal": "active_intent", "value": "CODE" }
+        ]
+      },
+      "intent_family": "code",
+      "template_id": "TEMPLATE_CODE_HANDOFF",
+      "rigor_level": "medium",
+      "recommended_actor": "expert_lazy_code",
+      "stance": "code_executor",
+      "execution_brief": {
+        "objective": "Préparer un handoff Forge ou réponse code ciblée",
+        "constraints": ["vram_8gb", "tiering_lazy_experts", "profil_B"],
+        "deliverable": "handoff_forge",
+        "reflection_mode": "none"
+      },
+      "do_not": ["vision", "ocr", "comparatif_web"]
+    }
+  ],
+  "default_fallback": {
+    "intent_family": "unknown",
+    "template_id": "TEMPLATE_DIRECT_CHAT",
+    "rigor_level": "low",
+    "recommended_actor": "ornith",
+    "stance": "assistant",
+    "execution_brief": {
+      "objective": "Répondre directement à la requête canonique",
+      "constraints": ["local_first"],
+      "deliverable": "direct_answer",
+      "reflection_mode": "none"
+    },
+    "do_not": ["meta_prompt_narrative"]
+  },
+  "templates": {
+    "TEMPLATE_DIRECT_CHAT": {
+      "injection_hint": "Réponds à canonical_query sans sur-interpréter. Pas de méta-discours.",
+      "max_system_chars": 120
+    },
+    "TEMPLATE_FOLLOW_UP_RESOLVE": {
+      "injection_hint": "Relance elliptique : restaure current_subject depuis l'historique, puis réponds.",
+      "max_system_chars": 160
+    },
+    "TEMPLATE_META_SYSTEM_ARCH": {
+      "injection_hint": "Question système : livrable policy_recommendation ou steps_3. Cite fichiers/policies si possible. Si rigor=high, structure pour handoff R1.",
+      "max_system_chars": 200
+    },
+    "TEMPLATE_AMBIGUOUS_CLARIFY": {
+      "injection_hint": "Ambiguïté : une question de clarification OU réponse avec hypothèse explicite.",
+      "max_system_chars": 140
+    },
+    "TEMPLATE_EXPLAIN_STRUCTURED": {
+      "injection_hint": "Explication : objectif → concepts → exemple court. Pas de procédure vide.",
+      "max_system_chars": 140
+    },
+    "TEMPLATE_CODE_HANDOFF": {
+      "injection_hint": "Code : précise périmètre fichier/langage. Prépare handoff Forge si > snippet.",
+      "max_system_chars": 160
+    },
+    "TEMPLATE_ASSISTANT_BEHAVIOR": {
+      "injection_hint": "Critique UX : rail pris, cause, correctif en 3 étapes max. Pas de défense.",
+      "max_system_chars": 160
+    },
+    "TEMPLATE_WARM_TONE": {
+      "injection_hint": "Complice, bref, naturel — réponds sans surclarifier ni ton commercial.",
+      "max_system_chars": 88
+    }
+  },
+  "actor_escalation": {
+    "ornith": { "model": "ornith:9b", "tier": 1 },
+    "ornith_only": { "model": "ornith:9b", "tier": 1 },
+    "expert_lazy_code": { "model": "qwen2.5-coder:7b", "fallback": null, "tier": 3 },
+    "expert_lazy_vision": { "model": "gemma4:12b", "tier": 3 },
+    "expert_lazy_ocr": { "model": "deepseek-ocr:latest", "tier": 3 },
+    "clarify_then_ornith": { "model": "ornith:9b", "pre_step": "clarification" },
+    "deterministic_only": { "model": null, "note": "Pas d'appel LLM chat — rail déterministe suffit" }
+  }
+}

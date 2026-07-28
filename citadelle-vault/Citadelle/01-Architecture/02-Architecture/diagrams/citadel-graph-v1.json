@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "name": "La Citadelle Knowledge Graph",
+  "metadata": {
+    "vocabulary": ["governed_by", "implements", "depends_on", "references", "telemetry_of", "validated_by"],
+    "lastUpdate": "2026-05-08T00:25:00Z"
+  },
+  "nodes": [
+    { "id": "ADR-001", "label": "Web Consciousness", "type": "ADR", "path": "00-ADRs/ADR-001-Web-Consciousness.md" },
+    { "id": "ADR-002", "label": "Multimodal Vision", "type": "ADR", "path": "00-ADRs/ADR-002-Sovereign-Multimodal-Vision.md" },
+    { "id": "ADR-003.1", "label": "Knowledge Governance", "type": "ADR", "path": "00-ADRs/ADR-003-Knowledge-Governance.md" },
+    { "id": "ADR-003.2", "label": "SMAC Consensus", "type": "ADR", "path": "00-ADRs/ADR-003-Stochastic-Multi-Agent-Consensus.md" },
+    { "id": "ADR-004.1", "label": "Continuity Protocol", "type": "ADR", "path": "00-ADRs/ADR-004-Continuity-Protocol.md" },
+    { "id": "ADR-004.2", "label": "Security Hardening", "type": "ADR", "path": "00-ADRs/ADR-004-Security-Hardening.md" },
+    { "id": "ADR-005", "label": "Safety Governance", "type": "ADR", "path": "00-ADRs/ADR-005-Sovereign-Safety-Governance.md" },
+    { "id": "ADR-006", "label": "Memory Bridge", "type": "ADR", "path": "00-ADRs/ADR-006-Sovereign-Memory-Bridge.md" },
+    { "id": "ADR-007", "label": "Skills Architecture", "type": "ADR", "path": "00-ADRs/ADR-007-Skills-Architecture.md" },
+    { "id": "ADR-008", "label": "Benchmark SOTA", "type": "ADR", "path": "00-ADRs/ADR-008-Benchmark-SOTA.md" },
+    { "id": "ADR-008.1", "label": "Manifeste v3.1", "type": "ADR", "path": "00-ADRs/ADR-008.1-Manifest-v3.1.md" },
+    { "id": "ADR-009", "label": "CSP/SRI Security", "type": "ADR", "path": "00-ADRs/ADR-009-Security-Hardening-CSP-SRI.md" },
+    { "id": "ADR-010", "label": "Performance Strategy", "type": "ADR", "path": "00-ADRs/ADR-010-Frontend-Performance-Strategy.md" },
+    { "id": "Best-Practices", "label": "Obsidian Best Practices", "type": "Doc", "path": "00-ADRs/obsidian-citadelle-best-practices.md" },
+    { "id": "Cockpit-v3.1", "label": "Cockpit UI", "type": "Module", "path": "01-Modules/Cockpit-v3-1.md" },
+    { "id": "Server-Core", "label": "Server Core", "type": "Code", "path": "server/index.js" },
+    { "id": "Telemetry-Persistor", "label": "Telemetry Persistor", "type": "Code", "path": "server/src/agent/telemetry/telemetryPersistor.js" },
+    { "id": "Validator-Cockpit", "label": "Validator Cockpit", "type": "Test", "path": "server/scripts/validate_cockpit_v3_1.js" }
+  ],
+  "edges": [
+    { "from": "ADR-008.1", "to": "ADR-007", "relation": "depends_on" },
+    { "from": "ADR-008.1", "to": "ADR-005", "relation": "references" },
+    { "from": "ADR-008.1", "to": "ADR-003.1", "relation": "references" },
+    { "from": "Cockpit-v3.1", "to": "ADR-010", "relation": "governed_by" },
+    { "from": "Cockpit-v3.1", "to": "ADR-008.1", "relation": "governed_by" },
+    { "from": "Server-Core", "to": "ADR-008.1", "relation": "implements" },
+    { "from": "Server-Core", "to": "ADR-009", "relation": "governed_by" },
+    { "from": "Telemetry-Persistor", "to": "ADR-006", "relation": "implements" },
+    { "from": "Telemetry-Persistor", "to": "ADR-005", "relation": "governed_by" },
+    { "from": "ADR-006", "to": "ADR-003.1", "relation": "depends_on" },
+    { "from": "ADR-004.2", "to": "ADR-005", "relation": "references" },
+    { "from": "ADR-003.2", "to": "ADR-003.1", "relation": "depends_on" },
+    { "from": "Best-Practices", "to": "ADR-003.1", "relation": "references" },
+    { "from": "Cockpit-v3.1", "to": "Telemetry-Persistor", "relation": "telemetry_of" },
+    { "from": "Validator-Cockpit", "to": "Cockpit-v3.1", "relation": "validated_by" },
+    { "from": "Server-Core", "to": "Telemetry-Persistor", "relation": "depends_on" }
+  ]
+}

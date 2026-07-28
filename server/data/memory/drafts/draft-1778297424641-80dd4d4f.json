@@ -1,0 +1,21 @@
+{
+  "id": "draft-1778297424641-80dd4d4f",
+  "timestamp": "2026-05-09T03:30:24.641Z",
+  "trigger": "Nexxus, initie le Projet Pulse. Je veux un dashboard de santé qui scanne nos composants React locaux. Pour chaque fichier, calcule un 'Sovereign Score' basé sur l'absence d'erreurs lint et la propreté des imports. Affiche-le sous forme de grille haute densité. Ajoute un bouton 'AUTOCORRECT' qui, une fois cliqué, lance un cycle Sentinel pour refactorer le fichier sans jamais casser le build global",
+  "scope": [
+    "Cognition systémique, arbitrage identitaire, planification stratégique d'architectures IA. Spécialiste du déploiement souverain et des frameworks agentiques."
+  ],
+  "runId": "run-1778297424026",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_persona_leak",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 615,
+  "evidence": {
+    "logs": "Failed Validation: persona_leak\nResponse: [AirLLM Server] Inférence active pour deepseek-r1:14b. (Mode Sharded RAM)...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

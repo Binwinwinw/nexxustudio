@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778301383847-da0a4b06",
+  "timestamp": "2026-05-09T04:36:23.846Z",
+  "trigger": "Initier le projet Pulse : créer un module d’audit autonome pour surveiller la santé du codebase.",
+  "scope": "general",
+  "runId": "run-1778301383282",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_persona_leak",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 564,
+  "evidence": {
+    "logs": "Failed Validation: persona_leak\nResponse: [AirLLM Server] Inférence active pour deepseek-r1:14b. (Mode Sharded RAM)...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "finalAnswer.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["answer_id", "status", "verdict_matrix", "response_text"],
+  "properties": {
+    "answer_id": { "type": "string" },
+    "status": { "type": "string", "enum": ["validated", "failed_safe"] },
+    "verdict_matrix": { 
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["confirmed", "probable", "unknown"],
+      "properties": {
+        "confirmed": { "type": "array", "items": { "type": "string" } },
+        "probable": { "type": "array", "items": { "type": "string" } },
+        "unknown": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "response_text": { "type": "string" },
+    "audit_refs": { 
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["draft_id", "review_id"],
+      "properties": {
+        "draft_id": { "type": "string" },
+        "review_id": { "type": "string" }
+      }
+    }
+  }
+}

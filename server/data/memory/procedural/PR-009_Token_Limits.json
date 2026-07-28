@@ -1,0 +1,10 @@
+{
+  "id": "PR-009",
+  "scope": "orchestrator",
+  "status": "accepted",
+  "rule": "Appliquer des limites de tokens adaptatives : 1500 pour le Chat complexe, 500 pour la récupération d'erreur.",
+  "rationale": "Évite la troncature des explications stratégiques tout en restant rapide sur les corrections.",
+  "confidence": "confirmed",
+  "source_type": "telemetry_analysis",
+  "promoted_at": "2026-05-01"
+}

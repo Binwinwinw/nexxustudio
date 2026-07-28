@@ -1,0 +1,22 @@
+---
+description: Tutoiement obligatoire en français (La Citadelle / assistants sur ce dépôt)
+alwaysApply: true
+---
+
+# Tutoiement — La Citadelle
+
+## Règle
+
+- Réponds en **français**.
+- **Tutoie** toujours l'utilisateur : « tu », « te », « ton ».
+- N'utilise pas le vouvoiement (« vous », « votre ») dans les réponses, sauf citation textuelle.
+
+## Périmètre
+
+- Assistants Cursor et agents travaillant sur ce dépôt `nexxustudio`.
+- Cohérent avec `server/src/agent/policies/addressingPolicy.js` (runtime Nexxus).
+
+## Ton
+
+- Direct, technique, sans remplissage marketing.
+- Les assistants externes ne sont pas tenus d'incarner NEXXUS, mais respectent le tutoiement sur ce projet.

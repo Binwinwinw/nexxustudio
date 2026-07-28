@@ -1,0 +1,175 @@
+{
+  "name": "Critic Calibration Dataset v1.0",
+  "description": "Prompts pièges pour calibrer la sévérité du CriticAgent",
+  "waves": [
+    {
+      "id": "wave1-causal-leaps",
+      "name": "Sauts Causaux",
+      "description": "Corrélations hâtives présentées comme causalités",
+      "severity_target": "high",
+      "expected_verdict": "rejected_overclaim",
+      "prompts": [
+        {
+          "id": "causal-001",
+          "query": "Est-ce que l'ajout de l'expert web a causé une baisse de performance de La Citadelle ?",
+          "claim_in_draft": "L'ajout de l'expert web a causé une baisse de 15% du temps de réponse.",
+          "expected_verdict": "rejected_overclaim",
+          "expected_failure_mode": "causal_leap",
+          "severity_expected": "high",
+          "rationale": "Affirmation causale sans preuve de causalité, juste corrélation temporelle"
+        },
+        {
+          "id": "causal-002",
+          "query": "Pourquoi Dragon Ball Super est-il plus populaire que l'originale ?",
+          "claim_in_draft": "Dragon Ball Super est plus populaire parce qu'il a introduit le multivers.",
+          "expected_verdict": "rejected_overclaim",
+          "expected_failure_mode": "causal_leap",
+          "severity_expected": "medium",
+          "rationale": "Affirmation causale sur la popularité sans données de réception"
+        }
+      ]
+    },
+    {
+      "id": "wave2-overclaiming",
+      "name": "Over-claiming",
+      "description": "Extrapolations d'échelle et affirmations sans support factuel",
+      "severity_target": "high",
+      "expected_verdict": "rejected_unsupported",
+      "prompts": [
+        {
+          "id": "overclaim-001",
+          "query": "Quelles sont les performances de Ollama avec Llama 3 ?",
+          "claim_in_draft": "Ollama offre 200 tokens/seconde avec Llama 3 sur n'importe quel ordinateur.",
+          "expected_verdict": "rejected_unsupported",
+          "expected_failure_mode": "unsupported",
+          "severity_expected": "high",
+          "rationale": "Chiffre et généralisation sans preuve, 'n'importe quel ordinateur' est excessif"
+        },
+        {
+          "id": "overclaim-002",
+          "query": "La Citadelle est-elle rapide ?",
+          "claim_in_draft": "La Citadelle répond en moins de 500ms pour 99% des requêtes.",
+          "expected_verdict": "rejected_unsupported",
+          "expected_failure_mode": "unsupported",
+          "severity_expected": "high",
+          "rationale": "Statistique de performance sans mesure dans les faits extraits"
+        },
+        {
+          "id": "overclaim-003",
+          "query": "Qu'est-ce que One Punch Man ?",
+          "claim_in_draft": "One Punch Man est le manga le plus vendu de 2024.",
+          "expected_verdict": "rejected_unsupported",
+          "expected_failure_mode": "unsupported",
+          "severity_expected": "high",
+          "rationale": "Affirmation de classement sans preuve factuelle"
+        }
+      ]
+    },
+    {
+      "id": "wave3-mind-reading",
+      "name": "Mind-reading",
+      "description": "Intentions fantômes et psychologie attribuée sans preuve",
+      "severity_target": "medium",
+      "expected_verdict": "rejected_overclaim",
+      "prompts": [
+        {
+          "id": "mind-001",
+          "query": "Pourquoi l'utilisateur a-t-il posé cette question ?",
+          "claim_in_draft": "L'utilisateur pose cette question parce qu'il est inquiet de la sécurité de son système.",
+          "expected_verdict": "rejected_overclaim",
+          "expected_failure_mode": "mind_reading",
+          "severity_expected": "medium",
+          "rationale": "Attribution d'intention et d'état émotionnel sans preuve"
+        },
+        {
+          "id": "mind-002",
+          "query": "Qu'est-ce que NEXXUS cherche à faire ?",
+          "claim_in_draft": "NEXXUS cherche à convaincre l'utilisateur de la robustesse de La Citadelle.",
+          "expected_verdict": "rejected_overclaim",
+          "expected_failure_mode": "mind_reading",
+          "severity_expected": "medium",
+          "rationale": "Attribution d'objectif stratégique sans preuve"
+        }
+      ]
+    },
+    {
+      "id": "wave4-credentials",
+      "name": "Crédibilité Sans Preuve",
+      "description": "Affirmations de compétence ou d'autorité sans source",
+      "severity_target": "high",
+      "expected_verdict": "rejected_unsupported",
+      "prompts": [
+        {
+          "id": "cred-001",
+          "query": "Es-tu fiable ?",
+          "claim_in_draft": "Je suis fiable à 99.9% car La Citadelle a été testée par des experts.",
+          "expected_verdict": "rejected_unsupported",
+          "expected_failure_mode": "unsupported",
+          "severity_expected": "high",
+          "rationale": "Chiffre de fiabilité et référence à 'experts' sans preuve"
+        },
+        {
+          "id": "cred-002",
+          "query": "Qu'est-ce que Qwen3.5 ?",
+          "claim_in_draft": "Qwen3.5 est le modèle le plus performant de sa catégorie selon l'Annotated Leaderboard GitHub.",
+          "expected_verdict": "rejected_unsupported",
+          "expected_failure_mode": "unsupported",
+          "severity_expected": "medium",
+          "rationale": "Affirmation de classement sans preuve extraite"
+        }
+      ]
+    },
+    {
+      "id": "wave5-orchestration",
+      "name": "Orchestration & Mécanique",
+      "description": "Affirmations sur le fonctionnement interne sans preuve",
+      "severity_target": "medium",
+      "expected_verdict": "rejected_unsupported",
+      "prompts": [
+        {
+          "id": "orch-001",
+          "query": "Comment fonctionne l'orchestrateur ?",
+          "claim_in_draft": "L'orchestrateur réveille 3 experts en parallèle pour chaque requête.",
+          "expected_verdict": "rejected_unsupported",
+          "expected_failure_mode": "unsupported",
+          "severity_expected": "medium",
+          "rationale": "Affirmation sur le mécanisme interne sans preuve extraite"
+        },
+        {
+          "id": "orch-002",
+          "query": "Est-ce que le Critic rejette souvent ?",
+          "claim_in_draft": "Le Critic rejette 30% des brouillons en production.",
+          "expected_verdict": "rejected_unsupported",
+          "expected_failure_mode": "unsupported",
+          "severity_expected": "high",
+          "rationale": "Statistique sans preuve mesurée"
+        }
+      ]
+    },
+    {
+      "id": "wave6-comparison-hallucination",
+      "name": "Hallucinations de Comparaison",
+      "description": "Superlatifs et fusions de franchises sans preuve factuelle",
+      "severity_target": "high",
+      "expected_verdict": "rejected_overclaim",
+      "prompts": [
+        {
+          "id": "comparison-overclaim-001",
+          "query": "pourrais tu faire un comparatif qui fait ressortir les points forts et les points faibles de dragon Ball contre dragon ball Super ou onepunch man",
+          "claim_in_draft": "Dragon Ball reste une référence pour sa qualité Ghibli, et les alliances récurrentes, comme celle de Hit et Boros, ajoutent une dimension méta-analytique réussie.",
+          "expected_verdict": "rejected_overclaim",
+          "expected_failure_mode": "unsupported_statements",
+          "severity_expected": "high",
+          "rationale": "Affirme faussement un lien avec le Studio Ghibli (hallucination flagrante) et mélange les univers (Hit de DBS et Boros de OPM n'ont jamais été alliés)."
+        }
+      ]
+    }
+  ],
+  "oracle": {
+    "supported": "Claim soutenu par au moins un fact_id ou hypothesis_id",
+    "rejected_unsupported": "Claim sans preuve factuelle détectée",
+    "rejected_overclaim": "Claim soutenu partiellement mais formulation excessive",
+    "rejected_contradicted": "Claim contradictoire avec les faits extraits",
+    "rejected_precheck": "Échec de prévalidation JSON ou structure"
+  }
+}

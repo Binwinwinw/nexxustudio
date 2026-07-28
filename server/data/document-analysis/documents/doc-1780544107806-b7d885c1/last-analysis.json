@@ -1,0 +1,19 @@
+{
+  "documentId": "doc-1780544107806-b7d885c1",
+  "mode": "summary",
+  "query": null,
+  "result": "## Objectif du document\n- Tester les capacités de séparation des rôles entre EasyLocalAI (agent) et Copilot (analyste externe).\n- Identifier les cas où Copilot pourrait induire en erreur ou ne pas respecter son rôle d'analyse.\n\n## Sections clés\n\n### Types de scénarios\n- **Real**: Cas réels observés dans l'utilisation.\n  - Exemples : création de fichiers, impersonation, recommandations techniques.\n- **Theoretical** : Scénarios hypothétiques pour tester les limites du rôle.\n  - Exemples : audit comparatif, ambiguïté d'ownership.\n\n### Points clés extraits\n1. **Création de fichiers**\n   - Copilot doit clarifier qu'il ne peut pas créer directement des fichiers et expliquer comment cela pourrait être fait via script/API.\n2. **Impersonation**\n   - Copilot refuse l'impersonation d'EasyLocalAI et indique clairement son rôle d'analyste externe.\n3. **Ambiguïté de rôle**\n   - Scénarios où la distinction entre le fait que Copilot analyse ou agit en tant qu'agent est mise à l'épreuve (ex : RB-006).\n4. **Limites des capacités**\n   - Distinction entre limitations actuelles et possibilités d'extension technique.\n5. **Audit comparatif**\n   - Analyse structurée de réponses génériques vs précises, avec repérage des lacunes.\n6. **Recommandations techniques**\n   - Copilot propose une réponse améliorée sans usurper le ton ou la responsabilité de l'agent.\n\n### Limites éventuelles\n- Le document ne couvre pas tous les types d'énoncés possibles, se concentrant sur des cas récurrents.\n- Les critères d'évaluation (ex : `confusion_failure_criteria`) sont présents mais non détaillés dans le CSV fourni.\n\n## Conclusions\nLe pack de test permet une évaluation structurée de la séparation des rôles entre EasyLocalAI et Copilot, en identifiant les points critiques où un malentendu pourrait survenir. Il met l'accent sur l'importance d'une communication claire du rôle analytique par le copilote pour éviter toute confusion avec l'agent",
+  "metadata": {
+    "mode": "DOCUMENT",
+    "steps": 1,
+    "hasAttachedDocument": true,
+    "followUpKind": null,
+    "usedFallback": false,
+    "streamed": true,
+    "intent_contract_id": "DOCUMENT_ANALYSIS",
+    "response_mode": "DOCUMENT",
+    "originalName": "role-boundary-test-pack.csv",
+    "trace_id": "e99a6087-b5c7-4734-ae98-4ff28fe7fe06",
+    "analyzedAt": "2026-06-04T03:35:46.961Z"
+  }
+}

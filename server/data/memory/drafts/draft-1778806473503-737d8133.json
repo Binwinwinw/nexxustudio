@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778806473503-737d8133",
+  "timestamp": "2026-05-15T00:54:33.503Z",
+  "trigger": "yop yop [TRIGGER_POLLUTION]",
+  "scope": "general",
+  "runId": "run-1778806304823",
+  "selectedModel": "qwen3.5:4b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 168680,
+  "evidence": {
+    "logs": "Full Draft: <think>Le système a signalé une erreur de fiabilité dans ma réponse précédente. Je dois corriger cel...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

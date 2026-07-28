@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778307469933-d37f7539",
+  "timestamp": "2026-05-09T06:17:49.933Z",
+  "trigger": "Configure Webpack pour le projet Pulse.",
+  "scope": "general",
+  "runId": "run-1778307358610",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_unsolicited_code_injection",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 111323,
+  "evidence": {
+    "logs": "Failed Validation: unsolicited_code_injection\nResponse: **ALERTE CONFLIT DE CONFIGURATION** **DIAGNOSTIC :** Demande incompatible avec la stack technique du...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

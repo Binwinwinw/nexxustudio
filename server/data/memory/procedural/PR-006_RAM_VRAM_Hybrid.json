@@ -1,0 +1,10 @@
+{
+  "id": "PR-006",
+  "scope": "infra",
+  "status": "accepted",
+  "rule": "Répartir les experts par type de mémoire : Experts Stratégiques sur modèles lourds en RAM, Experts Techniques sur modèles rapides en VRAM.",
+  "rationale": "Équilibre puissance de raisonnement et rapidité d'exécution.",
+  "confidence": "confirmed",
+  "source_type": "system_design",
+  "promoted_at": "2026-05-01"
+}

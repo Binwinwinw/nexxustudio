@@ -1,0 +1,21 @@
+{
+  "id": "draft-1778697148023-b57ac2cd",
+  "timestamp": "2026-05-13T18:32:28.023Z",
+  "trigger": "salut nexxus, Quel projet aurais-tu aimé mener ?",
+  "scope": [
+    "Cognition systémique, arbitrage identitaire, planification stratégique d'architectures IA. Spécialiste du déploiement souverain et des frameworks agentiques."
+  ],
+  "runId": "run-1778697118406",
+  "selectedModel": "qwen-coder:7b-elite",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_social_off_topic",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 29617,
+  "evidence": {
+    "logs": "Failed Validation: social_off_topic\nResponse: Je suis Nexxus, l'assistant souverain de La Citadelle. Je coordonne les expertises et je possède la ...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

@@ -1,0 +1,6 @@
+{
+  "template": "react-vite",
+  "objective": "landing",
+  "layout": "header+main+footer",
+  "source_url": "http://127.0.0.1:5173/landing"
+}

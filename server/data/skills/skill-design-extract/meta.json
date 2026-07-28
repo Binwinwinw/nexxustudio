@@ -1,0 +1,83 @@
+{
+  "name": "Design Extract",
+  "version": "2.0.0",
+  "description": "Rétro-ingénierie visuelle — ADN d'un site (palette, typo, grille, patterns, ton éditorial) pour dossier de référence ou prompt de reproduction.",
+  "enabled": true,
+  "requiresRuntime": true,
+  "tier": "specialized",
+  "priority": 800,
+  "intentIds": ["DESIGN_EXTRACT"],
+  "triggers": [
+    "adn du site",
+    "extraire le style",
+    "design extract",
+    "dossier de référence",
+    "reconstitue le design system",
+    "analyse ce site design",
+    "récupère la palette",
+    "typographie du site",
+    "prompt de refonte fidèle"
+  ],
+  "doNotUseWhen": [
+    {
+      "type": "queryContains",
+      "patterns": ["conçois", "refonds", "audit ui", "impeccable"]
+    }
+  ],
+  "fallbackSkillId": "skill-nexxus-design",
+  "runtimeModules": [
+    {
+      "path": "server/src/services/design-extract/designExtractContract.js",
+      "exportName": "validateDesignExtractInput",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/design-extract/designExtractContract.js",
+      "exportName": "buildDesignExtractEnvelope",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/design-extract/designExtractPolicy.js",
+      "exportName": "validateDesignExtractEgress",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/design-extract/designExtractWorker.js",
+      "exportName": "runDesignExtractWorker",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/design-extract/designExtractColorCluster.js",
+      "exportName": "clusterColors",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/design-extract/designExtractQualityGate.js",
+      "exportName": "evaluateDesignExtractQualityGate",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/design-extract/designExtractStyleMerge.js",
+      "exportName": "mergeHybridExtract",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/design-extract/DesignExtractJobManager.js",
+      "exportName": "default",
+      "required": true,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/design-suite-contract.test.js",
+    "server/tests/design-extract-worker.test.js",
+    "server/tests/design-extract-hybrid.test.js"
+  ]
+}

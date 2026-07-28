@@ -1,0 +1,21 @@
+{
+  "id": "draft-1777873748939-a864178f",
+  "timestamp": "2026-05-04T05:49:08.939Z",
+  "trigger": "Option A : Activer le mode observation en temps réel",
+  "scope": [
+    "Performance profiling, optimization, assets compression."
+  ],
+  "runId": "run-1777873688386",
+  "selectedModel": "deepseek-r1:8b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 60553,
+  "evidence": {
+    "logs": "Full Draft: <think>Nous devons activer le mode observation en temps réel pour les tests de validation de MonCoac...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

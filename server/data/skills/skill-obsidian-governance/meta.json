@@ -1,0 +1,50 @@
+{
+  "name": "Obsidian Governance",
+  "version": "2.3.0",
+  "description": "Gouvernance Obsidian (parent ADR-008) — Vault, wiki, ingestion ADR et sub-skills Markdown/canvas/CLI.",
+  "enabled": true,
+  "requiresRuntime": true,
+  "subSkills": [
+    "skill-obsidian-markdown",
+    "skill-obsidian-canvas",
+    "skill-obsidian-cli"
+  ],
+  "runtimeModules": [
+    {
+      "path": "server/src/wiki/ingest_wiki_adrs.js",
+      "exportName": "ingestAdr",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/wiki/ingest_wiki_adrs.js",
+      "exportName": "batchIngestAdr",
+      "required": false,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/wiki/wiki_compiler.js",
+      "exportName": "compileWikiFromVault",
+      "required": false,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/ingest_wiki_adrs.test.js",
+    "server/tests/wiki_compiler.test.js"
+  ],
+  "kpis": {
+    "triggerAccuracyTarget": 0.88,
+    "fallbackRateMax": 0.1
+  },
+  "triggers": [
+    "obsidian",
+    "vault",
+    "note",
+    "adr",
+    "wiki",
+    "synthèse",
+    "compilation",
+    "capitalisation"
+  ]
+}

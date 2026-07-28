@@ -1,0 +1,132 @@
+{
+  "cases": [
+    {
+      "id": "landing",
+      "url": "http://127.0.0.1:5173/landing",
+      "fixture": "landing.html",
+      "computed_styles": [
+        {
+          "selector": ".btn-primary",
+          "tag": "a",
+          "classes": ["btn-primary", "cta"],
+          "hint": "cta",
+          "styles": {
+            "color": "rgb(255, 255, 255)",
+            "background-color": "rgb(99, 102, 241)",
+            "font-family": "Inter, sans-serif",
+            "font-size": "16px"
+          }
+        },
+        {
+          "selector": "body",
+          "tag": "body",
+          "classes": [],
+          "hint": "surface",
+          "styles": {
+            "color": "rgb(15, 23, 42)",
+            "background-color": "rgb(248, 250, 252)"
+          }
+        },
+        {
+          "selector": ".card",
+          "tag": "article",
+          "classes": ["card"],
+          "hint": "surface",
+          "styles": {
+            "background-color": "rgb(255, 255, 255)",
+            "border-radius": "16px"
+          }
+        }
+      ]
+    },
+    {
+      "id": "components",
+      "url": "http://127.0.0.1:5173/components",
+      "fixture": "components.html",
+      "computed_styles": [
+        {
+          "selector": ".btn-primary",
+          "tag": "button",
+          "classes": ["btn-primary"],
+          "hint": "cta",
+          "styles": {
+            "color": "rgb(255, 255, 255)",
+            "background-color": "rgb(99, 102, 241)",
+            "border-radius": "8px",
+            "box-shadow": "rgba(99, 102, 241, 0.35) 0px 2px 8px 0px"
+          }
+        },
+        {
+          "selector": ".badge-success",
+          "tag": "span",
+          "classes": ["badge-success"],
+          "hint": "badge",
+          "styles": {
+            "color": "rgb(255, 255, 255)",
+            "background-color": "rgb(16, 185, 129)",
+            "border-radius": "999px"
+          }
+        },
+        {
+          "selector": ".card",
+          "tag": "section",
+          "classes": ["card"],
+          "hint": "card",
+          "styles": {
+            "background-color": "rgb(255, 255, 255)",
+            "border-radius": "16px",
+            "box-shadow": "rgba(15, 23, 42, 0.08) 0px 4px 16px 0px"
+          }
+        }
+      ]
+    },
+    {
+      "id": "dashboard",
+      "url": "http://127.0.0.1:5173/dashboard",
+      "fixture": "dashboard.html",
+      "computed_styles": [
+        {
+          "selector": ".kpi",
+          "tag": "div",
+          "classes": ["kpi"],
+          "hint": "kpi",
+          "styles": {
+            "background-color": "rgb(30, 41, 59)",
+            "border-radius": "12px",
+            "color": "rgb(226, 232, 240)"
+          }
+        },
+        {
+          "selector": ".kpi-value",
+          "tag": "div",
+          "classes": ["kpi-value"],
+          "hint": "metric",
+          "styles": {
+            "color": "rgb(56, 189, 248)",
+            "font-size": "28px"
+          }
+        },
+        {
+          "selector": "table",
+          "tag": "table",
+          "classes": [],
+          "hint": "table",
+          "styles": {
+            "background-color": "rgb(30, 41, 59)",
+            "border-radius": "12px"
+          }
+        },
+        {
+          "selector": "body",
+          "tag": "body",
+          "classes": [],
+          "hint": "surface",
+          "styles": {
+            "background-color": "rgb(15, 23, 42)",
+            "color": "rgb(226, 232, 240)"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "CODE_PROJECT_LIGHT",
+  "version": "1.0.0",
+  "label": "Projet web léger — index.html / style.css / app.js",
+  "description": "Extension CODE_DELIVERY avec writeArtifact — trio HTML/CSS/JS enregistré sous projects/.",
+  "writeArtifact": true,
+  "artifacts": ["index.html", "style.css", "app.js"],
+  "defaultDirectoryPrefix": "projects/code-project-light",
+  "maxArtifactBytes": 512000
+}

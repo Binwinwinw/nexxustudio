@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778827154788-9ee4d4fa",
+  "timestamp": "2026-05-15T06:39:14.788Z",
+  "trigger": "yo yo ",
+  "scope": "general",
+  "runId": "run-1778826981525",
+  "selectedModel": "qwen3.5:4b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 173263,
+  "evidence": {
+    "logs": "Full Draft: <think>Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: \"yo yo\" (Informal greeting).\n ...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

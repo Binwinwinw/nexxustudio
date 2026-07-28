@@ -1,0 +1,16 @@
+{"step":"design.pipeline.validate","status":"running","trace_id":"trace-pipeline-access"}
+{"step":"design.pipeline.validate","status":"ok","trace_id":"trace-pipeline-access","mode":"dna_direct"}
+{"step":"design.pipeline.extract","status":"skipped","trace_id":"trace-pipeline-access","reason":"reference_dna_provided"}
+{"step":"design.pipeline.design.create","status":"running","trace_id":"trace-pipeline-access"}
+{"step":"design.create.validate","status":"running","trace_id":"trace-pipeline-access"}
+{"step":"design.create.validate","status":"ok","trace_id":"trace-pipeline-access"}
+{"step":"design.create.compose","status":"running","trace_id":"trace-pipeline-access"}
+{"step":"design.create.compose","status":"ok","trace_id":"trace-pipeline-access","objective":"landing","component_count":2}
+{"step":"design.create.pack","status":"running","trace_id":"trace-pipeline-access"}
+{"step":"design.create.pack","status":"ok","trace_id":"trace-pipeline-access"}
+{"step":"design.create.forge","status":"running","trace_id":"trace-pipeline-access"}
+{"step":"design.pipeline.forge","status":"running","trace_id":"trace-pipeline-access"}
+{"step":"design.create.forge","status":"ok","trace_id":"trace-pipeline-access","scaffold_template":"react-vite","file_count":4}
+{"step":"design.pipeline.forge","status":"ok","trace_id":"trace-pipeline-access","scaffold_template":"react-vite","file_count":4}
+{"step":"design.pipeline.design.create","status":"ok","trace_id":"trace-pipeline-access","objective":"landing"}
+{"step":"design.pipeline.forge","status":"ok","trace_id":"trace-pipeline-access","scaffold_template":"react-vite"}

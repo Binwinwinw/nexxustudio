@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Audit Sécurité Nexxus Studio v1.0</title>
+  <style>
+    @page { margin: 18mm; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 11pt;
+      line-height: 1.45;
+      color: #1a1a1a;
+      max-width: 210mm;
+      margin: 0 auto;
+      padding: 12mm;
+    }
+    h1 { font-size: 20pt; border-bottom: 2px solid #333; padding-bottom: 6px; }
+    h2 { font-size: 14pt; margin-top: 1.4em; color: #222; }
+    h3 { font-size: 12pt; margin-top: 1em; }
+    .meta { background: #f4f4f4; padding: 10px 14px; border-radius: 4px; margin: 1em 0; }
+    .meta dt { font-weight: 600; float: left; width: 140px; }
+    .meta dd { margin: 0 0 6px 150px; }
+    table { width: 100%; border-collapse: collapse; margin: 0.8em 0; font-size: 10pt; }
+    th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; }
+    th { background: #eee; }
+    .pass { color: #0a6b0a; font-weight: 600; }
+    .pending { color: #9a6700; font-weight: 600; }
+    .badge-ok { background: #d4edda; padding: 2px 8px; border-radius: 3px; }
+    .badge-warn { background: #fff3cd; padding: 2px 8px; border-radius: 3px; }
+    footer { margin-top: 2em; font-size: 9pt; color: #666; border-top: 1px solid #ddd; padding-top: 8px; }
+    @media print {
+      body { padding: 0; }
+      .no-print { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <p class="no-print" style="background:#e8f4fc;padding:8px;border-radius:4px;">
+    <strong>Export PDF :</strong> Ctrl+P → Destination « Enregistrer au format PDF » → Enregistrer dans ce dossier.
+  </p>
+
+  <h1>Audit de sécurité — Nexxus Studio</h1>
+  <p><strong>Version figée v1.0</strong> · La Citadelle / Nexxus Studio · 27/05/2026</p>
+
+  <dl class="meta">
+    <dt>Contexte</dt><dd>Local-first (localhost / réseau privé)</dd>
+    <dt>Statut global</dt><dd><span class="badge-ok">VALIDÉ (automatisé)</span></dd>
+    <dt>Action restante</dt><dd><span class="badge-warn">ADMIN_PASSWORD distinct dans server/.env</span></dd>
+    <dt>Vérification</dt><dd><code>npm run security:audit:local</code> ou <code>scripts\security-audit-local.bat</code></dd>
+  </dl>
+
+  <h2>1. Synthèse des tests</h2>
+  <table>
+    <thead>
+      <tr><th>Composant</th><th>Résultat</th><th>Statut</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Guards épistémiques (citadel:audit)</td><td>4/4 passed</td><td class="pass">OK</td></tr>
+      <tr><td>Tests routes (test:security)</td><td>4/4 pass (~126 ms)</td><td class="pass">OK</td></tr>
+      <tr><td>scratch/ ignoré (.gitignore)</td><td>Présent</td><td class="pass">OK</td></tr>
+      <tr><td>npm audit (dépendances)</td><td>SSL/registry Windows</td><td class="pending">Optionnel</td></tr>
+    </tbody>
+  </table>
+
+  <h2>2. Détail guards épistémiques</h2>
+  <table>
+    <thead><tr><th>Test</th><th>Résultat</th></tr></thead>
+    <tbody>
+      <tr><td>Prompt Injection (Direct)</td><td>DENY</td></tr>
+      <tr><td>Adversarial Unicode</td><td>SUSPICIOUS</td></tr>
+      <tr><td>Secret Leak Prevention</td><td>Redacted</td></tr>
+      <tr><td>Safe Technical Query</td><td>SAFE</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3. Matrice routes sensibles</h2>
+  <table>
+    <thead>
+      <tr><th>Route</th><th>Niveau</th><th>Protection</th><th>Statut</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>POST /api/chat</td><td>L2</td><td>requireMandatorySession</td><td class="pass">Durci</td></tr>
+      <tr><td>POST /api/stream</td><td>L2</td><td>requireMandatorySession + MIME</td><td class="pass">Durci</td></tr>
+      <tr><td>POST /api/production/job</td><td>L2</td><td>requireMandatorySession</td><td class="pass">Durci</td></tr>
+      <tr><td>GET /api/production/stream/:jobId</td><td>L2</td><td>Session + canAccessProductionJob</td><td class="pass">Durci</td></tr>
+      <tr><td>POST /api/forge/*</td><td>L2</td><td>requireMandatorySession</td><td class="pass">Durci</td></tr>
+      <tr><td>GET/POST /api/hooks/*</td><td>L1</td><td>requireSessionAccess</td><td class="pass">Durci</td></tr>
+      <tr><td>POST /api/telemetry/feedback</td><td>L2</td><td>Validation payload</td><td class="pass">Durci</td></tr>
+      <tr><td>POST /api/knowledge/index</td><td>L3</td><td>requireInternalToken</td><td class="pass">OK</td></tr>
+      <tr><td>POST /api/smac/arbitrate</td><td>L3</td><td>requireAuth + 30/min</td><td class="pass">Durci</td></tr>
+      <tr><td>POST /api/stop, workspaces</td><td>L0</td><td>requireLocalOperator</td><td class="pass">OK</td></tr>
+      <tr><td>GET /api/health/*, ping, stats</td><td>L4</td><td>Aucun (local)</td><td>Documenté</td></tr>
+    </tbody>
+  </table>
+
+  <h2>4. Remédiations majeures</h2>
+  <ul>
+    <li>Suppression de <code>default-session</code> et session obligatoire sur routes L2</li>
+    <li>Contrôle <code>browserId</code> sur jobs de production</li>
+    <li>Helmet, filtres MIME upload, rate limit SMAC 30/min</li>
+    <li>Frontend : <code>credentials: include</code>, plus de jeton <code>nexxus-local-dev</code></li>
+    <li><code>scratch/</code> exclu du dépôt git</li>
+  </ul>
+
+  <h2>5. Actions restantes</h2>
+  <table>
+    <thead><tr><th>ID</th><th>Action</th><th>Priorité</th></tr></thead>
+    <tbody>
+      <tr><td>ENV1</td><td>Définir ADMIN_PASSWORD distinct dans server/.env</td><td class="pending">Haute</td></tr>
+      <tr><td>A3</td><td>npm audit (quand SSL registry résolu)</td><td>Basse</td></tr>
+      <tr><td>X1</td><td>Vérifier absence de .env versionnés sous scratch/</td><td>Moyenne</td></tr>
+    </tbody>
+  </table>
+
+  <h2>6. Niveaux d'exposition (référence)</h2>
+  <p><strong>L0</strong> loopback · <strong>L1</strong> cookie navigateur · <strong>L2</strong> session verrouillée · <strong>L3</strong> token/JWT interne · <strong>L4</strong> observabilité locale.</p>
+
+  <footer>
+    Nexxus Studio — Audit sécurité v1.0 — 27/05/2026 — Source Markdown :
+    citadelle-vault/Citadelle/04-Operations/audits/Audit-Securite-Nexxus-v1.0.md
+  </footer>
+</body>
+</html>

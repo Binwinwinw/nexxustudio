@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "quickAnswer.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["answer", "sources", "confidence"],
+  "properties": {
+    "answer": {
+      "type": "string",
+      "minLength": 5
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["high", "medium", "low"]
+    }
+  }
+}

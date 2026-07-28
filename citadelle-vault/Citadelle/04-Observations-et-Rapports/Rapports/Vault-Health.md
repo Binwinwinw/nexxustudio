@@ -1,0 +1,799 @@
+# 🩺 Rapport de Santé du Vault
+
+*Généré le : 2026-06-26T04:17:13.806Z*
+
+## 🚨 Alertes Critiques (0)
+Aucune alerte critique.
+
+## ⚠️ Alertes Importantes (82)
+- **00-Gouvernance/00-Foundation/AGENTS.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **00-Gouvernance/00-Foundation/ANTIGRAVITY_PROMPT_SKILLS.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **00-Gouvernance/00-Foundation/VAULT-GOVERNANCE.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **00-Gouvernance/00-Foundation/adr/ADR-20260613-Inspiration-Methode-La-Citadelle-vs-Perplexity.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **00-Gouvernance/04-Governance/README.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **00-Gouvernance/README.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **00-Gouvernance/bibliothecaire.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/00-ADRs/README.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-001-Web-Consciousness.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-002-Sovereign-Multimodal-Vision.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-003-Knowledge-Governance.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-003-Stochastic-Multi-Agent-Consensus.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-004-Continuity-Protocol.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-004-Security-Hardening.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-005-Sovereign-Safety-Governance.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-006-Sovereign-Memory-Bridge.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-007-Skills-Architecture.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-008-Benchmark-SOTA.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-008.1-Manifest-v3.1.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-009-Security-Hardening-CSP-SRI.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-010-Frontend-Performance-Strategy.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-011-DISCIPLINE-EPISTEMIQUE.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-011-Politique-Scraping-Souverain.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-012-IBM-Granite-Long-Context.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-012-SEMANTIC-INTENT-RESOLVER.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-013-Politique-Alerte-Gouvernance-DRAFT.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-014-Sandbox-Workspace-Isolation.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-015-Routage-Generator-First.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260525-Job-Queue-Resumable-Streaming.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260526-Sequential-Consensus-Module.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260527-Intent-Contract-Registry.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260527-Intent-Triage-Local.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260527-Stack-Familiarite-Trois-Temps.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260528-Triangle-Gouvernance-Humain-IA-Citadelle.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260530-API-v1-InferenceProvider.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260530-Traces-MVP-Correlées.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Architecture-Design-Options.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Bootstrap-Readiness-Sondes.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Conversation-Momentum-P5.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Memoire-Fil.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Micro-Conversation-Delestage.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Nexxus-Video.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Suite-Design-Nexxus.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260603-Web-Candidate-Memory.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260604-Auto-Reply-Sufficiency.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260605-Document-Continuity.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260606-Session-Document-Briefing-Persistence.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260607-Refusal-Sufficiency.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260608-Subject-Intelligence-Layer.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260609-Hooks-Governance-v1.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-20260613-Knowledge-Hub-Gouverne.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/ADR-Refonte-Conversationnelle-Multi-Tours.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/Index-ADR.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/Registre-Projets-Souverains.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/obsidian-citadelle-best-practices.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/adr/État-du-Système-de-Skills.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/Browser-Harness-Phase-C.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/CGTM-SOEM.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/Cockpit-v3-1.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/Design-Extract-Worker.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/Governance-API.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/Governance-Dashboard.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/Intent-Triage-Classifier.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/Micro-Conversation-Delestage.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/adr-mcs-next.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/architecture_review_v1.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/audit_auth.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/audit_ui_v1.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/audit_ui_v2.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/auth_flow.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/03-UI/dashboard-eleve/ADR-005-UI.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/_index.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/Teams-365.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/modules/skills.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Architecture/vault-integration.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/02-Patrimoine-Technique/README.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/03-Forge/Mission-Certification-MCS.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/03-Forge/Strategie-Indexation.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/03-Forge/formation-teams-365.md**: Document critique sans métadonnées obligatoires (owner, last_reviewed, canonical).
+- **01-Architecture/03-Forge/v4.5-Industrialisation-Protocoles.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/03-Heritage/README.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+- **01-Architecture/README.md**: Document critique sans métadonnées obligatoires (status, owner, last_reviewed, canonical).
+
+## 📝 Avertissements (706)
+- **00-Gouvernance/00-Foundation/AGENTS.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **00-Gouvernance/00-Foundation/AGENTS.md**: Métadonnées recommandées manquantes (type, pillar).
+- **00-Gouvernance/00-Foundation/ANTIGRAVITY_PROMPT_SKILLS.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **00-Gouvernance/00-Foundation/ANTIGRAVITY_PROMPT_SKILLS.md**: Métadonnées recommandées manquantes (type, pillar).
+- **00-Gouvernance/00-Foundation/VAULT-GOVERNANCE.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **00-Gouvernance/00-Foundation/VAULT-GOVERNANCE.md**: Métadonnées recommandées manquantes (type, pillar).
+- **00-Gouvernance/00-Foundation/adr/ADR-20260613-Inspiration-Methode-La-Citadelle-vs-Perplexity.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **00-Gouvernance/00-Foundation/adr/ADR-20260613-Inspiration-Methode-La-Citadelle-vs-Perplexity.md**: Métadonnées recommandées manquantes (type, pillar).
+- **00-Gouvernance/04-Governance/README.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **00-Gouvernance/04-Governance/README.md**: Métadonnées recommandées manquantes (type, pillar).
+- **00-Gouvernance/README.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **00-Gouvernance/README.md**: Métadonnées recommandées manquantes (type, pillar).
+- **00-Gouvernance/bibliothecaire.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **00-Gouvernance/bibliothecaire.md**: Métadonnées recommandées manquantes (type, pillar).
+- **00-Manifeste-Doctrine.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **00-Manifeste-Doctrine.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/00-ADRs/README.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/00-ADRs/README.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-001-Web-Consciousness.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-001-Web-Consciousness.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-002-Sovereign-Multimodal-Vision.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-002-Sovereign-Multimodal-Vision.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-003-Knowledge-Governance.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-003-Knowledge-Governance.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-003-Stochastic-Multi-Agent-Consensus.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-003-Stochastic-Multi-Agent-Consensus.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-004-Continuity-Protocol.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-004-Continuity-Protocol.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-004-Security-Hardening.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-004-Security-Hardening.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-005-Sovereign-Safety-Governance.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-005-Sovereign-Safety-Governance.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-006-Sovereign-Memory-Bridge.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-006-Sovereign-Memory-Bridge.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-007-Skills-Architecture.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-007-Skills-Architecture.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-008-Benchmark-SOTA.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-008-Benchmark-SOTA.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-008.1-Manifest-v3.1.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-008.1-Manifest-v3.1.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-009-Security-Hardening-CSP-SRI.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-009-Security-Hardening-CSP-SRI.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-010-Frontend-Performance-Strategy.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-010-Frontend-Performance-Strategy.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-011-DISCIPLINE-EPISTEMIQUE.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-011-DISCIPLINE-EPISTEMIQUE.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-011-Politique-Scraping-Souverain.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-011-Politique-Scraping-Souverain.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-012-IBM-Granite-Long-Context.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-012-IBM-Granite-Long-Context.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-012-SEMANTIC-INTENT-RESOLVER.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-012-SEMANTIC-INTENT-RESOLVER.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-013-Politique-Alerte-Gouvernance-DRAFT.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-013-Politique-Alerte-Gouvernance-DRAFT.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-014-Sandbox-Workspace-Isolation.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-014-Sandbox-Workspace-Isolation.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-015-Routage-Generator-First.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-015-Routage-Generator-First.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260525-Job-Queue-Resumable-Streaming.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260525-Job-Queue-Resumable-Streaming.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260526-Sequential-Consensus-Module.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260526-Sequential-Consensus-Module.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260527-Intent-Contract-Registry.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260527-Intent-Contract-Registry.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260527-Intent-Triage-Local.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260527-Intent-Triage-Local.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260527-Stack-Familiarite-Trois-Temps.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260527-Stack-Familiarite-Trois-Temps.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260528-Triangle-Gouvernance-Humain-IA-Citadelle.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260528-Triangle-Gouvernance-Humain-IA-Citadelle.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260530-API-v1-InferenceProvider.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260530-API-v1-InferenceProvider.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260530-Traces-MVP-Correlées.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260530-Traces-MVP-Correlées.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Architecture-Design-Options.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Architecture-Design-Options.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Bootstrap-Readiness-Sondes.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Bootstrap-Readiness-Sondes.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Conversation-Momentum-P5.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Conversation-Momentum-P5.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Memoire-Fil.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Memoire-Fil.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Micro-Conversation-Delestage.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Micro-Conversation-Delestage.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Nexxus-Video.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Nexxus-Video.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Suite-Design-Nexxus.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260601-Suite-Design-Nexxus.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260603-Web-Candidate-Memory.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260603-Web-Candidate-Memory.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260604-Auto-Reply-Sufficiency.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260604-Auto-Reply-Sufficiency.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260605-Document-Continuity.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260605-Document-Continuity.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260606-Session-Document-Briefing-Persistence.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260606-Session-Document-Briefing-Persistence.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260607-Refusal-Sufficiency.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260607-Refusal-Sufficiency.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260608-Subject-Intelligence-Layer.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260608-Subject-Intelligence-Layer.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260609-Hooks-Governance-v1.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260609-Hooks-Governance-v1.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-20260613-Knowledge-Hub-Gouverne.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-20260613-Knowledge-Hub-Gouverne.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/ADR-Refonte-Conversationnelle-Multi-Tours.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/ADR-Refonte-Conversationnelle-Multi-Tours.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/Index-ADR.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/Index-ADR.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/Registre-Projets-Souverains.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/Registre-Projets-Souverains.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/obsidian-citadelle-best-practices.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/obsidian-citadelle-best-practices.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/adr/État-du-Système-de-Skills.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/adr/État-du-Système-de-Skills.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/Browser-Harness-Phase-C.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/Browser-Harness-Phase-C.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/CGTM-SOEM.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/CGTM-SOEM.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/Cockpit-v3-1.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/Cockpit-v3-1.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/Design-Extract-Worker.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/Design-Extract-Worker.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/Governance-API.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/Governance-API.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/Governance-Dashboard.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/Governance-Dashboard.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/Intent-Triage-Classifier.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/Intent-Triage-Classifier.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/Micro-Conversation-Delestage.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/Micro-Conversation-Delestage.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/adr-mcs-next.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/adr-mcs-next.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/architecture_review_v1.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/architecture_review_v1.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/audit_auth.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/audit_auth.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/audit_ui_v1.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/audit_ui_v1.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/audit_ui_v2.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/audit_ui_v2.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/auth_flow.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/01-Architecture/auth_flow.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/03-UI/dashboard-eleve/ADR-005-UI.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/03-UI/dashboard-eleve/ADR-005-UI.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/_index.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/MonCoachScolaire/_index.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/Teams-365.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/Teams-365.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/modules/skills.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/modules/skills.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Architecture/vault-integration.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Architecture/vault-integration.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/02-Patrimoine-Technique/README.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/02-Patrimoine-Technique/README.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/03-Forge/Mission-Certification-MCS.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/03-Forge/Mission-Certification-MCS.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/03-Forge/Strategie-Indexation.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/03-Forge/Strategie-Indexation.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/03-Forge/formation-teams-365.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/03-Forge/formation-teams-365.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/03-Forge/v4.5-Industrialisation-Protocoles.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/03-Forge/v4.5-Industrialisation-Protocoles.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/03-Heritage/README.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/03-Heritage/README.md**: Métadonnées recommandées manquantes (type, pillar).
+- **01-Architecture/README.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **01-Architecture/README.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/Index-Episodic.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/Index-Episodic.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/Index-Episodic.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-11/test-ltm-1778517629903.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-11/test-ltm-1778517629903.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-11/test-ltm-1778517629903.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-12/turn_1778624948521_nb9g2e.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-12/turn_1778624948521_nb9g2e.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-12/turn_1778624948521_nb9g2e.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778637810301_8ahabb.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778637810301_8ahabb.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778637810301_8ahabb.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778643060416_x3cgv2.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778643060416_x3cgv2.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778643060416_x3cgv2.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778710341808_klaew.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778710341808_klaew.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778710341808_klaew.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778712371623_fe13ne.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778712371623_fe13ne.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778712371623_fe13ne.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778712539768_0qsf8h.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778712539768_0qsf8h.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778712539768_0qsf8h.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778713685173_ilnefx.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778713685173_ilnefx.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-13/turn_1778713685173_ilnefx.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778716879561_olxfiq.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778716879561_olxfiq.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778716879561_olxfiq.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778720156390_7123i.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778720156390_7123i.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778720156390_7123i.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778720557840_susa8.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778720557840_susa8.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778720557840_susa8.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778720913681_0jw6b.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778720913681_0jw6b.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778720913681_0jw6b.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778720936965_0914f.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778720936965_0914f.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778720936965_0914f.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778721088168_aws5t.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778721088168_aws5t.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778721088168_aws5t.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778721292376_t61ijn.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778721292376_t61ijn.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778721292376_t61ijn.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778721341576_apzge.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778721341576_apzge.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778721341576_apzge.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778721716310_mxz03n.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778721716310_mxz03n.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778721716310_mxz03n.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778721855917_qdpja.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778721855917_qdpja.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778721855917_qdpja.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778724970608_qjbzoc.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778724970608_qjbzoc.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778724970608_qjbzoc.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778725832211_rdo3w9.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778725832211_rdo3w9.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778725832211_rdo3w9.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778729690445_k78udi.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778729690445_k78udi.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778729690445_k78udi.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778731644190_z5jqto.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778731644190_z5jqto.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778731644190_z5jqto.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778733800630_jcvzpl.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778733800630_jcvzpl.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778733800630_jcvzpl.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778770663460_qet57d.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778770663460_qet57d.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778770663460_qet57d.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778772503378_03vqem.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778772503378_03vqem.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778772503378_03vqem.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778773108475_86woo.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778773108475_86woo.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778773108475_86woo.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778773211884_ai6yg.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778773211884_ai6yg.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778773211884_ai6yg.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778773643333_54igdk.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778773643333_54igdk.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778773643333_54igdk.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778774203678_f7mydo.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778774203678_f7mydo.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778774203678_f7mydo.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778774268221_ifixfj.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778774268221_ifixfj.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778774268221_ifixfj.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778774408013_p8j4dm.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778774408013_p8j4dm.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778774408013_p8j4dm.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778774571278_c4er9.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778774571278_c4er9.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778774571278_c4er9.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778798230676_tx5e07.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778798230676_tx5e07.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778798230676_tx5e07.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778798273991_jjlj4l.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778798273991_jjlj4l.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778798273991_jjlj4l.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778798711093_rnmc2.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778798711093_rnmc2.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778798711093_rnmc2.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778799405932_ivqm4.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778799405932_ivqm4.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778799405932_ivqm4.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778801666351_81xu7.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778801666351_81xu7.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778801666351_81xu7.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778801679709_motmwf.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778801679709_motmwf.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-14/turn_1778801679709_motmwf.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778802144158_1zie3.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778802144158_1zie3.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778802144158_1zie3.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778802541396_rgkj7a.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778802541396_rgkj7a.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778802541396_rgkj7a.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778803791953_dwy6if.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778803791953_dwy6if.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778803791953_dwy6if.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778804636381_gpegw7.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778804636381_gpegw7.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778804636381_gpegw7.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778805528426_43oar.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778805528426_43oar.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778805528426_43oar.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778806759735_pbffgb.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778806759735_pbffgb.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778806759735_pbffgb.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778806919590_u4ckhb.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778806919590_u4ckhb.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778806919590_u4ckhb.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778807611382_r3nev.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778807611382_r3nev.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778807611382_r3nev.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778809829038_cj04ks.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778809829038_cj04ks.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778809829038_cj04ks.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778824813083_iofp8s.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778824813083_iofp8s.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778824813083_iofp8s.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778827141819_xqwdj9.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778827141819_xqwdj9.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778827141819_xqwdj9.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778827424248_8fb1yf.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778827424248_8fb1yf.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-15/turn_1778827424248_8fb1yf.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-16/turn_1778908150098_2vh0cb.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-16/turn_1778908150098_2vh0cb.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-16/turn_1778908150098_2vh0cb.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-16/turn_1778908310892_1gpr6i.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-16/turn_1778908310892_1gpr6i.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-16/turn_1778908310892_1gpr6i.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Episodic/interactions/2026-05-16/turn_1778912540720_guoxpi.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Episodic/interactions/2026-05-16/turn_1778912540720_guoxpi.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Episodic/interactions/2026-05-16/turn_1778912540720_guoxpi.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Modules/README.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Modules/README.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/01-Modules/README.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Strategy/Cockpit-Gouvernance.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Strategy/Cockpit-Gouvernance.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/01-Strategy/Cockpit-Gouvernance.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Strategy/Index-Skills-Runtime-2026.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Strategy/Index-Skills-Runtime-2026.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/01-Strategy/Index-Skills-Runtime-2026.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Strategy/LTM-Methodology/EPISODE-CITADEL-CERTIFICATION-v3.11.5.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Strategy/LTM-Methodology/EPISODE-CITADEL-CERTIFICATION-v3.11.5.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/01-Strategy/LTM-Methodology/EPISODE-CITADEL-CERTIFICATION-v3.11.5.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Strategy/LTM-Methodology/EPISODE-CITADEL-DISCOVERY-DOCTRINE-001.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Strategy/LTM-Methodology/EPISODE-CITADEL-DISCOVERY-DOCTRINE-001.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/01-Strategy/LTM-Methodology/EPISODE-CITADEL-DISCOVERY-DOCTRINE-001.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Strategy/LTM-Methodology/EPISODE-CITADEL-EPISTEMIC-PIPELINE-002.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Strategy/LTM-Methodology/EPISODE-CITADEL-EPISTEMIC-PIPELINE-002.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **02-Operations/01-Strategy/LTM-Methodology/EPISODE-CITADEL-EPISTEMIC-PIPELINE-002.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Strategy/LTM-Methodology/EPISODE-CITADEL-PERSONA-HARDENING-001.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Strategy/LTM-Methodology/EPISODE-CITADEL-PERSONA-HARDENING-001.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/01-Strategy/LTM-Methodology/EPISODE-CITADEL-PERSONA-HARDENING-001.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Strategy/POLICIES.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Strategy/POLICIES.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/01-Strategy/POLICIES.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/01-Strategy/Roadmap-6-Mois-Prouver-Avant-Ouvrir.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/01-Strategy/Roadmap-6-Mois-Prouver-Avant-Ouvrir.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/01-Strategy/Roadmap-6-Mois-Prouver-Avant-Ouvrir.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/audits/Audit-20260525-Fichiers-Orphelins.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/audits/Audit-20260525-Fichiers-Orphelins.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/audits/Audit-20260525-Fichiers-Orphelins.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/audits/Audit-Securite-Nexxus-27-05-2026.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/audits/Audit-Securite-Nexxus-27-05-2026.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/audits/Audit-Securite-Nexxus-27-05-2026.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/audits/Audit-Securite-Nexxus-v1.0.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/audits/Audit-Securite-Nexxus-v1.0.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/audits/Audit-Securite-Nexxus-v1.0.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/audits/Certification-Audit-Securite-v1.0.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/audits/Certification-Audit-Securite-v1.0.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/audits/Certification-Audit-Securite-v1.0.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/audits/Evaluation_Dashboard.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/audits/Evaluation_Dashboard.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/audits/Evaluation_Dashboard.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/audits/Rubrique_Annotation.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/audits/Rubrique_Annotation.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/audits/Rubrique_Annotation.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/audits/Security_Audit_Bookflow.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/audits/Security_Audit_Bookflow.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/audits/Security_Audit_Bookflow.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/procedures/Checklist-Audit-Securite-API.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/procedures/Checklist-Audit-Securite-API.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/procedures/Checklist-Audit-Securite-API.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/procedures/MANUEL-MAINTENANCE-V4.5.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/procedures/MANUEL-MAINTENANCE-V4.5.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/procedures/MANUEL-MAINTENANCE-V4.5.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/procedures/Plan-Migration-Skills-Runtime-v1.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/procedures/Plan-Migration-Skills-Runtime-v1.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/procedures/Plan-Migration-Skills-Runtime-v1.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/procedures/Playbook-Micro-Delestage-Conversationnel.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/procedures/Playbook-Micro-Delestage-Conversationnel.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/procedures/Playbook-Micro-Delestage-Conversationnel.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/procedures/Playbook-QA-Resumable-Streaming.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/procedures/Playbook-QA-Resumable-Streaming.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/procedures/Playbook-QA-Resumable-Streaming.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/procedures/Regle-Ancrage-Micro-Outils.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/procedures/Regle-Ancrage-Micro-Outils.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/procedures/Regle-Ancrage-Micro-Outils.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/procedures/SMAC-PROTOCOL-IMPLEMENTATION.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/procedures/SMAC-PROTOCOL-IMPLEMENTATION.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/procedures/SMAC-PROTOCOL-IMPLEMENTATION.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/procedures/principles/bookflow-readiness-principles.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/procedures/principles/bookflow-readiness-principles.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/procedures/principles/bookflow-readiness-principles.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/procedures/principles/ecommerce-sovereign-v1-readiness-principles.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/procedures/principles/ecommerce-sovereign-v1-readiness-principles.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/procedures/principles/ecommerce-sovereign-v1-readiness-principles.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/reports/Audit-Integrite-v4.5.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/reports/Audit-Integrite-v4.5.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/reports/Audit-Integrite-v4.5.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/reports/RCA-2026-06-12-Routing-Code-Generation.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/reports/RCA-2026-06-12-Routing-Code-Generation.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/reports/RCA-2026-06-12-Routing-Code-Generation.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/reports/Rapport-Audit-Forge-v3.4.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/reports/Rapport-Audit-Forge-v3.4.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/reports/Rapport-Audit-Forge-v3.4.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/reports/Rapport-Certification-C.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/reports/Rapport-Certification-C.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/reports/Rapport-Certification-C.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/reports/Rapport-Certification-Final.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/reports/Rapport-Certification-Final.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/reports/Rapport-Certification-Final.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/reports/Rapport-Cloture-Phase-1-Citadelle.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/reports/Rapport-Cloture-Phase-1-Citadelle.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/reports/Rapport-Cloture-Phase-1-Citadelle.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/reports/Rapport-Gouvernance-Memoire-2026-05-28.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/reports/Rapport-Gouvernance-Memoire-2026-05-28.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/reports/Rapport-Gouvernance-Memoire-2026-05-28.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/reports/Rapport-Ops-Quotidien-2026-05-28.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/reports/Rapport-Ops-Quotidien-2026-05-28.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/reports/Rapport-Ops-Quotidien-2026-05-28.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/reports/Rapport-Sante-Conversationnelle-2026-05-28.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/reports/Rapport-Sante-Conversationnelle-2026-05-28.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/reports/Rapport-Sante-Conversationnelle-2026-05-28.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/reports/Rapport-Stabilisation-Infrastructure.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/reports/Rapport-Stabilisation-Infrastructure.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/reports/Rapport-Stabilisation-Infrastructure.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/reports/Rapport-Stabilisation-Knowledge-Hub.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/reports/Rapport-Stabilisation-Knowledge-Hub.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/reports/Rapport-Stabilisation-Knowledge-Hub.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/reports/Rapport-Triage-Ambigu-2026-06-06.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/reports/Rapport-Triage-Ambigu-2026-06-06.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/reports/Rapport-Triage-Ambigu-2026-06-06.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/reports/Synthèse-Migration-Skills-Runtime.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/reports/Synthèse-Migration-Skills-Runtime.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/reports/Synthèse-Migration-Skills-Runtime.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/reports/audit-moncoach.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/reports/audit-moncoach.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/reports/audit-moncoach.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/04-Operations/reports/mcs-load-report.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/04-Operations/reports/mcs-load-report.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/04-Operations/reports/mcs-load-report.md**: Métadonnées recommandées manquantes (type, pillar).
+- **02-Operations/README.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **02-Operations/README.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **02-Operations/README.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/04-Knowledge-Graph/README.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/04-Knowledge-Graph/README.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/04-Knowledge-Graph/README.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/05-Knowledge/KI-001-Odyssee-SMAC.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/05-Knowledge/KI-001-Odyssee-SMAC.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/05-Knowledge/KI-001-Odyssee-SMAC.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/05-Knowledge/heritage/Assets-Visuels.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/05-Knowledge/heritage/Assets-Visuels.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/05-Knowledge/heritage/Assets-Visuels.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/05-Knowledge/heritage/Composants-Souverains.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/05-Knowledge/heritage/Composants-Souverains.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/05-Knowledge/heritage/Composants-Souverains.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/05-Knowledge/heritage/Index-Patrimoine.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/05-Knowledge/heritage/Index-Patrimoine.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/05-Knowledge/heritage/Index-Patrimoine.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/05-Knowledge/heritage/Memoire-des-Erreurs.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/05-Knowledge/heritage/Memoire-des-Erreurs.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/05-Knowledge/heritage/Memoire-des-Erreurs.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/05-Knowledge/heritage/Prompts-de-Gouvernance.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/05-Knowledge/heritage/Prompts-de-Gouvernance.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/05-Knowledge/heritage/Prompts-de-Gouvernance.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/05-Knowledge/heritage/Standards-de-Codage.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/05-Knowledge/heritage/Standards-de-Codage.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/05-Knowledge/heritage/Standards-de-Codage.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/compréhension.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/compréhension.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/compréhension.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/correction.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/correction.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/correction.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/examples/exemple-atelier-python.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/examples/exemple-atelier-python.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/examples/exemple-atelier-python.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/examples/exemple-refactor.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/examples/exemple-refactor.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/examples/exemple-refactor.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/examples/exemple-routing.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/examples/exemple-routing.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/examples/exemple-routing.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/outils.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/outils.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/outils.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/proactivite.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/proactivite.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/proactivite.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/production.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/production.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/05-Knowledge/perplexity-patterns/production.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/Connaissances/README.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/Connaissances/README.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/Connaissances/README.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/README.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/README.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/README.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/Wiki/Wiki-ADR-Index.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/Wiki/Wiki-ADR-Index.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/Wiki/Wiki-ADR-Index.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/Wiki/Wiki-ADRs-Index.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/Wiki/Wiki-ADRs-Index.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/Wiki/Wiki-ADRs-Index.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/Wiki/Wiki-Modules-Summary.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/Wiki/Wiki-Modules-Summary.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/Wiki/Wiki-Modules-Summary.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/Wiki/adr-clean-report.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/Wiki/adr-clean-report.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/Wiki/adr-clean-report.md**: Métadonnées recommandées manquantes (type, pillar).
+- **03-Connaissances/Wiki/rapport-sync.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **03-Connaissances/Wiki/rapport-sync.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **03-Connaissances/Wiki/rapport-sync.md**: Métadonnées recommandées manquantes (type, pillar).
+- **04-Observations-et-Rapports/Audits/AUDIT-VAULT-2026.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **04-Observations-et-Rapports/Audits/AUDIT-VAULT-2026.md**: Métadonnées recommandées manquantes (type, pillar).
+- **04-Observations-et-Rapports/Audits/README.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **04-Observations-et-Rapports/Audits/README.md**: Métadonnées recommandées manquantes (type, pillar).
+- **04-Observations-et-Rapports/README.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **04-Observations-et-Rapports/README.md**: Métadonnées recommandées manquantes (type, pillar).
+- **04-Observations-et-Rapports/Rapports/README.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **04-Observations-et-Rapports/Rapports/README.md**: Métadonnées recommandées manquantes (type, pillar).
+- **04-Observations-et-Rapports/Rapports/Vault-Health.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **04-Observations-et-Rapports/Rapports/Vault-Health.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-001-Web-Consciousness.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-001-Web-Consciousness.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-001-Web-Consciousness.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-002-Sovereign-Multimodal-Vision.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-002-Sovereign-Multimodal-Vision.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-002-Sovereign-Multimodal-Vision.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-003-Knowledge-Governance.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-003-Knowledge-Governance.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-003-Knowledge-Governance.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-003-Stochastic-Multi-Agent-Consensus.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-003-Stochastic-Multi-Agent-Consensus.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-003-Stochastic-Multi-Agent-Consensus.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-004-Continuity-Protocol.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-004-Continuity-Protocol.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-004-Continuity-Protocol.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-004-Security-Hardening.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-004-Security-Hardening.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-004-Security-Hardening.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-005-Sovereign-Safety-Governance.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-005-Sovereign-Safety-Governance.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-005-Sovereign-Safety-Governance.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-006-Sovereign-Memory-Bridge.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-006-Sovereign-Memory-Bridge.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-006-Sovereign-Memory-Bridge.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-007-Skills-Architecture.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-007-Skills-Architecture.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-007-Skills-Architecture.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-008-Benchmark-SOTA.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-008-Benchmark-SOTA.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-008-Benchmark-SOTA.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-008.1-Manifest-v3.1.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-008.1-Manifest-v3.1.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-008.1-Manifest-v3.1.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-009-Security-Hardening-CSP-SRI.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-009-Security-Hardening-CSP-SRI.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-009-Security-Hardening-CSP-SRI.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-010-Frontend-Performance-Strategy.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-010-Frontend-Performance-Strategy.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-010-Frontend-Performance-Strategy.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-011-DISCIPLINE-EPISTEMIQUE.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-011-DISCIPLINE-EPISTEMIQUE.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-011-DISCIPLINE-EPISTEMIQUE.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-012-IBM-Granite-Long-Context.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-012-IBM-Granite-Long-Context.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/ADR-012-IBM-Granite-Long-Context.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/Index-ADR.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/Index-ADR.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/Index-ADR.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/obsidian-citadelle-best-practices.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/obsidian-citadelle-best-practices.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/obsidian-citadelle-best-practices.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-Gouvernance/LTM-Methodology/EPISODE-CITADEL-CERTIFICATION-v3.11.5.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-Gouvernance/LTM-Methodology/EPISODE-CITADEL-CERTIFICATION-v3.11.5.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-Gouvernance/LTM-Methodology/EPISODE-CITADEL-CERTIFICATION-v3.11.5.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-Gouvernance/LTM-Methodology/EPISODE-CITADEL-DISCOVERY-DOCTRINE-001.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-Gouvernance/LTM-Methodology/EPISODE-CITADEL-DISCOVERY-DOCTRINE-001.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-Gouvernance/LTM-Methodology/EPISODE-CITADEL-DISCOVERY-DOCTRINE-001.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-Gouvernance/LTM-Methodology/EPISODE-CITADEL-EPISTEMIC-PIPELINE-002.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-Gouvernance/LTM-Methodology/EPISODE-CITADEL-EPISTEMIC-PIPELINE-002.md**: Métadonnées obligatoires manquantes (owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-Gouvernance/LTM-Methodology/EPISODE-CITADEL-EPISTEMIC-PIPELINE-002.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-Gouvernance/LTM-Methodology/EPISODE-CITADEL-PERSONA-HARDENING-001.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-Gouvernance/LTM-Methodology/EPISODE-CITADEL-PERSONA-HARDENING-001.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-Gouvernance/LTM-Methodology/EPISODE-CITADEL-PERSONA-HARDENING-001.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-Gouvernance/POLICIES.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-Gouvernance/POLICIES.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/00-Gouvernance/POLICIES.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/CGTM-SOEM.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/CGTM-SOEM.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/CGTM-SOEM.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/Cockpit-v3-1.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/Cockpit-v3-1.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/Cockpit-v3-1.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/adr-mcs-next.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/adr-mcs-next.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/adr-mcs-next.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/architecture_review_v1.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/architecture_review_v1.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/architecture_review_v1.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/audit_auth.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/audit_auth.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/audit_auth.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/audit_ui_v1.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/audit_ui_v1.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/audit_ui_v1.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/audit_ui_v2.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/audit_ui_v2.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/audit_ui_v2.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/auth_flow.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/auth_flow.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/01-Architecture/auth_flow.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/03-UI/dashboard-eleve/ADR-005-UI.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/03-UI/dashboard-eleve/ADR-005-UI.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/03-UI/dashboard-eleve/ADR-005-UI.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/_index.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/_index.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/MonCoachScolaire/_index.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/Teams-365.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/Teams-365.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/01-Modules/Teams-365.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Patrimoine-Technique/Assets-Visuels.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Patrimoine-Technique/Assets-Visuels.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Patrimoine-Technique/Assets-Visuels.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Patrimoine-Technique/Composants-Souverains.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Patrimoine-Technique/Composants-Souverains.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Patrimoine-Technique/Composants-Souverains.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Patrimoine-Technique/Index-Patrimoine.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Patrimoine-Technique/Index-Patrimoine.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Patrimoine-Technique/Index-Patrimoine.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Patrimoine-Technique/Prompts-de-Gouvernance.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Patrimoine-Technique/Prompts-de-Gouvernance.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Patrimoine-Technique/Prompts-de-Gouvernance.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Patrimoine-Technique/Standards-de-Codage.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Patrimoine-Technique/Standards-de-Codage.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Patrimoine-Technique/Standards-de-Codage.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Procedural/MANUEL-MAINTENANCE-V4.5.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Procedural/MANUEL-MAINTENANCE-V4.5.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Procedural/MANUEL-MAINTENANCE-V4.5.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Procedural/SMAC-PROTOCOL-IMPLEMENTATION.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Procedural/SMAC-PROTOCOL-IMPLEMENTATION.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Procedural/SMAC-PROTOCOL-IMPLEMENTATION.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Procedural/principles/bookflow-readiness-principles.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Procedural/principles/bookflow-readiness-principles.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Procedural/principles/bookflow-readiness-principles.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Procedural/principles/ecommerce-sovereign-v1-readiness-principles.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Procedural/principles/ecommerce-sovereign-v1-readiness-principles.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/02-Procedural/principles/ecommerce-sovereign-v1-readiness-principles.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Audits/Security_Audit_Bookflow.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Audits/Security_Audit_Bookflow.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Audits/Security_Audit_Bookflow.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Connaissances/KI-001-Odyssee-SMAC.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Connaissances/KI-001-Odyssee-SMAC.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Connaissances/KI-001-Odyssee-SMAC.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Décisions/Registre-Projets-Souverains.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Décisions/Registre-Projets-Souverains.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Décisions/Registre-Projets-Souverains.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Décisions/État-du-Système-de-Skills.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Décisions/État-du-Système-de-Skills.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Décisions/État-du-Système-de-Skills.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Audit-Integrite-v4.5.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Audit-Integrite-v4.5.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Audit-Integrite-v4.5.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Rapport-Audit-Forge-v3.4.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Rapport-Audit-Forge-v3.4.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Rapport-Audit-Forge-v3.4.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Rapport-Certification-C.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Rapport-Certification-C.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Rapport-Certification-C.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Rapport-Certification-Final.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Rapport-Certification-Final.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Rapport-Certification-Final.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Rapport-Stabilisation-Infrastructure.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Rapport-Stabilisation-Infrastructure.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Rapport-Stabilisation-Infrastructure.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Rapport-Stabilisation-Knowledge-Hub.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Rapport-Stabilisation-Knowledge-Hub.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/Rapport-Stabilisation-Knowledge-Hub.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/audit-moncoach.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/audit-moncoach.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/audit-moncoach.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/mcs-load-report.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/mcs-load-report.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/07-Archive/legacy-v4/Rapports/mcs-load-report.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/Décisions/README.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/Décisions/README.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/Décisions/README.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/README.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/README.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/README.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/_templates/micro-tool-anchoring.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/_templates/micro-tool-anchoring.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/_templates/micro-tool-anchoring.md**: Métadonnées recommandées manquantes (type, pillar).
+- **99-Zone-Exclue/_templates/role-boundary-audit-week-example.md**: Document orphelin (aucun lien ne pointe vers lui).
+- **99-Zone-Exclue/_templates/role-boundary-audit-week-example.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **99-Zone-Exclue/_templates/role-boundary-audit-week-example.md**: Métadonnées recommandées manquantes (type, pillar).
+- **Bienvenue.md**: Métadonnées obligatoires manquantes (status, owner, last_reviewed, canonical).
+- **Bienvenue.md**: Métadonnées recommandées manquantes (type, pillar).
+

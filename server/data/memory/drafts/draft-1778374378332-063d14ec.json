@@ -1,0 +1,21 @@
+{
+  "id": "draft-1778374378332-063d14ec",
+  "timestamp": "2026-05-10T00:52:58.332Z",
+  "trigger": "Nexxus, matérialise ce rapport dans CITADELLE-SELF-AUDIT.md. Autorisation de Forge accordée.",
+  "scope": [
+    "Cognition systémique, arbitrage identitaire, planification stratégique d'architectures IA. Spécialiste du déploiement souverain et des frameworks agentiques."
+  ],
+  "runId": "run-1778373802047",
+  "selectedModel": "qwen3.5:27b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 576285,
+  "evidence": {
+    "logs": "Full Draft: <think>L'utilisateur demande la matérialisation du rapport d'audit généré précédemment dans un fichi...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

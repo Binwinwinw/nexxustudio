@@ -1,0 +1,59 @@
+{
+  "version": "1.0.0",
+  "kind": "nexxus.browser.observation_result",
+  "source": {
+    "url": "http://127.0.0.1:5173/components",
+    "response_status": 200,
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    }
+  },
+  "style_summary": {
+    "samples_count": 3,
+    "unique_colors": 3,
+    "unique_font_families": 0
+  },
+  "computed_styles_count": 3,
+  "computed_style_keys": [
+    {
+      "selector": ".btn-primary",
+      "tag": "button",
+      "classes": [
+        "btn-primary"
+      ],
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(99, 102, 241)",
+      "font_family": null
+    },
+    {
+      "selector": ".badge-success",
+      "tag": "span",
+      "classes": [
+        "badge-success"
+      ],
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(16, 185, 129)",
+      "font_family": null
+    },
+    {
+      "selector": ".card",
+      "tag": "section",
+      "classes": [
+        "card"
+      ],
+      "color": null,
+      "background": "rgb(255, 255, 255)",
+      "font_family": null
+    }
+  ],
+  "dom_snapshot": {
+    "title": "Golden Mock"
+  },
+  "artifact_kinds": [
+    "observation_json",
+    "computed_styles_json",
+    "trace_jsonl"
+  ],
+  "uncertainties_count": 1
+}

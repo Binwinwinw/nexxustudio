@@ -1,0 +1,223 @@
+{
+  "main": {
+    "id": "8c2a274962ebd1a9",
+    "type": "split",
+    "children": [
+      {
+        "id": "f1a635af75d3f8f5",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "99d9891e266a9c50",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Vue graphique"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "aa1f637a17144d92",
+    "type": "split",
+    "children": [
+      {
+        "id": "d73de08a2ee5c54a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "95a114d93e9f2003",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorateur de fichiers"
+            }
+          },
+          {
+            "id": "ea70e7889abd6dd8",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Rechercher"
+            }
+          },
+          {
+            "id": "afb56dab2ba07ce9",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Signets"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 344.5
+  },
+  "right": {
+    "id": "13cd66e767afd3e5",
+    "type": "split",
+    "children": [
+      {
+        "id": "f4254807acc9a4c2",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "69e2b9b3dcbbdb1a",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Rétroliens"
+            }
+          },
+          {
+            "id": "8a33985b5b409464",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Bienvenue.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Liens sortants de Bienvenue"
+            }
+          },
+          {
+            "id": "ac945e2a8c00469d",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Mots-clés"
+            }
+          },
+          {
+            "id": "00922e6a9bfb1445",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Toutes les propriétés"
+            }
+          },
+          {
+            "id": "853b3122c89df74c",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Bienvenue.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Plan de Bienvenue"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Ouvrir le sélecteur rapide": false,
+      "graph:Ouvrir la vue graphique": false,
+      "canvas:Créer une nouvelle toile": false,
+      "daily-notes:Ouvrir la note quotidienne": false,
+      "templates:Insérer le modèle": false,
+      "command-palette:Ouvrir la palette de commandes": false,
+      "bases:Créer une nouvelle base": false
+    }
+  },
+  "active": "99d9891e266a9c50",
+  "lastOpenFiles": [
+    "Bienvenue.md",
+    "02-Architecture/modules/Cockpit-v3-1.md",
+    "02-Architecture/modules/Governance-Dashboard.md",
+    "02-Architecture/modules/CGTM-SOEM.md",
+    "04-Knowledge-Graph/README.md",
+    "00-Manifeste-Doctrine.md",
+    "07-Archive/legacy-v4/02-Patrimoine-Technique/Standards-de-Codage.md",
+    "07-Archive/legacy-v4/01-Modules/MonCoachScolaire/03-UI/dashboard-eleve/ADR-005-UI.md",
+    "archive/Décisions/ADR-004-Security-Hardening.md",
+    "archive/Décisions/ADR-005-Sovereign-Safety-Governance.md",
+    "archive/Décisions/ADR-002-Sovereign-Multimodal-Vision.md",
+    "archive/Décisions/ADR-003-Stochastic-Multi-Agent-Consensus.md",
+    "00-Gouvernance/POLICIES.md",
+    "archive/Décisions/ADR-001-Web-Consciousness.md",
+    "00-Gouvernance/LTM-Methodology/EPISODE-CITADEL-DISCOVERY-DOCTRINE-001.md",
+    "00-Gouvernance/LTM-Methodology/EPISODE-CITADEL-PERSONA-HARDENING-001.md",
+    "00-ADRs/obsidian-citadelle-best-practices.md",
+    "archive/Décisions/ADR-003-Knowledge-Governance.md",
+    "02-Procedural/SMAC-PROTOCOL-IMPLEMENTATION.md",
+    "01-Episodic/interactions/2026-05-14/turn_1778720156390_7123i.md",
+    "04-Governance/scorecards/ecommerce-sovereign-v1.scorecard.json",
+    "03-Heritage/assets/ecommerce-sovereign-v1.manifest.json",
+    "01-Episodic/events/ecommerce-sovereign-v1-2026-05-09-maturation.json",
+    "02-Procedural/principles/ecommerce-sovereign-v1-readiness-principles.md",
+    "Audits/Forge_Audit_ecommerce-sovereign-v1.json",
+    "04-Governance/scorecards/bookflow.scorecard.json",
+    "04-Governance/scorecards",
+    "04-Governance",
+    "03-Heritage/assets/bookflow.manifest.json",
+    "03-Heritage/assets",
+    "03-Heritage",
+    "02-Procedural/principles/bookflow-readiness-principles.md",
+    "Audits/Security_Audit_Bookflow.md",
+    "Rapports/Rapport-Audit-Forge-v3.4.md",
+    "01-Modules/MonCoachScolaire/_index.md",
+    "Décisions/État-du-Système-de-Skills.md",
+    "Sans titre.canvas",
+    "Sans titre 2.canvas",
+    "Sans titre 1.canvas"
+  ]
+}

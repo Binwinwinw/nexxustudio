@@ -1,0 +1,16 @@
+{
+  "id": "PR-001",
+  "scope": "routing",
+  "status": "accepted",
+  "rule": "La compétence de l'expert identifié doit systématiquement primer sur le flag de phase (Discovery/Social). Ne jamais rétrograder vers un modèle 'Social' (9B) si un expert 'Thinker' (8B/14B) est requis par le sujet.",
+  "rationale": "Évite les boucles de répétition infinies causées par l'incapacité des modèles conversationnels à traiter des problématiques de raisonnement pur.",
+  "applicability": {
+    "when": "Un expert spécifique a été sélectionné par le Master Orchestrator.",
+    "not_when": "Aucun expert n'est identifié et la requête est purement sociale."
+  },
+  "confidence": "confirmed",
+  "source_type": "incident_recovery",
+  "parent_id": "EP-001",
+  "promoted_at": "2026-05-01",
+  "version": 1
+}

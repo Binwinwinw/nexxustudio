@@ -1,0 +1,10 @@
+{
+  "id": "PR-007",
+  "scope": "logic",
+  "status": "accepted",
+  "rule": "L'accès à la Forge est verrouillé par un Readiness Score de 80%. L'hystérésis de maintien est fixée à 72%.",
+  "rationale": "Empêche les régressions de rôle et garantit la densité sémantique avant production.",
+  "confidence": "confirmed",
+  "source_type": "doctrine",
+  "promoted_at": "2026-05-01"
+}

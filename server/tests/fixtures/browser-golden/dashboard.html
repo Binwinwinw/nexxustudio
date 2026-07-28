@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Nexxus Dashboard</title>
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 16px; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+    .kpi { background: #1e293b; border-radius: 12px; padding: 16px; }
+    .kpi-value { color: #38bdf8; font-size: 28px; font-weight: 600; }
+    .kpi-label { color: #64748b; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; background: #1e293b; border-radius: 12px; }
+    th { color: #94a3b8; text-align: left; padding: 12px; border-bottom: 1px solid #334155; }
+    td { padding: 12px; color: #cbd5e1; border-bottom: 1px solid #334155; }
+    .chart-placeholder { height: 120px; background: #334155; border-radius: 8px; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <header><h1>Dashboard Ops</h1></header>
+  <main>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-value">42</div><div class="kpi-label">Jobs actifs</div></div>
+      <div class="kpi"><div class="kpi-value">98%</div><div class="kpi-label">Succès</div></div>
+      <div class="kpi"><div class="kpi-value">1.2s</div><div class="kpi-label">Latence P50</div></div>
+    </div>
+    <table>
+      <thead><tr><th>Service</th><th>Statut</th><th>Latence</th></tr></thead>
+      <tbody>
+        <tr><td>Browser Harness</td><td>OK</td><td>45ms</td></tr>
+        <tr><td>Design Extract</td><td>OK</td><td>120ms</td></tr>
+      </tbody>
+    </table>
+    <div class="chart-placeholder"></div>
+  </main>
+</body>
+</html>

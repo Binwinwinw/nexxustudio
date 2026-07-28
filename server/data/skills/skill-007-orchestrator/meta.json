@@ -1,0 +1,32 @@
+{
+  "name": "Coding Protocol",
+  "version": "1.0.0",
+  "description": "Règles d'or de l'assistant pour le développement de haute précision.",
+  "enabled": true,
+  "tier": "fallback",
+  "priority": 10,
+  "runtimeModules": [
+    {
+      "path": "server/src/agent/orchestrator/SovereignOrchestrator.js",
+      "exportName": "SovereignOrchestrator",
+      "required": true,
+      "status": "implemented"
+    }
+  ],
+  "triggers": [
+    "antigravity",
+    "pair-programming",
+    "assistant",
+    "code",
+    "coding",
+    "orchestrateur souverain",
+    "Citadelle",
+    "Nexxus",
+    "Nexxus Hybrid Mode",
+    "Nexxus Core",
+    "Nexxus v4.1",
+    "Nexxus Core v4.1",
+    "Nexxus Hybrid Mode v4.1",
+    "Nexxus v4.1"
+  ]
+}

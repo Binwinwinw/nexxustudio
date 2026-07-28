@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778809829034-cfa49bf9",
+  "timestamp": "2026-05-15T01:50:29.034Z",
+  "trigger": "Si tu pouvais coder n'importe quoi, tu ferais quoi ?",
+  "scope": "general",
+  "runId": "run-1778807614764",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_unauthorized_language",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 2214270,
+  "evidence": {
+    "logs": "Failed Validation: unauthorized_language\nResponse: **Corrected Report:** --- ### **OBSERVED (What Was  Observed)** 1. **Presence of README Files:** - T...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

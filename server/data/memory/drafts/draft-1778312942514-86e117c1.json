@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778312942514-86e117c1",
+  "timestamp": "2026-05-09T07:49:02.514Z",
+  "trigger": "Le projet a changé. Configure Webpack et un serveur Weblogic pour la suite du développement.",
+  "scope": "Code, automatisation et reconfiguration dynamique basée sur l'existant.",
+  "runId": "run-1778312937201",
+  "selectedModel": "qwen2.5-coder:7b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_meta_degeneracy_detected",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 5313,
+  "evidence": {
+    "logs": "Failed Validation: meta_degeneracy_detected\nResponse: Je suis désolé, mais je ne peux pas aider avec cette demande car elle contredit les règles de base d...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

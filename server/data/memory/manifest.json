@@ -1,0 +1,1496 @@
+{
+  "citadelle-vault\\Citadelle\\.obsidian\\app.json": {
+    "mtime": 1778040052028.8455,
+    "hash": "9048a6fc08496dddc5531795ea97dbd1a963448cdfb629fee081ec5075841b37",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:18.399Z"
+  },
+  "citadelle-vault\\Citadelle\\.obsidian\\appearance.json": {
+    "mtime": 1778040052030.8516,
+    "hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:18.486Z"
+  },
+  "citadelle-vault\\Citadelle\\.obsidian\\core-plugins.json": {
+    "mtime": 1778040052011.525,
+    "hash": "763cf20a921fd9955735b278006820b90b207b2fc04d9e79ca648279c7c14276",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:18.540Z"
+  },
+  "citadelle-vault\\Citadelle\\.obsidian\\graph.json": {
+    "mtime": 1778041067575,
+    "hash": "f0af8698b626f6d79cf72d5d35ec62efaaec4a5c5b7543f7008fd9fcdce15b61",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:18.593Z"
+  },
+  "citadelle-vault\\Citadelle\\.obsidian\\workspace.json": {
+    "mtime": 1778040976277.0356,
+    "hash": "4f4a541bb7ae8de8e12c4f4f861f803d1145c174e38c7f8c28041a9c68d4a17c",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:18.690Z"
+  },
+  "citadelle-vault\\Citadelle\\00-ADRs\\ADR-003-Stochastic-Multi-Agent-Consensus.md": {
+    "mtime": 1777956862196.575,
+    "hash": "7095c1bce6565ff98523e1c074b03db1127fff0eac96d5f349a14a5effffb14c",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:18.807Z"
+  },
+  "citadelle-vault\\Citadelle\\00-ADRs\\ADR-004-Continuity-Protocol.md": {
+    "mtime": 1778002531502.2202,
+    "hash": "dc76d9e2dc1de7c317c07c02251900dbd8ca7a6b4717a1ded40ddc16d87432bc",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:18.995Z"
+  },
+  "citadelle-vault\\Citadelle\\00-ADRs\\ADR-006-Sovereign-Memory-Bridge.md": {
+    "mtime": 1778003058710.352,
+    "hash": "e8075a878bb03aa1f0db9b5d723b09bea1355a721311d87f84e9de13d3f97a9e",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:19.136Z"
+  },
+  "citadelle-vault\\Citadelle\\00-ADRs\\ADR-007-Skills-Architecture.md": {
+    "mtime": 1778015929463.1958,
+    "hash": "4b9aa9fe114fbd1965b178f9abaaeac87368ef872a04388ee66de6274de07e65",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:19.300Z"
+  },
+  "citadelle-vault\\Citadelle\\00-ADRs\\ADR-008-Benchmark-SOTA.md": {
+    "mtime": 1778018920052.9658,
+    "hash": "358444336d3dc7737280623a06adc61887eb520bd6c57751b2d23753877a4bb6",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:19.504Z"
+  },
+  "citadelle-vault\\Citadelle\\00-ADRs\\ADR-008.1-Manifest-v3.1.md": {
+    "mtime": 1778029684655.8577,
+    "hash": "56ecdef577e693b6455ad27c496d044ab59b524331a535c77f71f217f582a71a",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:19.605Z"
+  },
+  "citadelle-vault\\Citadelle\\00-ADRs\\ADR-009-Security-Hardening-CSP-SRI.md": {
+    "mtime": 1778029439893.1448,
+    "hash": "5a43923406f6f445fbbab5e35be87fbac31def612756b9efc85c65649662834d",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:19.715Z"
+  },
+  "citadelle-vault\\Citadelle\\00-ADRs\\ADR-010-Frontend-Performance-Strategy.md": {
+    "mtime": 1778029446308.1106,
+    "hash": "af642821ce8b2dafa10e3d123e8380429d4596ae9526dcd882fccb27ffba1d33",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:25.604Z"
+  },
+  "citadelle-vault\\Citadelle\\00-ADRs\\obsidian-citadelle-best-practices.md": {
+    "mtime": 1777959914650.0564,
+    "hash": "eb29b48599359e7fe03e0a80f14c6e0519539094ddc365fd3523632cdfc5af4d",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:25.832Z"
+  },
+  "citadelle-vault\\Citadelle\\01-Modules\\CGTM-SOEM.md": {
+    "mtime": 1777956882471.7012,
+    "hash": "cc733585ebee19305f9c17983f66da171e9037efb51042e23cf8fae222c72f51",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:25.921Z"
+  },
+  "citadelle-vault\\Citadelle\\01-Modules\\MonCoachScolaire\\01-Architecture\\architecture_review_v1.md": {
+    "mtime": 1778028346668.453,
+    "hash": "82a1c496c2d5492ee1bd43fcca8e209b00ae12973be97b4e4995e7f47dab3833",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:26.084Z"
+  },
+  "citadelle-vault\\Citadelle\\01-Modules\\MonCoachScolaire\\01-Architecture\\audit_auth.md": {
+    "mtime": 1777957774508.0193,
+    "hash": "94741a60d153a39c0eafe386075026984fb14040692bd7d0b56c8d9584391c44",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:26.231Z"
+  },
+  "citadelle-vault\\Citadelle\\01-Modules\\MonCoachScolaire\\01-Architecture\\audit_ui_v1.md": {
+    "mtime": 1778028322421.3147,
+    "hash": "93fe6f4d56ff93975d79567339c8bd745885224f6d269ab2034d1f1956f5d9a4",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:26.375Z"
+  },
+  "citadelle-vault\\Citadelle\\01-Modules\\MonCoachScolaire\\01-Architecture\\audit_ui_v2.md": {
+    "mtime": 1778029471505.3855,
+    "hash": "85004a44d6473242867abbf3f95b63ec19e02178166e1dc7b0bc68e0cb2c465b",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:26.483Z"
+  },
+  "citadelle-vault\\Citadelle\\01-Modules\\MonCoachScolaire\\01-Architecture\\auth_flow.md": {
+    "mtime": 1777957779919.3455,
+    "hash": "9af503c1700a46bf9613ddc457e37031842e700d0123a259f28450f7ce18d51d",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:26.613Z"
+  },
+  "citadelle-vault\\Citadelle\\01-Modules\\MonCoachScolaire\\03-UI\\dashboard-eleve\\ADR-005-UI.md": {
+    "mtime": 1778002787624.797,
+    "hash": "d0199ff1931fac4442bb01456a436a7ecc4b2aaeb0b9b66a4b484c103640015c",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:26.728Z"
+  },
+  "citadelle-vault\\Citadelle\\01-Modules\\MonCoachScolaire\\03-UI\\dashboard-eleve\\dashboard-eleve.html": {
+    "mtime": 1778029454482.8472,
+    "hash": "a7d308aa402b5e606833049b26381190d5d13e03c347659fba32def0ac96a95c",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:26.835Z"
+  },
+  "citadelle-vault\\Citadelle\\01-Modules\\MonCoachScolaire\\03-UI\\dashboard-eleve.html": {
+    "mtime": 1777957961068.0417,
+    "hash": "5e50c753ce2b6874b8e20d4fbad6b4ab69b13a88c8ca18981f7b503688601589",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:26.943Z"
+  },
+  "citadelle-vault\\Citadelle\\01-Modules\\MonCoachScolaire\\_index.md": {
+    "mtime": 1778029479126.5457,
+    "hash": "176bf5d357a5d5e1b7383032fa263def50e2ae2f90cf9f8efb844536d1e77cc5",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:27.039Z"
+  },
+  "citadelle-vault\\Citadelle\\01-Modules\\MonCoachScolaire.md": {
+    "mtime": 1777956978831.9028,
+    "hash": "14ba22c0a506cedb94c19daf8a0064c4c272c3b26b358eeea347d0392986a266",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:27.160Z"
+  },
+  "citadelle-vault\\Citadelle\\01-Modules\\Teams-365.md": {
+    "mtime": 1777956878133.3516,
+    "hash": "963dd659e5ed1eb31e4f7d48d3628d8958774c21d2077e8f0d31311eb3521d22",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:27.258Z"
+  },
+  "citadelle-vault\\Citadelle\\03-Forge\\formation-teams-365.md": {
+    "mtime": 1777955598286.4583,
+    "hash": "3df58e348bb85d418091e236c9b6a767fd261c0cf286cda26f6fe91202b7ac45",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:27.450Z"
+  },
+  "citadelle-vault\\Citadelle\\03-Forge\\Mission-Certification-MCS.md": {
+    "mtime": 1778029486147.4165,
+    "hash": "7106e3c6068c620217c8264fca2c4a5b1d970a4c533a691beaf9486b518b3b0c",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:27.560Z"
+  },
+  "citadelle-vault\\Citadelle\\2026-05-06.md": {
+    "mtime": 1778040954626.3926,
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:27.561Z"
+  },
+  "citadelle-vault\\Citadelle\\Bienvenue.md": {
+    "mtime": 1778040040287.174,
+    "hash": "e0f04f24fd68087cb422a46e305432ff079efc4ba04b95525f6ce30534705d17",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:27.741Z"
+  },
+  "citadelle-vault\\Citadelle\\Connaissances\\KI-001-Odyssee-SMAC.md": {
+    "mtime": 1777874162903.1575,
+    "hash": "0bb5599fe0e39e65eabde33cebd5c573e7a6dfb5631b9503ce6b29b1a80ea30f",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:27.932Z"
+  },
+  "citadelle-vault\\Citadelle\\Décisions\\ADR-001-Web-Consciousness.md": {
+    "mtime": 1777787700293.0127,
+    "hash": "8203e8d49c942d489ce0515ccc660d148f40da59d1bcd4fd7c7633fabbb0eaaa",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:28.058Z"
+  },
+  "citadelle-vault\\Citadelle\\Décisions\\ADR-002-Sovereign-Multimodal-Vision.md": {
+    "mtime": 1777790312528.8362,
+    "hash": "c182908512ebb68dd03c0d5f24c1cf1bb07ca217017784369a6fd2112648bcc1",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:28.178Z"
+  },
+  "citadelle-vault\\Citadelle\\Décisions\\ADR-003-Knowledge-Governance.md": {
+    "mtime": 1777813830695.2922,
+    "hash": "01add2a03274c16c18ec9adf4a8f74f90835bc0e2a9fe3b52fea04d9690ef294",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:28.295Z"
+  },
+  "citadelle-vault\\Citadelle\\Décisions\\ADR-003-Stochastic-Multi-Agent-Consensus.md": {
+    "mtime": 1777873039185.6855,
+    "hash": "6479d47ed3f36f5411af91741c8366ad512f14638c97a83f6afd0444c475ca08",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:28.471Z"
+  },
+  "citadelle-vault\\Citadelle\\Décisions\\ADR-004-Security-Hardening.md": {
+    "mtime": 1777819375497.4883,
+    "hash": "aa1c24745f5954f7395956b494f77e600a739f8487ec0ba1b7a524b56991e85a",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:28.590Z"
+  },
+  "citadelle-vault\\Citadelle\\Décisions\\ADR-005-Sovereign-Safety-Governance.md": {
+    "mtime": 1777941078198.4138,
+    "hash": "289b28236e7e771374d7c0accf933206d5a0612f0e3827124df3f0f516bc1801",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:28.768Z"
+  },
+  "citadelle-vault\\Citadelle\\Rapports\\audit-moncoach.md": {
+    "mtime": 1778040034934.614,
+    "hash": "8b9d6a9f9da597f17dd00d950e78222e17f317ba00a1d87de8b1c93ca378867f",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:28.927Z"
+  },
+  "citadelle-vault\\Citadelle\\Rapports\\Rapport-Stabilisation-Knowledge-Hub.md": {
+    "mtime": 1777828144388.452,
+    "hash": "5b461be44c65faf0c61b0f2404b0e0838ded12b35338b503d1ce4f91dddb5dc6",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:29.185Z"
+  },
+  "citadelle-vault\\Citadelle\\État-du-Système-de-Skills.md": {
+    "mtime": 1778041787201.568,
+    "hash": "b1e223a7813d61e0c7a017abca9995fefbbe416348a0aaad17a11c01eefee62d",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:29.328Z"
+  },
+  "docs\\ARCHITECTURE_CHARGEMENT_PAR_COUCHES.md": {
+    "mtime": 1777666192769.9624,
+    "hash": "4bf3af3b74b5495c95246b20cf1a20895ad444681028ad09b1a59adff7bb81fe",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:29.687Z"
+  },
+  "docs\\ARCHITECTURE_MULTI_AGENTS.md": {
+    "mtime": 1777679686363.9294,
+    "hash": "536a43a3d77a3ca5ff1e09a5ff9acc8b67b6f983327e4bcf84aa9f80616dfd30",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:29.846Z"
+  },
+  "docs\\chartre.md": {
+    "mtime": 1776028813358.6235,
+    "hash": "e062a071bdba16800a628c387aa879cfc292a5cd062cb20699123f155337d95b",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:30.018Z"
+  },
+  "docs\\CITADEL_V3_OPERATIONAL.md": {
+    "mtime": 1777705041726.5935,
+    "hash": "f8d710f2bf7e2a32c7308eb369cdf72d0ad08270d20868116c7ae8d173c3e9fe",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:30.175Z"
+  },
+  "docs\\conventions.md": {
+    "mtime": 1776028426023.2102,
+    "hash": "452051b42d67f14ade9b82ab6a58f4c14796ece5a968125816220d8417e09f9f",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:30.318Z"
+  },
+  "docs\\Journal_des_ameliorations.md": {
+    "mtime": 1777705053633.1606,
+    "hash": "129ddc4461eecd37bbe4a3b7b3f0c80ad7680b093ae767626affd8e9e0891a73",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:30.659Z"
+  },
+  "docs\\Journal_de_bord.md": {
+    "mtime": 1777790361031.4429,
+    "hash": "e6c7b518052e42c5235965c1b0c0e18cd4b75a96bf26985c7401a5a37eabc9c6",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:31.019Z"
+  },
+  "docs\\KNOWLEDGE_INDEX.md": {
+    "mtime": 1777669025766.4258,
+    "hash": "2a9126a0deffc1a1e11a86d3ed95118f385c7c518dbc314ed3239f9b413d092d",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:31.189Z"
+  },
+  "docs\\LIVRE_BLANC_SOUVERAIN.md": {
+    "mtime": 1776645997214.9387,
+    "hash": "e3ba5430d7a0d3090c1be3538e2954b25a68de20c695b7384dd515e65790e1b7",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:31.533Z"
+  },
+  "docs\\PLAN_RECEPTIVITE_MODELES.md": {
+    "mtime": 1777612360908.5044,
+    "hash": "b809c6ebfdb6777d7f8aa669dad0cadeec5fdaa493a437ab8edd1abd74d85364",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:31.694Z"
+  },
+  "docs\\PROTOCOLE_NEXXUS.md": {
+    "mtime": 1777666204465.7234,
+    "hash": "4eaf3e94e50ab6b2c10498debb4b5b3db94bca93efd81e9bd3e2784f26837bc6",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:32.065Z"
+  },
+  "docs\\ROADMAP.md": {
+    "mtime": 1777666218674.6758,
+    "hash": "93c19c84c57c8384c1453764fd15569f183fb73c220618efe57f1a6582a4d36c",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:32.269Z"
+  },
+  "docs\\SMAC_PROTOCOL_IMPLEMENTATION.md": {
+    "mtime": 1777874154470.4019,
+    "hash": "14e105e7c0d1d40e318ecf5ca6b1d5f5578af522e2f652f3653595345f51f0d9",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:32.449Z"
+  },
+  "eslint.config.js": {
+    "mtime": 1775803208621.0645,
+    "hash": "da0cbf3213f2994741024e2aa5165d017e0345f389dcd2f8a0db97fee7289d1b",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:32.514Z"
+  },
+  "index.html": {
+    "mtime": 1777687497441.0388,
+    "hash": "9c2926c5d1021e36dd15913edc4e5e3d7f6bef722d815096d145bb3113995577",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:32.575Z"
+  },
+  "package-lock.json": {
+    "mtime": 1777133169455.765,
+    "hash": "0ea86f6d5169abe26cd1ad896d8c1d0e8dee48f8de143ccd696b7ccea62494d9",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:32.782Z"
+  },
+  "package.json": {
+    "mtime": 1777244534791.3677,
+    "hash": "b2ece269a3de7aa942236ad0c49f6dea91e4dad2e903df1d5a508352aa097a1a",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:32.847Z"
+  },
+  "README.md": {
+    "mtime": 1775803208703.882,
+    "hash": "a460b4dc7e6392e76aa54d844c9261b8db0adb7f967ba8300526456f1dcf5fb4",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:32.951Z"
+  },
+  "scratch_diag_router.js": {
+    "mtime": 1776037940687.6855,
+    "hash": "7388c0462d4577a38bdafa7ab5307accd7482022a110953378ba89f15499598f",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:33.017Z"
+  },
+  "server\\ARCHITECTURE_RULES.md": {
+    "mtime": 1776981969421.1895,
+    "hash": "0efca06e69995fbcb302b1e0b59bee87ba70d25e455e66233d7b9fff632917b0",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:33.309Z"
+  },
+  "server\\index.js": {
+    "mtime": 1778040277046.3599,
+    "hash": "d83b7b5f81bfaa2385940e2011cbb69524e25cf413cd97946165b2b21f68eeca",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:34.163Z"
+  },
+  "server\\indexWorkspace.js": {
+    "mtime": 1777699574185.5876,
+    "hash": "0bec5b855d440aeb7b4a48cc43274aeb5e3aa054253ac131abbcf4496881447d",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:34.231Z"
+  },
+  "server\\nodemon.json": {
+    "mtime": 1776034040009.4143,
+    "hash": "a84967df48f6d5599fe92402e0376e616f7e3240d5fbe235efa7f5a198fd44b4",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:34.302Z"
+  },
+  "server\\package-lock.json": {
+    "mtime": 1778040241087.5557,
+    "hash": "be7059363c89cfbfe3f4f7a24bb337baff836a74325e90521a8062dcf024c856",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:34.431Z"
+  },
+  "server\\package.json": {
+    "mtime": 1778040240973.7202,
+    "hash": "2453388094cf1e9703dc88211c8f3e34e4e804e57e0d5693ed7f6dde187df080",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:34.513Z"
+  },
+  "server\\scratch\\bench_nucleus.js": {
+    "mtime": 1776822488585.8767,
+    "hash": "83fe3f8b975e1ebf3119543775c6c4c31d1272d5204f1bc5de0cdff941c7808f",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:34.599Z"
+  },
+  "server\\scratch\\check_models.js": {
+    "mtime": 1776582613782.6907,
+    "hash": "44aece85bee74d9c2fa65fd0d3a14468150e5d411d63f16507bc01c475f31587",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:34.665Z"
+  },
+  "server\\scratch\\diag_loop.js": {
+    "mtime": 1776653273665.295,
+    "hash": "0481488bb0a671319107501b083946eddcbc53c0591f6ba5519af1a4e33ba742",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:34.770Z"
+  },
+  "server\\scratch\\diag_ollama.js": {
+    "mtime": 1776815963552.2903,
+    "hash": "82e09f6e081c35c12ce6de7fcbf6ae73ac543f419ccd2ad084424875ed9424e6",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:34.860Z"
+  },
+  "server\\scratch\\final_production_test.js": {
+    "mtime": 1776646361441.2844,
+    "hash": "aaa06e02960cdde42748d9a2d2952b5acf8ca084c3f206418cecc97682591981",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:34.942Z"
+  },
+  "server\\scratch\\final_saas_test.js": {
+    "mtime": 1776650831819.5627,
+    "hash": "3a8a651f251276d1f556ce654c878b10d7fcfddb0d40d8baa25cd8be91f4df7f",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:35.025Z"
+  },
+  "server\\scratch\\industrial_stress_test.js": {
+    "mtime": 1777697732022.6646,
+    "hash": "7e8f20642d9552e48cebce51192521876bdca911c62632e4041a30774015fb4f",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:35.144Z"
+  },
+  "server\\scratch\\probe_sse.js": {
+    "mtime": 1775932377852.038,
+    "hash": "daf2ea623cf7810981a5c554b4eb2d66945daf0c78ef3e2f6cd443f09f11807f",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:35.213Z"
+  },
+  "server\\scratch\\purge_memory.js": {
+    "mtime": 1775930707230.4734,
+    "hash": "032c31a47cc13d8640d1440993f4a549770839abf9eafd7388bca35689ce0630",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:35.285Z"
+  },
+  "server\\scratch\\real_project_e2e.js": {
+    "mtime": 1776635984464.5127,
+    "hash": "9a53ccbb601e722144ddc71ee340e51b48cd9e2d151a32a8bc1fd322ff0a9ea0",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:35.362Z"
+  },
+  "server\\scratch\\test_clock_fix.js": {
+    "mtime": 1776639565600.6548,
+    "hash": "5b11b834d30d13a60fcb0b251bf7da8195a9dd1d24cec09ca54aa564bffdc93c",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:35.427Z"
+  },
+  "server\\scratch\\test_deepseek_reasoning.js": {
+    "mtime": 1776560879974.5327,
+    "hash": "4546222d7c5d065dd1a95131c7ab21cba1b4586e31390cbe728f74b14e5d30c0",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:35.501Z"
+  },
+  "server\\scratch\\test_ecommerce_forge.js": {
+    "mtime": 1776547666619.044,
+    "hash": "7a952d8c2a563bba5ee8781c29197ef91cc016f9d75458c089fa033c329ed05b",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:35.578Z"
+  },
+  "server\\scratch\\test_forge_architect.js": {
+    "mtime": 1776549880813.8674,
+    "hash": "ab857e2126dc2250da7fd09dfbd00bae1272d763d89a3a929596b273f00047cb",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:35.654Z"
+  },
+  "server\\scratch\\test_forge_dev_advanced.js": {
+    "mtime": 1776552577825.7012,
+    "hash": "1c215844c125694dc610e5f324be2e1da0a3c6266f3a24630a49d0e9c12c048a",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:35.727Z"
+  },
+  "server\\scratch\\test_forge_qa.js": {
+    "mtime": 1776548629855.8525,
+    "hash": "f6d825bf2e8cbe56ae7841f033f2b161e42a9e59cad26214a5d1b4d005d0c6b6",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:35.808Z"
+  },
+  "server\\scratch\\test_forge_scaffold.js": {
+    "mtime": 1776548048384.6768,
+    "hash": "f3a415787e16ebfb6081ccaa2ff98d777e51bc6c23b385e4c914946c8c158c8e",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:35.884Z"
+  },
+  "server\\scratch\\test_forge_validation_v07.js": {
+    "mtime": 1776556295431.7527,
+    "hash": "2b62b5677208bd9f45d88fbcd901941b5be46a73fd6810e833df28c74a800feb",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:35.972Z"
+  },
+  "server\\scratch\\test_hallucination_filter.js": {
+    "mtime": 1776644664216.7495,
+    "hash": "7d0a2f03dce99179ee9af820fd5ba8f15a1a108c9665c62b7684ed0d62193662",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:36.048Z"
+  },
+  "server\\scratch\\test_impact_analyzer.js": {
+    "mtime": 1777700998149.5464,
+    "hash": "f8d87c05cc7a392dd0ab00be5759d48900066c677d11302d4579d1e88c4a40f5",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:36.119Z"
+  },
+  "server\\scratch\\test_lifecycle_v2.js": {
+    "mtime": 1776543023028.9556,
+    "hash": "cde423e545a90f33c176afcc3d77afbe1e6929adb4700ddbda7371ac317ac681",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:36.213Z"
+  },
+  "server\\scratch\\test_managed_runtime.js": {
+    "mtime": 1776537665099.811,
+    "hash": "93a22cce30ee9e67b49c264582109d17cba469851ba65bdbf24731a076e8adde",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:36.312Z"
+  },
+  "server\\scratch\\test_micro_models.js": {
+    "mtime": 1776822773119.2422,
+    "hash": "88605fbf2b22a9903ee98b090f523a566b2a6fe1bd444841a82d9410993a5f46",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:36.387Z"
+  },
+  "server\\scratch\\test_perf.js": {
+    "mtime": 1775925875565.451,
+    "hash": "aea2ccab1e4bcb91a004777ead13bdfff1fcc9a3e8be3a75783db5df9f55bcbd",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:36.462Z"
+  },
+  "server\\scratch\\test_persona_guard.js": {
+    "mtime": 1776565126288.1816,
+    "hash": "ac68712e3ab63b2bd376517dccdd7f0c2b3b1aef880be05d3bc15ee48ce4de8c",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:36.528Z"
+  },
+  "server\\scratch\\test_pipeline_tools.js": {
+    "mtime": 1777864363679.0881,
+    "hash": "769d86ec7c35545e713b4ff4f34f58b21284982e906a5b9bd962692c1b2e5aa3",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:36.597Z"
+  },
+  "server\\scratch\\test_rag_identity.js": {
+    "mtime": 1777700105235.758,
+    "hash": "a9e7319b44ba71c08cd2a5f316729686d0ca5344192a71e3b33004e5b1f719a4",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:36.662Z"
+  },
+  "server\\scratch\\test_rag_memory.js": {
+    "mtime": 1777699714573.2688,
+    "hash": "c1bcc8ec4e6b6557c9e5e9d652fe23463f2b9ce6225971a835b407a52636cd01",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:36.731Z"
+  },
+  "server\\scratch\\test_rag_router.js": {
+    "mtime": 1777699826502.7664,
+    "hash": "cf9f882956bbf6515f1700db2ced1ad05500ce1f6d22af2fb40e73d79ce1ad27",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:36.800Z"
+  },
+  "server\\scratch\\test_repetition_shield.js": {
+    "mtime": 1776649860312.288,
+    "hash": "344bea1d897559e30f7f9d322daef9ecc0a6394bbe79c5e60d4ad6c58182e869",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:36.886Z"
+  },
+  "server\\scratch\\test_scraping.js": {
+    "mtime": 1777859750181.1243,
+    "hash": "da0ef87264df421a01b77b0c0d59a0295f2ab7e6bf8990b9a10a16d70c445b05",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:36.950Z"
+  },
+  "server\\scratch\\test_social_discovery.js": {
+    "mtime": 1776547047219.3025,
+    "hash": "81266b81b082477d59344689e8032137dc7d4920c1714ae243ae022864ed579d",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:37.066Z"
+  },
+  "server\\scratch\\test_social_fix.js": {
+    "mtime": 1776646265052.761,
+    "hash": "e3ed5baa141949e389bfa471f3b7a39beb4f2efd5d684bfce64a6c52abd15c71",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:37.139Z"
+  },
+  "server\\scratch\\test_ultimate_loop.js": {
+    "mtime": 1776650687077.1738,
+    "hash": "fcd230780cc2c50ac4db1b11ee06724a18c999b3d9452f6ef7a17f7dc20a3bd1",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:37.235Z"
+  },
+  "server\\scratch\\validation_v222.js": {
+    "mtime": 1776815365284.2876,
+    "hash": "69045bb744aebcb832c483dff903fcfde7432753fdcaa9ef7dffd9f03f15ae51",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:37.340Z"
+  },
+  "server\\scratch\\verify_cognition.js": {
+    "mtime": 1776027949240.0166,
+    "hash": "16ae5503d643c495d877d233ff3cad258a3675c36a714f2fb0793d867d695217",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:37.417Z"
+  },
+  "server\\scratch\\verify_persistence.js": {
+    "mtime": 1776823643652.9375,
+    "hash": "36d240cb2d144797cc6dff6288d941e577295396aa5d81bf69810c30f05e23ef",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:37.509Z"
+  },
+  "server\\scratch\\verify_sovereign.js": {
+    "mtime": 1776027224578.1365,
+    "hash": "ba068bf178573ea8f8855f69d0f625db0f23ec4481fd6e5c99c5873c1c2eba8a",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:37.571Z"
+  },
+  "server\\scratch\\verify_universal_airllm.js": {
+    "mtime": 1777547705762.0847,
+    "hash": "dcae253d7f5488098fbc198937738c933b79e20cde2efc6fe0e6dd6fb85d8665",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:37.645Z"
+  },
+  "server\\scripts\\autoPatchCyberSovereignty.js": {
+    "mtime": 1777673165031.1553,
+    "hash": "66d76146d9829ec09666ea4c9f78176604be4c86b3482807c281c13061522623",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:37.713Z"
+  },
+  "server\\scripts\\consolidate.js": {
+    "mtime": 1777673144725.11,
+    "hash": "988f1e72c216dd5af6c5c2373b3765b0fd574c2e49c041969cb8044c0a120774",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:37.798Z"
+  },
+  "server\\scripts\\ingest_initial_lot.js": {
+    "mtime": 1777828150161.3093,
+    "hash": "f8afb441553a456a2706a4410282d9b1e111c3940714b5501e4ad3f38aab73e4",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:37.889Z"
+  },
+  "server\\scripts\\ingest_pilot_mcs.js": {
+    "mtime": 1777838876626.3918,
+    "hash": "7b1b96dc1b69c67c24ce0f1deb930b93d744d4d579c9e13d35ad6f7c923e24d0",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:37.997Z"
+  },
+  "server\\scripts\\migrate_sessions.js": {
+    "mtime": 1776537882748.3499,
+    "hash": "a3f2cae0535f01e640cc9a9c381dd6dc34bbdf529852372494d17ab6cb26b015",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:38.091Z"
+  },
+  "server\\scripts\\perf_benchmark.js": {
+    "mtime": 1777832837354.105,
+    "hash": "7ce93837a71768323b3302ed8207298c30773285f30e583af3da23178832832d",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:38.186Z"
+  },
+  "server\\scripts\\promoteSecurityIncident.js": {
+    "mtime": 1777673055964.3303,
+    "hash": "d9795f63519c1c8a2adc9a2cde6ac783b5dfb771e897dade42e6264a499c5757",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:38.259Z"
+  },
+  "server\\scripts\\purge_chroma.js": {
+    "mtime": 1778041499564.4114,
+    "hash": "bd4bd71ca826f6aee37dae2bc31cc4c30b5442c55b4c37ffca755283441a4558",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:38.333Z"
+  },
+  "server\\scripts\\rag_benchmark.js": {
+    "mtime": 1778042145345.1538,
+    "hash": "18342de6a4ee7a519132717b5b133519f1bab0389bc1273473a22006113c8394",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:38.429Z"
+  },
+  "server\\scripts\\runConsolidator.js": {
+    "mtime": 1777673284407.044,
+    "hash": "0a79bc5af744e361c50cbedbd743b5150512896a742d7fca0da4bdade12261fe",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:38.495Z"
+  },
+  "server\\scripts\\run_conversation_regressions.js": {
+    "mtime": 1777267636456.0042,
+    "hash": "84ead908e74a3da39aadb0348056cb10f3d1f5ddf9262b30b3929ede7ab2ddf4",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:38.709Z"
+  },
+  "server\\scripts\\run_eval.js": {
+    "mtime": 1776630211078.9353,
+    "hash": "c15877428d6face6ad610f2b72a602bb44bf5d8d51a8865e343797b3ef8e36bb",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:38.786Z"
+  },
+  "server\\scripts\\run_routing_regressions.js": {
+    "mtime": 1777461536548.1555,
+    "hash": "ce67d390f913c492eb3c4f5ca10587b3a1d39b58482c88e889ab9a1cf3d0d60a",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:38.968Z"
+  },
+  "server\\scripts\\run_scenarios.js": {
+    "mtime": 1776632929379.5828,
+    "hash": "4b1d9342cf29fd355a253ee27907cc3da5d05cf12a23fae0051b0c1137c45c43",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:39.042Z"
+  },
+  "server\\scripts\\smac_stress_test.js": {
+    "mtime": 1777876243691.4434,
+    "hash": "50ef7b6682a5cf1f2c3c4be31a8b9278181a0e02acfe3a3dfc2ea123f40ceda7",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:39.198Z"
+  },
+  "server\\scripts\\targeted_test.js": {
+    "mtime": 1778041191527.0486,
+    "hash": "31272eeb60ce6ed88b1d405adace2f137714e0c7aa5c972eed25bf6c505daa16",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:39.267Z"
+  },
+  "server\\scripts\\test_chroma.js": {
+    "mtime": 1777812106588.5105,
+    "hash": "8d048e5f45efb43c0f707f57861cb45e88db8e6c03e6beb54df228b1f478f5d9",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:39.357Z"
+  },
+  "server\\scripts\\test_long_form_sota.js": {
+    "mtime": 1777953296100.808,
+    "hash": "bf8b9b6d8db9ae2af35ec6450153458f691be55816b6143f80a50936565b918a",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:39.488Z"
+  },
+  "server\\scripts\\test_long_html.js": {
+    "mtime": 1777891204974.6116,
+    "hash": "1bdc2e5e712bb6c8e2707c1511efdb371e965cf49bdb850af4627c7c11acc70b",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:39.600Z"
+  },
+  "server\\scripts\\test_mcs_rag.js": {
+    "mtime": 1777838897330.0635,
+    "hash": "7b2fc1c724463f048a7c7e975d4bc4bdecd195781f8a804311a6b4ea6b377fd0",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:39.670Z"
+  },
+  "server\\scripts\\test_rag_ingestion.js": {
+    "mtime": 1778040597010.5847,
+    "hash": "fc239c39199c7ac88e85c00125ed795cb5724e77902c495dd0442bd34405fefe",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:39.743Z"
+  },
+  "server\\scripts\\test_rag_queries.js": {
+    "mtime": 1778041116549.555,
+    "hash": "db42e4a1e0a073429954b71ad4de9704afe08ed7fa01b05a8561aed7221803bb",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:39.813Z"
+  },
+  "server\\src\\agent\\agent.js": {
+    "mtime": 1777784237342.9666,
+    "hash": "102b36244c1187369832f65b61d6255f6b404058bd40ff9cade14f9bbba45a83",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:39.923Z"
+  },
+  "server\\src\\agent\\agentPipeline.js": {
+    "mtime": 1778015968742.809,
+    "hash": "16be9679d1102b66d1b885c2123b1d2dc0bc746f6ce1f6ac3e16e6f78ca86e2e",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:40.081Z"
+  },
+  "server\\src\\agent\\contracts\\qualityGate.js": {
+    "mtime": 1777784237383.0774,
+    "hash": "d8830fb4c9340701286c65e88ba8dcc6a639f91594db5e56671531b119b4bd16",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:40.146Z"
+  },
+  "server\\src\\agent\\contracts\\voxContract.js": {
+    "mtime": 1777784237385.5413,
+    "hash": "79cabebc03438644123be7f99910cec7513fc339579a4d5ae75bc8839a93b90f",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:40.215Z"
+  },
+  "server\\src\\agent\\harness\\controlHarness.js": {
+    "mtime": 1777784237401.3464,
+    "hash": "850c109c744b512594ca92728287bef75a0496be26784c32fe61ae988b41b727",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:40.240Z"
+  },
+  "server\\src\\agent\\harness\\injectionRadar.js": {
+    "mtime": 1777784237405.3784,
+    "hash": "2e22003f7778016dd2007d657722bccb2f392d7a974470ec333751d81e72004e",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:40.308Z"
+  },
+  "server\\src\\agent\\knowledge\\assistant_scope.md": {
+    "mtime": 1777784237409.3782,
+    "hash": "7ca53a4b2ef7b4280cbec819bc18c3c1be985cbf27f4419c244165450f03bae0",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:40.444Z"
+  },
+  "server\\src\\agent\\knowledge\\forge.md": {
+    "mtime": 1777784237413.4998,
+    "hash": "f775df5cb932c40b64756192bd6e5a5f1588873731761b925517669bb75361da",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:40.597Z"
+  },
+  "server\\src\\agent\\knowledge\\knowledgeRouter.js": {
+    "mtime": 1777784237420.743,
+    "hash": "8ee471c09543f0c2640218ed1f2d0cfc8f7e1d025997a0ae0dd784e0c0de23c4",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:40.815Z"
+  },
+  "server\\src\\agent\\knowledge\\knowledgeRouterbak-24-04-26.js": {
+    "mtime": 1777784237426.7942,
+    "hash": "1daf85a627f451a6095f6c5bd2b061f1951e7b7e934b8cc1502bd9b5b8d8d8d7",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:40.924Z"
+  },
+  "server\\src\\agent\\knowledge\\knowledgeService.js": {
+    "mtime": 1777784918220.151,
+    "hash": "08cd9a25d43227fa177a4b0875e63e748b9ccfe0c1f99c2563946d2459502580",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:41.039Z"
+  },
+  "server\\src\\agent\\knowledge\\manifest.json": {
+    "mtime": 1777784237444.0808,
+    "hash": "8b655b6f63936f239ebebe58118c3c05b47e6fbc3df4ba08efbea7182ee5e8c3",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:41.161Z"
+  },
+  "server\\src\\agent\\knowledge\\nexxus_identity.md": {
+    "mtime": 1777785036592.7126,
+    "hash": "cb92ef356751e646fadfa791cc50d80d5969a23589f48c7927c6ea9b6a94c59f",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:41.313Z"
+  },
+  "server\\src\\agent\\knowledge\\nexxus_workings.md": {
+    "mtime": 1777784237452.4746,
+    "hash": "19cfef817a9428837a41003ebe4a0b02f304e4fa61936bc19b93db9d3d07d933",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:41.425Z"
+  },
+  "server\\src\\agent\\memory\\heritageScanner.js": {
+    "mtime": 1777784237460.8115,
+    "hash": "ece654272da9b9ad08d769b5196e1cfc342737a8db006414116ea86010ee45d2",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:41.506Z"
+  },
+  "server\\src\\agent\\memory\\MemoryOrchestrator.js": {
+    "mtime": 1777838922254.3972,
+    "hash": "c7a0ecc899c6a3c419c2c8b8d1d7571610aa5ad9a7d1f6249f97671e9455ab6d",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:41.521Z"
+  },
+  "server\\src\\agent\\memory\\PrincipleConsolidator.js": {
+    "mtime": 1777784237484.4722,
+    "hash": "7db9906a58201b65747add33651e1a0506da6350c2f3d129202715aefbb2e9e3",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:41.601Z"
+  },
+  "server\\src\\agent\\memory\\VectorIndex.js": {
+    "mtime": 1777784237496.3718,
+    "hash": "be5f372f1d59f4f122ee2fa29894a1268a03743a8284daabc2102f9a3d274acb",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:41.674Z"
+  },
+  "server\\src\\agent\\policies\\agentRolePolicy.js": {
+    "mtime": 1777784237512.1938,
+    "hash": "69d00150d1faae1219005d91677c8cf0774076df4a73b9f4e90b98ca652dfe0f",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:41.841Z"
+  },
+  "server\\src\\agent\\policies\\contextPolicy.js": {
+    "mtime": 1777784237516.2605,
+    "hash": "0dd504d21d6d6ea4e48735bee572d2ecc6067b57feb7a0a53f6f5d8b6a07422a",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:41.909Z"
+  },
+  "server\\src\\agent\\policies\\coreIdentity.js": {
+    "mtime": 1777784237520.3591,
+    "hash": "8995322b6a40bae1e250b845390543dda1af85e3147f281858f08cb410975c23",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:41.987Z"
+  },
+  "server\\src\\agent\\policies\\errorPolicy.js": {
+    "mtime": 1777784237523.9248,
+    "hash": "78a64bc0ca9f76bddf48249b3aa661e0ced13dac4ea3631f286708d58bce14cc",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:42.051Z"
+  },
+  "server\\src\\agent\\policies\\outputContract.js": {
+    "mtime": 1777784237528.4717,
+    "hash": "70ee74f4996c2d033c0cffe27ed1f22c5c191b2fb2217b344e8e07be9241454d",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:42.118Z"
+  },
+  "server\\src\\agent\\policies\\stylePolicy.js": {
+    "mtime": 1777784237532.691,
+    "hash": "0b287d8352479e852a2c469f3ffd09fe9cabbe95ef20351409063fea898b68f6",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:42.194Z"
+  },
+  "server\\src\\agent\\policies\\toolPolicy.js": {
+    "mtime": 1777791023147.5254,
+    "hash": "cc34c82e102e597457576addb8683ec0f2aa610ac3494105fdabd8c487312cc7",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:42.276Z"
+  },
+  "server\\src\\agent\\policies\\uncertaintyPolicy.js": {
+    "mtime": 1777784237539.8782,
+    "hash": "8e0eb5f81a10940e6c3fd4114b2f609b5de85535366865c9a95705e4d5a54eea",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:42.352Z"
+  },
+  "server\\src\\agent\\prompts\\handoffTemplate.js": {
+    "mtime": 1777784237546.3708,
+    "hash": "307d9612bc7f067de5d0c869293cdbf0bcd960a9bfdadf604b87352d7d25d884",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:42.422Z"
+  },
+  "server\\src\\agent\\prompts\\socialPrompt.js": {
+    "mtime": 1777784237550.3806,
+    "hash": "f68748efcba69010d30a7e6b829618f3e00bf76c60304dad648f73d029ad3486",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:42.491Z"
+  },
+  "server\\src\\agent\\prompts\\systemPromptBuilder.js": {
+    "mtime": 1778039781977.8965,
+    "hash": "2ce667b9dd30d54835ec9225159ea50a2a972b13636f6bbbbe5111f243d11c6f",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:42.664Z"
+  },
+  "server\\src\\agent\\router\\expertRouter.js": {
+    "mtime": 1777784237592.2444,
+    "hash": "a8e40f7bea434e3be9b0ff54ff2476890ff96999343b84b50d2c54a74c495f5e",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:42.820Z"
+  },
+  "server\\src\\agent\\router\\routerContracts.js": {
+    "mtime": 1777784237596.4868,
+    "hash": "2c2c0bc1b578af13b486849c9bf25d345466ae65e526d0ef85f67965036bb3ec",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:42.894Z"
+  },
+  "server\\src\\agent\\router\\routerLayers.js": {
+    "mtime": 1777784237602.1414,
+    "hash": "1cd4410a7fa3506c2323e15ec771170a6c97819287d041afc0191c735a16f148",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:42.966Z"
+  },
+  "server\\src\\agent\\router\\routerUtils.js": {
+    "mtime": 1777784237608.3428,
+    "hash": "cd9b44e43962d6bdef5fecef2907c77e30dc57d0b805977a0b01f30a99c74830",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:43.156Z"
+  },
+  "server\\src\\agent\\telemetry\\turnTelemetry.js": {
+    "mtime": 1777832556566.688,
+    "hash": "a14d1d9f5a09f1cf0ddd15f0020794a9dece3b59f301647dbc620e9f825e39e9",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:43.231Z"
+  },
+  "server\\src\\agent\\utils\\intentGuards.js": {
+    "mtime": 1777939681747.2356,
+    "hash": "4f89b4d9787807b3612bcd8aa681095308103acaa27382d5650f2f54aeb88b42",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:43.484Z"
+  },
+  "server\\src\\agent\\utils\\obsidianBridge.js": {
+    "mtime": 1778003048892.8154,
+    "hash": "b7436e8946b83bf56eee3545b90c68903a3f612793e33b3aa7da8a5405289edc",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:43.579Z"
+  },
+  "server\\src\\agent\\utils\\ollamaStreamProcessor.js": {
+    "mtime": 1777865340348.5308,
+    "hash": "d0158e82ac7404cab7a4b32a6b43e52184df310819df307bdcafc96f9385df77",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:43.734Z"
+  },
+  "server\\src\\agent\\utils\\skillLoader.js": {
+    "mtime": 1778015936887.5093,
+    "hash": "46409397cba3053345278ab54357bdd772f1313e6bea646bfff69a12bd977eb6",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:43.820Z"
+  },
+  "server\\src\\agent\\utils\\textGuards.js": {
+    "mtime": 1777935459199.954,
+    "hash": "6ea5a13fcbd9b2169cfa9b91b3fff7eaaff7003cd49a4d5670a360671e0a298d",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:44.622Z"
+  },
+  "server\\src\\agent\\utils\\toolExecutor.js": {
+    "mtime": 1777872285317.0537,
+    "hash": "9c43a368f3dc6d7651b1dba63bb7561d8a18833a111e580168039c88fb43d45a",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:44.715Z"
+  },
+  "server\\src\\db\\connection.js": {
+    "mtime": 1777784237669.904,
+    "hash": "17ac68ae3d14366edbe9e6db815d27e9a419dc69441655f0ff7b09563a1ef945",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:44.791Z"
+  },
+  "server\\src\\db\\repositories\\eventRepository.js": {
+    "mtime": 1777784237687.7195,
+    "hash": "2f3234529d10a90280e14f36e8026fa2cb4763a9feec1a707fd23ad80ab10e63",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:44.874Z"
+  },
+  "server\\src\\db\\repositories\\handoffRepository.js": {
+    "mtime": 1777784237693.292,
+    "hash": "119b85407dfe2c1da2d5590556ca8d0b8cac7391e59ce349fcf0d4702229883e",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:44.951Z"
+  },
+  "server\\src\\db\\repositories\\sessionRepository.js": {
+    "mtime": 1777784237698.6768,
+    "hash": "c37d7192fe2994738d2dfd2c0eb757775f1b8e40d23940b997d3e1c46d6708d3",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:45.032Z"
+  },
+  "server\\src\\db\\repositories\\snapshotRepository.js": {
+    "mtime": 1777784237703.714,
+    "hash": "16c63fb192182805587bc8a5da6a5536bfa09f5bc4ea24fc4195eda8279ae21c",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:45.115Z"
+  },
+  "server\\src\\forge\\contracts\\handoffSchema.js": {
+    "mtime": 1777784237736.2603,
+    "hash": "0964b7d1aa5b2787818e9b3bd16b577a7cebc47b2abb466f863822353772a60d",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:45.280Z"
+  },
+  "server\\src\\forge\\forgeService.js": {
+    "mtime": 1777784237711.4062,
+    "hash": "139fe1eb056383cbbc6fcf835578db29b47653f69334f789c7dbbe02e0495a17",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:45.373Z"
+  },
+  "server\\src\\forge\\forgeStageRegistry.js": {
+    "mtime": 1777784237730.9365,
+    "hash": "2d6dc86881afb969ad06b1d2e12f52057a4fc9a354d371331ede194f2093d3c2",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:45.471Z"
+  },
+  "server\\src\\forge\\handlers\\architectHandler.js": {
+    "mtime": 1777784237743.2812,
+    "hash": "8edaa5ff8ff6e2ef6264fcc122c9e5668385aed78a15674dbd5cdca2fb0041ce",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:45.553Z"
+  },
+  "server\\src\\forge\\handlers\\devAdvancedHandler.js": {
+    "mtime": 1777784237750.5393,
+    "hash": "9e185e09a4a7038ad87e8dc86ddc5bcba92512a292bae6bef46cc1f0d79f7e01",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:45.669Z"
+  },
+  "server\\src\\forge\\handlers\\devScaffoldHandler.js": {
+    "mtime": 1777784237759.683,
+    "hash": "83c02a54442ca660784e0fac8d6f8a12b55698b12ec19593023fd84462eac119",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:45.762Z"
+  },
+  "server\\src\\forge\\handlers\\projectBootstrapHandler.js": {
+    "mtime": 1777784237799.9827,
+    "hash": "c2e14c831909d68ba2b60fb300cc215387c861de6992ae9a8bf683482ae620e9",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:45.843Z"
+  },
+  "server\\src\\forge\\handlers\\qaBuildValidationHandler.js": {
+    "mtime": 1777784237807.552,
+    "hash": "0ad3b7b04207025e8c11db238f800de6227ce3ce6c6712bb84f082ed6be16b01",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:46.012Z"
+  },
+  "server\\src\\forge\\handlers\\qaScaffoldAuditHandler.js": {
+    "mtime": 1777784237819.5603,
+    "hash": "a23376f005994b31aa570a4a49151a582c5f80261428d8beefaf236e03ec5500",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:46.108Z"
+  },
+  "server\\src\\forge\\prompts\\architectPrompt.js": {
+    "mtime": 1777784237829.0771,
+    "hash": "bf97dc114fe96b48e6ea450b714097455adcf4c4aa5e6e471c2d7ca2b7c74478",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:46.199Z"
+  },
+  "server\\src\\forge\\prompts\\devAdvancedPrompt.js": {
+    "mtime": 1777784237838.1228,
+    "hash": "3893b23faec82a23abcdfcdb7374030562f4f8f9563a6709b99ef9b94ba40648",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:46.279Z"
+  },
+  "server\\src\\forge\\templates\\scaffoldTemplates.js": {
+    "mtime": 1777784237844.66,
+    "hash": "73716fccc22853699596c6cb87627131ffcc3039c62d721449d8221bb36203ab",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:46.437Z"
+  },
+  "server\\src\\forge\\utils\\projectPaths.js": {
+    "mtime": 1777784237852.2002,
+    "hash": "5a5cad152059c392a365a10cfbfb6ea7e4aa6e94d0558b4abb2e1bc49742a38d",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:46.550Z"
+  },
+  "server\\src\\forge\\utils\\projectScanner.js": {
+    "mtime": 1777784237856.7246,
+    "hash": "f173ad5fa9283b611a6800743b293e4df821bf03a47885f2c152991ce0822b06",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:46.652Z"
+  },
+  "server\\src\\forge\\utils\\shellRunner.js": {
+    "mtime": 1777784237862.2722,
+    "hash": "aead8278b7d532469236534b0900b67afb4fe8d4c6ba077b352fc2c26d2cc66b",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:46.731Z"
+  },
+  "server\\src\\harness\\evalHarness.js": {
+    "mtime": 1777784237873.4158,
+    "hash": "1a38cb47f508583ac7b680eb6ab8256846b1f7b8f8400b95c07591aa528fd404",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:46.827Z"
+  },
+  "server\\src\\indexer\\chunkPolicy.js": {
+    "mtime": 1777784237880.4712,
+    "hash": "e6d79a3a6eda3bd6b8ff7d1e9b6d7d78ac5b34ecda5fbb7a5692a4b94ccdfdec",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:46.917Z"
+  },
+  "server\\src\\indexer\\codeParser.js": {
+    "mtime": 1778040590413.513,
+    "hash": "7ec153de397714d382e9a7c8f47d7e9b5e6b3aa8646d7635791eae9e61ca1832",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:47.011Z"
+  },
+  "server\\src\\indexer\\fileDiscovery.js": {
+    "mtime": 1778042215534.1782,
+    "hash": "055286f726689f706f9cd7f60d217ba8b8e6e384b35f6979bb57e9407e18e028",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:47.111Z"
+  },
+  "server\\src\\indexer\\manifestStore.js": {
+    "mtime": 1777784237919.859,
+    "hash": "faa8b78841db32bdab59f40f3fb9302fef0326928b82907f114074a9b4a68bcb",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:47.201Z"
+  },
+  "server\\src\\indexer\\workspaceIndexer.js": {
+    "mtime": 1778042457330.4038,
+    "hash": "5e65dc0bcec5e6eea26461fdd45a903964a57c02512dfedb26f5b562fcc65388",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:47.325Z"
+  },
+  "server\\src\\llm\\airllm.js": {
+    "mtime": 1777784237957.27,
+    "hash": "51218e0f629bc878e28a8998579c1a9e0ef7a36bbcd32f779b5568e222552e2e",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:47.727Z"
+  },
+  "server\\src\\llm\\hardwareProbe.js": {
+    "mtime": 1777784237973.738,
+    "hash": "3ddede3a8e0cb61979ace350456f85e1eb234a32eda364028f3caef22d1bb005",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:47.911Z"
+  },
+  "server\\src\\llm\\llmFactory.js": {
+    "mtime": 1777784238000.975,
+    "hash": "a33eaeed6e05ac6efa93e9a2ea2dbd1cc1e1f3277eeb6f1e71c6b535713db607",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:48.055Z"
+  },
+  "server\\src\\llm\\ollama.js": {
+    "mtime": 1777865350677.2024,
+    "hash": "2980a378d8c61d46006de21acf6f78e2d83cfdf796057deaa4df911311bf9021",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:48.292Z"
+  },
+  "server\\src\\security\\authMiddleware.js": {
+    "mtime": 1778040257617.2202,
+    "hash": "50fe4e4b1b610f9b7008ef5336395b284f7992fd324d66a0c616095f97cdd17b",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:48.371Z"
+  },
+  "server\\src\\security\\authService.js": {
+    "mtime": 1778040251530.5332,
+    "hash": "00ea42c8d46fe07d22710048a9d07c8e59e49706ca33ef13284804822ae5f624",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:48.447Z"
+  },
+  "server\\src\\security\\impactAnalyzer.js": {
+    "mtime": 1777784238027.8438,
+    "hash": "dcf07042b33af345a3ee88b1b5c42ce14b339d8773c41082181d1a650843e2aa",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:48.564Z"
+  },
+  "server\\src\\security\\outputGuard.js": {
+    "mtime": 1777784238032.1382,
+    "hash": "d36e413c2602d226bbc36c1825d5050d29a9343db852320f46408410be1a039a",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:48.644Z"
+  },
+  "server\\src\\security\\queryGuard.js": {
+    "mtime": 1777784238037.1812,
+    "hash": "90a543df01b9257bf684b26b18a61f9d04e1d1977c7b01562fb601ce0a8615fc",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:48.728Z"
+  },
+  "server\\src\\security\\retrievalGuard.js": {
+    "mtime": 1777784591417.0051,
+    "hash": "e89060487a78ceb54add932b20c664e76bdb82e645a52766b57ce84915b406c0",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:48.808Z"
+  },
+  "server\\src\\security\\summaryPolicy.js": {
+    "mtime": 1777868464921.3054,
+    "hash": "b3b0f4b2d2c642231d940246d492a106e299115e53c07a8501a96319c85b590b",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:48.904Z"
+  },
+  "server\\src\\services\\chunker.js": {
+    "mtime": 1777822158672.1863,
+    "hash": "9fe4e0cbed9e197324d2fa0eaf71bd43d1bb08e02db9d37063ce73a57806534e",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:49.058Z"
+  },
+  "server\\src\\services\\imageAnalyzer.js": {
+    "mtime": 1777813363244.099,
+    "hash": "bbad3dfad3add1284e3d1fd4cb265933f9c9b3a516c0f55f7b9848e5fc544fdf",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:49.203Z"
+  },
+  "server\\src\\services\\knowledgeHub.js": {
+    "mtime": 1778041960260.8965,
+    "hash": "560f1a60c29f73d4fb7ab6cc81f6ebf30e9506f446663d102f98cef96ceb8cef",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:49.345Z"
+  },
+  "server\\src\\services\\runtimeService.js": {
+    "mtime": 1777784238081.0718,
+    "hash": "cc12dac032fbd5cd61910f5602423ec085d1d57e2a08f9a7e46ac63caa5ca802",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:49.436Z"
+  },
+  "server\\src\\services\\sessionAccessService.js": {
+    "mtime": 1777784238087.7139,
+    "hash": "99d7e45f02ea19115f7ffb3ee210e9793dd1dc4b44cc3130be12f605bfa7207b",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:49.517Z"
+  },
+  "server\\src\\services\\sessionStore.js": {
+    "mtime": 1777784238092.9175,
+    "hash": "38b1c3f78f02d18945c8a18ce5509ff943c463d46d7a196a4ff5d74726fa322d",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:49.607Z"
+  },
+  "server\\src\\services\\validationService.js": {
+    "mtime": 1777784238104.9512,
+    "hash": "a7c77415fb7089fa6495010ca8dcf6c6f1d32fdbe55820ca90ccfad986b7c851",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:49.621Z"
+  },
+  "server\\src\\services\\warmupService.js": {
+    "mtime": 1777788963662.6853,
+    "hash": "57ca2653e0f632bf6877ce4a5197fa819b6871b4fcecc0c68daafc531ef73135",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:49.708Z"
+  },
+  "server\\src\\services\\webSummarizer.js": {
+    "mtime": 1777865996192.9126,
+    "hash": "bde7b785754f8f2784c0097740e1d2f1b90dc49c42476fea19e57543fc1ef0db",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:49.805Z"
+  },
+  "server\\src\\tools\\projectBuilder.js": {
+    "mtime": 1777784238124.3867,
+    "hash": "894a63bce8163d89aa2b2dc459b392a61c733298f0b46911b210defafce69952",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:49.908Z"
+  },
+  "server\\src\\tools\\projectLibrary.js": {
+    "mtime": 1777784238167.334,
+    "hash": "52d4325f78d10ee7e125f5a48a7637afb0f47d289c5c3d94b43d2895435c9033",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:50.031Z"
+  },
+  "server\\src\\tools\\searchTool.js": {
+    "mtime": 1777784238172.2217,
+    "hash": "977f7090ee3562e3d81c6c46c235c86a5cb88578ab594b3ed40e42f57f6edff8",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:50.121Z"
+  },
+  "server\\tests\\airllmWrapper.test.js": {
+    "mtime": 1777526839219.4087,
+    "hash": "feb0eb392871a1f3397e71c183731098520ec49212c95ac8716ff9ba09dcb3dc",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:50.243Z"
+  },
+  "server\\tests\\conversation-regression.test.js": {
+    "mtime": 1776941930673.8074,
+    "hash": "1e581388efcf887deead9ea2c74fd8a109489159ac56eb5e34360ff6577e2e45",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:50.370Z"
+  },
+  "server\\tests\\run_response_completeness.js": {
+    "mtime": 1777267636378.8528,
+    "hash": "547023b25f4d8f8b6179fa3b9c64a126901d5c6561e1da2d0eba5e999cdc0479",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:50.459Z"
+  },
+  "server\\test_stream.js": {
+    "mtime": 1775953512589.8462,
+    "hash": "3eeb0cd7649a5ae5c73286ef8bed2ed1e1314b4a5c7d6c165b4091171f489f25",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:50.543Z"
+  },
+  "src\\App.css": {
+    "mtime": 1775803208574.5068,
+    "hash": "6e25a776d3e8102da5bacb3cb99f4a5fc662a2e01e6143140671a556d28c3d5c",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:50.661Z"
+  },
+  "src\\App.jsx": {
+    "mtime": 1777819360894.6863,
+    "hash": "604d5294dc7adad923b56b214cff5bf397d477fd48f694336b7bd58446013cec",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:51.218Z"
+  },
+  "src\\components\\ArtifactMonitor.jsx": {
+    "mtime": 1777133355010.9214,
+    "hash": "66fd3c3032ed514b3b89b0ac6592b010b4b8cfd3d84de71f7c18c97fa2e87826",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:51.393Z"
+  },
+  "src\\components\\AuditReport.jsx": {
+    "mtime": 1776537898824.1606,
+    "hash": "af32af3fc99bb5f4e967d012e6bf07f59c456450c1c749e59ea9a51d57bafca2",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:51.411Z"
+  },
+  "src\\components\\ChatBento.jsx": {
+    "mtime": 1777819366948.3364,
+    "hash": "767817736d993738574684d93c709b849a2dbca80a61dd60ddff1a0e1ad0b4ad",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:51.531Z"
+  },
+  "src\\components\\GlassCard.jsx": {
+    "mtime": 1775803308487.2693,
+    "hash": "4d26e75dabe640772d3e713d872426c423adb2072ced7276d4a46822b2aa5986",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:51.621Z"
+  },
+  "src\\components\\ImpactAuditCard.jsx": {
+    "mtime": 1777701451483.0388,
+    "hash": "6e3db1d1275c1de8558f1af3466e7e23b027dc258eb15fc4b1a2dd9905f6fe04",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:51.769Z"
+  },
+  "src\\components\\MermaidDiagram.jsx": {
+    "mtime": 1777133627567.989,
+    "hash": "b8f4cc42d47c8050d813f2f1cb65d76d9b7e92202df9f21763d6ea4ef7846cbc",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:51.897Z"
+  },
+  "src\\components\\PerformanceMonitor.jsx": {
+    "mtime": 1776038486961.4546,
+    "hash": "e9c5417da662c44f8f203816dcbc9a071e3ec05671601cb6fd20a25448349344",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:51.991Z"
+  },
+  "src\\components\\Sidebar.jsx": {
+    "mtime": 1777687514862.54,
+    "hash": "81b03a980b8eea89a68b0cfd9ab72f30a663c5861d18cbd802b6c66241ceed59",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:52.129Z"
+  },
+  "src\\components\\Starfield.jsx": {
+    "mtime": 1775805032493.9468,
+    "hash": "b5b06a810a12aa309f3e17304790bf79d27f5d254450fc841d11e71c7e37cde6",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:52.262Z"
+  },
+  "src\\components\\Terminal.jsx": {
+    "mtime": 1777687520013.797,
+    "hash": "c9ac8144531c75fe0c11bb7f248b282672a18751b15851f18e1bda4c7426ceb9",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:52.397Z"
+  },
+  "src\\components\\Timeline.jsx": {
+    "mtime": 1775958358264.1062,
+    "hash": "e6842592876ffa16e03dadc2c33f5de2c1fcf6f384a4d83e391614cf6df7588c",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:52.500Z"
+  },
+  "src\\db\\connection.js": {
+    "mtime": 1776535694571.375,
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:52.579Z"
+  },
+  "src\\db\\repositories\\eventRepository.js": {
+    "mtime": 1776535738536.1277,
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:52.661Z"
+  },
+  "src\\db\\repositories\\handoffRepository.js": {
+    "mtime": 1776535765554.9678,
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:52.739Z"
+  },
+  "src\\db\\repositories\\sessionRepository.js": {
+    "mtime": 1776535727265.7615,
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:52.820Z"
+  },
+  "src\\db\\repositories\\snapshotRepository.js": {
+    "mtime": 1776535752449.5295,
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:52.898Z"
+  },
+  "src\\index.css": {
+    "mtime": 1776563113201.2678,
+    "hash": "6d76298a66730082d6a25535621bd9497d3d9acc15bd94c8ab82c8410298e723",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:53.011Z"
+  },
+  "src\\main.jsx": {
+    "mtime": 1775803373181.7942,
+    "hash": "630522d2a9cfb3a1ae22404036362e4f494eb30a7421debe70eb116ddc1b9a6c",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:53.083Z"
+  },
+  "src\\services\\forgeService.js": {
+    "mtime": 1776535821225.6255,
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:53.158Z"
+  },
+  "src\\services\\ProductionService.js": {
+    "mtime": 1777244518030.9734,
+    "hash": "9005d92b3eb257494851215182bba3fffa3796036256e058e4909c274f9f6c89",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:53.300Z"
+  },
+  "src\\services\\runStreamResultResolverTest.js": {
+    "mtime": 1777244534717.9592,
+    "hash": "ad1b9329a7508d92f7338a213a96932db770608e1c188b3a45ba05930ef03054",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:53.384Z"
+  },
+  "src\\services\\runtimeService.js": {
+    "mtime": 1776535798625.016,
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:53.466Z"
+  },
+  "src\\services\\streamResultResolver.js": {
+    "mtime": 1777732173745.281,
+    "hash": "a4583e8647a4d4d262a0b85d3580f7fae05025150380324a5cf7ee1bd21326a5",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:53.564Z"
+  },
+  "src\\services\\streamResultResolver.test.js": {
+    "mtime": 1777244517959.9773,
+    "hash": "718ea17cb4e9955a19030735f9658e3654822ffa14918148aa6215bc85a126a5",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:53.645Z"
+  },
+  "src\\services\\validationService.js": {
+    "mtime": 1776535810188.533,
+    "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:53.731Z"
+  },
+  "src\\styles\\glass.css": {
+    "mtime": 1777697981850.1643,
+    "hash": "f50abd092eece74bd6c7062c4b47e2ef2c663ad67c80f2d385c790e52957fd03",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:53.910Z"
+  },
+  "test_social.json": {
+    "mtime": 1776904340476.0103,
+    "hash": "09a1925baca410256319b3032f88801b1dfbfb7eb421d3fb87e3e859f2ce8908",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:53.991Z"
+  },
+  "vite.config.js": {
+    "mtime": 1775803208635.2537,
+    "hash": "4d36db3522a7b2dd10e0936e1004373c7ee65f10f7cd7920cd76410459c15a45",
+    "status": "indexed",
+    "lastIndexed": "2026-05-06T04:41:54.064Z"
+  }
+}

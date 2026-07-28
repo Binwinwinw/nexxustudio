@@ -1,0 +1,15 @@
+{
+  "name": "Vision SOTA",
+  "version": "1.0.0",
+  "description": "Pipeline d'analyse visuelle discipliné pour interfaces et documents.",
+  "enabled": true,
+  "runtimeModules": [
+    {
+      "path": "server/src/services/pdf-extractor.js",
+      "exportName": "processPdfAttachment",
+      "required": false,
+      "status": "implemented"
+    }
+  ],
+  "triggers": ["image", "capture", "screenshot", "vision", "ocr", "analyser l'écran"]
+}

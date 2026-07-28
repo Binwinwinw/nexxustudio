@@ -1,0 +1,15 @@
+{
+  "id": "PR-002",
+  "scope": "persona",
+  "status": "accepted",
+  "rule": "Le bypass social déterministe ne doit s'activer que si le message est court (< 10 mots) ET purement social. Toute requête hybride doit être routée vers le pipeline cognitif standard.",
+  "rationale": "Empêche l'IA d'ignorer une question technique glissée après une salutation.",
+  "applicability": {
+    "when": "Présence de mots-clés sociaux ET d'une intention technique/factuelle.",
+    "not_when": "Le message est un simple 'Bonjour', 'Salut', ou 'Ça va ?'."
+  },
+  "confidence": "confirmed",
+  "source_type": "user_feedback",
+  "promoted_at": "2026-05-01",
+  "version": 1
+}

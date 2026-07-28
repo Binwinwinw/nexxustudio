@@ -1,0 +1,36 @@
+{
+  "schema_version": "intent_triage_ambiguous_v1",
+  "generated_at": "2026-06-06T01:54:04.177Z",
+  "source": {
+    "feedback_path": "D:\\Hostinger\\public_html\\nexxustudio\\server\\data\\intent-triage\\clarification-feedback.jsonl",
+    "entries_total": 0,
+    "ambiguous_entries": 0
+  },
+  "summary": {
+    "entries_total": 0,
+    "ambiguous_entries": 0,
+    "ambiguous_rate_pct": 0,
+    "distinct_pairs": 0
+  },
+  "confidence_distribution": {
+    "high": 0,
+    "medium": 0,
+    "low": 0
+  },
+  "ambiguous_pairs": [],
+  "signal_frequency": [],
+  "replay": {
+    "total": 0,
+    "still_ambiguous": 0,
+    "resolved_by_rules": 0,
+    "intent_changed": 0
+  },
+  "replay_details": [],
+  "recommendations": [
+    {
+      "priority": "info",
+      "target": "scoreIntentCandidates",
+      "hint": "Aucune ambiguïté enregistrée — continuer la collecte terrain via clarifications."
+    }
+  ]
+}

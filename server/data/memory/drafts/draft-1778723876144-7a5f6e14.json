@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778723876144-7a5f6e14",
+  "timestamp": "2026-05-14T01:57:56.143Z",
+  "trigger": "Comment tes réponses sont-elles sécurisées ?",
+  "scope": "general",
+  "runId": "run-1778721704614",
+  "selectedModel": "qwen3.5:4b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 2171529,
+  "evidence": {
+    "logs": "Full Draft: <think>Thinking Process:\n\n1.  **Analyze the Request:**\n    *   **User:** [ERREUR DE FIABILITÉ] Votre...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "draft-1777954273701-0134f877",
+  "timestamp": "2026-05-05T04:11:13.701Z",
+  "trigger": "Oui, donne-moi la suite.",
+  "scope": "general",
+  "runId": "run-1777954056562",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_unsolicited_code_injection",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 217139,
+  "evidence": {
+    "logs": "Failed Validation: unsolicited_code_injection\nResponse: ```html <!-- Slide 4 --> <div class=\"slide\" id=\"slide-4\"> <h1>Intégration Copilot dans Teams</h1> <h...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

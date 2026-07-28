@@ -1,0 +1,19 @@
+{
+  "id": "EP-001",
+  "scope": "orchestrator",
+  "status": "reviewed",
+  "timestamp": "2026-05-01T01:21:00Z",
+  "context": "Phase Discovery, Test d'une question complexe sur l'architecture de vote électronique.",
+  "trigger": "Propose une architecture complète pour une application de vote électronique sécurisée...",
+  "failure": "Boucle de répétition infinie sur le modèle qwen3.5:9b. Latence de 183s.",
+  "diagnosis": "Le pipeline forçait le modèle SOCIAL (9B) car le score de maturité était bas, ignorant le besoin de raisonnement du Mentor.",
+  "remedy": "Correction de agentPipeline.js pour prioriser getModelForRole sur isSocial.",
+  "outcome": "success",
+  "evidence": {
+    "sessionId": "54ef8530-3097-4460-bb9f-bd2046f25161",
+    "logs": "[Agent] 🔁 Thought repetition loop detected — aborting."
+  },
+  "confidence": "confirmed",
+  "source_type": "system_log",
+  "last_verified_at": "2026-05-01"
+}

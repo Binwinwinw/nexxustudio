@@ -1,0 +1,62 @@
+{
+  "name": "Quality Gate",
+  "version": "1.1.0",
+  "description": "Checklist pre-livraison : test:stability, security audit local, quality-gate avant merge.",
+  "enabled": true,
+  "priority": 830,
+  "intentIds": ["DIAGNOSTIC"],
+  "triggers": [
+    "quality gate",
+    "test:stability",
+    "test de régression",
+    "pre-commit",
+    "security:audit",
+    "certifier avant merge",
+    "npm run test:conversation"
+  ],
+  "doNotUseWhen": [
+    {
+      "type": "queryContains",
+      "patterns": ["sans tester", "skip tests", "pas besoin de tests"]
+    }
+  ],
+  "requiresRuntime": true,
+  "fallbackSkillId": "skill-conversation-stability",
+  "runtimeModules": [
+    {
+      "path": "server/src/quality/quality-gate.js",
+      "exportName": "runQualityGate",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/quality/quality-gate.js",
+      "exportName": "generateGateReport",
+      "required": false,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/quality/conversationHealthScore.js",
+      "exportName": "conversationHealthScore",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/quality/skillTriggerMatrixData.js",
+      "exportName": "evaluateSkillTriggerAccuracy",
+      "required": false,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/quality-gate.test.js",
+    "server/tests/conversation-health-score.test.js",
+    "server/tests/skillTriggerMatrix.test.js"
+  ],
+  "kpis": {
+    "triggerAccuracyTarget": 0.88,
+    "fallbackRateMax": 0.05,
+    "maxFalsePositiveRate": 0.05,
+    "notes": "100% PASS test:stability avant release ; triggerAccuracy ≥ 0.88"
+  }
+}

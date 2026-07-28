@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778307177120-33b723fe",
+  "timestamp": "2026-05-09T06:12:57.120Z",
+  "trigger": "Aide moi sur ce projet... très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très important.",
+  "scope": "general",
+  "runId": "run-1778306982604",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_persona_leak",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 194516,
+  "evidence": {
+    "logs": "Failed Validation: persona_leak\nResponse: ` (car je ne suis pas en mode reasoning visible pour l'utilisateur, mais je dois m'assurer que la so...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

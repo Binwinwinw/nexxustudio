@@ -1,0 +1,19 @@
+{
+  "id": "draft-1777868321991-ec17417d",
+  "timestamp": "2026-05-04T04:18:41.991Z",
+  "trigger": "B",
+  "scope": "general",
+  "runId": "run-1777868211668",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 110323,
+  "evidence": {
+    "logs": "Full Draft: <think>Okay, the user chose option B, which is to integrate the SMAC pattern into the current Citade...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

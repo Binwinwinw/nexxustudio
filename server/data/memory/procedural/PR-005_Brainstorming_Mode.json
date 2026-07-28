@@ -1,0 +1,10 @@
+{
+  "id": "PR-005",
+  "scope": "expert",
+  "status": "accepted",
+  "rule": "En mode Brainstorming, l'IA doit rester dans une posture d'idéation pure et s'interdire toute proposition de structure de fichiers ou de code source avant validation conceptuelle.",
+  "rationale": "Évite la précipitation vers la production et garantit la phase de réflexion amont.",
+  "confidence": "confirmed",
+  "source_type": "user_feedback",
+  "promoted_at": "2026-05-01"
+}

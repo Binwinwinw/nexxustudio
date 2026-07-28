@@ -1,0 +1,18 @@
+{
+  "documentId": "doc-1780370783093-c9e21150",
+  "mode": "summary",
+  "query": null,
+  "result": "**Résumé du document**\n\n- **Type de fichier :** PDF numérisé (scan/image) sans couche texte exploitable.  \n- **Objectif/Contenu :** Impossible à déterminer précisément en raison de l'absence de texte extrait. Le document semble être un scan d'un formulaire ou contrat, mais aucun élément clair ne peut être identifié.\n- **Sections clés :** Non identifiables sans contenu textuel.\n- **Limites éventuelles :**\n  - Pas possible d'extraction automatique des informations essentielles (noms, dates, clauses).\n  - Nécessite une lecture manuelle ou un OCR avancé pour récupérer le texte.\n\n**Conclusions**\n\nLe document joint ne contient pas de texte exploitable dans sa forme actuelle. Pour obtenir un résumé précis des objectifs et sections clés, il est nécessaire d'effectuer un traitement supplémentaire (par exemple, une reconnaissance optique de caractères OCR) ou de fournir le contenu textuel directement",
+  "metadata": {
+    "mode": "DOCUMENT",
+    "steps": 1,
+    "hasAttachedDocument": true,
+    "usedFallback": false,
+    "streamed": true,
+    "intent_contract_id": "DOCUMENT_ANALYSIS",
+    "response_mode": "DOCUMENT",
+    "originalName": "CGTM_TRACT Appel jeudi 29 sept 2022.pdf",
+    "trace_id": "57f7d3cb-3880-4c60-adac-4b9104dd64e2",
+    "analyzedAt": "2026-06-02T03:26:44.228Z"
+  }
+}

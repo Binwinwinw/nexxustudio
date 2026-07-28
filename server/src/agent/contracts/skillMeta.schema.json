@@ -1,0 +1,144 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "citadelle-skill-meta-v1.6",
+  "title": "Citadelle Platform Skill Meta (ADR-007 v1.6)",
+  "description": "Schéma meta.json pour server/data/skills/ — v1.6 : parentSkillId, subSkills (ADR-008).",
+  "type": "object",
+  "required": ["name", "version", "description", "triggers", "enabled", "runtimeModules"],
+  "additionalProperties": false,
+  "properties": {
+    "name": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "description": { "type": "string", "maxLength": 1024 },
+    "enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Feature flag local. false = skill ignoré par skillLoader."
+    },
+    "requiresRuntime": {
+      "type": "boolean",
+      "default": false,
+      "description": "Si true, au moins un runtimeModule status=implemented est obligatoire (CI)."
+    },
+    "deprecated": {
+      "type": "boolean",
+      "default": false,
+      "description": "Skill procédural obsolète — conservé pour compatibilité loader."
+    },
+    "replacedBy": {
+      "type": "string",
+      "pattern": "^skill-[a-z0-9-]+$",
+      "description": "Skill de remplacement si deprecated=true."
+    },
+    "parentSkillId": {
+      "type": "string",
+      "pattern": "^skill-[a-z0-9-]+$",
+      "description": "Skill parent pour sub-skills ADR-008."
+    },
+    "subSkills": {
+      "type": "array",
+      "description": "Sub-skills déclarés sous ce skill parent.",
+      "items": {
+        "type": "string",
+        "pattern": "^skill-[a-z0-9-]+$"
+      },
+      "uniqueItems": true
+    },
+    "tier": {
+      "type": "string",
+      "enum": ["specialized", "fallback"],
+      "default": "specialized"
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000,
+      "default": 100
+    },
+    "intentIds": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "triggers": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 2 },
+      "minItems": 1
+    },
+    "runtimeModules": {
+      "type": "array",
+      "description": "Modules JavaScript exécutables associés à ce skill (traçabilité skill → code).",
+      "items": {
+        "type": "object",
+        "required": ["path", "exportName"],
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^(server|shared|citadelle-vault)/",
+            "description": "Chemin relatif à la racine du dépôt nexxustudio."
+          },
+          "exportName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "required": {
+            "type": "boolean",
+            "default": true
+          },
+          "status": {
+            "type": "string",
+            "enum": ["implemented", "pending", "deprecated"],
+            "default": "implemented"
+          }
+        }
+      }
+    },
+    "testFiles": {
+      "type": "array",
+      "description": "Tests Node associés au runtime (validate_skill_runtime.js vérifie l'existence).",
+      "items": {
+        "type": "string",
+        "pattern": "^server/"
+      }
+    },
+    "doNotUseWhen": {
+      "type": "array",
+      "description": "Règles d'exclusion après match intent/trigger (pattern Gemini CLI).",
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["queryContains", "queryMatches", "intentId", "envFlag"]
+          },
+          "patterns": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "pattern": { "type": "string" },
+          "value": { "type": "string" },
+          "not": { "type": "string" }
+        }
+      }
+    },
+    "fallbackSkillId": {
+      "type": "string",
+      "pattern": "^skill-[a-z0-9-]+$",
+      "description": "Skill de repli si doNotUseWhen bloque ou enabled=false en cascade."
+    },
+    "kpis": {
+      "type": "object",
+      "description": "Indicateurs post-implémentation à suivre en télémétrie ou rapports ops.",
+      "properties": {
+        "triggerAccuracyTarget": { "type": "number", "minimum": 0, "maximum": 1 },
+        "maxFalsePositiveRate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "fallbackRateMax": { "type": "number", "minimum": 0, "maximum": 1 },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}

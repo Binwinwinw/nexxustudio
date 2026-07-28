@@ -1,0 +1,23 @@
+=== 20 SLIDES POWERPOINT ===
+Slide 1: Slide 1: Titre Atelier Teams 365 
+Slide 2: Slide 2: Objectifs journée
+Slide 3: Slide 3: Interface Teams overview
+Slide 4: Slide 4: Équipes & Canaux
+Slide 5: Slide 5: Chats & @mentions
+Slide 6: Slide 6: Créer Réunion
+Slide 7: Slide 7: Outils réunion (chat/écran/sondage)
+Slide 8: Slide 8: Copilot & sous-titres
+Slide 9: Slide 9: OneDrive partage
+Slide 10: Slide 10: Co-édition Word/Excel/Loop
+Slide 11: Slide 11: Planner tâches
+Slide 12: Slide 12: Power Automate flux
+Slide 13: Slide 13: Intégration Outlook
+Slide 14: Slide 14: Sécurité permissions
+Slide 15: Slide 15: Check-list 10 actions
+Slide 16: Slide 16: Bonnes pratiques pro
+Slide 17: Slide 17: Quiz interactif
+Slide 18: Slide 18: Certif & badge Credly
+Slide 19: Slide 19: Ressources post-formation
+Slide 20: Slide 20: Questions & Contacts
+
+=== À COPIER DANS POWERPOINT/CANVA ===

@@ -1,0 +1,18 @@
+{
+  "name": "Obsidian Canvas",
+  "version": "1.0.0",
+  "description": "Sub-skill: fichiers .canvas Obsidian (JSON natif, nœuds et arêtes).",
+  "enabled": true,
+  "requiresRuntime": false,
+  "parentSkillId": "skill-obsidian-governance",
+  "runtimeModules": [],
+  "triggers": [
+    "canvas obsidian",
+    "fichier .canvas",
+    "cartographie canvas",
+    "noeud canvas"
+  ],
+  "kpis": {
+    "triggerAccuracyTarget": 0.8
+  }
+}

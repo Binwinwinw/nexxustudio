@@ -1,0 +1,27 @@
+{
+  "name": "Perplexity Patterns",
+  "version": "1.0.0",
+  "description": "Comportements de type Perplexity : livrables immédiats, pas de fausses promesses, diagnostic direct.",
+  "enabled": true,
+  "requiresRuntime": true,
+  "tier": "behavioral",
+  "priority": 950,
+  "intentIds": ["GENERAL", "DOCUMENT", "WRITING", "CODE", "PRESENTATION", "DIAGNOSTIC", "WEB_HTML", "WEB_FULLSTACK"],
+  "triggers": [
+    "fais",
+    "fais-moi",
+    "crée",
+    "rédige",
+    "problème",
+    "erreur",
+    "marche pas"
+  ],
+  "doNotUseWhen": [],
+  "runtimeModules": [],
+  "testFiles": [
+    "server/tests/manual/test-perplexity-ness.mjs"
+  ],
+  "kpis": {
+    "notes": "Force la production directe et le diagnostic sans déviation vers l'architecture de la Citadelle."
+  }
+}

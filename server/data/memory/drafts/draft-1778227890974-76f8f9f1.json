@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778227890974-76f8f9f1",
+  "timestamp": "2026-05-08T08:11:30.974Z",
+  "trigger": "bonjour toi comment vas tu ??? qu'est-ce quer tu fais de beau aujourd'hui? qu'as tu de prévu à faire?",
+  "scope": "general",
+  "runId": "run-1778227791531",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 99443,
+  "evidence": {
+    "logs": "Full Draft: <think>Je suis Nexxus. Je suis prêt. Je n'ai pas de sentiments, ni de plans personnels. Je suis une ...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

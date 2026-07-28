@@ -1,0 +1,21 @@
+{
+  "id": "draft-1778907354986-bf95faee",
+  "timestamp": "2026-05-16T04:55:54.986Z",
+  "trigger": "« Imagine que tu es La Citadelle, un système multi‑agents capable de réflexion, de méta‑raisonnement et de replanning. Tu dois résoudre un problème où tu n’as d’abord aucune information claire : tu reçois un seul signe “un calendrier brouillé” et une phrase ambigüe en français vieillot : “ce qui fut cru ne fut jamais dit”. Explique, étape par étape, comment tu vas : (1) interpréter ce contexte, (2) générer plusieurs hypothèses cohérentes mais contradictoires, (3) tester ces hypothèses en te posant à toi‑même des questions pièges, (4) repérer les limites de ton propre raisonnement, puis (5) proposer, au final, une interprétation simple et une interprétation plus complexe, tout en explicitant tes biais et tes erreurs de logique possibles. »",
+  "scope": [
+    "Performance profiling, optimization, assets compression."
+  ],
+  "runId": "run-1778907328826",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 26159,
+  "evidence": {
+    "logs": "Full Draft: <think>Okay, so I'm trying to figure out what the user is asking for here. They provided a pretty de...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

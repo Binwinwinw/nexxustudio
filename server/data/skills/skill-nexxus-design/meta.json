@@ -1,0 +1,98 @@
+{
+  "name": "Nexxus Design",
+  "version": "1.3.0",
+  "description": "Designer stratégique La Citadelle — DA, design system, composants, structure de pages. D1–D4 worker, Forge, API jobs, pipeline orchestré.",
+  "enabled": true,
+  "requiresRuntime": true,
+  "tier": "specialized",
+  "priority": 780,
+  "intentIds": ["DESIGN_CREATE"],
+  "triggers": [
+    "conçois une interface",
+    "concevoir une interface",
+    "refonds cette page",
+    "refonte ui",
+    "direction artistique",
+    "design system",
+    "système de design",
+    "forge une landing",
+    "cockpit ui",
+    "webapp ui",
+    "maquette",
+    "nexxus design"
+  ],
+  "doNotUseWhen": [
+    {
+      "type": "queryContains",
+      "patterns": ["audit", "audite", "auditer", "impeccable", "extraire l'adn", "extraire adn", "design extract"]
+    }
+  ],
+  "fallbackSkillId": "skill-impeccable",
+  "runtimeModules": [
+    {
+      "path": "server/src/services/nexxus-design/nexxusDesignContract.js",
+      "exportName": "validateDesignCreateInput",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/nexxus-design/nexxusDesignContract.js",
+      "exportName": "buildDesignCreateEnvelope",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/nexxus-design/nexxusDesignComposer.js",
+      "exportName": "composeDesignFromExtract",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/nexxus-design/nexxusDesignWorker.js",
+      "exportName": "runNexxusDesignWorker",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/nexxus-design/forgeDesignBridge.js",
+      "exportName": "buildForgeScaffold",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/nexxus-design/NexxusDesignJobManager.js",
+      "exportName": "default",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/design-pipeline/designPipelineContract.js",
+      "exportName": "validateDesignPipelineInput",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/design-pipeline/designPipelineWorker.js",
+      "exportName": "runDesignPipelineWorker",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/design-pipeline/DesignPipelineJobManager.js",
+      "exportName": "default",
+      "required": true,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/design-suite-contract.test.js",
+    "server/tests/nexxus-design-worker.test.js",
+    "server/tests/design-create-api.test.js",
+    "server/tests/design-pipeline-api.test.js"
+  ],
+  "kpis": {
+    "triggerAccuracyTarget": 0.88,
+    "maxFalsePositiveRate": 0.08,
+    "notes": "Tier 3 lazy — enchaînement recommandé avec Impeccable post-création"
+  }
+}

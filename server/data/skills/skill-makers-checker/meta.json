@@ -1,0 +1,49 @@
+{
+  "name": "Makers Checker",
+  "version": "1.0.0",
+  "description": "Double validation : 2 agents vérifient 1 décision — réduit hallucinations (fail-closed).",
+  "enabled": true,
+  "requiresRuntime": true,
+  "priority": 810,
+  "intentIds": ["DIAGNOSTIC", "CRITICAL"],
+  "triggers": [
+    "makers checker",
+    "makers-checker",
+    "double validation",
+    "vérification agent",
+    "verification agent",
+    "consensus agent",
+    "validations",
+    "checker pattern"
+  ],
+  "doNotUseWhen": [
+    {
+      "type": "queryContains",
+      "patterns": ["urgence", "time-critical", "fast response", "réponse rapide"]
+    },
+    {
+      "type": "envFlag",
+      "value": "MAKERS_CHECKER_DISABLED"
+    }
+  ],
+  "runtimeModules": [
+    {
+      "path": "server/src/verification/makersChecker.js",
+      "exportName": "MakersChecker",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/verification/makersChecker.js",
+      "exportName": "default",
+      "required": true,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": ["server/tests/makers-checker.test.js"],
+  "kpis": {
+    "triggerAccuracyTarget": 0.85,
+    "fallbackRateMax": 0.1,
+    "notes": "Consensus ≥ 0.85 pour confirmation ; sécurité blocked = fail-closed"
+  }
+}

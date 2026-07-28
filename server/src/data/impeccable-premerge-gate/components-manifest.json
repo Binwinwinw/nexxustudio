@@ -1,0 +1,66 @@
+{
+  "version": "1.0.0",
+  "kind": "nexxus.forge.components_manifest",
+  "objective": "landing",
+  "scaffold_template": "react-vite",
+  "components": [
+    {
+      "id": "ButtonPrimary",
+      "role": "cta",
+      "props": {
+        "background": "#6068f0",
+        "color": "#ffffff",
+        "borderRadius": "16px",
+        "fontFamily": "Inter"
+      },
+      "tailwind_hint": "rounded-lg px-6 py-3 font-semibold text-white bg-[#6068f0]"
+    },
+    {
+      "id": "CardSurface",
+      "role": "surface",
+      "props": {
+        "background": "#f8f8ff",
+        "borderRadius": "16px",
+        "shadow": "0 4px 16px rgba(15,23,42,0.08)"
+      },
+      "tailwind_hint": "rounded-2xl p-4 bg-[#f8f8ff] shadow-sm"
+    }
+  ],
+  "page_structure": [
+    {
+      "id": "header",
+      "tag": "header",
+      "role": "navigation",
+      "children": [
+        "nav"
+      ]
+    },
+    {
+      "id": "hero",
+      "tag": "section",
+      "role": "hero",
+      "children": [
+        "headline",
+        "subheadline"
+      ]
+    },
+    {
+      "id": "content",
+      "tag": "article",
+      "role": "card",
+      "children": [
+        "body",
+        "cta"
+      ]
+    },
+    {
+      "id": "footer",
+      "tag": "footer",
+      "role": "footer",
+      "children": [
+        "legal"
+      ]
+    }
+  ],
+  "generated_at": "2026-06-01T02:40:57.217Z"
+}

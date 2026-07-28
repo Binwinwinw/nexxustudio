@@ -1,0 +1,21 @@
+{
+  "id": "draft-1778626673674-cf3e43c4",
+  "timestamp": "2026-05-12T22:57:53.674Z",
+  "trigger": "Oui — la réponse de la Citadelle est faible sur le fond malgré une bonne intention méthodologique, et votre propre audit implicite est juste : elle a surtout produit un pseudo-plan d’analyse au lieu d’une analyse réelle du dépôt.\n\nProblèmes de fond\nLe défaut principal est la présence d’affirmations non prouvées sur le contenu du repo, par exemple l’évocation de code_formatter, de CI/CD ou d’une structure recommandée “par composant”, alors que rien dans l’échange ne prouve que ces éléments ont été effectivement lus dans la source.\n\nC’est précisément le type d’écart que votre Recalibrage de Fiabilité v3.5 cherchait à empêcher : affirmer un état externe sans preuve outillée ni citation matérielle.\n\nConfusion méthodologique\nLa Citadelle mélange trois niveaux qui devraient rester séparés :\n\nle plan de recherche,\n\nles constats réellement observés,\n\net les recommandations d’implémentation.\n\nElle dit en substance “voici ce qu’on pourrait faire pour analyser”, puis glisse vers “voici ce que le GitHub contient”, sans rupture claire entre hypothèse et observation.\n\nCela recrée exactement la confusion Blueprint/Build que vous avez explicitement traitée dans votre doctrine de fiabilité.\n\nSignaux d’hallucination\nPlusieurs signaux faibles sont visibles dans la trace de réflexion et la sortie :\n\nusage d’outils ou de noms d’outils non vérifiés dans la réponse opérationnelle ;\n\nrépétitions de plans au lieu d’extraction factuelle ;\n\ncomblement automatique des blancs par des “bonnes pratiques génériques” de dev.\n\nLe pattern est classique : face à une source non encore lue proprement, le système remplit avec du probable au lieu de rester strictement sur le vérifié.\n\nCe que la Citadelle aurait dû faire\nElle aurait dû répondre de manière beaucoup plus sobre, par exemple :\n\ndéclarer qu’aucun contenu du repo n’était encore observé ;\n\nrécupérer réellement le README ou les fichiers clés ;\n\nextraire uniquement les patterns explicitement présents ;\n\nensuite comparer ces patterns à La Citadelle.\n\nAutrement dit, la bonne sortie n’était pas “installer prettier/eslint”, mais plutôt “je n’ai pas encore de preuve que ce dépôt recommande cela ; je dois d’abord lire README/CLAUDE.md”.\n\nCorrectif recommandé\nJe recommanderais d’ajouter dans Nexxus une règle très explicite pour les audits de sources externes : interdiction de produire un plan d’implémentation si la source n’a pas été effectivement lue et citée.\n\nEt j’ajouterais un garde-fou dans le Critic ou le contrat de sortie pour détecter les formulations du type “le dépôt expose”, “le scan montre”, “la structure respecte” sans identifiant de preuve associé.\n\nMon diagnostic net : la réponse de la Citadelle était épistémiquement non conforme, même si son intention procédurale allait dans la bonne direction.\n\nLa vraie correction n’est pas seulement meilleure recherche web, mais un verrou supplémentaire contre les résumés fictifs de sources non lues.",
+  "scope": [
+    "Performance profiling, optimization, assets compression."
+  ],
+  "runId": "run-1778625486703",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_unauthorized_language",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 1186971,
+  "evidence": {
+    "logs": "Failed Validation: unauthorized_language\nResponse: The response demonstrated a procedural approach but fell short by including unverified claims about ...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

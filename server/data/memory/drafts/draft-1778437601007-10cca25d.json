@@ -1,0 +1,21 @@
+{
+  "id": "draft-1778437601007-10cca25d",
+  "timestamp": "2026-05-10T18:26:41.007Z",
+  "trigger": "Ton analyse est mieux structurée, mais la section “fichiers réellement présents sur disque” contient encore des affirmations non suffisamment prouvées et au moins une incohérence d’arborescence (package.json / .env placés sous src). Merci de reprendre cette section en ne listant que les fichiers explicitement confirmés par un scan, avec sortie brute ou références précises, et de marquer séparément tout élément supposé ou reconstruit.\n\nEt pour la partie architecture :\n\nPour les recommandations, distingue aussi ce qui relève d’une préférence de design system (Atomic Design) de ce qui relève d’un besoin structurel objectivable. Compare brièvement avec une organisation par features avant de recommander une cible.",
+  "scope": [
+    "Cognition systémique, arbitrage identitaire, planification stratégique d'architectures IA. Spécialiste du déploiement souverain et des frameworks agentiques."
+  ],
+  "runId": "run-1778436906248",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_loop_detected",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 694759,
+  "evidence": {
+    "logs": "Failed Validation: loop_detected\nResponse: Je comprends vos attentes en matière de clarté et de preuve. Voici une nouvelle version du rapport q...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

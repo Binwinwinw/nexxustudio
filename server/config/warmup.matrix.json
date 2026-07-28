@@ -1,0 +1,115 @@
+{
+  "version": "1.0.0",
+  "description": "Matrice warm-up multi-modèle La Citadelle — Tier 1 chat/embed/reasoner, Tier 3 experts lazy",
+  "doctrine": {
+    "max_concurrent_experts": 2,
+    "max_vram_gb": 20,
+    "tier1_only_at_boot": true,
+    "tier2_deferred": false
+  },
+  "tiers": {
+    "tier1": {
+      "label": "CRITIQUE — Chat rapide & routage (boot)",
+      "timeout": 120000,
+      "models": [
+        {
+          "id": "ornith:9b",
+          "role": "chat",
+          "mode": "single",
+          "best_effort": true,
+          "profiles": {
+            "reactive": { "mode": "single" },
+            "balanced": { "mode": "single" },
+            "fast": { "id": "qwen3.5:9b", "mode": "single" }
+          },
+          "vram_gb": 7.8,
+          "priority": 1,
+          "context_gb_per_8k": 0.5
+        },
+        {
+          "id": "nomic-embed-text:latest",
+          "role": "embeddings",
+          "mode": "single",
+          "vram_gb": 0.3,
+          "priority": 1,
+          "context_gb_per_8k": 0.1
+        }
+      ]
+    },
+    "tier2": {
+      "label": "Tier 2 désactivé — reasoner = Tier 1 (ornith:9b)",
+      "timeout": 180000,
+      "lazy": true,
+      "defer_at_boot": false,
+      "models": []
+    },
+    "tier3": {
+      "label": "EXPERTS — Lazy-loaded (max 1–2 actifs)",
+      "timeout": 180000,
+      "lazy": true,
+      "models": [
+        {
+          "id": "qwen2.5-coder:7b",
+          "role": "coding",
+          "expert": "builder",
+          "mode": "single",
+          "vram_gb": 4.7,
+          "priority": 3,
+          "context_gb_per_8k": 1
+        },
+        {
+          "id": "gemma4:12b",
+          "role": "vision",
+          "expert": "vision",
+          "mode": "single",
+          "vram_gb": 7.6,
+          "priority": 3,
+          "context_gb_per_8k": 1
+        },
+        {
+          "id": "deepseek-ocr:latest",
+          "role": "ocr",
+          "expert": "ocr",
+          "mode": "single",
+          "vram_gb": 6.7,
+          "priority": 3,
+          "context_gb_per_8k": 1
+        },
+        {
+          "id": "nexxus-vox:latest",
+          "role": "voice",
+          "expert": "vox",
+          "mode": "single",
+          "vram_gb": 0.5,
+          "priority": 3,
+          "context_gb_per_8k": 0.2
+        }
+      ]
+    }
+  },
+  "settings": {
+    "priming": {
+      "ping": {
+        "num_predict": 1,
+        "prompt": "Ping",
+        "num_ctx": 2048,
+        "keep_alive": "30m"
+      },
+      "sense": {
+        "num_predict": 8,
+        "prompt": "Bonjour Nexxus. Es-tu prêt ?",
+        "num_ctx": 2048,
+        "keep_alive": "30m"
+      }
+    },
+    "fallback": {
+      "enabled": true,
+      "default_reasoner": "ornith:9b",
+      "default_chat": "ornith:9b",
+      "default_coder": "qwen2.5-coder:7b",
+      "default_coder_alternative": null,
+      "default_chat_alternative_multimodal": "qwen3.5:9b",
+      "default_vision": "gemma4:12b"
+    }
+  }
+}

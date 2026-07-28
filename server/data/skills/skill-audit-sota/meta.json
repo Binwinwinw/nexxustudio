@@ -1,0 +1,9 @@
+{
+  "name": "Audit SOTA",
+  "version": "1.0.0",
+  "description": "Compétence d'expertise pour certifier la sécurité, la conformité et la performance des modules.",
+  "enabled": true,
+  "requiresRuntime": false,
+  "runtimeModules": [],
+  "triggers": ["audit", "certification", "readiness", "conformité", "score smac", "score final"]
+}

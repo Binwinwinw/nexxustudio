@@ -1,0 +1,19 @@
+{
+  "id": "draft-1777870551876-8e12d1da",
+  "timestamp": "2026-05-04T04:55:51.876Z",
+  "trigger": "A) Documente les spécifications techniques pour l'intégration ",
+  "scope": "general",
+  "runId": "run-1777870479714",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_unsolicited_code_injection",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 72162,
+  "evidence": {
+    "logs": "Failed Validation: unsolicited_code_injection\nResponse: **GUIDANCE :** Spécifications techniques documentées pour l'intégration : **1. Architecture d'Intégr...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

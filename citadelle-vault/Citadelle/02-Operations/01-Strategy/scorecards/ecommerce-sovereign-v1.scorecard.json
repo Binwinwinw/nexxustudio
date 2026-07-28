@@ -1,0 +1,10 @@
+# 📊 Scorecard de Maturation : ecommerce-sovereign-v1
+
+| Critère | Statut | Note |
+| :--- | :--- | :--- |
+| Docs Production | ✅ | 5/5 |
+| ADR Sécurité | ✅ | 5/5 |
+| Runbook | ✅ | 5/5 |
+| Sécurité Code | ⚠️ | 3/5 (Attente Backend) |
+
+**Score : 18/20**

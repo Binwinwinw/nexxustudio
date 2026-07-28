@@ -1,0 +1,15 @@
+{
+  "id": "PR-005",
+  "scope": "infra",
+  "status": "accepted",
+  "rule": "Le serveur AirLLM (port 11435) doit être lancé via 'npm run airllm' ou 'npm run start'. Les dépendances Python critiques sont transformers<5.0.0 et optimum<1.17.0.",
+  "rationale": "Garantit la compatibilité entre l'inférence shardée et le backend Node.js sans erreurs de module ou d'import.",
+  "applicability": {
+    "when": "Usage de modèles 14B+ sur infrastructure locale.",
+    "not_when": "Usage exclusif de modèles légers (<8B) sur Ollama standard."
+  },
+  "confidence": "high",
+  "source_type": "infrastructure_update",
+  "promoted_at": "2026-05-07",
+  "version": 1
+}

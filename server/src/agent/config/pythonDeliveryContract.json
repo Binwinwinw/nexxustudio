@@ -1,0 +1,15 @@
+{
+  "id": "PYTHON_CODE_DELIVERY_V1",
+  "version": "1.0.0",
+  "label": "Livraison Python — 8 règles structurées",
+  "description": "Modificateur additif injecté sur demande de code Python. Ne remplace pas le contrat NEXXUS global.",
+  "llm": {
+    "temperature": 0.3,
+    "top_p": 0.9,
+    "num_predict": 4000
+  },
+  "detection": {
+    "requiresPythonSignal": false,
+    "note": "Détection élargie : python explicite OU génération de code sans autre langage cible"
+  }
+}

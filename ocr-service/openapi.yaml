@@ -1,0 +1,315 @@
+openapi: 3.1.0
+info:
+  title: La Citadelle OCR Service
+  description: Micro-service Unlimited-OCR — contrat HTTP interne La Citadelle / Nexxus.
+  version: 0.2.0
+paths:
+  /health:
+    get:
+      tags:
+      - meta
+      summary: Health
+      operationId: health_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /capabilities:
+    get:
+      tags:
+      - meta
+      summary: Capabilities
+      operationId: capabilities_capabilities_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapabilitiesResponse'
+  /ocr/page:
+    post:
+      tags:
+      - ocr
+      summary: Ocr Page
+      operationId: ocr_page_ocr_page_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OcrPageRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OcrNormalizedResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /ocr/document:
+    post:
+      tags:
+      - ocr
+      summary: Ocr Document
+      operationId: ocr_document_ocr_document_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OcrDocumentRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OcrNormalizedResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    CapabilitiesResponse:
+      properties:
+        singleImage:
+          type: boolean
+          title: Singleimage
+          default: true
+        multiPage:
+          type: boolean
+          title: Multipage
+          default: true
+        pdf:
+          type: boolean
+          title: Pdf
+          default: true
+        backend:
+          type: string
+          title: Backend
+        maxContext:
+          type: integer
+          title: Maxcontext
+          default: 32768
+      type: object
+      required:
+      - backend
+      title: CapabilitiesResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HealthResponse:
+      properties:
+        ok:
+          type: boolean
+          title: Ok
+        backend:
+          type: string
+          title: Backend
+        model:
+          type: string
+          title: Model
+          default: baidu/Unlimited-OCR
+      type: object
+      required:
+      - ok
+      - backend
+      title: HealthResponse
+    OcrBlock:
+      properties:
+        page:
+          type: integer
+          minimum: 1.0
+          title: Page
+        type:
+          type: string
+          enum:
+          - text
+          - table
+          - heading
+          - other
+          title: Type
+          default: text
+        content:
+          type: string
+          title: Content
+          default: ''
+      type: object
+      required:
+      - page
+      title: OcrBlock
+    OcrDocumentRequest:
+      properties:
+        pdfPath:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pdfpath
+        imageFiles:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Imagefiles
+        mode:
+          type: string
+          enum:
+          - gundam
+          - base
+          title: Mode
+          default: base
+        prompt:
+          type: string
+          title: Prompt
+          default: <image>Multi page parsing.
+        maxPages:
+          type: integer
+          maximum: 200.0
+          minimum: 1.0
+          title: Maxpages
+          default: 40
+      type: object
+      title: OcrDocumentRequest
+    OcrMeta:
+      properties:
+        prompt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Prompt
+        imageMode:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Imagemode
+        stub:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Stub
+        extra:
+          anyOf:
+          - type: object
+          - type: 'null'
+          title: Extra
+      type: object
+      title: OcrMeta
+    OcrNormalizedResponse:
+      properties:
+        ok:
+          type: boolean
+          title: Ok
+        mode:
+          type: string
+          enum:
+          - page
+          - document
+          title: Mode
+          default: page
+        backend:
+          type: string
+          title: Backend
+          default: stub
+        pages:
+          type: integer
+          title: Pages
+          default: 0
+        text:
+          type: string
+          title: Text
+          default: ''
+        markdown:
+          type: string
+          title: Markdown
+          default: ''
+        blocks:
+          items:
+            $ref: '#/components/schemas/OcrBlock'
+          type: array
+          title: Blocks
+        meta:
+          $ref: '#/components/schemas/OcrMeta'
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+      type: object
+      required:
+      - ok
+      title: OcrNormalizedResponse
+    OcrPageRequest:
+      properties:
+        imagePath:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Imagepath
+        imageUrl:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Imageurl
+        mode:
+          type: string
+          enum:
+          - gundam
+          - base
+          title: Mode
+          default: gundam
+        prompt:
+          type: string
+          title: Prompt
+          default: <image>document parsing.
+      type: object
+      title: OcrPageRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

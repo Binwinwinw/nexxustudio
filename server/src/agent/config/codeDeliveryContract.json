@@ -1,0 +1,96 @@
+{
+  "id": "CODE_DELIVERY_V1",
+  "version": "1.0.0",
+  "label": "Livraison code multi-langages",
+  "description": "Modificateur additif injecté sur demande de code. Ne remplace pas le contrat NEXXUS global.",
+  "auto_detect": true,
+  "fallback_language": "python",
+  "llm": {
+    "temperature": 0.3,
+    "top_p": 0.9,
+    "num_predict": 4000
+  },
+  "section_markers": ["✅", "📋", "🚀", "✨", "💡"],
+  "language_rules": {
+    "php": {
+      "label": "PHP",
+      "code_fence": "php",
+      "example_cmd": "php fichier.php",
+      "rules": [
+        "Utiliser <?php (pas de short tags)",
+        "Échapper les sorties avec htmlspecialchars()",
+        "Ne pas utiliser mysql_* (obsolète) ; PDO avec requêtes préparées si base de données",
+        "Gestion des erreurs avec try/catch"
+      ]
+    },
+    "javascript_node": {
+      "label": "JavaScript (Node.js)",
+      "code_fence": "javascript",
+      "example_cmd": "node fichier.js",
+      "rules": [
+        "Utiliser const/let, pas var",
+        "Promises ou async/await pour l'asynchrone",
+        "Gérer les erreurs avec .catch() ou try/catch"
+      ]
+    },
+    "javascript_browser": {
+      "label": "JavaScript (Navigateur)",
+      "code_fence": "javascript",
+      "example_cmd": "intégrer dans une page HTML",
+      "rules": [
+        "Utiliser document.addEventListener('DOMContentLoaded', ...)",
+        "Éviter les variables globales",
+        "Gérer les exceptions utilisateur"
+      ]
+    },
+    "html": {
+      "label": "HTML",
+      "code_fence": "html",
+      "example_cmd": "ouvrir index.html dans le navigateur",
+      "rules": [
+        "Doctype HTML5 : <!DOCTYPE html>",
+        "Balises sémantiques (header, aside, main, nav, section, footer)",
+        "Attribut lang=\"fr\" sur <html>",
+        "Atelier / page structurée : sidebar verticale dans <aside>, pas nav horizontale seule",
+        "CSS responsive avec @media (max-width: 768px) minimum",
+        "nav avec aria-label ; lien skip « Aller au contenu » si navigation latérale",
+        "Accessibilité clavier (focus-visible) et contenu pédagogique substantiel par section",
+        "Footer : année courante (pas de © 2023 générique)"
+      ]
+    },
+    "css": {
+      "label": "CSS",
+      "code_fence": "css",
+      "example_cmd": "lier style.css dans index.html",
+      "rules": [
+        "Reset ou normalize en tête de feuille",
+        "Utiliser des classes, pas des IDs pour le style",
+        "Flexbox ou Grid pour les layouts modernes",
+        "Media queries pour le responsive",
+        "Nommer les classes en kebab-case"
+      ]
+    },
+    "jsx": {
+      "label": "JSX / React",
+      "code_fence": "jsx",
+      "example_cmd": "intégrer le composant dans l'app React",
+      "rules": [
+        "Composants fonctionnels avec hooks (useState, useEffect)",
+        "Props typées (PropTypes ou TypeScript si précisé)",
+        "Clé unique sur les listes (key)",
+        "Pas de mutations directes du state"
+      ]
+    },
+    "python": {
+      "label": "Python",
+      "code_fence": "python",
+      "example_cmd": "python fichier.py",
+      "rules": [
+        "PEP8 respecté",
+        "Inclure if __name__ == \"__main__\": pour un script CLI",
+        "random.SystemRandom() pour l'aléatoire sensible",
+        "with open(...) as f pour les fichiers"
+      ]
+    }
+  }
+}

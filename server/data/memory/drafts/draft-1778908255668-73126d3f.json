@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778908255668-73126d3f",
+  "timestamp": "2026-05-16T05:10:55.668Z",
+  "trigger": "boudoumboudoum",
+  "scope": "general",
+  "runId": "run-1778908155894",
+  "selectedModel": "qwen3.5:4b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 99774,
+  "evidence": {
+    "logs": "Full Draft: <think>Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: \"boudoumboudoum\" (This appears...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "requestInterpreter.schema.json",
+  "title": "RequestInterpreterResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "scoring_rule",
+    "family",
+    "subtype",
+    "user_goal",
+    "object",
+    "instrument",
+    "confidence",
+    "top_candidates",
+    "needs_clarification",
+    "suggested_pipeline",
+    "risk_flags",
+    "evidence_spans"
+  ],
+  "properties": {
+    "contract": {
+      "type": "string",
+      "const": "REQUEST_INTERPRETER_V1"
+    },
+    "scoring_rule": {
+      "type": "string",
+      "const": "request_interpreter_composite_score_v1"
+    },
+    "family": {
+      "type": "string",
+      "enum": [
+        "conversation",
+        "information",
+        "procedure",
+        "planning",
+        "software_help",
+        "code_dev",
+        "analysis",
+        "math_calculation",
+        "health_general",
+        "location",
+        "license_admin",
+        "unknown"
+      ]
+    },
+    "subtype": {
+      "type": "string",
+      "minLength": 1
+    },
+    "user_goal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "object": {
+      "type": ["string", "null"]
+    },
+    "instrument": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "top_candidates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["intent", "score"],
+        "properties": {
+          "intent": { "type": "string", "minLength": 1 },
+          "score": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "needs_clarification": {
+      "type": "boolean"
+    },
+    "suggested_pipeline": {
+      "type": "string",
+      "enum": [
+        "direct_explanation",
+        "clarify_user",
+        "build_v1",
+        "recall_previous",
+        "general_answer",
+        "full_pipeline"
+      ]
+    },
+    "risk_flags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "evidence_spans": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Obsidian Markdown",
+  "version": "1.0.0",
+  "description": "Sub-skill: traitement Markdown Obsidian (wikilinks, callouts, frontmatter YAML).",
+  "enabled": true,
+  "requiresRuntime": false,
+  "parentSkillId": "skill-obsidian-governance",
+  "runtimeModules": [],
+  "triggers": [
+    "markdown obsidian",
+    "wikilink",
+    "callout obsidian",
+    "frontmatter yaml",
+    "note obsidian"
+  ],
+  "kpis": {
+    "triggerAccuracyTarget": 0.85
+  }
+}

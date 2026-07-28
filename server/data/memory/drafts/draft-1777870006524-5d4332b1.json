@@ -1,0 +1,21 @@
+{
+  "id": "draft-1777870006524-5d4332b1",
+  "timestamp": "2026-05-04T04:46:46.524Z",
+  "trigger": "B) Optimiser la précision décisionnelle (Latence vs Précision) ?",
+  "scope": [
+    "Cognition systémique, arbitrage identitaire, planification stratégique d'architectures IA. Spécialiste du déploiement souverain et des frameworks agentiques."
+  ],
+  "runId": "run-1777869966998",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_persona_leak",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 39526,
+  "evidence": {
+    "logs": "Failed Validation: persona_leak\nResponse: **GUIDANCE :** Choix validé. L'optimisation de la précision décisionnelle implique : - **Allocation ...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

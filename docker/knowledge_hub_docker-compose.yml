@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: nexxus-chroma
+    ports:
+      - "127.0.0.1:8008:8000"
+    volumes:
+      - ../server/data/chroma:/chroma/data
+    environment:
+      - ANONYMIZED_TELEMETRY=False
+      - ALLOW_RESET=True
+      - CHROMA_SERVER_CORS_ALLOW_ORIGINS=["*"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  airllm:
+    build:
+      context: ../server/airllm
+    container_name: nexxus-airllm
+    ports:
+      - "127.0.0.1:11435:11435"
+    volumes:
+      - ../server/airllm/cache:/root/.cache/huggingface
+    environment:
+      - AIRLLM_PORT=11435
+      - HF_TOKEN=${HF_TOKEN:-}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11435/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  default:
+    name: nexxus-network

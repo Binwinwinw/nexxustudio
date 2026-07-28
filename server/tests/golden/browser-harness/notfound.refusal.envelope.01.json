@@ -1,0 +1,9 @@
+{
+  "code": "NAVIGATION_FAILED",
+  "has_browser_session": true,
+  "has_partial_artifacts": true,
+  "artifact_kinds": [
+    "trace_jsonl",
+    "failure_json"
+  ]
+}

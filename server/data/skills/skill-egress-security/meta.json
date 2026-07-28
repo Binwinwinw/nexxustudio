@@ -1,0 +1,52 @@
+{
+  "name": "Egress Security",
+  "version": "1.0.0",
+  "description": "Sécurité sortante unifiée : anti-SSRF, egress fail-closed, sanitisation sorties web (OWASP ASI-03).",
+  "enabled": true,
+  "priority": 870,
+  "intentIds": ["FACTUAL_RESEARCH"],
+  "triggers": [
+    "recherche web",
+    "web search",
+    "scrape",
+    "fetch url",
+    "http://localhost",
+    "169.254.169.254",
+    "injection outil",
+    "tool output"
+  ],
+  "doNotUseWhen": [
+    {
+      "type": "queryContains",
+      "patterns": ["sans aller sur le web", "ne pas chercher sur internet"]
+    }
+  ],
+  "runtimeModules": [
+    {
+      "path": "server/src/services/tool-output-sanitizer.js",
+      "exportName": "sanitizeToolOutput",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/agent/agents/expertWebSearch.js",
+      "exportName": "expertWebSearch",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/webSummarizer.js",
+      "exportName": "summarizeWebPage",
+      "required": false,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/tool-output-sanitizer.test.js"
+  ],
+  "kpis": {
+    "triggerAccuracyTarget": 0.9,
+    "maxFalsePositiveRate": 0.05,
+    "notes": "0 SSRF localhost/metadata ; 0 exécution consigne injectée depuis snippet web"
+  }
+}

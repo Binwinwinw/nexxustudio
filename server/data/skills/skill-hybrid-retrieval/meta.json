@@ -1,0 +1,42 @@
+{
+  "name": "Hybrid Retrieval",
+  "version": "1.0.0",
+  "description": "BM25 + vecteur (knowledgeHub) + RRF + rerank — au-delà de rag-ingestion.",
+  "enabled": true,
+  "requiresRuntime": true,
+  "parentSkillId": "skill-rag-ingestion",
+  "runtimeModules": [
+    {
+      "path": "server/src/retrieval/hybrid-retrieval.js",
+      "exportName": "HybridRetrieval",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/retrieval/hybrid-retrieval.js",
+      "exportName": "reciprocalRankFusion",
+      "required": false,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/retrieval/hybrid-retrieval.js",
+      "exportName": "default",
+      "required": true,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/hybrid-retrieval.test.js"
+  ],
+  "triggers": [
+    "recherche hybride",
+    "BM25 vecteur",
+    "rerank RAG",
+    "hybrid retrieval",
+    "RRF fusion"
+  ],
+  "kpis": {
+    "triggerAccuracyTarget": 0.88,
+    "fallbackRateMax": 0.1
+  }
+}

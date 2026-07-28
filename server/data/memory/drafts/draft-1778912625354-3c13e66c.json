@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778912625354-3c13e66c",
+  "timestamp": "2026-05-16T06:23:45.354Z",
+  "trigger": "Bonjour Nexxus, quelles sont les spécialités dans lesquelles tu excelles ???",
+  "scope": "general",
+  "runId": "run-1778912541759",
+  "selectedModel": "qwen3.5:4b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 83595,
+  "evidence": {
+    "logs": "Full Draft: <think>Thinking Process:\n\n1.  **Analyze the Request:**\n    *   **User:** \"Bonjour Nexxus, quelles so...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

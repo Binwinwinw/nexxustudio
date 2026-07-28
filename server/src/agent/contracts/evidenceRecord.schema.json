@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "evidenceRecord.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["evidence_id", "source_type", "content", "trust_level"],
+  "properties": {
+    "evidence_id": { "type": "string" },
+    "source_type": { "type": "string" },
+    "source_name": { "type": "string" },
+    "locator": { "type": "object" },
+    "captured_at": { "type": "string" },
+    "content": { "type": "string" },
+    "hash": { "type": "string" },
+    "trust_level": { "type": "string", "enum": ["high", "medium", "low"] },
+    "observed_by": { "type": "string" }
+  }
+}

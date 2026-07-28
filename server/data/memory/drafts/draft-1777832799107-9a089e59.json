@@ -1,0 +1,21 @@
+{
+  "id": "draft-1777832799107-9a089e59",
+  "timestamp": "2026-05-03T18:26:39.107Z",
+  "trigger": "Qui est Nexxus ?",
+  "scope": [
+    "Cognition systémique, arbitrage identitaire, planification stratégique d'architectures IA. Spécialiste du déploiement souverain et des frameworks agentiques."
+  ],
+  "runId": "run-1777832724248",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_unauthorized_language",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 74859,
+  "evidence": {
+    "logs": "Failed Validation: unauthorized_language\nResponse: ` and provide the response outside. * Specific Instruction: \"Répondez de manière directe et structur...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

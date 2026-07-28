@@ -1,0 +1,260 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "orchestratorPacket.schema.json",
+  "title": "OrchestratorPacket",
+  "description": "Contrat de données entre l'Orchestrateur Souverain et le Final Response Composer.",
+  "type": "object",
+  "required": [
+    "user_intent",
+    "mode",
+    "expert_outputs",
+    "risk_level",
+    "budget"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "user_intent": {
+      "type": "string",
+      "description": "Type de demande classifiée par l'orchestrateur.",
+      "enum": [
+        "social",
+        "social_chit_chat",
+        "normal_conversation",
+        "courtesy",
+        "identity",
+        "ideation",
+        "factual_light",
+        "factual_heavy",
+        "technical_diagnostic",
+        "creative",
+        "strategic",
+        "tool_action",
+        "vision",
+        "safety",
+        "safety_sensitive",
+        "unknown",
+        "expert_task"
+      ]
+    },
+    "mode": {
+      "type": "string",
+      "description": "Mode de réponse attendu.",
+      "enum": [
+        "SOCIAL",
+        "IDEATION",
+        "OPERATIONAL",
+        "EPISTEMIC",
+        "VISION"
+      ]
+    },
+    "expert_outputs": {
+      "type": "array",
+      "description": "Sorties brutes des agents experts (jamais exposées directement à l'utilisateur).",
+      "items": {
+        "type": "object",
+        "required": [
+          "stage",
+          "content"
+        ],
+        "properties": {
+          "stage": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "approved",
+              "rejected",
+              "uncertain",
+              "skipped"
+            ]
+          },
+          "claims": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "description": "Preuves et sources collectées par les agents de retrieval.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "excerpt": {
+            "type": "string"
+          },
+          "relevance": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "vision_briefing": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Analyse visuelle générée par VisionAgent (null si pas d'image)."
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "budget": {
+      "type": "object",
+      "description": "Rapport du BudgetManager.",
+      "required": [
+        "total_budget_ms",
+        "elapsed_ms",
+        "remaining_ms",
+        "exhausted"
+      ],
+      "properties": {
+        "total_budget_ms": {
+          "type": "number"
+        },
+        "elapsed_ms": {
+          "type": "number"
+        },
+        "remaining_ms": {
+          "type": "number"
+        },
+        "exhausted": {
+          "type": "boolean"
+        },
+        "stages": {
+          "type": "object"
+        },
+        "expert_budget": {
+          "type": "object",
+          "description": "Rapport du BudgetManager dédié aux experts.",
+          "required": [
+            "total_budget_ms",
+            "elapsed_ms",
+            "remaining_ms",
+            "exhausted"
+          ],
+          "properties": {
+            "total_budget_ms": {
+              "type": "number"
+            },
+            "elapsed_ms": {
+              "type": "number"
+            },
+            "remaining_ms": {
+              "type": "number"
+            },
+            "exhausted": {
+              "type": "boolean"
+            },
+            "stages": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "user_query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Requête utilisateur brute transmise au Composer pour les heuristiques de forme et de longueur."
+    },
+    "raw_query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Texte exact saisi par l'utilisateur."
+    },
+    "canonical_query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Requête reconstruite sémantiquement."
+    },
+    "semantic_context": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Contexte sémantique de la requête (intention, subject, anaphora)."
+    },
+    "quick_answer": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Réponse directe pré-calculée pour les cas triviaux (social, idéation simple). Null si pipeline complet utilisé."
+    },
+    "system_prompt_used": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "System prompt transmis au Composer pour maintenir la cohérence persona."
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "executionContract": {
+          "type": "string"
+        },
+        "forbiddenFlags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tools_used": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowPostHocExplanation": {
+          "type": "boolean"
+        },
+        "critic": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "reasoning": {
+      "type": "string",
+      "description": "Champ optionnel pour la pensée du modèle."
+    },
+    "thoughts": {
+      "type": "string",
+      "description": "Champ optionnel pour la réflexion du modèle."
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Conteneur pour d'autres clés inattendues du LLM."
+    }
+  }
+}

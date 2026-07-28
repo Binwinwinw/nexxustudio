@@ -1,0 +1,18 @@
+{
+  "documents": [
+    {
+      "id": "doc-1780368008800-2e3f2108",
+      "sessionId": "2e821ee1-c815-4506-bf64-9f9dca9627dd",
+      "browserId": "68c008bf-9fa5-4f8b-bc27-f4afe5dbb671",
+      "originalName": "Diapos_Teams_365_20_slides.txt",
+      "storagePath": "D:\\Hostinger\\public_html\\nexxustudio\\server\\data\\document-analysis\\documents\\doc-1780368008800-2e3f2108\\Diapos_Teams_365_20_slides.txt",
+      "mimetype": "text/plain",
+      "size": 886,
+      "status": "analyzed",
+      "createdAt": "2026-06-02T02:40:08.803Z",
+      "traceId": "b9196927-a8f2-45a4-854d-647681224632",
+      "lastAnalysisJobId": "job-doc-1780368013670-d10f1c",
+      "lastAnalysisAt": "2026-06-02T02:40:50.486Z"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "RAG Ingestion",
+  "version": "1.1.0",
+  "description": "Indexation intelligente et chunking AST-aware du workspace.",
+  "enabled": true,
+  "requiresRuntime": true,
+  "runtimeModules": [
+    {
+      "path": "server/src/wiki/ingest_wiki_adrs.js",
+      "exportName": "ingestWikiChunksToHub",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/wiki/ingest_wiki_adrs.js",
+      "exportName": "loadWikiRagChunks",
+      "required": false,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/ingest_wiki_adrs.test.js"
+  ],
+  "triggers": ["indexer", "ingérer", "charger les docs", "rag", "vectoriser", "index"]
+}

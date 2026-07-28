@@ -1,0 +1,208 @@
+{
+  "version": "1.0.0",
+  "kind": "nexxus.design.create_result",
+  "skill_id": "skill-nexxus-design",
+  "objective": "landing",
+  "source": {
+    "extract_version": "2.0.0",
+    "extract_url": "http://127.0.0.1:5173/landing",
+    "extraction_mode": "hybrid",
+    "quality_score": 87
+  },
+  "blueprint": {
+    "layout": "header+main+footer",
+    "layout_signatures": [
+      {
+        "pattern": "header+main+footer",
+        "confidence": 0.96
+      },
+      {
+        "pattern": "sidebar+main",
+        "confidence": 0.78
+      },
+      {
+        "pattern": "hero-first",
+        "confidence": 0.85
+      }
+    ],
+    "grid_strategy": "marketing-flow",
+    "source_url": "http://127.0.0.1:5173/landing",
+    "quality_score": 87,
+    "assembly_notes": [
+      "Layout principal : header+main+footer",
+      "Tokens hérités de Design Extract v2 — pas de dérive palette sans validation.",
+      "Forge consomme ce blueprint en entrée unique de vérité."
+    ]
+  },
+  "tokens": {
+    "colors": {
+      "primary": "#6068f0",
+      "accent": "#6068f0",
+      "surface": "#f8f8ff",
+      "text": "#6068f0",
+      "palette_ranked": [
+        {
+          "hex": "#6068f0",
+          "role": "primary",
+          "frequency": 4,
+          "sources": [
+            "cta",
+            "style"
+          ],
+          "rank": 1
+        },
+        {
+          "hex": "#101828",
+          "role": "support",
+          "frequency": 4,
+          "sources": [
+            "surface",
+            "style",
+            "meta"
+          ],
+          "rank": 2
+        },
+        {
+          "hex": "#f8f8ff",
+          "role": "surface",
+          "frequency": 3,
+          "sources": [
+            "surface",
+            "style"
+          ],
+          "rank": 3
+        }
+      ],
+      "distinct_count": 3
+    },
+    "typography": {
+      "families": [
+        {
+          "name": "Inter",
+          "roles": [
+            "cta",
+            "style"
+          ],
+          "sizes_px": [
+            16
+          ],
+          "frequency": 2
+        }
+      ],
+      "scale": [
+        16
+      ],
+      "distinct_families": 1,
+      "distinct_sizes": 1
+    },
+    "spacing": {
+      "scale_px": [
+        24,
+        16,
+        32,
+        48,
+        8,
+        12
+      ],
+      "dominant_gap": "24px",
+      "raw": [
+        "24px",
+        "16px",
+        "32px",
+        "48px",
+        "8px",
+        "12px"
+      ]
+    },
+    "radius": {
+      "values": [
+        "16px",
+        "8px"
+      ],
+      "dominant": "16px"
+    },
+    "shadows": []
+  },
+  "components": [
+    {
+      "id": "ButtonPrimary",
+      "role": "cta",
+      "props": {
+        "background": "#6068f0",
+        "color": "#ffffff",
+        "borderRadius": "16px",
+        "fontFamily": "Inter"
+      },
+      "tailwind": "rounded-lg px-6 py-3 font-semibold text-white bg-[#6068f0]"
+    },
+    {
+      "id": "CardSurface",
+      "role": "surface",
+      "props": {
+        "background": "#f8f8ff",
+        "borderRadius": "16px",
+        "shadow": "0 4px 16px rgba(15,23,42,0.08)"
+      },
+      "tailwind": "rounded-2xl p-4 bg-[#f8f8ff] shadow-sm"
+    }
+  ],
+  "page_structure": [
+    {
+      "id": "header",
+      "tag": "header",
+      "role": "navigation",
+      "children": [
+        "nav"
+      ]
+    },
+    {
+      "id": "hero",
+      "tag": "section",
+      "role": "hero",
+      "children": [
+        "headline",
+        "subheadline"
+      ]
+    },
+    {
+      "id": "content",
+      "tag": "article",
+      "role": "card",
+      "children": [
+        "body",
+        "cta"
+      ]
+    },
+    {
+      "id": "footer",
+      "tag": "footer",
+      "role": "footer",
+      "children": [
+        "legal"
+      ]
+    }
+  ],
+  "ux_copy": {
+    "headline": "La Citadelle",
+    "subheadline": "Observer, transposer, corriger",
+    "cta": "Découvrir Forge",
+    "brief_excerpt": "access"
+  },
+  "guidelines": [
+    "Local-first — pas de dépendance CDN critique pour la charte.",
+    "Contraste WCAG à valider via Impeccable avant merge production.",
+    "Référence reproduction : Refonte fidèle au style source observé. Palette dominante : #6068f0, #6068f0, #f8f8ff. Typographies : Inter. Structure : header+main+footer, sidebar+main, hero-first. Rythme espacement : base 24px. Pa…"
+  ],
+  "assembly": {
+    "scaffold_template": "react-vite",
+    "css_strategy": "tailwind-arbitrary",
+    "layout": "header+main+footer",
+    "component_count": 2
+  },
+  "uncertainties": [
+    "Analyse static HTML/CSS — getComputedStyle requiert browser harness (Phase C).",
+    "Fusion hybrid — styles getComputedStyle prioritaires sur HTML statique.",
+    "Palette static (#101828) vs computed (#6068f0) — computed prioritaire."
+  ],
+  "generated_at": "2026-06-01T02:36:48.564Z"
+}

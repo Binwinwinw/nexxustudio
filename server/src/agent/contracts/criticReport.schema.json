@@ -1,0 +1,174 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "criticReport.schema.json",
+  "title": "CriticReport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "report_id",
+    "query_id",
+    "status",
+    "overall_verdict",
+    "summary",
+    "claim_reviews",
+    "required_fixes",
+    "approved_answer"
+  ],
+  "properties": {
+    "report_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "query_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "failed"]
+    },
+    "overall_verdict": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "approved_with_warnings",
+        "rejected",
+        "rejected_precheck",
+        "rejected_unsupported",
+        "rejected_overclaim"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 5
+    },
+    "claim_reviews": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "claim_id",
+          "section",
+          "claim_text",
+          "verdict",
+          "reason"
+        ],
+        "properties": {
+          "claim_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "section": {
+            "type": "string",
+            "enum": ["confirmed", "probable", "unknown"]
+          },
+          "claim_text": {
+            "type": "string",
+            "minLength": 5
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "supported",
+              "partially_supported",
+              "unsupported",
+              "contradicted",
+              "misclassified",
+              "uncertain"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 5
+          },
+          "fact_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "hypothesis_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "missing_proof_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"]
+          }
+        }
+      }
+    },
+    "required_fixes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 5
+      }
+    },
+    "approved_answer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "question_reformulated",
+        "answer_summary",
+        "confirmed_section",
+        "probable_section",
+        "unknown_section",
+        "next_checks"
+      ],
+      "properties": {
+        "question_reformulated": {
+          "type": "string",
+          "minLength": 5
+        },
+        "answer_summary": {
+          "type": "string",
+          "minLength": 5
+        },
+        "confirmed_section": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 5
+          }
+        },
+        "probable_section": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 5
+          }
+        },
+        "unknown_section": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 5
+          }
+        },
+        "next_checks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 5
+          }
+        }
+      }
+    }
+  }
+}

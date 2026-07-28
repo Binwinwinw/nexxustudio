@@ -1,0 +1,18 @@
+{
+  "name": "Obsidian CLI",
+  "version": "1.0.0",
+  "description": "Sub-skill: automatisation via CLI Obsidian (list, search, walk).",
+  "enabled": true,
+  "requiresRuntime": false,
+  "parentSkillId": "skill-obsidian-governance",
+  "runtimeModules": [],
+  "triggers": [
+    "cli obsidian",
+    "obsidian-cli",
+    "scan vault",
+    "walk obsidian"
+  ],
+  "kpis": {
+    "triggerAccuracyTarget": 0.85
+  }
+}

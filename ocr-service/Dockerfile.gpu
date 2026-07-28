@@ -1,0 +1,29 @@
+# Image GPU — build séparé ; runtime NVIDIA Container Toolkit requis.
+# Usage: docker build -f Dockerfile.gpu -t citadelle-ocr:transformers .
+
+FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    OCR_BACKEND=transformers \
+    OCR_MODEL_ID=baidu/Unlimited-OCR
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 python3-pip python3-venv ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt requirements-transformers.txt ./
+RUN pip3 install --no-cache-dir -r requirements.txt -r requirements-transformers.txt
+
+COPY app ./app
+COPY fixtures ./fixtures
+
+EXPOSE 8765
+
+HEALTHCHECK --interval=60s --timeout=10s --start-period=120s --retries=3 \
+  CMD python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/health', timeout=5)"
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8765"]

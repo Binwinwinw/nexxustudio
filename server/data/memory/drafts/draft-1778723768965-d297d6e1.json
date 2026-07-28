@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778723768965-d297d6e1",
+  "timestamp": "2026-05-14T01:56:08.964Z",
+  "trigger": "Comment tes réponses sont-elles sécurisées ?",
+  "scope": "general",
+  "runId": "run-1778721704618",
+  "selectedModel": "qwen3.5:4b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 2064345,
+  "evidence": {
+    "logs": "Full Draft: <think>Le système de sécurité de Nexxus repose sur une architecture en couches, où chaque niveau de ...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

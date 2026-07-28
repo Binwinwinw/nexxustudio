@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778188906014-70c1d173",
+  "timestamp": "2026-05-07T21:21:46.014Z",
+  "trigger": "Je veux créer un module de formation sur Microsoft Teams pour une équipe de 10 personnes. Peux-tu analyser les besoins et proposer une structure ?",
+  "scope": "general",
+  "runId": "run-1778188905437",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_persona_leak",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 577,
+  "evidence": {
+    "logs": "Failed Validation: persona_leak\nResponse: [AirLLM Server] Inférence active pour deepseek-r1:14b. (Mode Sharded RAM)...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

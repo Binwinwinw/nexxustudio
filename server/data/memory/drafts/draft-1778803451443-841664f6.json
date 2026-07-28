@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778803451443-841664f6",
+  "timestamp": "2026-05-15T00:04:11.441Z",
+  "trigger": "Comment tes réponses sont-elles sécurisées ?",
+  "scope": "general",
+  "runId": "run-1778803081689",
+  "selectedModel": "qwen3.5:4b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 369752,
+  "evidence": {
+    "logs": "Full Draft: <think>Thinking Process:\n\n1.  **Analyze the Request:**\n    *   User Question: \"Comment tes réponses ...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

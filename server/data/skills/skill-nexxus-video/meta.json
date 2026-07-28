@@ -1,0 +1,87 @@
+{
+  "name": "Nexxus Video",
+  "version": "1.0.0",
+  "description": "Intelligence vidéo multimodale local-first — structuration (scènes, transcript, OCR) puis analyse gouvernée sur evidence pack. Exécution asynchrone, pas de chat synchrone.",
+  "enabled": false,
+  "requiresRuntime": true,
+  "priority": 880,
+  "intentIds": ["VIDEO_ANALYSIS"],
+  "triggers": [
+    "analyse cette vidéo",
+    "analyse la vidéo",
+    "résume la vidéo",
+    "résume cette vidéo",
+    "timeline vidéo",
+    "moment précis vidéo",
+    "extrait ce qui est dit",
+    "texte à l'écran",
+    "audit vidéo",
+    "fichier mp4",
+    "vidéo jointe",
+    "nexxus video"
+  ],
+  "doNotUseWhen": [
+    {
+      "type": "queryContains",
+      "patterns": ["génère une vidéo", "genere une video", "montage vidéo", "monter la vidéo", "stream live", "temps réel"]
+    },
+    {
+      "type": "queryContains",
+      "patterns": ["reconnaissance faciale", "biométrie", "biometrie"]
+    }
+  ],
+  "fallbackSkillId": "skill-document-analysis",
+  "runtimeModules": [
+    {
+      "path": "server/src/services/nexxus-video/videoUploadService.js",
+      "exportName": "validateVideoUploadFile",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/nexxus-video/VideoJobManager.js",
+      "exportName": "default",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/nexxus-video/videoRouterContract.js",
+      "exportName": "validateVideoInput",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/nexxus-video/videoPreprocessor.js",
+      "exportName": "preprocessVideo",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/nexxus-video/videoEvidencePack.js",
+      "exportName": "buildVideoEvidencePack",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/nexxus-video/videoArtifactsService.js",
+      "exportName": "writeVideoArtifacts",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/nexxus-video/nexxusVideoPipeline.js",
+      "exportName": "runNexxusVideoPipeline",
+      "required": true,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/nexxus-video-contract.test.js",
+    "server/tests/video-upload-job.test.js"
+  ],
+  "kpis": {
+    "triggerAccuracyTarget": 0.9,
+    "maxFalsePositiveRate": 0.05,
+    "notes": "Lazy-loaded ; job async obligatoire ; enabled=false jusqu'à branchement upload MP4"
+  }
+}

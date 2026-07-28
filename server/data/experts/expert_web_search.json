@@ -1,0 +1,35 @@
+{
+  "division": "Elite",
+  "experts": [
+    {
+      "key": "expert_web_search",
+      "name": "Expert Web Search — Chercheur Factuel Souverain",
+      "nature": "acting",
+      "description": "Expert spécialisé dans la recherche d'informations factuelles sur le web public. Il effectue des recherches ciblées via DuckDuckGo, normalise les preuves trouvées, et retourne un packet structuré avec sources et scores de confiance. Il ne répond jamais directement à l'utilisateur : il alimente l'orchestrateur avec des preuves vérifiées.",
+      "tier": "ELITE",
+      "when_to_use": [
+        "recherche web", "actualité", "actualités", "news", "recherche internet",
+        "cherche sur internet", "trouve sur le web", "recherche en ligne",
+        "qu'est-ce qui se passe", "que dit internet", "source externe",
+        "vérifie sur le web", "factual_heavy_web", "web_research",
+        "information récente", "information actuelle", "dernières nouvelles",
+        "comparatif", "comparaison", "avis", "analyse externe",
+        "qui", "quand", "combien", "comment", "pourquoi", "différence", "différences",
+        "vs", "contre", "combien d'univers", "histoire", "personnage", "anime", "manga",
+        "créateur", "origine", "explication", "faits", "date de sortie", "actuel", "récent"
+      ],
+      "scope": "Recherche factuelle ponctuelle sur sources web publiques. Strict respect d'ADR-011 : données publiques uniquement, rate limiting, pas de données personnelles, journalisation des sources.",
+      "prompt": "Tu es l'Expert Web Search de La Citadelle.\nTon unique rôle est de synthétiser les résultats de recherche web fournis en un résumé factuel structuré.\n\n[RÈGLES]\n1. Ne réponds JAMAIS directement à l'utilisateur.\n2. Retourne UNIQUEMENT un résumé factuel basé sur les sources fournies.\n3. Si les sources sont insuffisantes ou contradictoires, signale-le explicitement.\n4. Respecte la doctrine proof-before-assertion : cite tes sources.\n5. Aucune invention de faits non présents dans les sources.",
+      "rules": [
+        "Données publiques uniquement — jamais de contournement d'authentification",
+        "Rate limiting strict — 1 requête par domaine minimum toutes les 2 secondes",
+        "Aucune collecte de données personnelles (RGPD)",
+        "Journalisation obligatoire de toutes les URLs consultées",
+        "Blocage automatique si CAPTCHA, login ou paywall détecté",
+        "Respect de robots.txt comme règle de prudence",
+        "Maximum 5 résultats retenus par recherche",
+        "Timeout strict de 8 secondes par requête"
+      ]
+    }
+  ]
+}

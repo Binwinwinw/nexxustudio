@@ -1,0 +1,21 @@
+{
+  "id": "draft-1777952388114-be4f16f0",
+  "timestamp": "2026-05-05T03:39:48.114Z",
+  "trigger": "Nexxus, génère le fichier HTML complet de la formation Teams 365 (plan révisé avec Copilot, 12 slides, skill slides), en utilisant ADR-004 pour la segmentation longue et ADR-005 pour respecter la zone forge/noyau. Commence par le slide 1 et pause après 3 chapitres.",
+  "scope": [
+    "Cognition systémique, arbitrage identitaire, planification stratégique d'architectures IA. Spécialiste du déploiement souverain et des frameworks agentiques."
+  ],
+  "runId": "run-1777951452691",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_persona_leak",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 935423,
+  "evidence": {
+    "logs": "Failed Validation: persona_leak\nResponse: [STREAM_STATUS::PAUSED] [STREAM_DOC::OPEN] ```html <!DOCTYPE html> <html lang=\"fr\"> <head> <meta cha...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "PR-004",
+  "scope": "infra",
+  "status": "accepted",
+  "rule": "Tout modèle de taille > 14B ou dépassant la capacité VRAM actuelle doit être routé via le client AirLLM (RAM ou distant) plutôt que chargé localement sur Ollama.",
+  "rationale": "Prévient les plantages du driver graphique et les latences extrêmes de 5s/token.",
+  "applicability": {
+    "when": "Usage de modèles 30B+ ou 70B.",
+    "not_when": "Usage de modèles < 14B sur GPU dédié."
+  },
+  "confidence": "probable",
+  "source_type": "system_design",
+  "promoted_at": "2026-05-01",
+  "version": 1
+}

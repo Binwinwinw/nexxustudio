@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778179687513-0d0e73b0",
+  "timestamp": "2026-05-07T18:48:07.513Z",
+  "trigger": "Comment optimiser les schémas de collection ChromaDB pour une recherche sémantique multi-projets ?",
+  "scope": "general",
+  "runId": "run-1778179518754",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 168759,
+  "evidence": {
+    "logs": "Full Draft: <think>Je dois répondre en français, direct, sans fioritures, en suivant le protocole CAVEMAN DENSIT...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

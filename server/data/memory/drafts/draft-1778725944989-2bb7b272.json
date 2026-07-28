@@ -1,0 +1,21 @@
+{
+  "id": "draft-1778725944989-2bb7b272",
+  "timestamp": "2026-05-14T02:32:24.989Z",
+  "trigger": "Je veux créer une plateforme e-commerce complète avec gestion de stock et paiement Stripe. Commence maintenant.",
+  "scope": [
+    "Cadrage stratégique, gestion des risques systémiques et roadmap de crise."
+  ],
+  "runId": "run-1778723730826",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_unsolicited_code_injection",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 2214163,
+  "evidence": {
+    "logs": "Failed Validation: unsolicited_code_injection\nResponse: ### Réponse Structurée et Organisée **Problème Identifié :** - L'outil `webSearch` a retourné une er...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

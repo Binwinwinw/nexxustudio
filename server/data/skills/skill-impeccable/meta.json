@@ -1,0 +1,70 @@
+{
+  "name": "Impeccable",
+  "version": "1.1.0",
+  "description": "Critique qualité design/UX — score, issues, blockers, merge_ok. Worker E1 + API + Cockpit Phase E.",
+  "enabled": true,
+  "requiresRuntime": true,
+  "tier": "specialized",
+  "priority": 790,
+  "intentIds": ["DESIGN_AUDIT"],
+  "triggers": [
+    "audit design",
+    "audite cette page",
+    "design propre",
+    "est-ce premium",
+    "incohérences ui",
+    "checklist design",
+    "pre-merge design",
+    "impeccable",
+    "quality gate visuel",
+    "polish ui"
+  ],
+  "doNotUseWhen": [
+    {
+      "type": "queryContains",
+      "patterns": ["conçois", "concevoir", "refonds", "refonte", "extraire l'adn", "design extract"]
+    }
+  ],
+  "runtimeModules": [
+    {
+      "path": "server/src/services/impeccable/impeccableContract.js",
+      "exportName": "validateDesignAuditInput",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/impeccable/impeccableContract.js",
+      "exportName": "buildImpeccableAuditEnvelope",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/impeccable/impeccableScorer.js",
+      "exportName": "scoreImpeccableArtifacts",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/impeccable/impeccableWorker.js",
+      "exportName": "runImpeccableWorker",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/services/impeccable/ImpeccableJobManager.js",
+      "exportName": "default",
+      "required": true,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/design-suite-contract.test.js",
+    "server/tests/impeccable-worker.test.js",
+    "server/tests/impeccable-api.test.js"
+  ],
+  "kpis": {
+    "triggerAccuracyTarget": 0.88,
+    "maxFalsePositiveRate": 0.08,
+    "notes": "Gate merge_ok sur artefacts pipeline D4 — complément skill-quality-gate technique"
+  }
+}

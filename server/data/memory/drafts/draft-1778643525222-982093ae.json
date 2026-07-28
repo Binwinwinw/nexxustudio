@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778643525222-982093ae",
+  "timestamp": "2026-05-13T03:38:45.222Z",
+  "trigger": "est-ce que tu te sent bien ???",
+  "scope": "general",
+  "runId": "run-1778643064889",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 460333,
+  "evidence": {
+    "logs": "Full Draft: <think>Okay, so I'm trying to figure out how Nexxus responded when the user pointed out an error in ...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778714011308-14002c92",
+  "timestamp": "2026-05-13T23:13:31.308Z",
+  "trigger": "Quelles sont tes spécialités techniques ?",
+  "scope": "general",
+  "runId": "run-1778713691499",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_unauthorized_language",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 319809,
+  "evidence": {
+    "logs": "Failed Validation: unauthorized_language\nResponse: Nexxus specializes in architectural maturation for web projects developed using React, Vite, and Nod...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

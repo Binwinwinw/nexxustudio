@@ -1,0 +1,27 @@
+# 📊 Production Readiness Scorecard - Bookflow
+
+| Catégorie | Critère | Statut | Note |
+| :--- | :--- | :--- | :--- |
+| **Code** | Stack moderne (React/Node) | ✅ | 5/5 |
+| **Code** | Linting & Structure | ✅ | 4/5 |
+| **Sécurité** | Headers HTTP (Helmet) | ✅ | 5/5 |
+| **Sécurité** | Gestion des Secrets (.env) | ✅ | 5/5 |
+| **Sécurité** | Patching (Axios Fix) | ✅ | 5/5 |
+| **Documentation** | README Production | ✅ | 5/5 |
+| **Documentation** | ADR Sécurité | ✅ | 5/5 |
+| **Documentation** | Runbook Opérationnel | ✅ | 4/5 |
+| **Exploitation** | Health Endpoints | ⚠️ | 2/5 |
+| **Exploitation** | CI/CD (Automated Audit) | ❌ | 0/5 |
+
+## 📈 Score de Maturité Global : 40/50 (80%)
+
+### 🎯 Objectif ADR-004
+Avec un score de **80%**, Bookflow a franchi le seuil théorique d'industrialisation autonome. Le "sentiment de complétude" est désormais étayé par des artefacts documentaires et des correctifs techniques vérifiables.
+
+### 🚩 Prochains Leviers
+1. **Implémentation d'un Health Check dédié** (`/api/health`).
+2. **Automatisation CI/CD** pour garantir que chaque changement maintient ce niveau de qualité.
+3. **Mise en place de tests unitaires** sur les routes critiques.
+
+---
+*Rapport validé par Nexxus MaturationPlanner*

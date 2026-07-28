@@ -1,0 +1,19 @@
+{
+  "id": "draft-1777878833362-c9d40ff7",
+  "timestamp": "2026-05-04T07:13:53.362Z",
+  "trigger": "tu peux continuer le html là ou tu t'es arrêté",
+  "scope": "general",
+  "runId": "run-1777878747026",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_persona_leak",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 86336,
+  "evidence": {
+    "logs": "Failed Validation: persona_leak\nResponse: Bonjour. Je suis Nexxus, l'assistant de Nexxus Citadel. Je coordonne les expertises, je structure le...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

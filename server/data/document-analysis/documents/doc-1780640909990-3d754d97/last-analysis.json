@@ -1,0 +1,19 @@
+{
+  "documentId": "doc-1780640909990-3d754d97",
+  "mode": "summary",
+  "query": null,
+  "result": "## Objectif du document\nFournir une interface utilisateur web permettant de gérer un ensemble d’exercices scolaires, avec fonctionnalités spécifiques :\n- Visualisation des statistiques générales.\n- Détection et gestion des doublons d'exercice.\n- Affichage et filtrage de la liste complète des exercices.\n- Opérations de nettoyage automatique pour supprimer les doublons.\n\n## Sections clés\n### 1. Tableau de bord (📊)\n- **Statistiques générales** :\n  - Total d’exercices (`#total-exercises`)\n  - Nombre d’identifiants uniques (`#unique-identifiers`)  \n  - Compte des doublons détectés (`#duplicate-count`)\n  - Exercices traités (`#processed-count`)\n\n### 2. Détection de doublons (🔍)\n- Bouton **Analyser les doublons** pour initier la recherche.\n- Résultats affichés dans `#duplicate-results`.\n\n### 3. Liste des exercices (📚)  \nFiltres disponibles :\n- Tous (`loadExercises('all')`)\n- Traités (`loadExercises('processed')`)   \n- Non traités (`loadExercises('unprocessed')`)\n\nAffichage dynamique dans `#exercise-list`.\n\n### 4. Nettoyage automatique (🧹)\n- **Simulation** : bouton *Dry Run* pour prévisualiser les suppressions.\n- **Suppression réelle** : bouton *Nettoyer*, activé via `cleanupReal()`.\n- Message d’avertissement avant suppression, avec création de backup implicite.\n\n## Conclusions\nLe document décrit une interface complète pour la gestion des exercices scolaires. Il centralise les analyses statistiques, offre un outil précis pour identifier et supprimer les doublons, ainsi qu’un mécanisme sécurisé (backup) pour le nettoyage automatique. Les sections sont bien structurées avec une interaction utilisateur claire via plusieurs boutons d’action",
+  "metadata": {
+    "mode": "DOCUMENT",
+    "steps": 1,
+    "hasAttachedDocument": true,
+    "followUpKind": null,
+    "usedFallback": false,
+    "streamed": true,
+    "intent_contract_id": "DOCUMENT_ANALYSIS",
+    "response_mode": "DOCUMENT",
+    "originalName": "admin_exercises.html",
+    "trace_id": "21b9f292-74a4-47ac-871d-e2a703561af8",
+    "analyzedAt": "2026-06-05T06:29:11.104Z"
+  }
+}

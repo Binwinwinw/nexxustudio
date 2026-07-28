@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "routingDecision.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["route", "query_type", "epistemic_risk", "reasoning_budget", "allowed_sources", "requires_human_review", "confidence", "rationale"],
+  "properties": {
+    "route": { "type": "string", "enum": ["verified_pipeline", "legacy_pipeline", "quick_answer"] },
+    "query_type": { "type": "string", "enum": ["social", "diagnostic", "architecture", "code_audit", "debug", "other"] },
+    "epistemic_risk": { "type": "string", "enum": ["low", "medium", "high"] },
+    "reasoning_budget": { "type": "string", "enum": ["low", "medium", "high"] },
+    "allowed_sources": { 
+      "type": "array", 
+      "items": { "type": "string", "enum": ["code", "logs", "db", "memory", "docs"] }
+    },
+    "requires_human_review": { "type": "boolean" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "rationale": { "type": "string" }
+  }
+}

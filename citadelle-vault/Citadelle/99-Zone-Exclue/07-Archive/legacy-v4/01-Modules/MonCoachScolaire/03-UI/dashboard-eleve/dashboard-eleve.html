@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;">
+    <title>Dashboard Élève v1.0 - MonCoachScolaire</title>
+    <script src="https://cdn.tailwindcss.com" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/framer-motion@10.16.4/dist/framer-motion.js" integrity="sha384-N6+MshDqLzRTo34EozZfM63B5qC4K8N0zX6pC5zQ0p6C5zQ0p6C5zQ0p6C5zQ0p6" crossorigin="anonymous"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        eduBlue: '#1E40AF',
+                        eduGreen: '#10B981',
+                        eduAmber: '#F59E0B'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .dark .glass-card { background: rgba(15, 23, 42, 0.6); }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
+
+    <!-- 📱 HEADER -->
+    <header class="sticky top-0 z-50 glass-card px-4 md:px-8 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-eduBlue to-eduGreen flex items-center justify-center text-white font-black text-xl shadow-lg">MC</div>
+            <div class="hidden sm:block">
+                <h1 class="text-sm font-bold text-slate-500 uppercase tracking-widest">Dashboard v1.0</h1>
+                <p class="text-xl font-black">MonCoachScolaire</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-6">
+            <div class="text-right hidden md:block">
+                <p class="text-xs text-slate-500 font-bold"> Thomas Lavigne</p>
+                <div class="w-32 h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full mt-1 overflow-hidden">
+                    <div class="bg-eduGreen h-full w-[72%]"></div>
+                </div>
+            </div>
+            <button class="relative p-2 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+                🔔 <span class="absolute top-1 right-1 w-2 h-2 bg-eduAmber rounded-full"></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- 📂 SIDEBAR (Desktop) -->
+        <aside class="hidden lg:flex flex-col w-72 h-[calc(100vh-80px)] p-6 gap-10 border-r border-slate-200 dark:border-slate-800">
+            <nav class="space-y-2">
+                <p class="text-[10px] font-black text-slate-400 mb-4 tracking-[0.2em]">MENU PRINCIPAL</p>
+                <a href="#" class="flex items-center gap-4 p-3 rounded-2xl bg-eduBlue/10 text-eduBlue font-bold">🏠 Accueil</a>
+                <a href="#" class="flex items-center gap-4 p-3 rounded-2xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all">📚 Matières</a>
+                <a href="#" class="flex items-center gap-4 p-3 rounded-2xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900">📝 Quizzes</a>
+            </nav>
+
+            <div class="space-y-4">
+                <p class="text-[10px] font-black text-slate-400 mb-4 tracking-[0.2em]">MATIÈRES RÉCENTES</p>
+                <div class="flex items-center gap-3 p-2 group cursor-pointer">
+                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                    <span class="text-sm font-medium group-hover:text-blue-500">Français</span>
+                </div>
+                <div class="flex items-center gap-3 p-2 group cursor-pointer">
+                    <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                    <span class="text-sm font-medium group-hover:text-red-500">Mathématiques</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 🚀 MAIN CONTENT -->
+        <main class="flex-1 p-6 lg:p-10 space-y-10 overflow-y-auto">
+            <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                <div class="glass-card p-6 rounded-[2rem] border-l-4 border-eduBlue">
+                    <p class="text-xs font-bold text-slate-400">SCORE MOYEN</p>
+                    <h2 class="text-4xl font-black mt-2 text-eduBlue">16.4<span class="text-lg text-slate-500">/20</span></h2>
+                </div>
+                <div class="glass-card p-6 rounded-[2rem] border-l-4 border-eduGreen">
+                    <p class="text-xs font-bold text-slate-400">QUIZZES COMPLÉTÉS</p>
+                    <h2 class="text-4xl font-black mt-2 text-eduGreen">42</h2>
+                </div>
+                <div class="glass-card p-6 rounded-[2rem] border-l-4 border-eduAmber">
+                    <p class="text-xs font-bold text-slate-400">TEMPS D'ÉTUDE</p>
+                    <h2 class="text-4xl font-black mt-2 text-eduAmber">12h <span class="text-lg">45m</span></h2>
+                </div>
+            </section>
+
+            <section class="space-y-6">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-2xl font-black">Continuer l'apprentissage</h3>
+                    <button class="text-eduBlue font-bold text-sm">Voir tout</button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Exercice Card -->
+                    <div class="glass-card p-2 rounded-[2.5rem] hover:scale-[1.02] transition-transform cursor-pointer group">
+                        <div class="bg-slate-200 dark:bg-slate-800 h-48 rounded-[2.2rem] mb-4 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent p-6 flex flex-col justify-end">
+                                <span class="px-3 py-1 bg-blue-500 text-white text-[10px] font-black rounded-full w-fit mb-2">FRANÇAIS</span>
+                                <h4 class="text-white font-bold text-xl">Analyse Linéaire : Germinal</h4>
+                            </div>
+                        </div>
+                        <div class="p-4 flex justify-between items-center">
+                            <p class="text-xs text-slate-500 font-medium">Progrès : 85%</p>
+                            <div class="w-10 h-10 rounded-full bg-eduBlue text-white flex items-center justify-center">▶️</div>
+                        </div>
+                    </div>
+
+                    <!-- Exercice Card 2 -->
+                    <div class="glass-card p-2 rounded-[2.5rem] hover:scale-[1.02] transition-transform cursor-pointer group">
+                        <div class="bg-slate-200 dark:bg-slate-800 h-48 rounded-[2.2rem] mb-4 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent p-6 flex flex-col justify-end">
+                                <span class="px-3 py-1 bg-red-500 text-white text-[10px] font-black rounded-full w-fit mb-2">MATHS</span>
+                                <h4 class="text-white font-bold text-xl">Suites Numériques</h4>
+                            </div>
+                        </div>
+                        <div class="p-4 flex justify-between items-center">
+                            <p class="text-xs text-slate-500 font-medium">Progrès : 40%</p>
+                            <div class="w-10 h-10 rounded-full bg-eduBlue text-white flex items-center justify-center">▶️</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Framer Motion Animation Logic
+        const { animate, stagger } = Motion;
+        
+        animate(".glass-card", 
+            { opacity: [0, 1], y: [20, 0] }, 
+            { delay: stagger(0.1), duration: 0.6, easing: "ease-out" }
+        );
+    </script>
+</body>
+</html>

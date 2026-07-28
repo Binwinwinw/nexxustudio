@@ -1,0 +1,20 @@
+{
+  "verbose": true,
+  "watch": [
+    "src",
+    "index.js",
+    "../citadelle-vault/Citadelle/01-Architecture/03-Forge"
+  ],
+  "ignore": [
+    "data",
+    "logs",
+    "scratch",
+    "artifacts",
+    "node_modules",
+    "*.json",
+    "*.txt",
+    "tests",
+    ".env"
+  ],
+  "delay": "2500"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "draft-1778136304614-df03d17b",
+  "timestamp": "2026-05-07T06:45:04.614Z",
+  "trigger": "Explique-moi comment tu gères la mémoire à long terme entre les sessions et l'impact du RAG sur tes décisions stratégiques.",
+  "scope": [
+    "Cognition systémique, arbitrage identitaire, planification stratégique d'architectures IA. Spécialiste du déploiement souverain et des frameworks agentiques."
+  ],
+  "runId": "run-1778136148732",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 155882,
+  "evidence": {
+    "logs": "Full Draft: <think>Thinking Process:\n\n1.  **Analyze the Request:**\n    *   **User:** Asks about Long-Term Memory...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

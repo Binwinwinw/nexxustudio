@@ -1,0 +1,53 @@
+{
+  "name": "Request Interpreter",
+  "version": "0.1.0",
+  "description": "P4 candidat — interprète de requête gouverné : normalisation, hypothèses d'intention, ambiguïtés, politique clarify/confirm/respond. Implémenté en micro-couche interne ; promotion skill après observation terrain.",
+  "enabled": false,
+  "lifecycle": "candidate",
+  "requiresRuntime": true,
+  "priority": 870,
+  "parentSkill": "skill-micro-delestage",
+  "intentIds": ["INSTANT", "SOCIAL"],
+  "triggers": [
+    "request interpreter",
+    "interpretRequest",
+    "requête bancale",
+    "clarification requête",
+    "request_interpreter_clarify",
+    "request_interpreter_confirm",
+    "fragile_reformulate_ambiguous_clarify"
+  ],
+  "runtimeModules": [
+    {
+      "path": "server/src/agent/micro/interpreter/requestInterpreter.js",
+      "exportName": "interpretRequest",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/agent/micro/interpreter/requestNormalizer.js",
+      "exportName": "canonicalizeRequest",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/agent/micro/interpreter/clarificationPolicy.js",
+      "exportName": "decideInterpreterAction",
+      "required": true,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/request-interpreter-p4.test.js"
+  ],
+  "promotionCriteria": [
+    "0 fail sur request-interpreter-p4.test.js pendant 2 semaines terrain",
+    "Taux clarify/confirm documenté dans télémétrie",
+    "Playbook smoke P4 validé manuellement",
+    "Pas de régression sur micro-conversation-shortcircuit"
+  ],
+  "vaultRefs": [
+    "citadelle-vault/Citadelle/02-Architecture/modules/Micro-Conversation-Delestage.md",
+    "citadelle-vault/Citadelle/04-Operations/procedures/Playbook-Micro-Delestage-Conversationnel.md"
+  ]
+}

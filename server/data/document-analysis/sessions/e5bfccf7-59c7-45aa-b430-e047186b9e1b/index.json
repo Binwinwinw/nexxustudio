@@ -1,0 +1,18 @@
+{
+  "documents": [
+    {
+      "id": "doc-1780544107806-b7d885c1",
+      "sessionId": "e5bfccf7-59c7-45aa-b430-e047186b9e1b",
+      "browserId": "68c008bf-9fa5-4f8b-bc27-f4afe5dbb671",
+      "originalName": "role-boundary-test-pack.csv",
+      "storagePath": "D:\\Hostinger\\public_html\\nexxustudio\\server\\data\\document-analysis\\documents\\doc-1780544107806-b7d885c1\\role-boundary-test-pack.csv",
+      "mimetype": "text/csv",
+      "size": 3284,
+      "status": "analyzed",
+      "createdAt": "2026-06-04T03:35:07.808Z",
+      "traceId": "8f3ec0d7-5ad8-486f-b511-68a443849fdc",
+      "lastAnalysisJobId": "job-doc-1780544110199-0bgg4i",
+      "lastAnalysisAt": "2026-06-04T03:35:46.961Z"
+    }
+  ]
+}

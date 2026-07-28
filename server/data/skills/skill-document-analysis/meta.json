@@ -1,0 +1,35 @@
+{
+  "name": "Document Analysis",
+  "version": "1.0.0",
+  "description": "Analyse structurée de documents joints (texte, code, logs) avec briefing, streaming et fallback document-aware.",
+  "enabled": true,
+  "requiresRuntime": true,
+  "priority": 900,
+  "intentIds": ["DOCUMENT_ATTACHED", "DOCUMENT_ANALYSIS"],
+  "triggers": [
+    "analyse le document",
+    "analyse le fichier",
+    "document joint",
+    "pièce jointe",
+    "fichier joint",
+    "briefing document",
+    "contenu du fichier"
+  ],
+  "runtimeModules": [
+    {
+      "path": "citadelle-vault/Citadelle/03-Forge/document-analysis.js",
+      "exportName": "documentAnalysis",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/agent/utils/contextAgent.js",
+      "exportName": "default",
+      "required": true,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/pdf-extractor.test.js"
+  ]
+}

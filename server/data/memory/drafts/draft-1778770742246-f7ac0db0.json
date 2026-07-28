@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778770742246-f7ac0db0",
+  "timestamp": "2026-05-14T14:59:02.246Z",
+  "trigger": "yop yop",
+  "scope": "general",
+  "runId": "run-1778770669155",
+  "selectedModel": "qwen3.5:4b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 73090,
+  "evidence": {
+    "logs": "Full Draft: <think>Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Input: \"yop yop\" (French slang for \"h...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

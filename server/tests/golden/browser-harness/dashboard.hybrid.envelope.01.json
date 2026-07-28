@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "kind": "nexxus.design.extract_result",
+  "extraction_mode": "hybrid",
+  "style_summary": {
+    "palette": 8,
+    "typography": 1,
+    "layout_signatures": 0
+  },
+  "tokens": {
+    "colors": {
+      "primary": "#202838",
+      "accent": "#e0e8f0",
+      "distinct_count": 8
+    },
+    "typography": {
+      "primary_family": null,
+      "distinct_families": 1
+    }
+  },
+  "layout_signatures": [],
+  "signals": {
+    "palette": 8,
+    "typography": 1,
+    "sections": 2,
+    "cta": 0,
+    "layout_signatures": 0,
+    "computed_nodes": 4,
+    "static_nodes": 11
+  },
+  "quality_gate": {
+    "merge_ok": true,
+    "score": 60
+  }
+}

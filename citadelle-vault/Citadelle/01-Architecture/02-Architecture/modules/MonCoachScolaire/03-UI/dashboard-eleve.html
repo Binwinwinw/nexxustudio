@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonCoachScolaire - Dashboard Élève</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Framer Motion (via Motion One pour HTML natif) -->
+    <script src="https://cdn.jsdelivr.net/npm/motion@10.16.2/dist/motion.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#a855f7',
+                        accent: '#f43f5e',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .dark .glass { background: rgba(0, 0, 0, 0.2); }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-[#0f172a] text-gray-900 dark:text-gray-100 min-h-screen font-sans">
+
+    <!-- 📱 HEADER & PROGRESSION -->
+    <header class="sticky top-0 z-50 glass px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-secondary"></div>
+            <div>
+                <h1 class="text-lg font-bold leading-none">Thomas L.</h1>
+                <p class="text-xs text-gray-400">Terminale Générale</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-6">
+            <div class="hidden md:block w-48 bg-gray-200 dark:bg-gray-800 rounded-full h-2">
+                <div class="bg-primary h-2 rounded-full w-[65%]"></div>
+            </div>
+            <button class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">🔔</button>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- 📂 SIDEBAR -->
+        <aside class="hidden lg:flex flex-col w-64 h-[calc(100vh-72px)] p-6 gap-8 border-r border-gray-200 dark:border-gray-800">
+            <nav class="space-y-4">
+                <a href="#" class="flex items-center gap-3 text-primary font-medium">🏠 Dashboard</a>
+                <a href="#" class="flex items-center gap-3 text-gray-500 hover:text-primary">📚 Mes Matières</a>
+                <a href="#" class="flex items-center gap-3 text-gray-500 hover:text-primary">📝 Quizzes</a>
+                <a href="#" class="flex items-center gap-3 text-gray-500 hover:text-primary">📊 Statistiques</a>
+            </nav>
+            <div class="mt-auto p-4 rounded-2xl bg-primary/10 border border-primary/20">
+                <p class="text-xs font-bold text-primary mb-2">MODE EXAMEN</p>
+                <p class="text-[10px] text-gray-400 italic">"Objectif Bac : J-45"</p>
+            </div>
+        </aside>
+
+        <!-- 🚀 MAIN CONTENT -->
+        <main class="flex-1 p-6 lg:p-10 space-y-10">
+            <!-- Stats Row -->
+            <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass p-6 rounded-3xl">
+                    <p class="text-gray-400 text-sm">Exercices finis</p>
+                    <h2 class="text-3xl font-black mt-1">128</h2>
+                </div>
+                <div class="glass p-6 rounded-3xl border-l-4 border-secondary">
+                    <p class="text-gray-400 text-sm">Temps d'étude</p>
+                    <h2 class="text-3xl font-black mt-1">42h</h2>
+                </div>
+                <div class="glass p-6 rounded-3xl bg-gradient-to-br from-primary/20 to-transparent">
+                    <p class="text-gray-400 text-sm">Précision Moyenne</p>
+                    <h2 class="text-3xl font-black mt-1">84%</h2>
+                </div>
+            </section>
+
+            <!-- Exercises Grid -->
+            <section class="space-y-6">
+                <div class="flex justify-between items-end">
+                    <h3 class="text-xl font-bold">Quizzes recommandés</h3>
+                    <a href="#" class="text-primary text-sm font-medium">Tout voir →</a>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <!-- Card 1 -->
+                    <div class="glass group cursor-pointer hover:border-primary/50 transition-all p-2 rounded-[2rem]">
+                        <div class="h-40 rounded-[1.8rem] bg-gray-200 dark:bg-gray-800 mb-4 overflow-hidden relative">
+                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
+                                <span class="px-3 py-1 bg-primary text-white text-[10px] font-bold rounded-full">MATHÉMATIQUES</span>
+                             </div>
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-bold text-lg mb-1">Dérivées et Primitives</h4>
+                            <p class="text-xs text-gray-500">15 Questions • 20 min</p>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="glass group cursor-pointer hover:border-secondary/50 transition-all p-2 rounded-[2rem]">
+                        <div class="h-40 rounded-[1.8rem] bg-gray-200 dark:bg-gray-800 mb-4 overflow-hidden relative">
+                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
+                                <span class="px-3 py-1 bg-secondary text-white text-[10px] font-bold rounded-full">PHYSIQUE</span>
+                             </div>
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-bold text-lg mb-1">Lois de Newton</h4>
+                            <p class="text-xs text-gray-500">12 Questions • 15 min</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 📱 MOBILE FOOTER NAV -->
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 glass px-8 py-4 flex justify-between items-center border-t border-gray-800">
+        <button class="text-primary">🏠</button>
+        <button class="text-gray-500">📚</button>
+        <button class="text-gray-500">📝</button>
+        <button class="text-gray-500">👤</button>
+    </nav>
+
+    <script>
+        // Framer Motion Animation Mockup
+        const { animate } = Motion;
+        animate(".glass", { opacity: [0, 1], y: [20, 0] }, { duration: 0.5, delay: (i) => i * 0.1 });
+    </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+{
+  "generatedAt": "2026-05-28T22:23:52.546Z",
+  "dateFr": "28/05/2026",
+  "day": "2026-05-28",
+  "status": "OK",
+  "score": 90,
+  "globalScore": 90,
+  "snapshot": {
+    "at": "2026-05-28T22:23:52.550Z",
+    "today": {
+      "ingestAttempts": 1,
+      "committed": 0,
+      "skipped": 0,
+      "precheckRefused": 1,
+      "promotionRefused": 0,
+      "promoted": 0,
+      "contractViolations": 0,
+      "staleRefusals": 0,
+      "streamLikeErrors": 0,
+      "promotionRatePct": 0,
+      "staleInStore": 0
+    },
+    "distribution": {
+      "storeActive": 0,
+      "episodicFiles": 4,
+      "semanticFacts": 0,
+      "heritageProposed": 0,
+      "proceduralTotal": 11,
+      "promotedToday": {
+        "episodic": 0,
+        "semantic": 0,
+        "heritage": 0
+      }
+    },
+    "refusalReasons": [
+      {
+        "reason": "test_probe",
+        "count": 1
+      }
+    ],
+    "recentEvents": [
+      {
+        "at": "2026-05-28T22:15:20.235Z",
+        "status": "rejected_precheck",
+        "target": null,
+        "reasons": [
+          "test_probe"
+        ],
+        "memoryId": null,
+        "pipelineMode": "COMPOSER"
+      }
+    ],
+    "globalScore": 90,
+    "kpis": {
+      "memoryGateHealthy": true,
+      "promotionFlowActive": false,
+      "noStaleActive": true,
+      "governanceReady": true
+    }
+  },
+  "trend": [],
+  "trendLabel": "Données insuffisantes",
+  "trendDelta": 0,
+  "todayEvents": [
+    {
+      "at": "2026-05-28T22:15:20.235Z",
+      "status": "rejected_precheck",
+      "reasons": [
+        "test_probe"
+      ],
+      "pipelineMode": "COMPOSER"
+    }
+  ],
+  "recommendation": "Gouvernance mémoire stable. Continuer le suivi quotidien promotions/refus.",
+  "refusalLines": "- `test_probe` · 1 occurrence(s)",
+  "eventLines": "- `rejected_precheck` · test_probe · 28/05/2026 18:15:20",
+  "tierLines": "- Store actif: **0**\n- Episodic: **4**\n- Semantic: **0**\n- Heritage proposés (auto v1): **0**\n- Promotions du jour: episodic 0, semantic 0, heritage 0"
+}

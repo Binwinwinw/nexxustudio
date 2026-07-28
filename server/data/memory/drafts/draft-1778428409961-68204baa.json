@@ -1,0 +1,21 @@
+{
+  "id": "draft-1778428409961-68204baa",
+  "timestamp": "2026-05-10T15:53:29.961Z",
+  "trigger": "peux tu voir les dossiers des projets déjà existant",
+  "scope": [
+    "Performance profiling, optimization, assets compression."
+  ],
+  "runId": "run-1778428337509",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 72452,
+  "evidence": {
+    "logs": "Full Draft: <think>Okay, I need to figure out how to see the existing project folders. The user mentioned they'r...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

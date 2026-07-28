@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+airllm
+torch
+transformers
+optimum
+accelerate
+pydantic
+python-dotenv

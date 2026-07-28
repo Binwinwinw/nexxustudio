@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778394407446-ee54354e",
+  "timestamp": "2026-05-10T06:26:47.446Z",
+  "trigger": "te souviens tu de ceci : \nj'ai les informations suivantes à organiser dans une page index.php : Voici une proposition de programme de formation structuré et complet pour maîtriser Microsoft Teams 365. Ce cursus est conçu de manière progressive, allant de la simple prise en main à l'utilisation avancée de l'écosystème Microsoft 365.\n\nCe programme est divisé en 4 niveaux de compétence.",
+  "scope": "general",
+  "runId": "run-1778393121480",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_unsolicited_code_injection",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 1285966,
+  "evidence": {
+    "logs": "Failed Validation: unsolicited_code_injection\nResponse: Je me souviens parfaitement de vos informations concernant le programme de formation. Je vais vous a...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

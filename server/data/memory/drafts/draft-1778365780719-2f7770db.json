@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778365780719-2f7770db",
+  "timestamp": "2026-05-09T22:29:40.719Z",
+  "trigger": "Test interaction",
+  "scope": "general",
+  "runId": "run-1778365728779",
+  "selectedModel": "qwen3.5:4b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 51940,
+  "evidence": {
+    "logs": "Full Draft: <think>L'utilisateur teste l'interaction. Je dois confirmer mon identité, mes capacités et mes règle...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

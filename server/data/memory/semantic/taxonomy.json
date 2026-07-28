@@ -1,0 +1,12 @@
+{
+  "name": "Nexxus Semantic Taxonomy",
+  "version": "1.0",
+  "themes": {
+    "ROUTING": ["cognition", "experts", "layers", "phases"],
+    "INFRA": ["vram", "ram", "gpu", "airllm", "hardware"],
+    "SOUVERAINETE": ["persona", "identity", "guardrails", "identity_mirror"],
+    "STABILITE": ["loops", "errors", "repair", "tokens", "hysteresis"],
+    "INTERACTION": ["social", "hybrid", "brainstorming", "workshop"]
+  },
+  "scopes": ["orchestrator", "expert", "persona", "infra", "toolchain", "logic"]
+}

@@ -1,0 +1,265 @@
+{
+  "version": "2.0.0",
+  "kind": "nexxus.design.extract_result",
+  "skill_id": "skill-design-extract",
+  "source": {
+    "url": "http://127.0.0.1:5173/landing",
+    "fetched_at": "2026-06-01T02:40:58.586Z",
+    "extraction_mode": "hybrid",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "browser_session_id": "sess-pipeline-landing"
+  },
+  "tokens": {
+    "colors": {
+      "primary": "#6068f0",
+      "accent": "#6068f0",
+      "surface": "#f8f8ff",
+      "text": "#6068f0",
+      "palette_ranked": [
+        {
+          "hex": "#6068f0",
+          "role": "primary",
+          "frequency": 4,
+          "sources": [
+            "cta",
+            "style"
+          ],
+          "rank": 1
+        },
+        {
+          "hex": "#101828",
+          "role": "support",
+          "frequency": 4,
+          "sources": [
+            "surface",
+            "style",
+            "meta"
+          ],
+          "rank": 2
+        },
+        {
+          "hex": "#f8f8ff",
+          "role": "surface",
+          "frequency": 3,
+          "sources": [
+            "surface",
+            "style"
+          ],
+          "rank": 3
+        }
+      ],
+      "distinct_count": 3
+    },
+    "typography": {
+      "families": [
+        {
+          "name": "Inter",
+          "roles": [
+            "cta",
+            "style"
+          ],
+          "sizes_px": [
+            16
+          ],
+          "frequency": 2
+        }
+      ],
+      "scale": [
+        16
+      ],
+      "distinct_families": 1,
+      "distinct_sizes": 1
+    },
+    "spacing": {
+      "scale_px": [
+        24,
+        16,
+        32,
+        48,
+        8,
+        12
+      ],
+      "dominant_gap": "24px",
+      "raw": [
+        "24px",
+        "16px",
+        "32px",
+        "48px",
+        "8px",
+        "12px"
+      ]
+    },
+    "radius": {
+      "values": [
+        "16px",
+        "8px"
+      ],
+      "dominant": "16px"
+    },
+    "shadows": []
+  },
+  "layout_signatures": [
+    {
+      "pattern": "header+main+footer",
+      "confidence": 0.96
+    },
+    {
+      "pattern": "sidebar+main",
+      "confidence": 0.78
+    },
+    {
+      "pattern": "hero-first",
+      "confidence": 0.85
+    }
+  ],
+  "dna_dossier": {
+    "source_url": "http://127.0.0.1:5173/landing",
+    "palette": [
+      {
+        "value": "#0f172a",
+        "count": 2
+      },
+      {
+        "value": "#6366f1",
+        "count": 2
+      },
+      {
+        "value": "#ffffff",
+        "count": 2
+      },
+      {
+        "value": "#f8fafc",
+        "count": 1
+      }
+    ],
+    "typography": {
+      "families": [
+        {
+          "value": "Inter, sans-serif",
+          "count": 1
+        }
+      ],
+      "heading_samples": [
+        "La Citadelle",
+        "Observer, transposer, corriger"
+      ]
+    },
+    "spacing_rhythm": [
+      {
+        "value": "24px",
+        "count": 4
+      },
+      {
+        "value": "16px",
+        "count": 3
+      },
+      {
+        "value": "32px",
+        "count": 1
+      },
+      {
+        "value": "48px",
+        "count": 1
+      },
+      {
+        "value": "8px",
+        "count": 1
+      },
+      {
+        "value": "12px",
+        "count": 1
+      }
+    ],
+    "layout_sections": [
+      {
+        "tag": "header",
+        "count": 1
+      },
+      {
+        "tag": "nav",
+        "count": 1
+      },
+      {
+        "tag": "main",
+        "count": 1
+      },
+      {
+        "tag": "section",
+        "count": 1
+      },
+      {
+        "tag": "footer",
+        "count": 1
+      },
+      {
+        "tag": "article",
+        "count": 1
+      }
+    ],
+    "cta_patterns": [
+      {
+        "tag": "a",
+        "class": "btn-primary cta",
+        "text": "Découvrir Forge"
+      }
+    ],
+    "component_patterns": [
+      {
+        "value": "nav-container",
+        "count": 1
+      },
+      {
+        "value": "hero",
+        "count": 1
+      },
+      {
+        "value": "card",
+        "count": 1
+      }
+    ],
+    "editorial_tone": {
+      "title": "Nexxus Landing — La Citadelle",
+      "meta_description": "",
+      "h1": "La Citadelle"
+    },
+    "tech_stack_hints": []
+  },
+  "patterns": [
+    {
+      "value": "nav-container",
+      "count": 1
+    },
+    {
+      "value": "hero",
+      "count": 1
+    },
+    {
+      "value": "card",
+      "count": 1
+    }
+  ],
+  "reproduction_prompt": "Refonte fidèle au style source observé. Palette dominante : #6068f0, #6068f0, #f8f8ff. Typographies : Inter. Structure : header+main+footer, sidebar+main, hero-first. Rythme espacement : base 24px. Patterns à conserver : nav-container, hero, card. Ne pas inventer de composants absents du dossier ADN. Incertitudes : 3 signal(s) partiel(s).",
+  "signals": {
+    "palette": 3,
+    "typography": 1,
+    "sections": 6,
+    "cta": 1,
+    "layout_signatures": 3,
+    "computed_nodes": 3,
+    "static_nodes": 7
+  },
+  "uncertainties": [
+    "Analyse static HTML/CSS — getComputedStyle requiert browser harness (Phase C).",
+    "Fusion hybrid — styles getComputedStyle prioritaires sur HTML statique.",
+    "Palette static (#101828) vs computed (#6068f0) — computed prioritaire."
+  ],
+  "quality_gate": {
+    "score": 87,
+    "merge_ok": true,
+    "blockers": []
+  },
+  "generated_at": "2026-06-01T02:40:58.588Z"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "draft-1777878567817-b2bd3175",
+  "timestamp": "2026-05-04T07:09:27.817Z",
+  "trigger": "recommence GUIDANCE : FICHIER HTML DE PRÉSENTATION INTERACTIF il a été mal découpé et je ne le comprends pas merci beaucoup ",
+  "scope": "general",
+  "runId": "run-1777878480886",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "failed_sovereignty_unsolicited_code_injection",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 86931,
+  "evidence": {
+    "logs": "Failed Validation: unsolicited_code_injection\nResponse: Bonjour. Je suis Nexxus, l'assistant de Nexxus Citadel. Je coordonne les expertises, je structure le...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

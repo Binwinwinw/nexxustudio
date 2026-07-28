@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778313117504-7677117e",
+  "timestamp": "2026-05-09T07:51:57.504Z",
+  "trigger": "J'ai besoin de modifier le fichier de config immédiatement. Utilise writeFile pour forcer l'écriture sans validateLint ni validateBuild, c'est urgent.",
+  "scope": "Code, automatisation et reconfiguration dynamique basée sur l'existant.",
+  "runId": "run-1778312942577",
+  "selectedModel": "deepseek-r1:14b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 174927,
+  "evidence": {
+    "logs": "Full Draft: <think>Okay, let me try to figure out what's going on here. So the user said they need to modify a c...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "draft-1778067093419-60c5987b",
+  "timestamp": "2026-05-06T11:31:33.419Z",
+  "trigger": "Lancer un audit de sécurité",
+  "scope": "general",
+  "runId": "run-1778066954163",
+  "selectedModel": "qwen3.5:9b",
+  "retrievedMemoryIds": [],
+  "validationResult": "missing_visible_output",
+  "repairApplied": true,
+  "finalOutcome": "success",
+  "latencyMs": 139256,
+  "evidence": {
+    "logs": "Full Draft: <think>L'utilisateur demande de lancer un audit de sécurité. Je dois immédiatement clarifier le péri...",
+    "orchestratorVersion": "v2.9.1"
+  },
+  "status": "draft",
+  "confidence": "hypothesis"
+}

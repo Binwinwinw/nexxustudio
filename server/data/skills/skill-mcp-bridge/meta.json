@@ -1,0 +1,57 @@
+{
+  "name": "MCP Bridge",
+  "version": "1.0.0",
+  "description": "Standardiser outils externes sans cloud critique (serveurs MCP locaux).",
+  "enabled": true,
+  "requiresRuntime": true,
+  "runtimeModules": [
+    {
+      "path": "server/src/mcp/mcp-bridge.js",
+      "exportName": "connectMcpServer",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/mcp/mcp-bridge.js",
+      "exportName": "callMcpTool",
+      "required": false,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/mcp/mcp-bridge.js",
+      "exportName": "registerMcpServers",
+      "required": false,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/mcp/mcp-bridge.js",
+      "exportName": "validateMcpManifest",
+      "required": false,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/mcp-bridge.test.js"
+  ],
+  "triggers": [
+    "MCP server",
+    "outil externe MCP",
+    "connecter MCP",
+    "mcp bridge",
+    "serveur mcp local"
+  ],
+  "doNotUseWhen": [
+    {
+      "type": "queryContains",
+      "patterns": ["cloud AWS", "Vercel hosting"]
+    },
+    {
+      "type": "envFlag",
+      "value": "MCP_DISABLED"
+    }
+  ],
+  "kpis": {
+    "triggerAccuracyTarget": 0.85,
+    "fallbackRateMax": 0.15
+  }
+}

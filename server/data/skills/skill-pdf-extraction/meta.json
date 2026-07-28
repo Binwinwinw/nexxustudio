@@ -1,0 +1,53 @@
+{
+  "name": "PDF Extraction",
+  "version": "1.0.0",
+  "description": "Extraction texte PDF local-first ; contrat de capacités aligné OCR/vision en aval.",
+  "enabled": true,
+  "priority": 895,
+  "intentIds": ["DOCUMENT_ATTACHED", "DOCUMENT_ANALYSIS"],
+  "triggers": [
+    "extraire le texte de ce pdf",
+    "analyser le pdf",
+    "fichier.pdf",
+    "document pdf",
+    "pdf joint"
+  ],
+  "doNotUseWhen": [
+    {
+      "type": "queryContains",
+      "patterns": ["prévisualiser", "preview", "aperçu seulement", "juste voir le pdf"]
+    },
+    {
+      "type": "queryMatches",
+      "pattern": "(\\d+\\s*(mo|mb|go|gb)).*pdf|pdf.*(\\d+\\s*(mo|mb|go|gb))"
+    },
+    {
+      "type": "queryContains",
+      "patterns": ["pdf scanné", "scan sans ocr", "ocr"]
+    }
+  ],
+  "fallbackSkillId": "skill-document-analysis",
+  "runtimeModules": [
+    {
+      "path": "server/src/services/pdf-extractor.js",
+      "exportName": "extractTextFromPdf",
+      "required": true,
+      "status": "implemented"
+    },
+    {
+      "path": "server/src/agent/utils/contextAgent.js",
+      "exportName": "default",
+      "required": true,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/pdf-extractor.test.js",
+    "server/tests/document-capability-contract.test.js"
+  ],
+  "kpis": {
+    "triggerAccuracyTarget": 0.88,
+    "maxFalsePositiveRate": 0.08,
+    "notes": "Fallback document-analysis si preview ou OCR demandé"
+  }
+}

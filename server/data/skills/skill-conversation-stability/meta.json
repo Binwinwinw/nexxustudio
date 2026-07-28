@@ -1,0 +1,31 @@
+{
+  "name": "Conversation Stability",
+  "version": "1.0.0",
+  "description": "Stabilité conversationnelle, streaming, contrats de réponse, régressions et health score.",
+  "enabled": true,
+  "requiresRuntime": true,
+  "priority": 840,
+  "intentIds": ["DIAGNOSTIC", "CONVERSATION_STANDARD"],
+  "triggers": [
+    "régression",
+    "test conversation",
+    "stabilité",
+    "streaming",
+    "health score",
+    "completeness",
+    "signal insuffisant",
+    "conversation health"
+  ],
+  "runtimeModules": [
+    {
+      "path": "server/src/agent/telemetry/conversationHealthScore.js",
+      "exportName": "computeHealthScore",
+      "required": true,
+      "status": "implemented"
+    }
+  ],
+  "testFiles": [
+    "server/tests/conversation-stability.test.js",
+    "server/tests/conversation-health-score.test.js"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Maturation Industrielle",
+  "version": "1.0.0",
+  "description": "Capacité d'indexation, de benchmarking et d'arbitrage SMAC sur des dépôts de code locaux.",
+  "enabled": true,
+  "requiresRuntime": false,
+  "runtimeModules": [],
+  "triggers": ["analyse ce projet", "indexe", "audit de maturité", "smac-arbitrate"]
+}

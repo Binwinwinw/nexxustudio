@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Observabilité Souveraine — La Citadelle</title>
+  
+  <!-- Font Outfit pour une esthétique moderne et scannable -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── SYSTEM DESIGN SYSTEM (HSL TOKENS) ────────────────────────────────── */
+    :root {
+      --bg-main: hsl(218, 22%, 6%);
+      --bg-panel: hsla(218, 16%, 12%, 0.6);
+      --bg-card: hsla(218, 18%, 15%, 0.45);
+      --border-color: hsla(218, 14%, 22%, 0.4);
+      --border-glow: hsla(218, 14%, 28%, 0.6);
+      
+      --color-text-primary: hsl(218, 15%, 94%);
+      --color-text-secondary: hsl(218, 10%, 62%);
+      --color-text-muted: hsl(218, 8%, 45%);
+
+      /* Status Accents (Elite military shades) */
+      --accent-green: hsl(142, 60%, 48%);
+      --accent-green-alpha: hsla(142, 60%, 48%, 0.12);
+      
+      --accent-red: hsl(352, 75%, 52%);
+      --accent-red-alpha: hsla(352, 75%, 52%, 0.12);
+
+      --accent-orange: hsl(36, 90%, 54%);
+      --accent-orange-alpha: hsla(36, 90%, 54%, 0.12);
+
+      --accent-blue: hsl(212, 85%, 58%);
+      --accent-blue-alpha: hsla(212, 85%, 58%, 0.12);
+
+      --sidebar-width: 260px;
+      --topbar-height: 70px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--color-text-primary);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+    }
+
+    /* ── TABULAR NUMBERS FOR MATHEMATICAL ALIGNMENT ──────────────────────── */
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── LAYOUT ─────────────────────────────────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-width);
+      height: 100%;
+      background-color: var(--bg-panel);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      flex-shrink: 0;
+    }
+
+    .main-container {
+      flex-grow: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .topbar {
+      height: var(--topbar-height);
+      border-bottom: 1px solid var(--border-color);
+      background-color: var(--bg-panel);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      flex-shrink: 0;
+      backdrop-filter: blur(10px);
+    }
+
+    .content-viewport {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* ── BRANDING (SUPPRESSION DES GRADIENTS MULTICOLORES DE LOGO) ──────── */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .brand-logo {
+      width: 28px;
+      height: 28px;
+      background-color: var(--accent-blue);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--bg-main);
+      font-size: 14px;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── NAVIGATION ─────────────────────────────────────────────────────── */
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item.active a, .nav-item a:hover {
+      background-color: var(--bg-card);
+      color: var(--color-text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .system-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      background-color: hsla(218, 15%, 20%, 0.3);
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent-green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* ── TOPBAR STATUS ELEMENTS ────────────────────────────────────────── */
+    .topbar-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .topbar-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    select.time-select {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--color-text-primary);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    select.time-select:focus {
+      border-color: var(--accent-blue);
+    }
+
+    .hardware-pills {
+      display: flex;
+      gap: 12px;
+    }
+
+    .hardware-pill {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+
+    .hardware-pill span.value {
+      color: var(--accent-blue);
+    }
+
+    /* ── KPI CARDS GRID (RESPONSIVE AUTO-FIT) ───────────────────────────── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .kpi-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .kpi-card:hover {
+      border-color: var(--border-glow);
+      transform: translateY(-2px);
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .kpi-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+
+    .kpi-footer {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .kpi-card.rejection .kpi-value { color: var(--accent-red); }
+    .kpi-card.failsafe .kpi-value { color: var(--accent-orange); }
+    .kpi-card.latency .kpi-value { color: var(--accent-blue); }
+
+    /* ── TRENDS SECTION (CHARTS ROW) ─────────────────────────────────────── */
+    .trends-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+    }
+
+    .panel {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 240px;
+      position: relative;
+    }
+
+    /* ── DETAILS TABLE ──────────────────────────────────────────────────── */
+    .details-panel {
+      flex-grow: 1;
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table.details-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    table.details-table th, table.details-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    table.details-table th {
+      color: var(--color-text-secondary);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      background-color: hsla(218, 15%, 20%, 0.15);
+    }
+
+    table.details-table tr:hover td {
+      background-color: hsla(218, 15%, 25%, 0.12);
+    }
+
+    /* Verdict Tags Styles */
+    .verdict-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .verdict-tag.approved { background-color: var(--accent-green-alpha); color: var(--accent-green); }
+    .verdict-tag.approved_with_caveats { background-color: var(--accent-blue-alpha); color: var(--accent-blue); }
+    .verdict-tag.rejected { background-color: var(--accent-red-alpha); color: var(--accent-red); }
+    .verdict-tag.failed_safe { background-color: var(--accent-orange-alpha); color: var(--accent-orange); }
+
+    /* Failure Mode List Styles */
+    .failure-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .failure-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+
+    .failure-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+    }
+
+    .failure-count-badge {
+      background-color: var(--accent-red-alpha);
+      color: var(--accent-red);
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    /* ── LOADING OVERLAY ────────────────────────────────────────────────── */
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 1s infinite linear;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── MEDIA QUERIES POUR UN RESPONSIVE RÉEL SANS DOUBLE SCROLL ───────── */
+    @media (max-width: 1024px) {
+      .trends-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        overflow-y: auto;
+        height: auto;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding: 16px;
+      }
+
+      .brand {
+        margin-bottom: 16px;
+      }
+
+      .nav-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .main-container {
+        height: auto;
+        overflow: visible;
+      }
+
+      .content-viewport {
+        overflow-y: visible;
+        padding: 16px;
+      }
+
+      .topbar {
+        padding: 16px;
+        height: auto;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar Tactique -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">N</div>
+      <h1 class="brand-title">La Citadelle</h1>
+    </div>
+
+    <nav>
+      <ul class="nav-list">
+        <li class="nav-item active" id="nav-tab-observability">
+          <a href="#" onclick="switchTab('observability')">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            Observabilité
+          </a>
+        </li>
+        <li class="nav-item" id="nav-tab-workspaces">
+          <a href="#" onclick="switchTab('workspaces')">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+            Santé Workspaces
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/api/health" target="_blank">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Santé API
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/api/health/thermal" target="_blank">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Télémétrie LLM
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="system-badge">
+        <div class="pulse-dot"></div>
+        <span id="system-source-lbl">Base Active</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Section Principale -->
+  <div class="main-container">
+    
+    <!-- Topbar Tactique -->
+    <header class="topbar">
+      <h2 class="topbar-title">Cockpit Observabilité v5.0</h2>
+      <div class="topbar-controls">
+        <div class="hardware-pills">
+          <div class="hardware-pill">
+            <span>LLM Tiers:</span>
+            <span class="value" id="status-warmup">VÉRIFICATION</span>
+          </div>
+          <div class="hardware-pill">
+            <span>Pression VRAM:</span>
+            <span class="value tabular-nums" id="status-vram">0%</span>
+          </div>
+          <div class="hardware-pill">
+            <span>Gouvernance:</span>
+            <span class="value" id="status-gov">CRUISE</span>
+          </div>
+        </div>
+
+        <select class="time-select" id="time-window-select">
+          <option value="1">Dernières 24 Heures</option>
+          <option value="7" selected>7 Derniers Jours</option>
+          <option value="14">14 Derniers Jours</option>
+          <option value="30">30 Derniers Jours</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- Zone principale avec un seul défilement vertical -->
+    <main class="content-viewport">
+      
+      <!-- VUE OBSERVABILITÉ (Actuelle) -->
+      <div id="view-observability">
+        <!-- KPI Top Row (Responsive Adaptatif) -->
+        <section class="kpi-grid">
+          <div class="kpi-card">
+            <span class="kpi-label">Volume de Runs</span>
+            <span class="kpi-value tabular-nums" id="kpi-total-runs">0</span>
+            <span class="kpi-footer">Exécutions de pipeline</span>
+          </div>
+          <div class="kpi-card rejection">
+            <span class="kpi-label">Taux de Rejet</span>
+            <span class="kpi-value tabular-nums" id="kpi-rejection-rate">0%</span>
+            <span class="kpi-footer">Alertes de dérives sémantiques</span>
+          </div>
+          <div class="kpi-card failsafe">
+            <span class="kpi-label">Runs Failed Safe</span>
+            <span class="kpi-value tabular-nums" id="kpi-failed-safe">0</span>
+            <span class="kpi-footer">Arrêts sécurisés contrôlés</span>
+          </div>
+          <div class="kpi-card latency">
+            <span class="kpi-label">Latence Moyenne</span>
+            <span class="kpi-value tabular-nums" id="kpi-avg-latency">0 ms</span>
+            <span class="kpi-footer">Vitesse de génération</span>
+          </div>
+          <div class="kpi-card latency">
+            <span class="kpi-label">Latence Critic</span>
+            <span class="kpi-value tabular-nums" id="kpi-avg-critic-latency">0 ms</span>
+            <span class="kpi-footer">Vérification de vérité</span>
+          </div>
+        </section>
+
+        <!-- Section Graphiques (Middle Row - Auto stack sur tablette/mobile) -->
+        <section class="trends-grid" style="margin-top: 32px;">
+          <div class="panel">
+            <div class="panel-header">
+              <h3 class="panel-title">Évolution des Verdicts & Tendance de Rejet</h3>
+            </div>
+            <div class="chart-container" id="trend-chart-box">
+              <!-- Tracé SVG dynamique généré par dashboard.js -->
+            </div>
+          </div>
+          
+          <div class="panel">
+            <div class="panel-header">
+              <h3 class="panel-title">Modes d'Échec Dominants</h3>
+            </div>
+            <div class="failure-list" id="failure-modes-box">
+              <!-- Liste dynamique injectée par dashboard.js -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Section Table Détails (Bottom Row) -->
+        <section class="panel details-panel" style="margin-top: 32px;">
+          <div class="panel-header">
+            <h3 class="panel-title">Journal d'Audit du Critic — Exécutions Récentes</h3>
+          </div>
+          
+          <div class="table-container">
+            <table class="details-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Session ID</th>
+                  <th>Verdict Global</th>
+                  <th>Latence Totale</th>
+                  <th>Latence Critic</th>
+                  <th>Sources (Web / Locales)</th>
+                  <th>Horodatage</th>
+                </tr>
+              </thead>
+              <tbody id="events-table-body">
+                <!-- Lignes dynamiques injectées par dashboard.js -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- VUE SANTÉ WORKSPACES (Nouvelle) -->
+      <div id="view-workspaces" style="display: none;">
+        <section class="kpi-grid">
+          <div class="kpi-card">
+            <span class="kpi-label">Workspaces Actifs</span>
+            <span class="kpi-value tabular-nums" id="ws-active-runs">0</span>
+            <span class="kpi-footer">Statut running</span>
+          </div>
+          <div class="kpi-card failsafe">
+            <span class="kpi-label">Orphelins</span>
+            <span class="kpi-value tabular-nums" id="ws-orphans">0</span>
+            <span class="kpi-footer">Expirés non nettoyés</span>
+          </div>
+          <div class="kpi-card rejection">
+            <span class="kpi-label">Erreurs Sandbox</span>
+            <span class="kpi-value tabular-nums" id="ws-recent-errors">0</span>
+            <span class="kpi-footer">Derniers 100 runs</span>
+          </div>
+          <div class="kpi-card latency">
+            <span class="kpi-label">Durée Moy. Run</span>
+            <span class="kpi-value tabular-nums" id="ws-avg-duration">0 ms</span>
+            <span class="kpi-footer">Sur les derniers runs</span>
+          </div>
+        </section>
+
+        <section class="trends-grid" style="margin-top: 32px;">
+          <div class="panel">
+            <div class="panel-header">
+              <h3 class="panel-title">Distribution par Statut</h3>
+            </div>
+            <div class="failure-list" id="ws-status-distribution">
+              <!-- Dynamique -->
+            </div>
+          </div>
+          
+          <div class="panel">
+            <div class="panel-header">
+              <h3 class="panel-title">Profils Réseau (100 derniers runs)</h3>
+            </div>
+            <div class="failure-list" id="ws-network-distribution">
+              <!-- Dynamique -->
+            </div>
+          </div>
+        </section>
+
+        <section class="panel details-panel" style="margin-top: 32px;">
+          <div class="panel-header">
+            <h3 class="panel-title">Dernières Erreurs d'Exécution (Sandbox)</h3>
+          </div>
+          
+          <div class="table-container">
+            <table class="details-table">
+              <thead>
+                <tr>
+                  <th>Run ID</th>
+                  <th>Workspace ID</th>
+                  <th>Erreur / Timeout</th>
+                </tr>
+              </thead>
+              <tbody id="ws-recent-failures-body">
+                <!-- Dynamique -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+    </main>
+
+    <script>
+      function switchTab(tab) {
+        document.getElementById('view-observability').style.display = tab === 'observability' ? 'block' : 'none';
+        document.getElementById('view-workspaces').style.display = tab === 'workspaces' ? 'block' : 'none';
+        
+        document.getElementById('nav-tab-observability').classList.toggle('active', tab === 'observability');
+        document.getElementById('nav-tab-workspaces').classList.toggle('active', tab === 'workspaces');
+        
+        // Change title
+        document.querySelector('.topbar-title').textContent = tab === 'observability' ? 'Cockpit Observabilité v5.0' : 'Santé Workspaces & Sandboxes';
+      }
+    </script>
+
+  </div>
+
+  <!-- Loading State Overlay -->
+  <div class="loading-overlay" id="loading-spinner-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
