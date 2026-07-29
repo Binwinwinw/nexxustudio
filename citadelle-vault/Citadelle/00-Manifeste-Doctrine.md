@@ -1,4 +1,4 @@
-# Manifeste de la Citadelle v4.5 : Doctrine de Souveraineté & Rigueur Épistémique
+# Manifeste de la Citadelle : Doctrine de Souveraineté & Rigueur Épistémique
 
 ```mermaid
 graph TD
@@ -32,7 +32,7 @@ graph TD
 
 ## 1. Vision Holistique
 
-La Citadelle est une architecture agentique **souveraine, modulaire et orientée décision**. Son rôle n’est pas de “faire tout”, mais d’orchestrer, analyser, sécuriser, puis préparer la Forge quand la maturité est suffisante.
+La Citadelle est une architecture agentique **souveraine, modulaire et orientée décision**. Son rôle n’est pas de “faire tout”, mais d’orchestrer, analyser, sécuriser, puis préparer la création des livrables quand l'utilisateur en demande.
 
 ## 2. Les Piliers de l'Architecture
 
@@ -47,21 +47,24 @@ Une structure vivante reliant :
 - **Patrimoine** (Archives /projects).
 - **Vault Obsidian** (Décisions ADR et Gouvernance).
 - **Connaissance Vectorielle** (ChromaDB).
-Elle évite de réinventer l'existant et alimente les arbitrages futurs par le RAG.
+- **Vault graphify**
+Elle évite de réinventer l'existant et alimente les arbitrages futurs par le RAG ainsi le système a la possibilité de retrouver ses erreurs afin de ne plus les commettre.
 
 ### 2.3 L'Analyse Multimodale
 
 Couche d'analyse disciplinée :
 
-- **Vision Pipeline** : Lecture d'interfaces et de schémas en 4 couches.
+- **Vision Pipeline** : Lecture d'interfaces, résumé de documents importés dans la conversation .
 
 - **Recherche Web** : Signal externe croisé avec le patrimoine interne.
+
+- 
 
 ### 2.4 La Gouvernance (Le Point Fort)
 
 Application rigoureuse des règles :
 
-- **Maturité** : Variable réelle contrôlant l'ouverture de la topologie.
+- **Gouvernance** : l'agent orchestrateur hash la requête de l'utilisateur afin de choisir le rail grâce à la détection d'intentions et ce sont les intentions qui permettent de router la requête vers le ou les bons rails
 - **Sécurité** : Séparation stricte entre analyse, audit et génération.
 
 - **Transparence Contrôlée** : Savoir quand être opaque ou explicite.
@@ -78,6 +81,7 @@ Le verrou de la vérité :
 
 La Citadelle est le **Cerveau** (Réflexion/Arbitrage).
 La Forge est la **Main** (Industrialisation/Code).
+l' agent OCR est l'**oeil** (Analyse de documents, transcription et traduction
 *On ne mélange jamais la réflexion et l'implémentation.*
 
 ## 4. Dynamique Contextuelle
