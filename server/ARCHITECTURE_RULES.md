@@ -136,8 +136,9 @@ Objectif : réduire le bruit d’un dossier plat (~140 fichiers) sans big bang.
 | `policies/math/` | `math*Policy`, `mathCompositeQueryPolicy` |
 | `policies/summary/` | `summaryContract*`, `culturalContentSummary*`, `knownEntitySummary*` |
 | `policies/social/` | `socialPattern`, `socialChatContinuity`, `socialAcceptanceOfOffer`, `socialCompositeReply` |
+| `policies/code/` | `code*Policy`, `code*Contract`, `code*Sentinels`, `codeProjectLight*` |
 
-**Ordre de migration suivant :** code → intent → conversation → meta (ideation vs fiches = passe routage séparée).
+**Ordre de migration suivant :** intent → conversation → meta (ideation vs fiches = passe routage séparée).
 
 **Routage connu hors périmètre move-only** (chantier B — ordre des short-circuits, même famille causale) :
 

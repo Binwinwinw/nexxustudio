@@ -51,7 +51,10 @@ import {
   resolveSocialPatternShortCircuit,
   resolveSocialChatContinuityShortCircuit,
 } from "../../policies/social/index.js";
-import { resolveCodeConceptExplainShortCircuit } from "../../policies/codeConceptExplainExecutionPolicy.js";
+import {
+  resolveCodeConceptExplainShortCircuit,
+  shouldAllowMultiSegmentShortCircuit,
+} from "../../policies/code/index.js";
 import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
@@ -60,7 +63,6 @@ import { resolveGuidedCreationScopingShortCircuit } from "../../policies/guidedC
 import { resolveReactAuditShortCircuitEmit } from "../../policies/reactAuditShortCircuit.js";
 import { recordSocialPatternTelemetry } from "../../telemetry/socialPatternTelemetry.js";
 import { isConversationMemoryRecallRequest } from "../../utils/conversationGuards.js";
-import { shouldAllowMultiSegmentShortCircuit } from "../../policies/codeReviewRoutingGuard.js";
 import { shouldBypassMultiSegmentShortCircuit } from "../../policies/practicalAdviceRoutingGuard.js";
 import { resolveGeneralKnowledgeShortCircuit } from "../replies/generalKnowledgeComposerContract.js";
 import {

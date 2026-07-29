@@ -74,7 +74,24 @@ import {
   getTriageIntentLabel,
   resolveWantsAnalysisFromTriage,
 } from "./classifiers/intentTriageClassifier.js";
-import { shouldBypassDocumentAnalysisRoute } from "./policies/codeReviewRoutingGuard.js";
+import {
+  shouldBypassDocumentAnalysisRoute,
+  resolveCodeProjectLightIntentContractId,
+  isCodeProjectLightRequest,
+  extractCodeProjectLightSlots,
+  applyCodeProjectLightWrite,
+  buildCodeConceptExplainFallbackReply,
+  isCodeConceptExplainExecution,
+  recordCodeConceptExplainExecutionTelemetry,
+  resolveCodeConceptComposerGateOutcome,
+  resolveCodeConceptExplainCatchOutcome,
+  CODE_CONCEPT_EXECUTION_PATHS,
+  isCodeReviewRequest,
+  enforceCodeReviewPipelineDelivery,
+  appliesCodeErrorPriorityPolicy,
+  enforceCodeErrorPriorityPipelineDelivery,
+} from "./policies/code/index.js";
+import { enforceFileContextGuard } from "./policies/fileContextGuard.js";
 import {
   classifyAttachmentTask,
   formatAttachmentTaskSummary,
@@ -107,11 +124,6 @@ import {
 import { resolveResearchThenSummarizeIntentContractId } from "./policies/researchThenSummarizePolicy.js";
 import { resolveFormalLetterTemplateIntentContractId } from "./policies/formalLetterTemplatePolicy.js";
 import {
-  resolveCodeProjectLightIntentContractId,
-  isCodeProjectLightRequest,
-  extractCodeProjectLightSlots,
-} from "./policies/codeProjectLightPolicy.js";
-import {
   resolveGuidedDocumentSynthesisIntentContractId,
   buildDocumentSynthesisSlotTelemetry,
 } from "./policies/guidedDocumentSynthesisPolicy.js";
@@ -138,16 +150,7 @@ import { sanitizeToolOutput } from "../services/tool-output-sanitizer.js";
 import { validateProductRecommendationReply } from "./policies/productRecoValidator.js";
 import { validateWebEvidenceFidelityReply } from "./policies/webEvidenceFidelityValidator.js";
 import { validateDocumentSynthesisReply } from "./policies/documentSynthesisValidator.js";
-import { applyCodeProjectLightWrite } from "./policies/codeProjectLightExecutionPolicy.js";
 import { resolveDocumentSynthesisBypassReply, extractPastedSourceText } from "./policies/documentSynthesisPolicy.js";
-import {
-  buildCodeConceptExplainFallbackReply,
-  isCodeConceptExplainExecution,
-  recordCodeConceptExplainExecutionTelemetry,
-  resolveCodeConceptComposerGateOutcome,
-  resolveCodeConceptExplainCatchOutcome,
-  CODE_CONCEPT_EXECUTION_PATHS,
-} from "./policies/codeConceptExplainExecutionPolicy.js";
 import { resolveFamiliarityDomainOverviewBypassReply } from "./policies/familiarityDomainOverviewPolicy.js";
 import { resolveSubjectReferenceResumeBypassReply } from "./policies/subjectReferenceResumePolicy.js";
 import {
@@ -188,11 +191,6 @@ import {
   isInformationSeekingWithTarget,
 } from "./utils/informationSeekingIntentGuards.js";
 import { formatJustIntentSummary } from "../../../shared/justIntentCatalog.js";
-import { isCodeReviewRequest } from "./policies/codeReviewPolicy.js";
-import { enforceCodeReviewPipelineDelivery } from "./policies/codeReviewRuntimeGuard.js";
-import { enforceFileContextGuard } from "./policies/fileContextGuard.js";
-import { appliesCodeErrorPriorityPolicy } from "./policies/codeErrorPriorityPolicy.js";
-import { enforceCodeErrorPriorityPipelineDelivery } from "./policies/codeReviewRuntimeGuard.js";
 import { runConversationShortCircuit } from "./micro/classifiers/intentShortCircuit.js";
 import { resolveSemanticIntent, shouldUseSemanticResolution } from "./micro/classifiers/semanticIntentResolver.js";
 import { isMetaAssistantBehaviorRequest, isComprehensionDemonstrationRequest } from "./utils/metaAssistantBehaviorGuards.js";
