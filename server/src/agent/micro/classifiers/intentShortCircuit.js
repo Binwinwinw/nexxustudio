@@ -11,7 +11,11 @@
 import { RESPONSE_MODES } from "../../config/modeResponseContracts.js";
 import { resolveConversationContinuityShortCircuit } from "../continuity/conversationContinuityContext.js";
 import { resolveAnaphoraReferenceShortCircuit } from "../continuity/anaphoraReferenceResolver.js";
-import { resolveOpenPromptContinuityShortCircuit } from "../../policies/openPromptContinuityPolicy.js";
+import {
+  resolveOpenPromptContinuityShortCircuit,
+  resolveMetaAssistantBehaviorShortCircuit,
+  resolveComprehensionGroundingShortCircuit,
+} from "../../policies/meta/index.js";
 import { resolveGuidedChoiceShortCircuit } from "../../policies/guidedChoicePolicy.js";
 import { buildArchitectureDesignReply } from "../replies/architectureDesignReplyBuilder.js";
 import { buildFamiliarityReply } from "../replies/familiarityReplyBuilder.js";
@@ -90,13 +94,17 @@ import { resolveCompareChooseShortCircuit } from "../replies/compareChooseCompos
 import { resolveAdminProcedureShortCircuit } from "../replies/adminProcedureComposer.js";
 import { resolveSelfModificationRoute } from "../replies/selfModificationReplyBuilder.js";
 import { isAcknowledgmentRequest } from "../../utils/acknowledgmentIntentGuards.js";
-import { isSimpleFactualQuestion } from "../../policies/justIntentDetectionPolicy.js";
+import {
+  isSimpleFactualQuestion,
+  resolveSimpleDeterministicFromFrame,
+  applyPedagogicalCompositionAugment,
+  resolveIntentComposition,
+} from "../../policies/intent/index.js";
 import {
   evaluateFactualSanityGate,
   shouldRunFactualSanityGate,
 } from "../replies/factualSanityGate.js";
 import { recordFactualSanityTelemetry } from "../../telemetry/factualSanityTelemetry.js";
-import { resolveSimpleDeterministicFromFrame } from "../../policies/conversationIntentFrame.js";
 import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIntentGuards.js";
 import {
   resolveSubjectTypingFromQuery,
@@ -127,7 +135,11 @@ import {
   resolveMathExplainShortCircuit,
   resolveMathPercentShortCircuit,
 } from "../../policies/math/index.js";
-import { resolveQueryCompositeShortCircuit } from "../../policies/conversationQueryUnderstanding.js";
+import {
+  resolveQueryCompositeShortCircuit,
+  resolveConversationTurnFamilyShortCircuit,
+  resolveExploratoryConversationShortCircuit,
+} from "../../policies/conversation/index.js";
 import { resolveDocumentSynthesisShortCircuit } from "../../policies/documentSynthesisPolicy.js";
 import { resolveFamiliarityDomainOverviewShortCircuit } from "../../policies/familiarityDomainOverviewPolicy.js";
 import { resolvePedagogySoftOverviewShortCircuit } from "../../policies/pedagogySoftOverviewPolicy.js";
@@ -138,10 +150,6 @@ import {
   resolvePedagogicalStructuredExplainShortCircuit,
 } from "../../policies/lexiconExplainLightPolicy.js";
 import { resolvePedagogicalScheduledExplain } from "../../policies/pedagogicalTableSchedulerPolicy.js";
-import {
-  applyPedagogicalCompositionAugment,
-  resolveIntentComposition,
-} from "../../policies/intentCompositionPolicy.js";
 import { shouldDeferSocialRouting } from "../../policies/voiceContinuityPolicy.js";
 
 function withPedagogicalComposition(query, reply) {
@@ -149,19 +157,15 @@ function withPedagogicalComposition(query, reply) {
   const composition = resolveIntentComposition(query);
   return applyPedagogicalCompositionAugment(reply, composition);
 }
-import { resolveMetaAssistantBehaviorShortCircuit } from "../../policies/metaAssistantBehaviorPolicy.js";
-import { resolveComprehensionGroundingShortCircuit } from "../../policies/comprehensionGroundingPolicy.js";
 import {
   classifyConversationTurnFamily,
   shouldSuppressTurnFamilyPath,
   CONVERSATION_TURN_FAMILIES,
 } from "../classifiers/conversationTurnClassifier.js";
-import { resolveConversationTurnFamilyShortCircuit } from "../../policies/conversationTurnRoutingPolicy.js";
 import { recordConversationTurnTelemetry } from "../../telemetry/conversationTurnTelemetry.js";
 import { resolveCasualExplanationLightShortCircuit } from "../../policies/casualExplanationLightPolicy.js";
 import { resolveInformationSeekingLightShortCircuit } from "../../policies/informationSeekingLightPolicy.js";
 import { resolveAssistantUtteranceClarifyShortCircuit } from "../../policies/assistantUtteranceClarifyPolicy.js";
-import { resolveExploratoryConversationShortCircuit } from "../../policies/exploratoryConversationPolicy.js";
 import { resolveEpistemicUncertaintyShortCircuit } from "../../policies/epistemicUncertaintyResolutionPolicy.js";
 import { resolveExistingSourceAnalysisShortCircuit } from "../../policies/existingSourceAnalysisPolicy.js";
 import { resolveRepoAnalysisShortCircuit } from "../../policies/repoAnalysisPolicy.js";

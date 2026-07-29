@@ -137,8 +137,13 @@ Objectif : réduire le bruit d’un dossier plat (~140 fichiers) sans big bang.
 | `policies/summary/` | `summaryContract*`, `culturalContentSummary*`, `knownEntitySummary*` |
 | `policies/social/` | `socialPattern`, `socialChatContinuity`, `socialAcceptanceOfOffer`, `socialCompositeReply` |
 | `policies/code/` | `code*Policy`, `code*Contract`, `code*Sentinels`, `codeProjectLight*` |
+| `policies/intent/` | `justIntent*`, `intentComposition*`, `intentCompatibilityMatrix`, `intentFamilyRegistry`, `requestIntentFrame`, `conversationIntentFrame` |
+| `policies/conversation/` | `conversationQueryUnderstanding`, `conversationMove*`, `conversationTurnRouting`, `conversationSubjectExtraction`, `exploratoryConversation`, `queryUnderstandingDomainRegistry`, `queryUnderstandingCoverageMatrix` |
+| `policies/meta/` | `metaAssistantBehavior`, `metaCapabilities`, `comprehensionGrounding`, `openPromptContinuity` |
 
-**Ordre de migration suivant :** intent → conversation → meta (ideation vs fiches = passe routage séparée).
+**Ordre de migration suivant :** lots restants au fil des PR (document, delivery, guided, routing, …) — pas de big bang.
+
+**Pilote domaine `meta/` clôturé** avec les slices connectors → meta ci-dessus.
 
 **Routage connu hors périmètre move-only** (chantier B — ordre des short-circuits, même famille causale) :
 

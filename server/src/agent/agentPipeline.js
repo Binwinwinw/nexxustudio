@@ -99,7 +99,9 @@ import {
 import { buildAttachmentInterpretationSystemAddon } from "./policies/attachmentInterpretationPolicy.js";
 import {
   evaluateJustIntent,
-} from "./policies/justIntentDetectionPolicy.js";
+  resolveIntentComposition,
+  formatIntentCompositionSummary,
+} from "./policies/intent/index.js";
 import { resolveClarificationGate } from "./policies/clarificationDecisionPolicy.js";
 import {
   resolveMathPedagogyBypassReply,
@@ -107,7 +109,19 @@ import {
   resolveMathRootBypassReply,
   resolveMathPercentBypassReply,
 } from "./policies/math/index.js";
-import { resolveQueryCompositeShortCircuit, understandQuery, buildExecutionPlan, shouldAppendDatetimeToDocumentWork, extractDocumentAnalysisQuery, mergeDocumentAnalysisWithDatetimeSections } from "./policies/conversationQueryUnderstanding.js";
+import {
+  resolveQueryCompositeShortCircuit,
+  understandQuery,
+  buildExecutionPlan,
+  shouldAppendDatetimeToDocumentWork,
+  extractDocumentAnalysisQuery,
+  mergeDocumentAnalysisWithDatetimeSections,
+  evaluateConversationMove,
+  applyConversationMoveAuthority,
+  verifyMoveContract,
+  classifyTurnForPipeline,
+  resolveConversationTurnFamilyShortCircuit,
+} from "./policies/conversation/index.js";
 import {
   runAgentUnderstandingPhase,
   decideRetrieval as applyWorkupRetrievalGate,
@@ -163,9 +177,6 @@ import {
   runConversationMoveShadowServed,
   emitConversationMovePersistentEvent,
 } from "./telemetry/conversationMoveShadowTelemetry.js";
-import { evaluateConversationMove } from "./policies/conversationMovePolicy.js";
-import { applyConversationMoveAuthority } from "./policies/conversationMoveAuthority.js";
-import { verifyMoveContract } from "./policies/conversationMoveContractVerification.js";
 import { observeInformationSeekingOrchestration } from "./telemetry/informationSeekingOrchestrationTelemetry.js";
 import { recordTranslationOrchestrationTelemetry } from "./telemetry/translationOrchestrationTelemetry.js";
 import { recordContextReferenceTelemetry } from "./telemetry/contextReferenceTelemetry.js";
@@ -198,10 +209,6 @@ import {
   classifyConversationTurnFamily,
   shouldSuppressTurnFamilyPath,
 } from "./micro/classifiers/conversationTurnClassifier.js";
-import {
-  classifyTurnForPipeline,
-  resolveConversationTurnFamilyShortCircuit,
-} from "./policies/conversationTurnRoutingPolicy.js";
 import { recordConversationTurnTelemetry } from "./telemetry/conversationTurnTelemetry.js";
 import {
   beginSessionWorkTurn,
@@ -230,10 +237,6 @@ import {
   formatDeliverableContractSummary,
   PROMISED_VALUES,
 } from "./policies/deliverableContractPolicy.js";
-import {
-  resolveIntentComposition,
-  formatIntentCompositionSummary,
-} from "./policies/intentCompositionPolicy.js";
 import {
   resolveRequestWorkloadSignal,
   formatWorkloadSignalSummary,

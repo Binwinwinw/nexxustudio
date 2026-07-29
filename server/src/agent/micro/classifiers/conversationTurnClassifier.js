@@ -20,7 +20,7 @@ import {
 import {
   classifyMetaCapabilitiesSubKind,
   isMetaCapabilitiesIntent,
-} from "../../policies/metaCapabilitiesPolicy.js";
+} from "../../policies/meta/index.js";
 import { isExplicitWebSearchRequest } from "../../policies/explicitWebSearchRequestPolicy.js";
 import { isKnownSocialPattern } from "../../policies/socialPatternPolicy.js";
 
