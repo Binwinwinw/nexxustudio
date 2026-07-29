@@ -1,3 +1,6 @@
+# Runtime metrics (local pipeline, not source)
+data/
+
 # Dependencies
 node_modules/
 .pnp
