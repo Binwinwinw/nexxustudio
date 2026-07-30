@@ -237,7 +237,11 @@ import {
   resolveDeliverableContract,
   formatDeliverableContractSummary,
   PROMISED_VALUES,
-} from "./policies/deliverableContractPolicy.js";
+  validateDeliverablePromise,
+  DELIVERY_CONTRACT_V1,
+  DELIVERY_MODES,
+  ensureTerminalDeliveryText,
+} from "./policies/delivery/index.js";
 import {
   resolveRequestWorkloadSignal,
   formatWorkloadSignalSummary,
@@ -267,12 +271,6 @@ import { extractUrlContent } from "../utils/urlExtractor.js";
 // Orchestrateur Souverain v5.0
 import { SovereignOrchestrator } from "./orchestrator/SovereignOrchestrator.js";
 import { evaluateEpistemicRefusal, isGreetingOrIntroduction } from "./config/modeResponseContracts.js";
-import { validateDeliverablePromise } from "./policies/deliverablePromiseGuard.js";
-import {
-  DELIVERY_CONTRACT_V1,
-  DELIVERY_MODES,
-  ensureTerminalDeliveryText,
-} from "./policies/deliveryContract.js";
 import { emitOnContent } from "./utils/streamTextChunks.js";
 import { finalRendererAgent } from "./agents/finalRendererAgent.js";
 import {

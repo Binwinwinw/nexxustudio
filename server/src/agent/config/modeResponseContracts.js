@@ -32,11 +32,9 @@ import {
   buildConstructiveDeliverySystemAddon,
   isClearConstructiveDeliverable,
   isDefensiveDeliveryRefusal,
-} from "../policies/constructiveDeliveryPolicy.js";
-import {
   buildHtmlProjectSystemAddon,
   isHtmlProjectDeliverable,
-} from "../policies/htmlProjectDeliveryPolicy.js";
+} from "../policies/delivery/index.js";
 import { buildCodeProjectLightSystemAddon } from "../policies/codeProjectLightPolicy.js";
 import { TUTOIEMENT_COMPOSER_LINE } from "../policies/addressingPolicy.js";
 import {
