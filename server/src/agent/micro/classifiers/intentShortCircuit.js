@@ -16,7 +16,10 @@ import {
   resolveMetaAssistantBehaviorShortCircuit,
   resolveComprehensionGroundingShortCircuit,
 } from "../../policies/meta/index.js";
-import { resolveGuidedChoiceShortCircuit } from "../../policies/guidedChoicePolicy.js";
+import {
+  resolveGuidedChoiceShortCircuit,
+  resolveGuidedCreationScopingShortCircuit,
+} from "../../policies/guided/index.js";
 import { buildArchitectureDesignReply } from "../replies/architectureDesignReplyBuilder.js";
 import { buildFamiliarityReply } from "../replies/familiarityReplyBuilder.js";
 import {
@@ -63,7 +66,6 @@ import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
 } from "../../policies/responseMannerPolicy.js";
-import { resolveGuidedCreationScopingShortCircuit } from "../../policies/guidedCreationScopingPolicy.js";
 import { resolveReactAuditShortCircuitEmit } from "../../policies/reactAuditShortCircuit.js";
 import { recordSocialPatternTelemetry } from "../../telemetry/socialPatternTelemetry.js";
 import { isConversationMemoryRecallRequest } from "../../utils/conversationGuards.js";

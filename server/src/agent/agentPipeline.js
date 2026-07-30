@@ -134,13 +134,11 @@ import {
 import {
   resolveGuidedProductIntentContractId,
   buildQueryUnderstandingSlotTelemetry,
-} from "./policies/guidedProductRecommendationPolicy.js";
-import { resolveResearchThenSummarizeIntentContractId } from "./policies/researchThenSummarizePolicy.js";
-import { resolveFormalLetterTemplateIntentContractId } from "./policies/formalLetterTemplatePolicy.js";
-import {
   resolveGuidedDocumentSynthesisIntentContractId,
   buildDocumentSynthesisSlotTelemetry,
-} from "./policies/guidedDocumentSynthesisPolicy.js";
+} from "./policies/guided/index.js";
+import { resolveResearchThenSummarizeIntentContractId } from "./policies/researchThenSummarizePolicy.js";
+import { resolveFormalLetterTemplateIntentContractId } from "./policies/formalLetterTemplatePolicy.js";
 import {
   recordGuidedCreationScopingTelemetry,
   resolveGuidedCreationIntentContractId,
