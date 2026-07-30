@@ -173,8 +173,10 @@ import { resolveEpistemicUncertaintyShortCircuit } from "../../policies/epistemi
 import { resolveExistingSourceAnalysisShortCircuit } from "../../policies/existingSourceAnalysisPolicy.js";
 import { resolveRepoAnalysisShortCircuit } from "../../policies/repoAnalysisPolicy.js";
 import { isSubjectReferenceAvailabilityRequest } from "../../micro/continuity/sessionSubjectReferenceGuards.js";
-import { resolveCurrentWebFactShortCircuit } from "../../policies/currentWebFactPolicy.js";
-import { resolveExternalCalendarLookupShortCircuit } from "../../policies/externalCalendarLookupPolicy.js";
+import {
+  resolveCurrentWebFactShortCircuit,
+  resolveExternalCalendarLookupShortCircuit,
+} from "../../policies/web/index.js";
 import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/externalCalendarLookupIntentGuards.js";
 import { isUiNavigationRestructureFeedback } from "../../utils/uiNavigationFeedbackGuards.js";
 import {
