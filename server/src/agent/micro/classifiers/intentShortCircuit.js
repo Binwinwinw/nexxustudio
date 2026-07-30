@@ -75,7 +75,8 @@ import {
 import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
-} from "../../policies/responseMannerPolicy.js";
+  shouldDeferSocialRouting,
+} from "../../policies/posture/index.js";
 import { recordSocialPatternTelemetry } from "../../telemetry/socialPatternTelemetry.js";
 import { isConversationMemoryRecallRequest } from "../../utils/conversationGuards.js";
 import { resolveGeneralKnowledgeShortCircuit } from "../replies/generalKnowledgeComposerContract.js";
@@ -153,7 +154,6 @@ import {
   resolvePedagogicalStructuredExplainShortCircuit,
 } from "../../policies/lexiconExplainLightPolicy.js";
 import { resolvePedagogicalScheduledExplain } from "../../policies/pedagogicalTableSchedulerPolicy.js";
-import { shouldDeferSocialRouting } from "../../policies/voiceContinuityPolicy.js";
 
 function withPedagogicalComposition(query, reply) {
   if (!reply) return reply;

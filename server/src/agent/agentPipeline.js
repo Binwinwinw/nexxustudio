@@ -215,7 +215,14 @@ import {
   beginSessionWorkTurn,
   commitSessionWorkTurn,
 } from "./memory/sessionWorkMemory.js";
-import { resolvePosture, buildPosturePromptAddon } from "./policies/posturePolicy.js";
+import {
+  resolvePosture,
+  buildPosturePromptAddon,
+  resolveVoiceContinuityContext,
+  buildVoiceContinuityPromptAddon,
+  formatVoiceContinuitySummary,
+  shouldBlockGenericInsufficientRefusal,
+} from "./policies/posture/index.js";
 import {
   composeCapabilityContext,
   buildCapabilityPacksPromptAddon,
@@ -226,12 +233,6 @@ import {
   setCapabilityToolsForTurn,
   clearCapabilityToolsForTurn,
 } from "./capabilities/capabilityToolSession.js";
-import {
-  resolveVoiceContinuityContext,
-  buildVoiceContinuityPromptAddon,
-  formatVoiceContinuitySummary,
-  shouldBlockGenericInsufficientRefusal,
-} from "./policies/voiceContinuityPolicy.js";
 import { isPedagogicalStructuredExplainRequest } from "./policies/lexiconExplainLightPolicy.js";
 import {
   resolveDeliverableContract,
