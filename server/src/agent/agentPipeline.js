@@ -58,7 +58,12 @@ import {
   runDocumentFollowUp,
   recordActiveDocumentAnalysis,
 } from "./micro/continuity/documentContinuityContext.js";
-import { prepareDocumentAnalysisContext } from "./policies/documentWebComparePolicy.js";
+import {
+  prepareDocumentAnalysisContext,
+  validateDocumentSynthesisReply,
+  resolveDocumentSynthesisBypassReply,
+  extractPastedSourceText,
+} from "./policies/document/index.js";
 import { synthesizeConversationRecall } from "./utils/conversationRecallSynthesizer.js";
 import { resolvePipelineFallback, resolveLocalDeterministicFallback } from "./utils/genericGreetingGuards.js";
 import {
@@ -161,8 +166,6 @@ import { recordSummaryContractTelemetry } from "./telemetry/summaryContractTelem
 import { sanitizeToolOutput } from "../services/tool-output-sanitizer.js";
 import { validateProductRecommendationReply } from "./policies/productRecoValidator.js";
 import { validateWebEvidenceFidelityReply } from "./policies/webEvidenceFidelityValidator.js";
-import { validateDocumentSynthesisReply } from "./policies/documentSynthesisValidator.js";
-import { resolveDocumentSynthesisBypassReply, extractPastedSourceText } from "./policies/documentSynthesisPolicy.js";
 import { resolveFamiliarityDomainOverviewBypassReply } from "./policies/familiarityDomainOverviewPolicy.js";
 import { resolveSubjectReferenceResumeBypassReply } from "./policies/subjectReferenceResumePolicy.js";
 import {

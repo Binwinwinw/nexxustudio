@@ -142,7 +142,7 @@ import {
   resolveConversationTurnFamilyShortCircuit,
   resolveExploratoryConversationShortCircuit,
 } from "../../policies/conversation/index.js";
-import { resolveDocumentSynthesisShortCircuit } from "../../policies/documentSynthesisPolicy.js";
+import { resolveDocumentSynthesisShortCircuit } from "../../policies/document/index.js";
 import { resolveFamiliarityDomainOverviewShortCircuit } from "../../policies/familiarityDomainOverviewPolicy.js";
 import { resolvePedagogySoftOverviewShortCircuit } from "../../policies/pedagogySoftOverviewPolicy.js";
 import { resolvePromptForArtifactShortCircuit } from "../../policies/promptForArtifactPolicy.js";
