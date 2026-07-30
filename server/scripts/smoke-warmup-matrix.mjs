@@ -55,7 +55,9 @@ async function main() {
   check(
     'W15',
     'Vision + OCR verrouillés Tier 3',
-    tier3Ids.includes('gemma4:12b') && tier3Ids.includes('deepseek-ocr:latest'),
+    tier3Ids.includes('gemma4:12b') &&
+      tier3Ids.includes('glm-ocr:q8_0') &&
+      tier3Ids.includes('deepseek-ocr:latest'),
   );
 
   console.log(`\n=== Résultat : ${passed}/${checks.length} PASS ===`);

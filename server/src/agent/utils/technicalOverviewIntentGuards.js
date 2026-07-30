@@ -183,7 +183,7 @@ export function isTechnicalOverviewRequest(query = "") {
   if (isBeginnerTopicOverviewRequest(query)) return false;
 
   const CITADELLE_VISION_RUNTIME_RE =
-    /\b(?:intent\s+ocr|nexxus|la citadelle|citadelle|visionagent|deepseek-ocr|pipeline vision|briefing visuel|gemma4|ocr citadelle)\b/i;
+    /\b(?:intent\s+ocr|nexxus|la citadelle|citadelle|visionagent|glm-ocr|deepseek-ocr|pipeline vision|briefing visuel|gemma4|ocr citadelle)\b/i;
   if (CITADELLE_VISION_RUNTIME_RE.test(q)) return false;
 
   if (isPedagogicalOverviewRequest(query)) return false;

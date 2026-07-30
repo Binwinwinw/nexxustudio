@@ -36,7 +36,7 @@ const META_SYSTEM_RE =
   /\b(?:zephyr|ornith|deepseek-r1|starcoder|tier(?:ing)?|warmup|vram|profil\s+[abc]|executionbrief|intentframe|short[- ]?circuit|agentrolepolicy|models\.js|ollama|routeur|orchestrat|policy|policies|la\s+citadelle|stack\s+mod[eè]le)\b/i;
 
 const STACK_MODEL_RE =
-  /\b(?:qwen2\.5-coder|qwen3\.5|llama3\.2-vision|deepseek-ocr|nomic-embed|mod[eè]le\s+ollama|8\s*go\s*vram)\b/i;
+  /\b(?:qwen2\.5-coder|qwen3\.5|llama3\.2-vision|glm-ocr|deepseek-ocr|nomic-embed|mod[eè]le\s+ollama|8\s*go\s*vram)\b/i;
 
 /**
  * @param {string} query

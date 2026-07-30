@@ -67,12 +67,21 @@
           "context_gb_per_8k": 1
         },
         {
-          "id": "deepseek-ocr:latest",
+          "id": "glm-ocr:q8_0",
           "role": "ocr",
           "expert": "ocr",
           "mode": "single",
-          "vram_gb": 6.7,
+          "vram_gb": 1.6,
           "priority": 3,
+          "context_gb_per_8k": 1
+        },
+        {
+          "id": "deepseek-ocr:latest",
+          "role": "ocr",
+          "expert": "ocr_fallback",
+          "mode": "single",
+          "vram_gb": 6.7,
+          "priority": 4,
           "context_gb_per_8k": 1
         },
         {

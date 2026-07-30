@@ -245,7 +245,8 @@
     "ornith_only": { "model": "ornith:9b", "tier": 1 },
     "expert_lazy_code": { "model": "qwen2.5-coder:7b", "fallback": null, "tier": 3 },
     "expert_lazy_vision": { "model": "gemma4:12b", "tier": 3 },
-    "expert_lazy_ocr": { "model": "deepseek-ocr:latest", "tier": 3 },
+    "expert_lazy_ocr": { "model": "glm-ocr:q8_0", "tier": 3 },
+    "expert_lazy_ocr_fallback": { "model": "deepseek-ocr:latest", "tier": 3 },
     "clarify_then_ornith": { "model": "ornith:9b", "pre_step": "clarification" },
     "deterministic_only": { "model": null, "note": "Pas d'appel LLM chat — rail déterministe suffit" }
   }

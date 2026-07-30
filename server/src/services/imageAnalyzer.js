@@ -11,10 +11,14 @@ const PRIMARY_MODEL =
 const OCR_MODEL =
   process.env.NEXXUS_VISION_OCR_MODEL ||
   MODEL_CONFIG.TIER_3_EXPERTS.ocr.model ||
+  'glm-ocr:q8_0';
+const OCR_FALLBACK_MODEL =
+  process.env.NEXXUS_VISION_OCR_FALLBACK_MODEL ||
+  MODEL_CONFIG.TIER_3_EXPERTS.ocr.fallback ||
   'deepseek-ocr:latest';
-/** Fallback VL/OCR si primaire plante (OOM, archi, etc.). */
+/** Fallback VL/OCR si vision primaire (gemma4) plante (OOM, archi, etc.). */
 const FALLBACK_MODEL =
-  process.env.NEXXUS_VISION_FALLBACK_MODEL || OCR_MODEL;
+  process.env.NEXXUS_VISION_FALLBACK_MODEL || OCR_FALLBACK_MODEL;
 const OCR_LANG = 'fra+eng';
 const OCR_ENABLED = process.env.NEXXUS_VISION_OCR === '1';
 
@@ -65,29 +69,36 @@ function buildFallbackPrompt() {
 }
 
 /**
- * ocrImage - Extraction de texte via DeepSeek-OCR (avec Tesseract.js en fallback)
+ * ocrImage - Extraction de texte via GLM-OCR (fallback deepseek-ocr, puis Tesseract)
  */
 async function ocrImage(buffer) {
-  try {
-    const ocrAnalysis = await ollama.chat(
-      [
-        {
-          role: 'user',
-          content:
-            'Extrait tout le texte de cette image avec une grande précision. Ne renvoie que le texte brut extrait, sans commentaire supplémentaire.',
-          images: [buffer.toString('base64')],
-        },
-      ],
-      OCR_MODEL,
-    );
+  const ocrModels = [OCR_MODEL];
+  if (OCR_FALLBACK_MODEL && OCR_FALLBACK_MODEL !== OCR_MODEL) {
+    ocrModels.push(OCR_FALLBACK_MODEL);
+  }
 
-    if (ocrAnalysis && ocrAnalysis.trim().length > 0) {
-      return ocrAnalysis.trim();
+  for (const model of ocrModels) {
+    try {
+      const ocrAnalysis = await ollama.chat(
+        [
+          {
+            role: 'user',
+            content:
+              'Extrait tout le texte de cette image avec une grande précision. Ne renvoie que le texte brut extrait, sans commentaire supplémentaire.',
+            images: [buffer.toString('base64')],
+          },
+        ],
+        model,
+      );
+
+      if (ocrAnalysis && ocrAnalysis.trim().length > 0) {
+        return ocrAnalysis.trim();
+      }
+    } catch (error) {
+      console.warn(
+        `[Vision][OCR] Erreur ${model}, tentative suivante: ${error.message}`,
+      );
     }
-  } catch (error) {
-    console.warn(
-      `[Vision][OCR] Erreur DeepSeek-OCR, tentative de fallback Tesseract: ${error.message}`,
-    );
   }
 
   // Tesseract Fallback

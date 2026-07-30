@@ -39,16 +39,17 @@ export const MODEL_CONFIG = Object.freeze({
       alternative: null,
     }),
     // Primaire : gemma4:12b (vision + clip). llama3.2-vision (mllama) cassé Ollama ≥0.30.
-    // Fallback OCR : TIER_3_EXPERTS.ocr / NEXXUS_VISION_FALLBACK_MODEL.
+    // OCR primaire : glm-ocr:q8_0 (128K, ~1.6 Go). Fallback OCR/vision VL : ocr.fallback.
     vision: Object.freeze({
       model: 'gemma4:12b',
       loadStrategy: 'lazy',
       vram_gb: 7.6,
     }),
     ocr: Object.freeze({
-      model: 'deepseek-ocr:latest',
+      model: 'glm-ocr:q8_0',
+      fallback: 'deepseek-ocr:latest',
       loadStrategy: 'lazy',
-      vram_gb: 6.7,
+      vram_gb: 1.6,
     }),
     voice: Object.freeze({
       model: 'nexxus-vox:latest',

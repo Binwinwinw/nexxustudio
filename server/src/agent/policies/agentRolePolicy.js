@@ -56,7 +56,7 @@ export const AGENT_ROLES = Object.freeze({
 
   // SPÉCIALISTES
   VISION: "gemma4:12b",
-  OCR: "deepseek-ocr:latest",
+  OCR: "glm-ocr:q8_0",
   ZEPHYR: "zephyr:latest",
 
   // WEB RESEARCH (V1 — duck-duck-scrape, sans LLM dédié)
