@@ -119,7 +119,9 @@ import {
   resolveSubjectTypingFromQuery,
   buildSubjectTypeClarifyReply,
   resolveSubjectTypeClarifyShortCircuit,
-} from "../../policies/subjectTypingPolicy.js";
+  resolveHowToShortCircuit,
+  resolveAssistantUtteranceClarifyShortCircuit,
+} from "../../policies/qualification/index.js";
 import {
   buildTranslationClarifyReply,
   isTranslationPipelineReady,
@@ -129,9 +131,6 @@ import { buildTranslationRequestPlan } from "../../utils/translationRequestPlan.
 import {
   buildMultiUnitCompositeReply,
 } from "../replies/multiUnitReplyBuilder.js";
-import {
-  resolveHowToShortCircuit,
-} from "../../policies/howToQualificationPolicy.js";
 import {
   resolveMathSimpleShortCircuit,
   resolveMathRootShortCircuit,
@@ -168,7 +167,6 @@ import {
 } from "../classifiers/conversationTurnClassifier.js";
 import { recordConversationTurnTelemetry } from "../../telemetry/conversationTurnTelemetry.js";
 import { resolveCasualExplanationLightShortCircuit } from "../../policies/casualExplanationLightPolicy.js";
-import { resolveAssistantUtteranceClarifyShortCircuit } from "../../policies/assistantUtteranceClarifyPolicy.js";
 import { resolveEpistemicUncertaintyShortCircuit } from "../../policies/epistemicUncertaintyResolutionPolicy.js";
 import { resolveExistingSourceAnalysisShortCircuit } from "../../policies/existingSourceAnalysisPolicy.js";
 import { resolveRepoAnalysisShortCircuit } from "../../policies/repoAnalysisPolicy.js";
