@@ -35,8 +35,15 @@ function checkRepeatedFallback(history) {
   const txt = String(lastAssistant.content);
   return isInsufficientSignalRefusal(txt) || txt.includes("Il faudrait que tu arrives à préciser :") || txt.includes("Pour avancer sur");
 }
-import { shouldDeferShortCircuitToFullPipeline } from "./policies/practicalAdviceRoutingGuard.js";
-import { resolveKnowledgeEnrichmentPolicy } from "./policies/knowledgeEnrichmentPolicy.js";
+import {
+  shouldDeferShortCircuitToFullPipeline,
+  resolveKnowledgeEnrichmentPolicy,
+  resolveClarificationGate,
+  mergeAgentCycleWithShortCircuit,
+  resolveResearchThenSummarizeIntentContractId,
+  decomposeRequest,
+  buildMultiUnitExecutionHint,
+} from "./policies/routing/index.js";
 import {
   observeConnectorPlanShadow,
   applyConnectorPhaseCWebKey,
@@ -107,7 +114,6 @@ import {
   resolveIntentComposition,
   formatIntentCompositionSummary,
 } from "./policies/intent/index.js";
-import { resolveClarificationGate } from "./policies/clarificationDecisionPolicy.js";
 import {
   resolveMathPedagogyBypassReply,
   resolveMathGeometryBypassReply,
@@ -131,7 +137,6 @@ import {
   runAgentUnderstandingPhase,
   decideRetrieval as applyWorkupRetrievalGate,
 } from "./nexxusAgentCycle.js";
-import { mergeAgentCycleWithShortCircuit } from "./policies/shortCircuitCognitiveCyclePolicy.js";
 import {
   shouldUseChatLightComposerPath,
   buildLightChatOrchestratorPacket,
@@ -142,7 +147,6 @@ import {
   resolveGuidedDocumentSynthesisIntentContractId,
   buildDocumentSynthesisSlotTelemetry,
 } from "./policies/guided/index.js";
-import { resolveResearchThenSummarizeIntentContractId } from "./policies/researchThenSummarizePolicy.js";
 import { resolveFormalLetterTemplateIntentContractId } from "./policies/formalLetterTemplatePolicy.js";
 import {
   recordGuidedCreationScopingTelemetry,
@@ -188,10 +192,6 @@ import {
 } from "./utils/translationIntentGuards.js";
 import { isContextReferenceRequest } from "./utils/contextReferenceIntentGuards.js";
 import { resolveSessionContextReference } from "./utils/sessionContextReferenceResolver.js";
-import {
-  decomposeRequest,
-  buildMultiUnitExecutionHint,
-} from "./policies/requestDecompositionPolicy.js";
 import { recordRequestDecompositionTelemetry } from "./telemetry/requestDecompositionTelemetry.js";
 import { resolveStrategyExecution } from "./telemetry/strategyExecutionTelemetry.js";
 import {

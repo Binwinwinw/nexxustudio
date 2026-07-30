@@ -33,7 +33,17 @@ import {
 } from "../interpreter/requestInterpreter.js";
 import { buildParseState } from "../parsing/responseSufficiencyEvaluator.js";
 import { applyShortCircuitSufficiencyGate } from "../parsing/shortCircuitSufficiencyGate.js";
-import { annotateShortCircuitCognitiveCycle } from "../../policies/shortCircuitCognitiveCyclePolicy.js";
+import {
+  annotateShortCircuitCognitiveCycle,
+  resolveReactAuditShortCircuitEmit,
+  shouldBypassMultiSegmentShortCircuit,
+  isResearchThenSummarizeRequest,
+  decomposeRequest,
+  isMultiUnitRequest,
+  shouldPreemptMultiSegment,
+  resolveInformationSeekingLightShortCircuit,
+  resolveExplicitWebSearchHelpShortCircuit,
+} from "../../policies/routing/index.js";
 import {
   resolveMultiSegmentPlan,
   buildMultiSegmentSystemHint,
@@ -66,10 +76,8 @@ import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
 } from "../../policies/responseMannerPolicy.js";
-import { resolveReactAuditShortCircuitEmit } from "../../policies/reactAuditShortCircuit.js";
 import { recordSocialPatternTelemetry } from "../../telemetry/socialPatternTelemetry.js";
 import { isConversationMemoryRecallRequest } from "../../utils/conversationGuards.js";
-import { shouldBypassMultiSegmentShortCircuit } from "../../policies/practicalAdviceRoutingGuard.js";
 import { resolveGeneralKnowledgeShortCircuit } from "../replies/generalKnowledgeComposerContract.js";
 import {
   resolveSummaryContractShortCircuit,
@@ -77,7 +85,6 @@ import {
   hasSummaryShell,
   hasWebPageSummaryIntent,
 } from "../../policies/summary/index.js";
-import { isResearchThenSummarizeRequest } from "../../policies/researchThenSummarizePolicy.js";
 import {
   classifyAttachmentTask,
   shouldRouteAttachmentTaskToFullPipeline,
@@ -120,11 +127,6 @@ import {
 } from "../../utils/translationIntentGuards.js";
 import { buildTranslationRequestPlan } from "../../utils/translationRequestPlan.js";
 import {
-  decomposeRequest,
-  isMultiUnitRequest,
-  shouldPreemptMultiSegment,
-} from "../../policies/requestDecompositionPolicy.js";
-import {
   buildMultiUnitCompositeReply,
 } from "../replies/multiUnitReplyBuilder.js";
 import {
@@ -166,12 +168,10 @@ import {
 } from "../classifiers/conversationTurnClassifier.js";
 import { recordConversationTurnTelemetry } from "../../telemetry/conversationTurnTelemetry.js";
 import { resolveCasualExplanationLightShortCircuit } from "../../policies/casualExplanationLightPolicy.js";
-import { resolveInformationSeekingLightShortCircuit } from "../../policies/informationSeekingLightPolicy.js";
 import { resolveAssistantUtteranceClarifyShortCircuit } from "../../policies/assistantUtteranceClarifyPolicy.js";
 import { resolveEpistemicUncertaintyShortCircuit } from "../../policies/epistemicUncertaintyResolutionPolicy.js";
 import { resolveExistingSourceAnalysisShortCircuit } from "../../policies/existingSourceAnalysisPolicy.js";
 import { resolveRepoAnalysisShortCircuit } from "../../policies/repoAnalysisPolicy.js";
-import { resolveExplicitWebSearchHelpShortCircuit } from "../../policies/explicitWebSearchRequestPolicy.js";
 import { isSubjectReferenceAvailabilityRequest } from "../../micro/continuity/sessionSubjectReferenceGuards.js";
 import { resolveCurrentWebFactShortCircuit } from "../../policies/currentWebFactPolicy.js";
 import { resolveExternalCalendarLookupShortCircuit } from "../../policies/externalCalendarLookupPolicy.js";

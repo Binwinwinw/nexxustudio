@@ -144,8 +144,9 @@ Objectif : réduire le bruit d’un dossier plat (~140 fichiers) sans big bang.
 | `policies/document/` | `documentSynthesis*`, `documentAnalysisComposite`, `documentWebCompare`, `documentCapabilityContract` |
 | `policies/attachment/` | `attachmentTask`, `attachmentInterpretation` |
 | `policies/delivery/` | `deliverableContract`, `deliverablePromiseGuard`, `deliveryContract`, `constructiveDelivery`, `htmlProjectDelivery`, `htmlWorkshopDeliveryContract`, `htmlProjectDeliveryThresholds`, `pythonDelivery` |
+| `policies/routing/` | `practicalAdviceRoutingGuard`, `reactAuditContractRouter`, `reactAuditShortCircuit`, `explicitWebSearchRequest`, `informationSeekingOrchestration`, `informationSeekingLight`, `informationSeekingQualification`, `clarificationDecision`, `requestDecomposition`, `shortCircuitCognitiveCycle`, `researchThenSummarize`, `knowledgeEnrichment`, `compareChooseComposite`, `multiSegmentQualification` |
 
-**Ordre de migration suivant :** lots restants au fil des PR (routing, …) — pas de big bang.
+**Ordre de migration suivant :** lots restants au fil des PR (qualification, web, posture, …) — pas de big bang.
 
 **Pilote domaine `meta/` clôturé** avec les slices connectors → meta ci-dessus.
 

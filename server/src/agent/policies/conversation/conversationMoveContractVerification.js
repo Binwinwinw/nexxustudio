@@ -338,8 +338,9 @@ export function enforceMoveContract(
 export function verifyMoveContract(
   text = "",
   query = "",
-  { conversationMove = {}, pipelinePath = null, segmentPlan = null } = {},
+  { conversationMove: rawMove = {}, pipelinePath = null, segmentPlan = null } = {},
 ) {
+  const conversationMove = rawMove ?? {};
   const detection = detectMoveContractViolations(text, query, {
     conversationMove,
     pipelinePath,
