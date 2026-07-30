@@ -81,8 +81,8 @@ import { isResearchThenSummarizeRequest } from "../../policies/researchThenSumma
 import {
   classifyAttachmentTask,
   shouldRouteAttachmentTaskToFullPipeline,
-} from "../../policies/attachmentTaskPolicy.js";
-import { buildAttachmentInterpretationSystemAddon } from "../../policies/attachmentInterpretationPolicy.js";
+  buildAttachmentInterpretationSystemAddon,
+} from "../../policies/attachment/index.js";
 import { isAttachedVisionRequest } from "../../utils/conversationGuards.js";
 import { resolveFormalLetterTemplateShortCircuit } from "../../policies/formalLetterTemplatePolicy.js";
 import { resolvePedagogicalOverviewShortCircuit } from "../replies/pedagogicalOverviewComposer.js";

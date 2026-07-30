@@ -142,8 +142,9 @@ Objectif : réduire le bruit d’un dossier plat (~140 fichiers) sans big bang.
 | `policies/meta/` | `metaAssistantBehavior`, `metaCapabilities`, `comprehensionGrounding`, `openPromptContinuity` |
 | `policies/guided/` | `guidedProductRecommendation`, `guidedDocumentSynthesis`, `guidedCreationScoping`, `guidedChoice` |
 | `policies/document/` | `documentSynthesis*`, `documentAnalysisComposite`, `documentWebCompare`, `documentCapabilityContract` |
+| `policies/attachment/` | `attachmentTask`, `attachmentInterpretation` |
 
-**Ordre de migration suivant :** lots restants au fil des PR (delivery, routing, attachment, …) — pas de big bang.
+**Ordre de migration suivant :** lots restants au fil des PR (delivery, routing, …) — pas de big bang.
 
 **Pilote domaine `meta/` clôturé** avec les slices connectors → meta ci-dessus.
 

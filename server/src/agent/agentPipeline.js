@@ -100,8 +100,8 @@ import { enforceFileContextGuard } from "./policies/fileContextGuard.js";
 import {
   classifyAttachmentTask,
   formatAttachmentTaskSummary,
-} from "./policies/attachmentTaskPolicy.js";
-import { buildAttachmentInterpretationSystemAddon } from "./policies/attachmentInterpretationPolicy.js";
+  buildAttachmentInterpretationSystemAddon,
+} from "./policies/attachment/index.js";
 import {
   evaluateJustIntent,
   resolveIntentComposition,
