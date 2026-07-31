@@ -166,7 +166,7 @@ import {
   CONVERSATION_TURN_FAMILIES,
 } from "../classifiers/conversationTurnClassifier.js";
 import { recordConversationTurnTelemetry } from "../../telemetry/conversationTurnTelemetry.js";
-import { resolveCasualExplanationLightShortCircuit } from "../../policies/casualExplanationLightPolicy.js";
+import { resolveCasualExplanationLightShortCircuit } from "../../policies/social/index.js";
 import { resolveEpistemicUncertaintyShortCircuit } from "../../policies/epistemic/index.js";
 import { resolveExistingSourceAnalysisShortCircuit } from "../../policies/existingSourceAnalysisPolicy.js";
 import { resolveRepoAnalysisShortCircuit } from "../../policies/repoAnalysisPolicy.js";

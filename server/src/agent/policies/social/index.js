@@ -3,3 +3,4 @@ export * from "./socialPatternPolicy.js";
 export * from "./socialChatContinuityPolicy.js";
 export * from "./socialAcceptanceOfOfferPolicy.js";
 export * from "./socialCompositeReplyPolicy.js";
+export * from "./casualExplanationLightPolicy.js";
