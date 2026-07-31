@@ -1,7 +1,7 @@
-import CORE_IDENTITY from '../policies/coreIdentity.js';
-import STYLE_POLICY from '../policies/stylePolicy.js';
-import OUTPUT_CONTRACT from '../policies/outputContract.js';
-import UNCERTAINTY_POLICY from '../policies/uncertaintyPolicy.js';
+import CORE_IDENTITY from '../policies/prompt/coreIdentity.js';
+import STYLE_POLICY from '../policies/posture/index.js';
+import OUTPUT_CONTRACT from '../policies/prompt/outputContract.js';
+import UNCERTAINTY_POLICY from '../policies/epistemic/index.js';
 
 export function buildSocialPrompt(state = {}) {
   const { score = 0, missing = [] } = state;

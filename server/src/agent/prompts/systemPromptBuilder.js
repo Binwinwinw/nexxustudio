@@ -1,18 +1,17 @@
 import identityCore from "../identity/identityCore.js";
-import ERROR_POLICY from "../policies/errorPolicy.js";
-import { buildToolPolicy } from "../policies/toolPolicy.js";
-import { buildStyleModule } from "../policies/responseStylePolicy.js";
+import ERROR_POLICY from "../policies/prompt/errorPolicy.js";
+import { buildToolPolicy } from "../policies/prompt/toolPolicy.js";
+import { buildStyleModule } from "../policies/posture/responseStylePolicy.js";
 import UNCERTAINTY_POLICY from "../policies/epistemic/index.js";
-import CONTEXT_POLICY from "../policies/contextPolicy.js";
+import CONTEXT_POLICY from "../policies/prompt/contextPolicy.js";
 import QUALITY_GATE from "../contracts/qualityGate.js";
 import fs from 'fs';
 import path from 'path';
 import { SKILLS_DIR } from '../utils/skillLoader.js';
-import { buildCodeDeliveryAddon } from '../policies/codeDeliveryPolicy.js';
-import { buildCodeIntentAddon } from '../policies/codeReviewPolicy.js';
-import { buildJustIntentAddon } from '../policies/justIntentDetectionPolicy.js';
+import { buildCodeDeliveryAddon, buildCodeIntentAddon } from '../policies/code/index.js';
+import { buildJustIntentAddon } from '../policies/intent/index.js';
 import { buildStructuredRequestPromptAddon } from '../interpreter/RequestInterpreter.js';
-import { TUTOIEMENT_RULE } from '../policies/addressingPolicy.js';
+import { TUTOIEMENT_RULE } from '../policies/posture/index.js';
 
 const SKILLS_HUB_PATH = path.join(SKILLS_DIR, 'SKILLS.md');
 

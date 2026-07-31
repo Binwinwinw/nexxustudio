@@ -7,3 +7,5 @@ export * from "./htmlProjectDeliveryPolicy.js";
 export * from "./htmlWorkshopDeliveryContract.js";
 export * from "./htmlProjectDeliveryThresholds.js";
 export * from "./pythonDeliveryPolicy.js";
+export * from "./formalLetterTemplatePolicy.js";
+export * from "./promptForArtifactPolicy.js";

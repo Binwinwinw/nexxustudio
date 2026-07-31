@@ -8,3 +8,4 @@ export * from "./conversationSubjectExtraction.js";
 export * from "./exploratoryConversationPolicy.js";
 export * from "./queryUnderstandingDomainRegistry.js";
 export * from "./queryUnderstandingCoverageMatrix.js";
+export * from "./openExplorationFramePolicy.js";

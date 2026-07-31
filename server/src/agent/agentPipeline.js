@@ -8,7 +8,7 @@ import {
 } from "./utils/normalizationGuards.js";
 import intentClassifier from "./utils/intentClassifier.js";
 import controlHarness from "./harness/controlHarness.js";
-import { AGENT_ROLES } from "./policies/agentRolePolicy.js";
+import { AGENT_ROLES } from "./policies/core/index.js";
 import { getClientForModel } from "../llm/llmFactory.js";
 import turnTelemetry from "./telemetry/turnTelemetry.js";
 import caveman from "../utils/cavemanShrink.js";
@@ -103,7 +103,7 @@ import {
   appliesCodeErrorPriorityPolicy,
   enforceCodeErrorPriorityPipelineDelivery,
 } from "./policies/code/index.js";
-import { enforceFileContextGuard } from "./policies/fileContextGuard.js";
+import { enforceFileContextGuard } from "./policies/guards/index.js";
 import {
   classifyAttachmentTask,
   formatAttachmentTaskSummary,
@@ -140,14 +140,14 @@ import {
 import {
   shouldUseChatLightComposerPath,
   buildLightChatOrchestratorPacket,
-} from "./policies/chatAgentProfilePolicy.js";
+} from "./policies/orchestration/index.js";
 import {
   resolveGuidedProductIntentContractId,
   buildQueryUnderstandingSlotTelemetry,
   resolveGuidedDocumentSynthesisIntentContractId,
   buildDocumentSynthesisSlotTelemetry,
 } from "./policies/guided/index.js";
-import { resolveFormalLetterTemplateIntentContractId } from "./policies/formalLetterTemplatePolicy.js";
+import { resolveFormalLetterTemplateIntentContractId } from "./policies/delivery/index.js";
 import {
   recordGuidedCreationScopingTelemetry,
   resolveGuidedCreationIntentContractId,
@@ -170,8 +170,7 @@ import { recordSummaryContractTelemetry } from "./telemetry/summaryContractTelem
 import { sanitizeToolOutput } from "../services/tool-output-sanitizer.js";
 import { validateProductRecommendationReply } from "./policies/guided/index.js";
 import { validateWebEvidenceFidelityReply } from "./policies/web/index.js";
-import { resolveFamiliarityDomainOverviewBypassReply } from "./policies/familiarityDomainOverviewPolicy.js";
-import { resolveSubjectReferenceResumeBypassReply } from "./policies/subjectReferenceResumePolicy.js";
+import { resolveFamiliarityDomainOverviewBypassReply, resolveSubjectReferenceResumeBypassReply } from "./policies/familiarity/index.js";
 import {
   recordJustIntentTelemetry,
   recordClarificationGateEvent,
@@ -251,7 +250,7 @@ import {
   resolveWorkUnitCountAndPlan,
   formatWorkUnitCountAndPlanSummary,
 } from "./policies/workload/index.js";
-import { resolveOpenExplorationFrame } from "./policies/openExplorationFramePolicy.js";
+import { resolveOpenExplorationFrame } from "./policies/conversation/index.js";
 import {
   evaluateBoundedSubjectDeepening,
   isSubjectDeepeningLlmEnabled,

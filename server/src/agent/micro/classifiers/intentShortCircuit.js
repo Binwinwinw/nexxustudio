@@ -92,7 +92,6 @@ import {
   buildAttachmentInterpretationSystemAddon,
 } from "../../policies/attachment/index.js";
 import { isAttachedVisionRequest } from "../../utils/conversationGuards.js";
-import { resolveFormalLetterTemplateShortCircuit } from "../../policies/formalLetterTemplatePolicy.js";
 import { resolvePedagogicalOverviewShortCircuit } from "../replies/pedagogicalOverviewComposer.js";
 import { resolveBeginnerTopicOverviewShortCircuit } from "../replies/beginnerTopicOverviewComposer.js";
 import { resolveCareerLearningPathShortCircuit } from "../replies/careerLearningPathComposer.js";
@@ -145,21 +144,24 @@ import {
   resolveExploratoryConversationShortCircuit,
 } from "../../policies/conversation/index.js";
 import { resolveDocumentSynthesisShortCircuit } from "../../policies/document/index.js";
-import { resolveFamiliarityDomainOverviewShortCircuit } from "../../policies/familiarityDomainOverviewPolicy.js";
+import {
+  resolveFamiliarityDomainOverviewShortCircuit,
+  resolveSubjectReferenceResumeShortCircuit,
+} from "../../policies/familiarity/index.js";
 import {
   resolvePedagogySoftOverviewShortCircuit,
   resolveLexiconExplainShortCircuit,
   resolvePedagogicalStructuredExplainShortCircuit,
   resolvePedagogicalScheduledExplain,
 } from "../../policies/pedagogical/index.js";
-import { resolvePromptForArtifactShortCircuit } from "../../policies/promptForArtifactPolicy.js";
-import { resolveSubjectReferenceResumeShortCircuit } from "../../policies/subjectReferenceResumePolicy.js";
-
-function withPedagogicalComposition(query, reply) {
-  if (!reply) return reply;
-  const composition = resolveIntentComposition(query);
-  return applyPedagogicalCompositionAugment(reply, composition);
-}
+import {
+  resolveFormalLetterTemplateShortCircuit,
+  resolvePromptForArtifactShortCircuit,
+} from "../../policies/delivery/index.js";
+import {
+  resolveExistingSourceAnalysisShortCircuit,
+  resolveRepoAnalysisShortCircuit,
+} from "../../policies/analysis/index.js";
 import {
   classifyConversationTurnFamily,
   shouldSuppressTurnFamilyPath,
@@ -168,8 +170,12 @@ import {
 import { recordConversationTurnTelemetry } from "../../telemetry/conversationTurnTelemetry.js";
 import { resolveCasualExplanationLightShortCircuit } from "../../policies/social/index.js";
 import { resolveEpistemicUncertaintyShortCircuit } from "../../policies/epistemic/index.js";
-import { resolveExistingSourceAnalysisShortCircuit } from "../../policies/existingSourceAnalysisPolicy.js";
-import { resolveRepoAnalysisShortCircuit } from "../../policies/repoAnalysisPolicy.js";
+
+function withPedagogicalComposition(query, reply) {
+  if (!reply) return reply;
+  const composition = resolveIntentComposition(query);
+  return applyPedagogicalCompositionAugment(reply, composition);
+}
 import { isSubjectReferenceAvailabilityRequest } from "../../micro/continuity/sessionSubjectReferenceGuards.js";
 import {
   resolveCurrentWebFactShortCircuit,
