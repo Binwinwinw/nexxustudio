@@ -2,7 +2,7 @@ import identityCore from "../identity/identityCore.js";
 import ERROR_POLICY from "../policies/errorPolicy.js";
 import { buildToolPolicy } from "../policies/toolPolicy.js";
 import { buildStyleModule } from "../policies/responseStylePolicy.js";
-import UNCERTAINTY_POLICY from "../policies/uncertaintyPolicy.js";
+import UNCERTAINTY_POLICY from "../policies/epistemic/index.js";
 import CONTEXT_POLICY from "../policies/contextPolicy.js";
 import QUALITY_GATE from "../contracts/qualityGate.js";
 import fs from 'fs';

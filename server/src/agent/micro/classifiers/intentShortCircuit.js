@@ -167,7 +167,7 @@ import {
 } from "../classifiers/conversationTurnClassifier.js";
 import { recordConversationTurnTelemetry } from "../../telemetry/conversationTurnTelemetry.js";
 import { resolveCasualExplanationLightShortCircuit } from "../../policies/casualExplanationLightPolicy.js";
-import { resolveEpistemicUncertaintyShortCircuit } from "../../policies/epistemicUncertaintyResolutionPolicy.js";
+import { resolveEpistemicUncertaintyShortCircuit } from "../../policies/epistemic/index.js";
 import { resolveExistingSourceAnalysisShortCircuit } from "../../policies/existingSourceAnalysisPolicy.js";
 import { resolveRepoAnalysisShortCircuit } from "../../policies/repoAnalysisPolicy.js";
 import { isSubjectReferenceAvailabilityRequest } from "../../micro/continuity/sessionSubjectReferenceGuards.js";

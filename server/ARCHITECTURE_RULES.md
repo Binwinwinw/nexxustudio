@@ -148,8 +148,9 @@ Objectif : réduire le bruit d’un dossier plat (~140 fichiers) sans big bang.
 | `policies/web/` | `webSource`, `webSearchThreadContinuity`, `currentWebFact`, `knowledgeFreshness`, `externalCalendarLookup`, `trafficCurrentRequest`, `weatherCurrentRequest`, `webEvidenceFidelity` |
 | `policies/qualification/` | `howToQualification`, `subjectTyping`, `assistantUtteranceClarify`, `pendingClarificationResume` |
 | `policies/posture/` | `addressing`, `voiceContinuity`, `posture`, `sessionModeState`, `responseStyle`, `responseManner`, `style` |
+| `policies/epistemic/` | `epistemicUncertaintyResolution`, `uncertainty`, `aiVerification` |
 
-**Ordre de migration suivant :** lots restants au fil des PR (epistemic, pedagogical, …) — pas de big bang.
+**Ordre de migration suivant :** lots restants au fil des PR (pedagogical, …) — pas de big bang.
 
 **Pilote domaine `meta/` clôturé** avec les slices connectors → meta ci-dessus.
 
