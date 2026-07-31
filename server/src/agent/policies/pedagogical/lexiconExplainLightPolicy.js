@@ -20,7 +20,7 @@ import {
 import {
   extractFreeformUnitTarget,
   resolveRequestWorkloadSignal,
-} from "../requestWorkloadSignalPolicy.js";
+} from "../workload/index.js";
 
 export {
   PEDAGOGICAL_TABLE_HEADERS,

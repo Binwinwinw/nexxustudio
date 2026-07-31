@@ -246,11 +246,11 @@ import {
 import {
   resolveRequestWorkloadSignal,
   formatWorkloadSignalSummary,
-} from "./policies/requestWorkloadSignalPolicy.js";
+} from "./policies/workload/index.js";
 import {
   resolveWorkUnitCountAndPlan,
   formatWorkUnitCountAndPlanSummary,
-} from "./policies/workUnitCountAndPlanPolicy.js";
+} from "./policies/workload/index.js";
 import { resolveOpenExplorationFrame } from "./policies/openExplorationFramePolicy.js";
 import {
   evaluateBoundedSubjectDeepening,

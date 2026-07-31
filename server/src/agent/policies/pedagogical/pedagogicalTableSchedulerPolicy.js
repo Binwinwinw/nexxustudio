@@ -12,11 +12,11 @@ import {
   parsePedagogicalStructuredUnits,
   pedagogicalSubjectLabel,
 } from "./lexiconExplainLightPolicy.js";
-import { resolveRequestWorkloadSignal } from "../requestWorkloadSignalPolicy.js";
+import { resolveRequestWorkloadSignal } from "../workload/index.js";
 import {
   resolveWorkUnitCountAndPlan,
   WORK_UNIT_EXECUTION_MODES,
-} from "../workUnitCountAndPlanPolicy.js";
+} from "../workload/index.js";
 
 /**
  * Invariant cardinalité : demandé (WorkloadSignal) = planifié (unités parse).
