@@ -9,7 +9,7 @@ import {
 import {
   buildZephyrTriggerSignals,
   resolveExecutionBriefTrigger,
-} from '../src/agent/policies/executionBriefPolicy.js';
+} from '../src/agent/policies/execution/index.js';
 
 test('matchesWarmToneSemiSocialShell — transitions conversationnelles', () => {
   assert.equal(matchesWarmToneSemiSocialShell('ok et sinon'), true);

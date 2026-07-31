@@ -8,7 +8,7 @@ import {
   bridgeSemanticOutputToExecutionBrief,
   formatExecutionBriefInjection,
   validateExecutionBrief,
-} from '../policies/executionBriefPolicy.js';
+} from '../policies/execution/index.js';
 
 const STAGE_ENABLED = () => process.env.EXECUTION_BRIEF_ENABLED !== '0';
 const ZEPHYR_ENABLED = () => process.env.EXECUTION_BRIEF_ZEPHYR !== '0';

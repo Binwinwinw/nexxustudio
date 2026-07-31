@@ -12,7 +12,7 @@ import {
   bridgeSemanticOutputToExecutionBrief,
   isFollowUpEllipsisQuery,
   isMetaSystemArchitectureQuery,
-} from '../src/agent/policies/executionBriefPolicy.js';
+} from '../src/agent/policies/execution/index.js';
 
 test('isFollowUpEllipsisQuery — relances courtes', () => {
   assert.equal(isFollowUpEllipsisQuery('et le poker'), true);
