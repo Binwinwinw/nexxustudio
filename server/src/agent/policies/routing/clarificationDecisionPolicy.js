@@ -73,7 +73,7 @@ import {
 } from "../epistemic/index.js";
 import { isReactAuditRequest } from "../../utils/reactAuditIntentGuards.js";
 import { shouldAllowClarifyThenBuild } from "../../utils/deliverableMandateGuards.js";
-import { isExistingSourceAnalysisSatisfiable } from "../existingSourceAnalysisPolicy.js";
+import { isExistingSourceAnalysisSatisfiable } from "../analysis/index.js";
 import {
   decomposeRequest,
   suppressesClarificationForDecomposedRequest,

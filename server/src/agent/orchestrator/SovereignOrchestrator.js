@@ -47,7 +47,7 @@ import {
 import {
   extractLocalFileReference,
 } from "../utils/localFileUriIntentGuards.js";
-import { resolveWorkspaceReadablePath } from "../policies/existingSourceAnalysisPolicy.js";
+import { resolveWorkspaceReadablePath } from "../policies/analysis/index.js";
 import { isExplicitWebSearchRequest } from "../policies/explicitWebSearchRequestPolicy.js";
 import {
   runOrchestratorMakersCheckerValidation,

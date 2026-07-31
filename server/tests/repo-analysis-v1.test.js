@@ -10,7 +10,7 @@ import {
   REPO_ANALYSIS_CANONICAL_LOCAL_QUERY,
   REPO_ANALYSIS_CANONICAL_GITHUB_QUERY,
   resolveRepoAnalysisShortCircuit,
-} from "../src/agent/policies/repoAnalysisPolicy.js";
+} from "../src/agent/policies/analysis/index.js";
 import {
   REPO_ANALYSIS_CONTRACT_ID,
   validateRepoAnalysisReport,

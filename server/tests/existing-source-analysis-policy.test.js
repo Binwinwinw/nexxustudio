@@ -8,7 +8,7 @@ import {
   resolveExistingSourceAnalysisShortCircuit,
   isExistingSourceAnalysisSatisfiable,
   resolveWorkspaceReadablePath,
-} from "../src/agent/policies/existingSourceAnalysisPolicy.js";
+} from "../src/agent/policies/analysis/index.js";
 import {
   extractLocalFileReference,
   isExistingSourceAnalysisRequest,
