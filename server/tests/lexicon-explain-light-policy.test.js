@@ -38,7 +38,7 @@ import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
 } from "../src/agent/policies/clarificationDecisionPolicy.js";
-import { resolveSubjectReferenceResumeShortCircuit } from "../src/agent/policies/subjectReferenceResumePolicy.js";
+import { resolveSubjectReferenceResumeShortCircuit } from "../src/agent/policies/familiarity/index.js";
 import {
   isFullExplanationResumeRequest,
   resolveConversationContinuityShortCircuit,

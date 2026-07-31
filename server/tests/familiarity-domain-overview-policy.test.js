@@ -8,7 +8,7 @@ import {
   FAMILIARITY_DOMAIN_CANONICAL_POLITIQUE_QUERY,
   isFamiliarityDomainOverviewSatisfiable,
   resolveFamiliarityDomainOverviewShortCircuit,
-} from "../src/agent/policies/familiarityDomainOverviewPolicy.js";
+} from "../src/agent/policies/familiarity/index.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,

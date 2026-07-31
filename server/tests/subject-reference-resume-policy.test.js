@@ -8,7 +8,7 @@ import {
   SUBJECT_REFERENCE_CANONICAL_RESUME_DIOR_QUERY,
   SUBJECT_REFERENCE_CANONICAL_REVIENS_ITALIE_QUERY,
   resolveSubjectReferenceResumeShortCircuit,
-} from "../src/agent/policies/subjectReferenceResumePolicy.js";
+} from "../src/agent/policies/familiarity/index.js";
 import { isConversationMemoryRecallRequest } from "../src/agent/utils/conversationGuards.js";
 import {
   CLARIFICATION_DECISIONS,
@@ -26,7 +26,7 @@ import {
 } from "../src/agent/micro/continuity/sessionSubjectReferenceGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolvePipelineFallback } from "../src/agent/utils/genericGreetingGuards.js";
-import { FAMILIARITY_DOMAIN_CANONICAL_POLITIQUE_QUERY } from "../src/agent/policies/familiarityDomainOverviewPolicy.js";
+import { FAMILIARITY_DOMAIN_CANONICAL_POLITIQUE_QUERY } from "../src/agent/policies/familiarity/index.js";
 
 const DIOR_HISTORY = [
   {

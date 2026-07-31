@@ -38,7 +38,8 @@ import {
 import {
   buildFamiliarityDomainOverviewRecoveryMessage,
   isFamiliarityDomainOverviewSatisfiable,
-} from "../policies/familiarityDomainOverviewPolicy.js";
+  buildSubjectReferenceResumeRecoveryMessage,
+} from "../policies/familiarity/index.js";
 import {
   buildCurrentWebFactRecoveryMessage,
   isCurrentWebFactRequest,
@@ -55,9 +56,6 @@ import {
   buildPromptForArtifactRecoveryMessage,
   isPromptForArtifactSatisfiable,
 } from "../policies/promptForArtifactPolicy.js";
-import {
-  buildSubjectReferenceResumeRecoveryMessage,
-} from "../policies/subjectReferenceResumePolicy.js";
 import { isSubjectReferenceAvailabilityRequest } from "../micro/continuity/sessionSubjectReferenceGuards.js";
 import { isGeneralKnowledgeRequest } from "./generalKnowledgeIntentGuards.js";
 import { isPedagogicalOverviewRequest } from "./pedagogicalOverviewIntentGuards.js";
