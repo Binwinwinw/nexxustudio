@@ -6,7 +6,7 @@ import contract from "../../config/codeProjectLightContract.json" with { type: "
 import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
 import { suppressesCodeGenerationForProgrammingPedagogy } from "../../utils/programmingPedagogyLightIntentGuards.js";
 import { isHtmlProjectDeliverable } from "../htmlProjectDeliveryPolicy.js";
-import { buildFrontPresentationQualitySystemAddon } from "../frontendPresentationQualityContract.js";
+import { buildFrontPresentationQualitySystemAddon } from "./frontendPresentationQualityContract.js";
 
 export const CODE_PROJECT_LIGHT_CONTRACT_ID = contract.id;
 export const CODE_PROJECT_LIGHT_ARTIFACTS = contract.artifacts || [

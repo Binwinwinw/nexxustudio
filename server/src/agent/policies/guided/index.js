@@ -3,3 +3,4 @@ export * from "./guidedProductRecommendationPolicy.js";
 export * from "./guidedDocumentSynthesisPolicy.js";
 export * from "./guidedCreationScopingPolicy.js";
 export * from "./guidedChoicePolicy.js";
+export * from "./productRecoValidator.js";

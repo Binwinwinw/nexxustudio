@@ -15,3 +15,4 @@ export * from "./codeProjectLightPolicy.js";
 export * from "./codeProjectLightExecutionPolicy.js";
 export * from "./codeProjectLightWriter.js";
 export * from "./codeCreateFallbackPolicy.js";
+export * from "./frontendPresentationQualityContract.js";

@@ -10,7 +10,7 @@ import {
   writeCodeProjectLightArtifacts,
   buildCodeProjectLightWriteSummary,
 } from "./codeProjectLightWriter.js";
-import { validateCodeProjectLightArtifacts } from "../frontendPresentationQualityContract.js";
+import { validateCodeProjectLightArtifacts } from "./frontendPresentationQualityContract.js";
 
 /**
  * @param {string} query

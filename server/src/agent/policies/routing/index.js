@@ -13,3 +13,4 @@ export * from "./researchThenSummarizePolicy.js";
 export * from "./knowledgeEnrichmentPolicy.js";
 export * from "./compareChooseCompositePolicy.js";
 export * from "./multiSegmentQualificationPolicy.js";
+export * from "./generalKnowledgeEnrichmentPolicy.js";

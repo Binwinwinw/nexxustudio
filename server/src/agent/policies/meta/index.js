@@ -3,3 +3,4 @@ export * from "./metaAssistantBehaviorPolicy.js";
 export * from "./metaCapabilitiesPolicy.js";
 export * from "./comprehensionGroundingPolicy.js";
 export * from "./openPromptContinuityPolicy.js";
+export * from "./governanceExplainPolicy.js";

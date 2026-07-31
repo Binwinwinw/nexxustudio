@@ -168,7 +168,7 @@ import {
 } from "./policies/summary/index.js";
 import { recordSummaryContractTelemetry } from "./telemetry/summaryContractTelemetry.js";
 import { sanitizeToolOutput } from "../services/tool-output-sanitizer.js";
-import { validateProductRecommendationReply } from "./policies/productRecoValidator.js";
+import { validateProductRecommendationReply } from "./policies/guided/index.js";
 import { validateWebEvidenceFidelityReply } from "./policies/web/index.js";
 import { resolveFamiliarityDomainOverviewBypassReply } from "./policies/familiarityDomainOverviewPolicy.js";
 import { resolveSubjectReferenceResumeBypassReply } from "./policies/subjectReferenceResumePolicy.js";

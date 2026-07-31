@@ -1,7 +1,7 @@
 /**
  * Politique d'enrichissement unifiée — culture générale + fraîcheur temporelle.
  */
-import { resolveGeneralKnowledgeEnrichmentPolicy } from "../generalKnowledgeEnrichmentPolicy.js";
+import { resolveGeneralKnowledgeEnrichmentPolicy } from "./generalKnowledgeEnrichmentPolicy.js";
 import { resolveInformationSeekingEnrichmentPolicy } from "./informationSeekingOrchestrationPolicy.js";
 import { assessKnowledgeFreshnessRisk } from "../knowledgeFreshnessPolicy.js";
 import {
