@@ -116,9 +116,11 @@ Ce qui ne doit plus être ajouté dans `agent.js` :
 - fonctionnement de Nexxus
 - périmètre du Studio
 
-## 4. `policies/` — découpage par domaine (pilote en cours)
+## 4. `policies/` — découpage par domaine (audit global racine clôturé)
 
 Objectif : réduire le bruit d’un dossier plat (~140 fichiers) sans big bang.
+
+**État :** audit move-only terminé — la racine `policies/` ne contient plus que des wrappers `@deprecated` ; les implémentations vivent sous `policies/<domaine>/`. Phase 2 = migration progressive des imports restants hors pilotes, puis suppression des wrappers.
 
 **Règles :**
 
@@ -128,36 +130,50 @@ Objectif : réduire le bruit d’un dossier plat (~140 fichiers) sans big bang.
 - Les barrels sont des **façades de domaine** destinées à réduire le bruit local et à faciliter la migration ; ils ne constituent **pas** un point d’entrée universel pour tout `policies/`. Préférer `./policies/<domaine>/<fichier>.js` quand un seul module suffit.
 - **Phase 2 fusion** seulement si >80 % des PR touchent le lot entier (co-évolution).
 
-**Pilote validé :**
+**Domaines validés :**
 
 | Dossier | Contenu |
 |---------|---------|
-| `policies/connectors/` | `connectorRegistry`, `connectorPhaseC`, `connectorPlanTelemetry` |
-| `policies/math/` | `math*Policy`, `mathCompositeQueryPolicy` |
-| `policies/summary/` | `summaryContract*`, `culturalContentSummary*`, `knownEntitySummary*` |
-| `policies/social/` | `socialPattern`, `socialChatContinuity`, `socialAcceptanceOfOffer`, `socialCompositeReply` |
-| `policies/code/` | `code*Policy`, `code*Contract`, `code*Sentinels`, `codeProjectLight*` |
-| `policies/intent/` | `justIntent*`, `intentComposition*`, `intentCompatibilityMatrix`, `intentFamilyRegistry`, `requestIntentFrame`, `conversationIntentFrame` |
-| `policies/conversation/` | `conversationQueryUnderstanding`, `conversationMove*`, `conversationTurnRouting`, `conversationSubjectExtraction`, `exploratoryConversation`, `queryUnderstandingDomainRegistry`, `queryUnderstandingCoverageMatrix` |
-| `policies/meta/` | `metaAssistantBehavior`, `metaCapabilities`, `comprehensionGrounding`, `openPromptContinuity` |
-| `policies/guided/` | `guidedProductRecommendation`, `guidedDocumentSynthesis`, `guidedCreationScoping`, `guidedChoice` |
-| `policies/document/` | `documentSynthesis*`, `documentAnalysisComposite`, `documentWebCompare`, `documentCapabilityContract` |
+| `policies/analysis/` | `existingSourceAnalysis`, `repoAnalysis` |
 | `policies/attachment/` | `attachmentTask`, `attachmentInterpretation` |
-| `policies/delivery/` | `deliverableContract`, `deliverablePromiseGuard`, `deliveryContract`, `constructiveDelivery`, `htmlProjectDelivery`, `htmlWorkshopDeliveryContract`, `htmlProjectDeliveryThresholds`, `pythonDelivery` |
-| `policies/routing/` | `practicalAdviceRoutingGuard`, `reactAuditContractRouter`, `reactAuditShortCircuit`, `explicitWebSearchRequest`, `informationSeekingOrchestration`, `informationSeekingLight`, `informationSeekingQualification`, `clarificationDecision`, `requestDecomposition`, `shortCircuitCognitiveCycle`, `researchThenSummarize`, `knowledgeEnrichment`, `compareChooseComposite`, `multiSegmentQualification` |
-| `policies/web/` | `webSource`, `webSearchThreadContinuity`, `currentWebFact`, `knowledgeFreshness`, `externalCalendarLookup`, `trafficCurrentRequest`, `weatherCurrentRequest`, `webEvidenceFidelity` |
-| `policies/qualification/` | `howToQualification`, `subjectTyping`, `assistantUtteranceClarify`, `pendingClarificationResume` |
-| `policies/posture/` | `addressing`, `voiceContinuity`, `posture`, `sessionModeState`, `responseStyle`, `responseManner`, `style` |
+| `policies/code/` | `code*Policy`, `code*Contract`, `code*Sentinels`, `codeProjectLight*`, `frontendPresentationQualityContract` |
+| `policies/connectors/` | `connectorRegistry`, `connectorPhaseC`, `connectorPlanTelemetry` |
+| `policies/conversation/` | `conversationQueryUnderstanding`, `conversationMove*`, `conversationTurnRouting`, `conversationSubjectExtraction`, `exploratoryConversation`, `openExplorationFrame`, `queryUnderstandingDomainRegistry`, `queryUnderstandingCoverageMatrix` |
+| `policies/core/` | `agentRole` |
+| `policies/delivery/` | `deliverableContract`, `deliverablePromiseGuard`, `deliveryContract`, `constructiveDelivery`, `formalLetterTemplate`, `htmlProjectDelivery`, `htmlWorkshopDeliveryContract`, `htmlProjectDeliveryThresholds`, `promptForArtifact`, `pythonDelivery` |
+| `policies/document/` | `documentSynthesis*`, `documentAnalysisComposite`, `documentWebCompare`, `documentCapabilityContract` |
 | `policies/epistemic/` | `epistemicUncertaintyResolution`, `uncertainty`, `aiVerification` |
+| `policies/execution/` | `executionBrief` |
+| `policies/familiarity/` | `familiarityDomainOverview`, `subjectReferenceResume` |
+| `policies/guards/` | `fileContextGuard` |
+| `policies/guided/` | `guidedProductRecommendation`, `guidedDocumentSynthesis`, `guidedCreationScoping`, `guidedChoice`, `productRecoValidator` |
+| `policies/intent/` | `justIntent*`, `intentComposition*`, `intentCompatibilityMatrix`, `intentFamilyRegistry`, `requestIntentFrame`, `conversationIntentFrame` |
+| `policies/math/` | `math*Policy`, `mathCompositeQueryPolicy` |
+| `policies/meta/` | `metaAssistantBehavior`, `metaCapabilities`, `comprehensionGrounding`, `openPromptContinuity`, `governanceExplain` |
+| `policies/orchestration/` | `chatAgentProfile` |
 | `policies/pedagogical/` | `pedagogySoftOverview`, `pedagogySoftOverviewKnowledge`, `pedagogicalCoverage`, `pedagogicalCoverageRegistry`, `pedagogicalTableScheduler`, `lexiconExplainLight` |
+| `policies/posture/` | `addressing`, `voiceContinuity`, `posture`, `sessionModeState`, `responseStyle`, `responseManner`, `style`, `structuredGenerativeTemplate` |
+| `policies/prompt/` | `context`, `error`, `outputContract`, `coreIdentity`, `tool` |
+| `policies/qualification/` | `howToQualification`, `subjectTyping`, `assistantUtteranceClarify`, `pendingClarificationResume`, `adminProcedureCoverage` |
+| `policies/routing/` | `practicalAdviceRoutingGuard`, `reactAuditContractRouter`, `reactAuditShortCircuit`, `explicitWebSearchRequest`, `informationSeekingOrchestration`, `informationSeekingLight`, `informationSeekingQualification`, `clarificationDecision`, `requestDecomposition`, `shortCircuitCognitiveCycle`, `researchThenSummarize`, `knowledgeEnrichment`, `generalKnowledgeEnrichment`, `compareChooseComposite`, `multiSegmentQualification` |
+| `policies/social/` | `socialPattern`, `socialChatContinuity`, `socialAcceptanceOfOffer`, `socialCompositeReply`, `casualExplanationLight` |
+| `policies/summary/` | `summaryContract*`, `culturalContentSummary*`, `knownEntitySummary*` |
+| `policies/web/` | `webSource`, `webSearchThreadContinuity`, `currentWebFact`, `knowledgeFreshness`, `externalCalendarLookup`, `trafficCurrentRequest`, `weatherCurrentRequest`, `webEvidenceFidelity` |
+| `policies/workload/` | `requestWorkloadSignal`, `workUnitCountAndPlan` |
 
-**Ordre de migration suivant :** lots restants au fil des PR — pas de big bang.
+**Imports pilotes migrés :** `agentPipeline.js`, `intentShortCircuit.js`, `systemPromptBuilder.js`, `socialPrompt.js`.
 
-**Pilote domaine `meta/` clôturé** avec les slices connectors → meta ci-dessus.
+**Phase 2 suivante :** migration des imports restants vers barrels ou chemins domaine ; suppression des wrappers racine quand plus aucun appelant.
 
 **Routage connu hors périmètre move-only** (chantier B — ordre des short-circuits, même famille causale) :
 
 - `social-composite-g41-1` — G41.1-T03 : `meta_conversation_deterministic` gagne avant `social_composite_deterministic`.
 - `connector-registry` / `connector-phase-c` — fiches JSX / `technical_learning_path` : `local_deterministic` (ideation ou reply prête) avant `local_generative`.
+- `clarification-decision-policy` — corpus `encyclopedic_familiarity` / `explanatory_general_knowledge`.
+- `traffic-current-request-policy` — Paris + en ce moment → web prioritaire.
+- `external-calendar-lookup-routing` — pleine lune → web prioritaire.
+- `file-context-guard` — TDZ `WORK_CULTURAL_MARKER_RE` dans `codeConceptExplainPolicy.js`.
+- `familiarity-domain-overview` — `lexicon_explain_light` vs `familiarity_domain_overview`.
+- `repo-analysis-v1` — GitHub → mauvais contrat LLM.
 
-Ne pas bloquer la validation structurelle sur ces rouges ; les traiter dans une passe dédiée routage déterministe vs génératif.
+Ne pas bloquer la validation structurelle sur ces rouges ; les traiter dans une passe dédiée routage déterministe vs génératif (chantier B).
