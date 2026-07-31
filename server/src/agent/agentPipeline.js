@@ -233,7 +233,7 @@ import {
   setCapabilityToolsForTurn,
   clearCapabilityToolsForTurn,
 } from "./capabilities/capabilityToolSession.js";
-import { isPedagogicalStructuredExplainRequest } from "./policies/lexiconExplainLightPolicy.js";
+import { isPedagogicalStructuredExplainRequest } from "./policies/pedagogical/index.js";
 import {
   resolveDeliverableContract,
   formatDeliverableContractSummary,
@@ -2120,7 +2120,7 @@ class AgentPipeline {
             }
             if (shortCircuit.lexiconExplainLight) {
               const { buildLexiconRecognitionFallbackReply } = await import(
-                "./policies/lexiconExplainLightPolicy.js"
+                "./policies/pedagogical/lexiconExplainLightPolicy.js"
               );
               return this._finalizePipelineTurn({
                 text: applySurfaceMicroContract(

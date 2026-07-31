@@ -149,8 +149,9 @@ Objectif : réduire le bruit d’un dossier plat (~140 fichiers) sans big bang.
 | `policies/qualification/` | `howToQualification`, `subjectTyping`, `assistantUtteranceClarify`, `pendingClarificationResume` |
 | `policies/posture/` | `addressing`, `voiceContinuity`, `posture`, `sessionModeState`, `responseStyle`, `responseManner`, `style` |
 | `policies/epistemic/` | `epistemicUncertaintyResolution`, `uncertainty`, `aiVerification` |
+| `policies/pedagogical/` | `pedagogySoftOverview`, `pedagogySoftOverviewKnowledge`, `pedagogicalCoverage`, `pedagogicalCoverageRegistry`, `pedagogicalTableScheduler`, `lexiconExplainLight` |
 
-**Ordre de migration suivant :** lots restants au fil des PR (pedagogical, …) — pas de big bang.
+**Ordre de migration suivant :** lots restants au fil des PR — pas de big bang.
 
 **Pilote domaine `meta/` clôturé** avec les slices connectors → meta ci-dessus.
 

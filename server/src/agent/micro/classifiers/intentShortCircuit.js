@@ -146,14 +146,14 @@ import {
 } from "../../policies/conversation/index.js";
 import { resolveDocumentSynthesisShortCircuit } from "../../policies/document/index.js";
 import { resolveFamiliarityDomainOverviewShortCircuit } from "../../policies/familiarityDomainOverviewPolicy.js";
-import { resolvePedagogySoftOverviewShortCircuit } from "../../policies/pedagogySoftOverviewPolicy.js";
-import { resolvePromptForArtifactShortCircuit } from "../../policies/promptForArtifactPolicy.js";
-import { resolveSubjectReferenceResumeShortCircuit } from "../../policies/subjectReferenceResumePolicy.js";
 import {
+  resolvePedagogySoftOverviewShortCircuit,
   resolveLexiconExplainShortCircuit,
   resolvePedagogicalStructuredExplainShortCircuit,
-} from "../../policies/lexiconExplainLightPolicy.js";
-import { resolvePedagogicalScheduledExplain } from "../../policies/pedagogicalTableSchedulerPolicy.js";
+  resolvePedagogicalScheduledExplain,
+} from "../../policies/pedagogical/index.js";
+import { resolvePromptForArtifactShortCircuit } from "../../policies/promptForArtifactPolicy.js";
+import { resolveSubjectReferenceResumeShortCircuit } from "../../policies/subjectReferenceResumePolicy.js";
 
 function withPedagogicalComposition(query, reply) {
   if (!reply) return reply;
