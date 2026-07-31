@@ -6,7 +6,7 @@ import { memoryOrchestrator } from "../memory/MemoryOrchestrator.js";
 import retrievalGuard from "../../security/retrievalGuard.js";
 import sotLoader from "../utils/sotLoader.js";
 import { getClientForModel } from "../../llm/llmFactory.js";
-import { AGENT_ROLES } from "../policies/agentRolePolicy.js";
+import { AGENT_ROLES } from "../policies/core/index.js";
 import turnTelemetry from "../telemetry/turnTelemetry.js";
 import {
   loadSessionWorkMemory,

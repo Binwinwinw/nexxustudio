@@ -2,7 +2,7 @@
  * Tier 2 — synthèse conversationnelle via LLM léger + contrat strict.
  * Fallback template (Tier 1) si historique vide ou erreur LLM.
  */
-import { AGENT_ROLES } from "../policies/agentRolePolicy.js";
+import { AGENT_ROLES } from "../policies/core/index.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../config/modeResponseContracts.js";
 import responseThinkingCleaner from "./responseThinkingCleaner.js";
 import {

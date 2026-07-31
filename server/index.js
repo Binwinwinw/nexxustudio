@@ -54,7 +54,7 @@ import {
   listTier3ExpertModels,
   MODEL_CONFIG,
 } from "./src/config/models.js";
-import { AGENT_ROLES } from "./src/agent/policies/agentRolePolicy.js";
+import { AGENT_ROLES } from "./src/agent/policies/core/index.js";
 import {
   initBootstrapDiagnostics,
   getBootTraceId,

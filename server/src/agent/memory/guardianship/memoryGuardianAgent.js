@@ -1,5 +1,5 @@
 import { getClientForModel } from '../../../llm/llmFactory.js';
-import { AGENT_ROLES } from '../../policies/agentRolePolicy.js';
+import { AGENT_ROLES } from '../../policies/core/index.js';
 import { MEMORY_WRITE_CONTRACT_V1 } from './memoryWriteContract.js';
 
 const GUARDIAN_SYSTEM_PROMPT = `[ROLE]

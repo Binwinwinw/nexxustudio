@@ -1,5 +1,5 @@
 /* server/src/forge/handlers/architectHandler.js */
-import { AGENT_ROLES } from '../../agent/policies/agentRolePolicy.js';
+import { AGENT_ROLES } from '../../agent/policies/core/index.js';
 import ollama from '../../llm/ollama.js';
 import { buildArchitectSystemPrompt } from '../prompts/architectPrompt.js';
 import { getArtifactPath } from '../utils/projectPaths.js';

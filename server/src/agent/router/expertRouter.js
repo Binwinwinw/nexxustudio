@@ -17,7 +17,7 @@ import {
   ROUTER_MESSAGES,
   buildRouterDecisionPrompt,
 } from './routerContracts.js';
-import { AGENT_ROLES } from '../policies/agentRolePolicy.js';
+import { AGENT_ROLES } from '../policies/core/index.js';
 import { ROUTER_BUDGETS, ROUTER_LAYERS, formatLayerLog } from './routerLayers.js';
 import turnTelemetry from '../telemetry/turnTelemetry.js';
 import { OTEL_ATTRIBUTES, SPAN_NAMES } from '../telemetry/otelSemanticMap.js';

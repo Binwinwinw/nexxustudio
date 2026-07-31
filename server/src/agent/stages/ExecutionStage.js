@@ -1,6 +1,6 @@
 /* server/src/agent/stages/ExecutionStage.js */
 import { getClientForModel, getClientName } from "../../llm/llmFactory.js";
-import { getModelNature, MODEL_NATURE, getFallbackModel } from "../policies/agentRolePolicy.js";
+import { getModelNature, MODEL_NATURE, getFallbackModel } from "../policies/core/index.js";
 import OllamaStreamProcessor from "../utils/ollamaStreamProcessor.js";
 import toolExecutor from "../utils/toolExecutor.js";
 import turnTelemetry from "../telemetry/turnTelemetry.js";

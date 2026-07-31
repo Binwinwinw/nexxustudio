@@ -1,6 +1,6 @@
 import pool from "../db/connection.js";
 import crypto from "crypto";
-import { AGENT_ROLES } from "../agent/policies/agentRolePolicy.js";
+import { AGENT_ROLES } from "../agent/policies/core/index.js";
 
 export const criticObservabilityService = {
   /**

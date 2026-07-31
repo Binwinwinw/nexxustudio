@@ -2,7 +2,7 @@
  * P3 — Synthèse LLM bornée pour sujets generic_topic après acceptation d'aperçu.
  * Fallback déterministe si LLM indisponible ou réponse de mauvaise qualité.
  */
-import { AGENT_ROLES } from "../../policies/agentRolePolicy.js";
+import { AGENT_ROLES } from "../../policies/core/index.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../../config/modeResponseContracts.js";
 import responseThinkingCleaner from "../../utils/responseThinkingCleaner.js";
 import { sanitizeQuery } from "../normalization/querySanitizer.js";

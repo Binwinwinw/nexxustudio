@@ -1,6 +1,6 @@
 /* server/src/agent/stages/RoutingStage.js */
 import expertRouter from "../router/expertRouter.js";
-import { AGENT_ROLES, MODEL_NATURE, getModelNature } from "../policies/agentRolePolicy.js";
+import { AGENT_ROLES, MODEL_NATURE, getModelNature } from "../policies/core/index.js";
 import turnTelemetry from "../telemetry/turnTelemetry.js";
 import { OTEL_ATTRIBUTES } from '../telemetry/otelSemanticMap.js';
 

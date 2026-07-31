@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { getClientForModel } from '../../llm/llmFactory.js';
-import { AGENT_ROLES } from '../policies/agentRolePolicy.js';
+import { AGENT_ROLES } from '../policies/core/index.js';
 import { getValidator } from '../validators/compileSchemas.js';
 
 function postValidateDraft(draft, extractionBundle) {

@@ -33,7 +33,7 @@ import {
 import { sanitizeHistory } from "../utils/safetyGuards.js";
 import { isLongOutputTask } from "../utils/qualityGuards.js";
 import criticAgent from "../utils/criticAgent.js";
-import { AGENT_ROLES } from "../policies/agentRolePolicy.js";
+import { AGENT_ROLES } from "../policies/core/index.js";
 import { validateOrchestratorPacket } from "../validators/pipelineValidators.js";
 import {
   applyIntentContractToPacket,

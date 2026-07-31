@@ -1,5 +1,5 @@
 import { getClientForModel } from "../../llm/llmFactory.js";
-import { AGENT_ROLES } from "../policies/agentRolePolicy.js";
+import { AGENT_ROLES } from "../policies/core/index.js";
 import { validateQuickAnswer } from "../validators/pipelineValidators.js";
 
 export const quickAnswerAgent = {

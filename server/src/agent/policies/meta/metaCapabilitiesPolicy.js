@@ -7,7 +7,7 @@
 import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
 import { isCapabilityQuery } from "../../utils/intentGuards.js";
 import MODEL_CONFIG, { getReasonerModel } from "../../../config/models.js";
-import { AGENT_ROLES } from "../agentRolePolicy.js";
+import { AGENT_ROLES } from "../core/index.js";
 import { NEXXUS_VIDEO_LIMITS } from "../../../services/nexxus-video/videoRouterContract.js";
 
 export const META_CAPABILITIES_RULE = "meta_capabilities_g47";

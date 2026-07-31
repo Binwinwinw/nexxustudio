@@ -2,7 +2,7 @@
 import { buildSystemPrompt } from "../prompts/systemPromptBuilder.js";
 import controlHarness from "../harness/controlHarness.js";
 import skillLoader from "../utils/skillLoader.js";
-import { getModelNature, MODEL_NATURE } from "../policies/agentRolePolicy.js";
+import { getModelNature, MODEL_NATURE } from "../policies/core/index.js";
 import turnTelemetry from "../telemetry/turnTelemetry.js";
 import { OTEL_ATTRIBUTES, SPAN_NAMES } from '../telemetry/otelSemanticMap.js';
 

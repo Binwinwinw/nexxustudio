@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { getClientForModel } from "../src/llm/llmFactory.js";
-import { AGENT_ROLES } from "../src/agent/policies/agentRolePolicy.js";
+import { AGENT_ROLES } from "../src/agent/policies/core/index.js";
 import { finalRendererAgent } from "../src/agent/agents/finalRendererAgent.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
 import responseThinkingCleaner from "../src/agent/utils/responseThinkingCleaner.js";

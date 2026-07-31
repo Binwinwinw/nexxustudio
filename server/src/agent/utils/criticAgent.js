@@ -2,7 +2,7 @@ import { TOOL_REGISTRY } from './toolRegistry.js';
 import turnTelemetry from '../telemetry/turnTelemetry.js';
 import syntaxProxy from './syntaxProxy.js';
 import { getClientForModel } from '../../llm/llmFactory.js';
-import { AGENT_ROLES } from '../policies/agentRolePolicy.js';
+import { AGENT_ROLES } from '../policies/core/index.js';
 
 const CRITIC_SYSTEM_PROMPT = `[ROLE]
 Tu es l'Agent Critique de Fiabilité v4.0 pour La Citadelle.

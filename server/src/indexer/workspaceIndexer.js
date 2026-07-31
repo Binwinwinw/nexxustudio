@@ -6,7 +6,7 @@ import codeParser from './codeParser.js';
 import chunkPolicy from './chunkPolicy.js';
 import ManifestStore from './manifestStore.js';
 import { getClientForModel } from '../llm/llmFactory.js';
-import { AGENT_ROLES } from '../agent/policies/agentRolePolicy.js';
+import { AGENT_ROLES } from '../agent/policies/core/index.js';
 import knowledgeHub from '../services/knowledgeHub.js';
 import crypto from 'crypto';
 
