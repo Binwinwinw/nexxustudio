@@ -3,7 +3,7 @@
  * Doctrine Citadelle : 5–10 fichiers pertinents, pas dump brut 128K.
  */
 import { tokenizeTechText } from "../router/routerUtils.js";
-import { extractFilePathsFromText } from "../policies/fileContextGuard.js";
+import { extractFilePathsFromText } from "../policies/guards/index.js";
 
 const DEFAULT_MAX_FILES = 8;
 const DEFAULT_MIN_SCORE = 0.08;

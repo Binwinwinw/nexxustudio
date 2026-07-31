@@ -11,7 +11,7 @@ import {
   buildAttachmentResponseState,
   enforceFileContextGuard,
   evaluateFileContextGuard,
-} from "../src/agent/policies/fileContextGuard.js";
+} from "../src/agent/policies/guards/index.js";
 
 describe("fileContextGuard precedence — réponse métier > soft-guard", () => {
   it("PJ + doc_improve + réponse longue → jamais écrasée (append_only / overrideLocked)", () => {

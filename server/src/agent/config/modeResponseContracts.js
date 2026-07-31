@@ -48,7 +48,7 @@ import {
   buildFileContextGuardAddon,
   buildFileContextInventory,
   shouldApplyFileContextGuard,
-} from "../policies/fileContextGuard.js";
+} from "../policies/guards/index.js";
 
 /** Modes pipeline — contrats de réponse v1 */
 export const RESPONSE_MODES = {

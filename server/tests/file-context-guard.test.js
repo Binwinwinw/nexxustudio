@@ -10,7 +10,7 @@ import {
   buildMissingFileClarification,
   isPlausibleFileBasename,
   isConcreteGroundedResponse,
-} from "../src/agent/policies/fileContextGuard.js";
+} from "../src/agent/policies/guards/index.js";
 import { BROKEN_CALCULATRICE_PY_SNIPPET } from "./fixtures/codeReviewGoldenQueries.js";
 
 describe("fileContextGuard", () => {

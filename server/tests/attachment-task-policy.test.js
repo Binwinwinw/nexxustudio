@@ -32,7 +32,7 @@ import {
   isLegacyDocFile,
   extractDocxToText,
 } from "../src/services/document-analysis/docxExtractor.js";
-import { enforceFileContextGuard } from "../src/agent/policies/fileContextGuard.js";
+import { enforceFileContextGuard } from "../src/agent/policies/guards/index.js";
 import { inflateRawSync, deflateRawSync } from "node:zlib";
 
 describe("attachmentTaskPolicy", () => {

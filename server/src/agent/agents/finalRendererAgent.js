@@ -26,7 +26,7 @@ import {
 import {
   enforceFileContextGuard,
   shouldApplyFileContextGuard,
-} from "../policies/fileContextGuard.js";
+} from "../policies/guards/index.js";
 import {
   requiresDirectArbitrationContract,
   buildDirectArbitrationUserPrompt,
