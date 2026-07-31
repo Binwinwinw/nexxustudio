@@ -36,7 +36,7 @@ import {
   buildConnectorResolutionContext,
   resolveConnectorChain,
   validateConnectorRegistryV1,
-} from "../src/agent/policies/connectorRegistry.js";
+} from "../src/agent/policies/connectors/index.js";
 import {
   INTENT_DOMAINS,
   INTENT_ACTIONS,

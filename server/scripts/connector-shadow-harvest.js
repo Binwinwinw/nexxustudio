@@ -3,13 +3,13 @@
  * Usage: node scripts/connector-shadow-harvest.js
  */
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { observeConnectorPlanShadow } from "../src/agent/policies/connectorPlanTelemetry.js";
-import { resolveIntentFamilyFromRegistry } from "../src/agent/policies/intentFamilyRegistry.js";
-import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/practicalAdviceRoutingGuard.js";
 import {
+  observeConnectorPlanShadow,
   EXPERT_TASK_TYPES,
   REQUESTED_CAPABILITIES,
-} from "../src/agent/policies/connectorRegistry.js";
+} from "../src/agent/policies/connectors/index.js";
+import { resolveIntentFamilyFromRegistry } from "../src/agent/policies/intentFamilyRegistry.js";
+import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/practicalAdviceRoutingGuard.js";
 
 const SCENARIOS = [
   {

@@ -15,7 +15,7 @@ import {
   validateConnectorRegistryV1,
   isWebChainBlocked,
   wantsWebResearch,
-} from "../src/agent/policies/connectorRegistry.js";
+} from "../src/agent/policies/connectors/index.js";
 import { resolveIntentFamilyFromRegistry } from "../src/agent/policies/intentFamilyRegistry.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolvePedagogicalOverviewShortCircuit } from "../src/agent/micro/replies/pedagogicalOverviewComposer.js";

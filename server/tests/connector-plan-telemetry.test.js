@@ -8,9 +8,10 @@ import {
   deriveLegacyForcedExpertKey,
   observeConnectorPlanShadow,
   resolveExpertTaskTypeFromPipeline,
-} from "../src/agent/policies/connectorPlanTelemetry.js";
-import { resolveConnectorChain } from "../src/agent/policies/connectorRegistry.js";
-import { EXPERT_TASK_TYPES, REQUESTED_CAPABILITIES } from "../src/agent/policies/connectorRegistry.js";
+  resolveConnectorChain,
+  EXPERT_TASK_TYPES,
+  REQUESTED_CAPABILITIES,
+} from "../src/agent/policies/connectors/index.js";
 import turnTelemetry from "../src/agent/telemetry/turnTelemetry.js";
 
 describe("connectorPlanTelemetry — Phase B shadow", () => {

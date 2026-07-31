@@ -5,7 +5,7 @@ import {
   applyConnectorPhaseCWebKey,
   isConnectorPhaseCWebAuthorityFamily,
   CONNECTOR_PHASE_C_WEB_AUTHORITY_FAMILIES_V1,
-} from "../src/agent/policies/connectorPhaseC.js";
+} from "../src/agent/policies/connectors/index.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 
 describe("connectorPhaseC — autorité web v1", () => {
