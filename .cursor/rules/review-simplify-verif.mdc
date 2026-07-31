@@ -1,0 +1,48 @@
+---
+description: Discipline par défaut pour toute nouvelle fonctionnalité — review → simplify → verif
+alwaysApply: true
+---
+
+# Review → Simplify → Verif
+
+Discipline **obligatoire** pour toute **nouvelle fonctionnalité** (pas pour un simple fix one-liner déjà cadré).
+
+## Séquence
+
+1. **Review** — lire l'existant, tracer le flux réel, repérer redondances, complexité accidentelle, couplages inutiles, risques de régression.
+2. **Simplify** — appliquer la version la plus simple qui conserve le comportement attendu ; diff minimal ; pas de refactor opportuniste hors périmètre.
+3. **Verif** — tests ciblés, smoke checks, imports, validations runtime utiles ; confirmer explicitement si c'est sain ou non.
+
+**Interdit :** coder → supposer → passer à autre chose.
+
+**Ne jamais** commencer une nouvelle feature directement par du code.
+
+Si la simplification casse quelque chose : réparer **dans le même tour**. Ne pas laisser une feature « presque bonne » sans verif explicite. En cas de doute : solution la plus simple compatible avec le comportement attendu.
+
+## Périmètre renforcé
+
+Appliquer avec rigueur quand le code touche :
+
+- routing, policies, orchestration, guards, prompts ;
+- comportements déterministes, short-circuits ;
+- chemins critiques du pipeline.
+
+## Rapport attendu (fin de feature)
+
+### Review
+
+- état initial ;
+- points de complexité ou de risque.
+
+### Simplify
+
+- ce qui a été simplifié ;
+- ce qui a volontairement été laissé intact.
+
+### Verif
+
+- tests lancés ;
+- résultats ;
+- régressions trouvées ;
+- corrections appliquées ;
+- **statut final : OK / BLOQUÉ / PARTIEL**
