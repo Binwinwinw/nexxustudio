@@ -8,7 +8,7 @@ import {
   CAPABILITY_TRIGGER_EXAMPLES,
   shouldUseChatLightComposerPath,
   buildLightChatOrchestratorPacket,
-} from "../src/agent/policies/chatAgentProfilePolicy.js";
+} from "../src/agent/policies/orchestration/index.js";
 import { buildRequestWorkup, understandQuery } from "../src/agent/policies/conversationQueryUnderstanding.js";
 import { applyWorkupRetrievalGate } from "../src/agent/policies/conversationQueryUnderstanding.js";
 

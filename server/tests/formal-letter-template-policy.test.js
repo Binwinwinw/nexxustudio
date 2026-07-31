@@ -21,7 +21,7 @@ import {
   buildRequestWorkup,
   understandQuery,
 } from "../src/agent/policies/conversationQueryUnderstanding.js";
-import { resolveActionDecision } from "../src/agent/policies/chatAgentProfilePolicy.js";
+import { resolveActionDecision } from "../src/agent/policies/orchestration/index.js";
 import {
   enforceModeContract,
   RESPONSE_MODES,
