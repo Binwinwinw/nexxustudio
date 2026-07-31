@@ -43,7 +43,7 @@ import {
   isHtmlProjectDeliverable,
   resolveHtmlProjectProfile,
 } from "../htmlProjectDeliveryPolicy.js";
-import { resolveAiVerificationNotice } from "../aiVerificationPolicy.js";
+import { resolveAiVerificationNotice } from "../epistemic/index.js";
 import { JUST_INTENT_THRESHOLDS } from "./justIntentThresholds.js";
 import {
   INTENT_DOMAINS,

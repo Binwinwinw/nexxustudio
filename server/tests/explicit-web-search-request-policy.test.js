@@ -19,7 +19,7 @@ import {
   isWebSearchThreadMaintenanceMessage,
   resolveWebSearchThreadMaintenanceShortCircuit,
 } from "../src/agent/policies/webSearchThreadContinuityPolicy.js";
-import { resolveEpistemicUncertaintyShortCircuit } from "../src/agent/policies/epistemicUncertaintyResolutionPolicy.js";
+import { resolveEpistemicUncertaintyShortCircuit } from "../src/agent/policies/epistemic/index.js";
 import {
   resolveIntentContract,
   shouldSkipWebSearchForIntent,

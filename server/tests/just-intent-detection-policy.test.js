@@ -13,7 +13,7 @@ import {
   buildJustIntentAddon,
   shouldApplyJustIntentClarification,
 } from "../src/agent/policies/justIntentDetectionPolicy.js";
-import { resolveAiVerificationNotice } from "../src/agent/policies/aiVerificationPolicy.js";
+import { resolveAiVerificationNotice } from "../src/agent/policies/epistemic/index.js";
 import { buildJustIntentTelemetryEvent } from "../src/agent/telemetry/justIntentTelemetry.js";
 
 const CODE_REVIEW_Q =

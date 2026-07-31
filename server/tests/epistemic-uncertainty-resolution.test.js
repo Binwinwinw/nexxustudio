@@ -9,7 +9,7 @@ import {
   classifyEpistemicKnowledgeState,
   evaluateEpistemicUncertaintyResolution,
   resolveEpistemicUncertaintyShortCircuit,
-} from "../src/agent/policies/epistemicUncertaintyResolutionPolicy.js";
+} from "../src/agent/policies/epistemic/index.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 
 const CHAT_HISTORY = [

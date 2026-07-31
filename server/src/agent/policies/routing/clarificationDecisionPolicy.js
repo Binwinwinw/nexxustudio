@@ -70,7 +70,7 @@ import {
 import {
   EPISTEMIC_ACTIONS,
   evaluateEpistemicUncertaintyResolution,
-} from "../epistemicUncertaintyResolutionPolicy.js";
+} from "../epistemic/index.js";
 import { isReactAuditRequest } from "../../utils/reactAuditIntentGuards.js";
 import { shouldAllowClarifyThenBuild } from "../../utils/deliverableMandateGuards.js";
 import { isExistingSourceAnalysisSatisfiable } from "../existingSourceAnalysisPolicy.js";
