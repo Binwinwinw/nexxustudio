@@ -17,7 +17,7 @@ import {
   normalizeMathGeometryQuery,
   parseMathGeometryTask,
   resolveMathGeometryShortCircuit,
-} from "../src/agent/policies/mathGeometryPolicy.js";
+} from "../src/agent/policies/math/index.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,

@@ -24,12 +24,12 @@ import {
   buildMathExplainRecoveryMessage,
   isMathExplainRequest,
   resolveMathExplainLocalFallback,
-} from "../policies/mathExplainPolicy.js";
-import { resolveMathSimpleShortCircuit } from "../policies/mathSimplePolicy.js";
+  resolveMathSimpleShortCircuit,
+  resolveMathRootShortCircuit,
+  resolveMathPercentShortCircuit,
+  resolveMathGeometryShortCircuit,
+} from "../policies/math/index.js";
 import { resolveQueryCompositeShortCircuit } from "../policies/conversationQueryUnderstanding.js";
-import { resolveMathRootShortCircuit } from "../policies/mathRootPolicy.js";
-import { resolveMathPercentShortCircuit } from "../policies/mathPercentPolicy.js";
-import { resolveMathGeometryShortCircuit } from "../policies/mathGeometryPolicy.js";
 import {
   buildDocumentSynthesisRecoveryMessage,
   hasDocumentSynthesisShell,

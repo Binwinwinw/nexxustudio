@@ -15,7 +15,7 @@ import {
   isMathRootSatisfiable,
   parseMathRootTask,
   resolveMathRootShortCircuit,
-} from "../src/agent/policies/mathRootPolicy.js";
+} from "../src/agent/policies/math/index.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,

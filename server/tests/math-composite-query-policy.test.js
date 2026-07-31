@@ -14,7 +14,7 @@ import {
   isMathCompositeSatisfiable,
   resolveMathCompositeShortCircuit,
   splitMathCompositeSegments,
-} from "../src/agent/policies/mathCompositeQueryPolicy.js";
+} from "../src/agent/policies/math/index.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,

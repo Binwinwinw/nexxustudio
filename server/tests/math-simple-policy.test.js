@@ -12,7 +12,7 @@ import {
   parseMathSimpleTask,
   resolveMathSimpleShortCircuit,
   solveMathSimpleTask,
-} from "../src/agent/policies/mathSimplePolicy.js";
+} from "../src/agent/policies/math/index.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,

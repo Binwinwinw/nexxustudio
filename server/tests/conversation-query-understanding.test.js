@@ -13,7 +13,7 @@ import {
 } from "../src/agent/policies/conversationQueryUnderstanding.js";
 import {
   MATH_COMPOSITE_CANONICAL_AREA_AND_PERIMETER_QUERY,
-} from "../src/agent/policies/mathCompositeQueryPolicy.js";
+} from "../src/agent/policies/math/index.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,

@@ -10,7 +10,7 @@ import {
   parseMathExplainTask,
   resolveMathExplainLocalFallback,
   resolveMathExplainShortCircuit,
-} from "../src/agent/policies/mathExplainPolicy.js";
+} from "../src/agent/policies/math/index.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,

@@ -15,7 +15,7 @@ import {
   isMathPercentSatisfiable,
   parseMathPercentTask,
   resolveMathPercentShortCircuit,
-} from "../src/agent/policies/mathPercentPolicy.js";
+} from "../src/agent/policies/math/index.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,

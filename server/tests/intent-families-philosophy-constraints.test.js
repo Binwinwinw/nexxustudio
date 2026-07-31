@@ -55,7 +55,7 @@ import {
 import {
   isMathSimpleSatisfiable,
   MATH_SIMPLE_CANONICAL_FACTORIZE_QUERY,
-} from "../src/agent/policies/mathSimplePolicy.js";
+} from "../src/agent/policies/math/index.js";
 
 const SMOOTHIE_MULTI_UNIT_QUERY =
   "salut salut comment ca va ??? héy j'ai besoin de l'heure, de la date du jour et savoir si tu sais comment on fait un smoothie???";

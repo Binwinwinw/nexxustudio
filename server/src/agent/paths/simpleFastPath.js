@@ -21,11 +21,13 @@ import {
   resolveLocalSimpleFactualAnswer,
 } from "../micro/replies/simpleFactualComposer.js";
 import { resolveLocalDeterministicFallback, resolvePipelineFallback } from "../utils/genericGreetingGuards.js";
-import { resolveMathSimpleShortCircuit } from "../policies/mathSimplePolicy.js";
-import { resolveMathRootShortCircuit } from "../policies/mathRootPolicy.js";
-import { resolveMathGeometryShortCircuit } from "../policies/mathGeometryPolicy.js";
-import { resolveMathExplainLocalFallback } from "../policies/mathExplainPolicy.js";
-import { resolveMathPercentShortCircuit } from "../policies/mathPercentPolicy.js";
+import {
+  resolveMathSimpleShortCircuit,
+  resolveMathRootShortCircuit,
+  resolveMathGeometryShortCircuit,
+  resolveMathExplainLocalFallback,
+  resolveMathPercentShortCircuit,
+} from "../policies/math/index.js";
 import { applySurfaceMicroContract } from "../micro/parsing/surfaceMicroContract.js";
 import {
   buildTranslationReflectiveHint,

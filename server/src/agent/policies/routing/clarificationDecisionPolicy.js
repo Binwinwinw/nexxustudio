@@ -28,14 +28,16 @@ import { isCareerLearningPathRequest } from "../../utils/careerLearningPathInten
 import { isTechnicalLearningPathRequest } from "../../utils/technicalLearningPathIntentGuards.js";
 import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIntentGuards.js";
 import { isTranslationRequestReady, isTranslationPipelineReady, isMultiTargetTranslationRequest } from "../../utils/translationIntentGuards.js";
-import { isMathSimpleSatisfiable } from "../mathSimplePolicy.js";
-import { isMathRootSatisfiable } from "../mathRootPolicy.js";
-import { isMathGeometrySatisfiable } from "../mathGeometryPolicy.js";
-import { isMathPercentSatisfiable } from "../mathPercentPolicy.js";
 import {
-  isQueryCompositeSatisfiable,
-} from "../conversationQueryUnderstanding.js";
-import { isMathExplainRequest, isMathExplainSatisfiable, isMathFactorizationGeneralRequest } from "../mathExplainPolicy.js";
+  isMathSimpleSatisfiable,
+  isMathRootSatisfiable,
+  isMathGeometrySatisfiable,
+  isMathPercentSatisfiable,
+  isMathExplainRequest,
+  isMathExplainSatisfiable,
+  isMathFactorizationGeneralRequest,
+} from "../math/index.js";
+import { isQueryCompositeSatisfiable } from "../conversationQueryUnderstanding.js";
 import {
   isDocumentSynthesisSatisfiable,
   buildMissingSourceClarifyReply,
