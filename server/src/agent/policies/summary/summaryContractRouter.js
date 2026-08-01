@@ -16,7 +16,7 @@ import {
 } from "./culturalContentSummaryPolicy.js";
 import { isCodeConceptExplainRequest } from "../codeConceptExplainPolicy.js";
 import { isResearchThenSummarizeRequest } from "../researchThenSummarizePolicy.js";
-import { shouldSuppressSummaryContractForAttachment } from "../attachmentTaskPolicy.js";
+import { shouldSuppressSummaryContractForAttachment } from "../attachment/index.js";
 
 export const SUMMARY_CONTRACT_VERSION = 1;
 

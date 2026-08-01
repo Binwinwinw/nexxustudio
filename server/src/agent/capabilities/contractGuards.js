@@ -9,7 +9,7 @@ import { isRepoAnalysisRequest } from "../utils/repoAnalysisIntentGuards.js";
 import {
   classifyAttachmentTask,
   isDocumentAttachmentTask,
-} from "../policies/attachmentTaskPolicy.js";
+} from "../policies/attachment/index.js";
 import { isUiNavigationRestructureFeedback } from "../utils/uiNavigationFeedbackGuards.js";
 
 /** Contrats où Caveman instruction est interdit (P0). */

@@ -8,7 +8,7 @@ import {
   isMetaAssistantBehaviorRequest,
 } from "./metaAssistantBehaviorGuards.js";
 import { hasExecutableSnippet } from "../policies/codeIntentPolicy.js";
-import { resolveAttachmentFileKind, ATTACHMENT_FILE_KINDS } from "../policies/attachmentTaskPolicy.js";
+import { resolveAttachmentFileKind, ATTACHMENT_FILE_KINDS } from "../policies/attachment/index.js";
 import { isUiNavigationRestructureFeedback } from "./uiNavigationFeedbackGuards.js";
 
 export const REACT_AUDIT_CONTRACT_ID = "REACT_AUDIT_V1";

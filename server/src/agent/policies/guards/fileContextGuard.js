@@ -15,7 +15,7 @@ import {
   classifyAttachmentTask,
   isCodeAttachmentTask,
   isDocumentAttachmentTask,
-} from "../attachmentTaskPolicy.js";
+} from "../attachment/index.js";
 
 export const INLINE_CONTEXT_LABEL = "snippet fourni dans la requête";
 

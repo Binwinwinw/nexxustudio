@@ -9,14 +9,14 @@ import {
   formatAttachmentTaskSummary,
   shouldSuppressSummaryContractForAttachment,
   shouldRouteAttachmentTaskToFullPipeline,
-} from "../src/agent/policies/attachmentTaskPolicy.js";
+} from "../src/agent/policies/attachment/index.js";
 import { classifySummaryContract } from "../src/agent/policies/summaryContractRouter.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/practicalAdviceRoutingGuard.js";
 import {
   buildAttachmentInterpretationSystemAddon,
   extractLinkedAssetRefs,
-} from "../src/agent/policies/attachmentInterpretationPolicy.js";
+} from "../src/agent/policies/attachment/index.js";
 import { applySimpleFastDeliveryPipeline } from "../src/agent/paths/simpleFastPath.js";
 import {
   shouldBypassDocumentAnalysisRoute,

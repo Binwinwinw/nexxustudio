@@ -13,7 +13,7 @@ import { isMetaCapabilitiesIntent } from "../metaCapabilitiesPolicy.js";
 import {
   classifyAttachmentTask,
   isCodeAttachmentTask,
-} from "../attachmentTaskPolicy.js";
+} from "../attachment/index.js";
 
 const CODE_TRIAGE_PREFIX = /^code_/;
 

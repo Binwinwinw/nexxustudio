@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import {
   ATTACHMENT_TASKS,
   classifyAttachmentTask,
-} from "../src/agent/policies/attachmentTaskPolicy.js";
+} from "../src/agent/policies/attachment/index.js";
 import { shouldBypassDocumentAnalysisRoute } from "../src/agent/policies/codeReviewRoutingGuard.js";
 import {
   GUARD_MODES,

@@ -14,7 +14,7 @@ import { suppressesDocumentSynthesisForCulturalSummary } from "../culturalConten
 import { isCodeConceptExplainRequest } from "../codeConceptExplainPolicy.js";
 import { isResearchThenSummarizeRequest } from "../researchThenSummarizePolicy.js";
 import { isFormalLetterTemplateRequest } from "../formalLetterTemplatePolicy.js";
-import { shouldSuppressSummaryContractForAttachment } from "../attachmentTaskPolicy.js";
+import { shouldSuppressSummaryContractForAttachment } from "../attachment/index.js";
 
 /** Lot #35 — « dis-moi l'essentiel sur [sujet scolaire] » sans document joint. */
 const PEDAGOGY_SOFT_ESSENTIEL_SHELL_RE =
