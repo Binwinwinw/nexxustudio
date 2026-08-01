@@ -15,7 +15,7 @@ import {
   buildLexiconPedagogicalSchemaReply,
   buildLexiconScienceTakeawayReply,
 } from "../../policies/lexiconExplainLightPolicy.js";
-import { isConversationTakeawaySummaryRequest } from "../../policies/culturalContentSummaryPolicy.js";
+import { isConversationTakeawaySummaryRequest } from "../../policies/summary/index.js";
 
 export const CONTINUITY_DEFAULT_WINDOW = 6;
 

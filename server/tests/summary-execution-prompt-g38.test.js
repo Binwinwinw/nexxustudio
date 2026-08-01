@@ -5,8 +5,8 @@ import {
   classifySummaryContract,
   SUMMARY_CONTRACTS,
   SUMMARY_INTENTS,
-} from "../src/agent/policies/summaryContractRouter.js";
-import { resolveSummaryContractShortCircuit } from "../src/agent/policies/summaryContractShortCircuit.js";
+} from "../src/agent/policies/summary/index.js";
+import { resolveSummaryContractShortCircuit } from "../src/agent/policies/summary/index.js";
 import {
   SUMMARY_EXECUTION_MODES,
   buildSummaryExecutionSystemAddon,
@@ -15,7 +15,7 @@ import {
   resolveSummaryExecutionMode,
   splitWebPayloadMainAndChrome,
   buildSummaryExecutionValidationContext,
-} from "../src/agent/policies/summaryExecutionPromptPolicy.js";
+} from "../src/agent/policies/summary/index.js";
 import {
   validateDocumentSynthesisReply,
   isExternalKnowledgeLeakReply,

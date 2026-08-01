@@ -1,5 +1,5 @@
 import { triageUserIntent } from "../src/agent/classifiers/intentTriageClassifier.js";
-import { classifySummaryContract } from "../src/agent/policies/summaryContractRouter.js";
+import { classifySummaryContract } from "../src/agent/policies/summary/index.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
 import { isCodeConceptExplainRequest } from "../src/agent/policies/codeConceptExplainPolicy.js";

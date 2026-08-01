@@ -27,7 +27,7 @@ import {
 import {
   extractCulturalSummarySubject,
   isCulturalContentSummaryRequest,
-} from "../policies/culturalContentSummaryPolicy.js";
+} from "../policies/summary/index.js";
 import { isLightCulturalRecognitionRequest } from "../policies/lexiconExplainLightPolicy.js";
 
 export const GENERAL_KNOWLEDGE_ROUTING_RULE =

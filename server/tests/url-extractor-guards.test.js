@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 import { extractUrlContent } from "../src/utils/urlExtractor.js";
 import { sanitizeToolOutput } from "../src/services/tool-output-sanitizer.js";
-import { extractSummaryUrl } from "../src/agent/policies/summaryContractRouter.js";
+import { extractSummaryUrl } from "../src/agent/policies/summary/index.js";
 import { checkUrlSsrf } from "../src/security/ssrfProtection.js";
 
 /**

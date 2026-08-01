@@ -92,7 +92,7 @@ import { isAssistantUtteranceClarifyRequest } from "../assistantUtteranceClarify
 import {
   classifySummaryContract,
   SUMMARY_INTENTS,
-} from "../summaryContractRouter.js";
+} from "../summary/index.js";
 import {
   buildIntentClarificationMessage,
   TRIAGE_ROUTING_ACTION,

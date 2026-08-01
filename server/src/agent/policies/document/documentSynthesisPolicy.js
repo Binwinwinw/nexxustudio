@@ -10,7 +10,7 @@ import { inferDocumentStateFromHistory } from "../../micro/continuity/documentCo
 import { hasReusableDocumentBriefing } from "../../micro/continuity/documentBriefingEncoder.js";
 import { isExistingSourceAnalysisRequest } from "../../utils/localFileUriIntentGuards.js";
 import { isRepoAnalysisRequest } from "../../utils/repoAnalysisIntentGuards.js";
-import { suppressesDocumentSynthesisForCulturalSummary } from "../culturalContentSummaryPolicy.js";
+import { suppressesDocumentSynthesisForCulturalSummary } from "../summary/index.js";
 import { isCodeConceptExplainRequest } from "../codeConceptExplainPolicy.js";
 import { isResearchThenSummarizeRequest } from "../researchThenSummarizePolicy.js";
 import { isFormalLetterTemplateRequest } from "../formalLetterTemplatePolicy.js";

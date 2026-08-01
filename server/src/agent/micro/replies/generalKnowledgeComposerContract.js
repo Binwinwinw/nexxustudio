@@ -9,7 +9,7 @@ import { isRecipeKnowledgeRequest } from "../../utils/recipeKnowledgeIntentGuard
 import {
   isCulturalContentSummaryRequest,
   extractCulturalSummarySubject,
-} from "../../policies/culturalContentSummaryPolicy.js";
+} from "../../policies/summary/index.js";
 
 export const GENERAL_KNOWLEDGE_COMPOSER_RULE =
   "general_knowledge_generous_human_response";

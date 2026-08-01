@@ -14,7 +14,7 @@ import {
 } from "../src/agent/config/intentContractRegistry.js";
 import {
   classifySummaryContract,
-} from "../src/agent/policies/summaryContractRouter.js";
+} from "../src/agent/policies/summary/index.js";
 import {
   extractPastedSourceText,
   isDocumentSynthesisExcluded,

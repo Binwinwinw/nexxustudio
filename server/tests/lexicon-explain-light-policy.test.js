@@ -486,9 +486,9 @@ describe("lexicon_explain_light — guards", () => {
 
   it("tour 4 — quel résumé on peut en tirer → takeaway, pas cultural_summary", async () => {
     const { isCulturalContentSummaryRequest, isConversationTakeawaySummaryRequest } =
-      await import("../src/agent/policies/culturalContentSummaryPolicy.js");
+      await import("../src/agent/policies/summary/index.js");
     const { classifySummaryContract } = await import(
-      "../src/agent/policies/summaryContractRouter.js"
+      "../src/agent/policies/summary/index.js"
     );
     const q = "quel résumé on peut en tirer ?";
     assert.equal(isConversationTakeawaySummaryRequest(q), true);

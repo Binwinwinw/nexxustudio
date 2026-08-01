@@ -5,8 +5,8 @@ import {
   classifySummaryContract,
   SUMMARY_CONTRACTS,
   SUMMARY_INTENTS,
-} from "../src/agent/policies/summaryContractRouter.js";
-import { resolveSummaryContractShortCircuit } from "../src/agent/policies/summaryContractShortCircuit.js";
+} from "../src/agent/policies/summary/index.js";
+import { resolveSummaryContractShortCircuit } from "../src/agent/policies/summary/index.js";
 import {
   isKnownEntityDirectSummaryExecution,
   shouldEnforceKnownEntitySummaryTerminalLock,
@@ -19,8 +19,8 @@ import {
   KNOWN_ENTITY_EXECUTION_PATHS,
   KNOWN_ENTITY_CONTRACT_VIOLATIONS,
   countSummarySentences,
-} from "../src/agent/policies/knownEntitySummaryExecutionPolicy.js";
-import { validateKnownEntitySummaryReply } from "../src/agent/policies/knownEntitySummaryValidator.js";
+} from "../src/agent/policies/summary/index.js";
+import { validateKnownEntitySummaryReply } from "../src/agent/policies/summary/index.js";
 import { buildCulturalContentSummarySystemAddon } from "../src/agent/micro/replies/generalKnowledgeComposerContract.js";
 
 const IDIOCRACY_QUERY =

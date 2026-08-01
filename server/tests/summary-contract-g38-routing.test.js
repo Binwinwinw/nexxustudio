@@ -9,8 +9,8 @@ import {
   SUMMARY_RESOLUTION_STRATEGIES,
   SUMMARY_MISSING_REASONS,
   isSummaryKnownEntityContract,
-} from "../src/agent/policies/summaryContractRouter.js";
-import { resolveSummaryContractShortCircuit } from "../src/agent/policies/summaryContractShortCircuit.js";
+} from "../src/agent/policies/summary/index.js";
+import { resolveSummaryContractShortCircuit } from "../src/agent/policies/summary/index.js";
 import {
   buildSummaryContractTelemetry,
   recordSummaryContractTelemetry,

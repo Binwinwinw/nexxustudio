@@ -6,8 +6,8 @@ import {
   suppressesCulturalSummaryForConceptExplain,
   suppressesCodeGenerationForConceptExplain,
 } from "../src/agent/policies/codeConceptExplainPolicy.js";
-import { isCulturalContentSummaryRequest } from "../src/agent/policies/culturalContentSummaryPolicy.js";
-import { classifySummaryContract, SUMMARY_INTENTS } from "../src/agent/policies/summaryContractRouter.js";
+import { isCulturalContentSummaryRequest } from "../src/agent/policies/summary/index.js";
+import { classifySummaryContract, SUMMARY_INTENTS } from "../src/agent/policies/summary/index.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { isCodeGenerationRequest } from "../src/agent/policies/codeDeliveryPolicy.js";
 import { classifyCodeIntent } from "../src/agent/policies/codeIntentPolicy.js";

@@ -5,8 +5,8 @@ import { normalizeDocumentSynthesisQuery } from "./documentSynthesisPolicy.js";
 import {
   SUMMARY_EXECUTION_MODES,
   splitWebPayloadMainAndChrome,
-} from "../summaryExecutionPromptPolicy.js";
-import { SUMMARY_CONTRACTS } from "../summaryContractRouter.js";
+} from "../summary/index.js";
+import { SUMMARY_CONTRACTS } from "../summary/index.js";
 
 const GENERIC_SYNTHESIS_RE = [
   /\bce\s+(?:document|texte|passage)\s+(?:parle|aborde|traite|evoque|évoque)\s+(?:de\s+)?(?:l[''])?importance\b/i,
