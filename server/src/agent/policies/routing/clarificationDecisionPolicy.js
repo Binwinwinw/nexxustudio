@@ -87,7 +87,7 @@ import { isOpenExplorationFrame } from "../openExplorationFramePolicy.js";
 import {
   isInlineProductBriefPaste,
   isProjectScopingAssistRequest,
-} from "../guidedCreationScopingPolicy.js";
+} from "../guided/index.js";
 import { isAssistantUtteranceClarifyRequest } from "../assistantUtteranceClarifyPolicy.js";
 import {
   classifySummaryContract,

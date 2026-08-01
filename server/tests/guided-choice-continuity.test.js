@@ -6,7 +6,7 @@ import {
   buildGuidedChoiceReply,
   resolveGuidedChoiceShortCircuit,
   GUIDED_CHOICE_PIPELINE_PATH,
-} from "../src/agent/policies/guidedChoicePolicy.js";
+} from "../src/agent/policies/guided/index.js";
 import { resolveDeliverableContract, PROMISED_VALUES } from "../src/agent/policies/deliverableContractPolicy.js";
 import { resolveCodeConceptExplainShortCircuit } from "../src/agent/policies/codeConceptExplainExecutionPolicy.js";
 import { isCodeConceptExplainRequest } from "../src/agent/policies/codeConceptExplainPolicy.js";

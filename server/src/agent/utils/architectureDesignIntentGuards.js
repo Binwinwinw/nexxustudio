@@ -8,7 +8,7 @@ import { isHtmlProjectDeliverable } from "../policies/htmlProjectDeliveryPolicy.
 import {
   isInlineProductBriefPaste,
   isProjectScopingAssistRequest,
-} from "../policies/guidedCreationScopingPolicy.js";
+} from "../policies/guided/index.js";
 import { isCodeConceptExplainRequest } from "../policies/codeConceptExplainPolicy.js";
 
 export const ARCHITECTURE_DESIGN_RULE = "architecture_options_not_execution";

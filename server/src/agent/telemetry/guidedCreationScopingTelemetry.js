@@ -5,7 +5,7 @@ import {
   extractCreationConstraints,
   GUIDED_CREATION_SCOPING_CONTRACT_ID,
   isGuidedCreationScopingRequest,
-} from "../policies/guidedCreationScopingPolicy.js";
+} from "../policies/guided/index.js";
 import { normalizeFamiliarityQuery } from "../utils/familiarityIntentGuards.js";
 
 export const GUIDED_CREATION_MAX_BLOCKING_QUESTIONS = 2;

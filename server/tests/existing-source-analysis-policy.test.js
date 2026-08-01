@@ -18,7 +18,7 @@ import {
   resolveFileTarget,
 } from "../src/agent/utils/fileTargetResolver.js";
 import { isHtmlProjectDeliverable } from "../src/agent/policies/htmlProjectDeliveryPolicy.js";
-import { isGuidedCreationScopingRequest } from "../src/agent/policies/guidedCreationScopingPolicy.js";
+import { isGuidedCreationScopingRequest } from "../src/agent/policies/guided/index.js";
 import {
   isExistingFilePathAnalysisRequest,
   isGeneratorFirstIntent,

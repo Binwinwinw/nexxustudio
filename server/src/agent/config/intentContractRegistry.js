@@ -30,9 +30,9 @@ import { requiresGenerousComposerResponse } from "../policies/practicalAdviceRou
 import { isSocialAcceptanceOfOffer } from "../policies/socialAcceptanceOfOfferPolicy.js";
 import { isMetaCapabilitiesIntent } from "../policies/metaCapabilitiesPolicy.js";
 import { isPresentationOutlineRequest } from "../utils/presentationOutlineIntentGuards.js";
-import { isGuidedProductRecommendationRequest } from "../policies/guidedProductRecommendationPolicy.js";
-import { isGuidedDocumentSynthesisRequest } from "../policies/guidedDocumentSynthesisPolicy.js";
-import { isGuidedCreationScopingContractRequest } from "../policies/guidedCreationScopingPolicy.js";
+import { isGuidedProductRecommendationRequest } from "../policies/guided/index.js";
+import { isGuidedDocumentSynthesisRequest } from "../policies/guided/index.js";
+import { isGuidedCreationScopingContractRequest } from "../policies/guided/index.js";
 import { isMetaAssistantBehaviorRequest, isComprehensionDemonstrationRequest } from "../utils/metaAssistantBehaviorGuards.js";
 import { isIdeationIntent } from "../utils/ideationIntentGuards.js";
 import { isAssistantUtteranceClarifyRequest } from "../policies/assistantUtteranceClarifyPolicy.js";

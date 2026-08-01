@@ -10,8 +10,8 @@
  */
 import { understandQuery, buildExecutionPlan } from "./conversationQueryUnderstanding.js";
 import { COMPARE_CHOOSE_SMARTPHONE_CANONICAL_QUERY } from "../compareChooseCompositePolicy.js";
-import { resolveGuidedProductIntentContractId } from "../guidedProductRecommendationPolicy.js";
-import { resolveGuidedDocumentSynthesisIntentContractId } from "../guidedDocumentSynthesisPolicy.js";
+import { resolveGuidedProductIntentContractId } from "../guided/index.js";
+import { resolveGuidedDocumentSynthesisIntentContractId } from "../guided/index.js";
 
 export const G30_COVERAGE_RULE = "query_understanding_coverage_g30_v1";
 

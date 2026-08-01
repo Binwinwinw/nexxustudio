@@ -22,7 +22,7 @@ const CODE_REVIEWER_QUERY =
   "comment créer un code-reviewer qui analyse tout le code d'un projet, identifie les erreurs et propose plusieurs solutions selon la logique de dev senior";
 
 import { ARCHITECTURE_DESIGN_SMOKE_V1_1 } from "./fixtures/architectureDesignSmokeV1_1.js";
-import { isGuidedCreationScopingRequest } from "../src/agent/policies/guidedCreationScopingPolicy.js";
+import { isGuidedCreationScopingRequest } from "../src/agent/policies/guided/index.js";
 
 describe("architectureDesignIntentGuards", () => {
   it("détecte « comment créer un code-reviewer »", () => {

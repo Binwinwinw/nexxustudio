@@ -13,7 +13,7 @@ import {
   hasExecutableSnippet,
 } from "../codeIntentPolicy.js";
 import { isHtmlProjectDeliverable } from "../htmlProjectDeliveryPolicy.js";
-import { deriveGuidedProductWebSearchQuery } from "../guidedProductRecommendationPolicy.js";
+import { deriveGuidedProductWebSearchQuery } from "../guided/index.js";
 import {
   deriveResearchThenSummarizeWebQuery,
   isResearchThenSummarizeRequest,

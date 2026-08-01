@@ -2,7 +2,7 @@
  * Continuité du fil recherche web — corrections date / mémorisation sans re-hash du message courant.
  */
 import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { deriveGuidedProductWebSearchQuery } from "../guidedProductRecommendationPolicy.js";
+import { deriveGuidedProductWebSearchQuery } from "../guided/index.js";
 import {
   extractWebSearchTopic,
   hasExplicitWebProductRecoSignals,

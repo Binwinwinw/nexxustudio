@@ -17,7 +17,7 @@ import {
   resolveGuidedDocumentSynthesisIntentContractId,
   resolveGuidedSynthesisExecutionLimits,
   buildDocumentSynthesisSlotTelemetry,
-} from "../src/agent/policies/guidedDocumentSynthesisPolicy.js";
+} from "../src/agent/policies/guided/index.js";
 import {
   scoreSynthesisGroundedness,
   isGenericSynthesisReply,

@@ -34,7 +34,7 @@ import {
 import {
   deriveGuidedProductWebSearchQuery,
   resolveGuidedProductIntentContractId,
-} from "../guidedProductRecommendationPolicy.js";
+} from "../guided/index.js";
 import { extractProductRecommendationSlots } from "../compareChooseCompositePolicy.js";
 import { assessKnowledgeFreshnessRisk } from "../knowledgeFreshnessPolicy.js";
 import { resolveActionDecision } from "../orchestration/index.js";

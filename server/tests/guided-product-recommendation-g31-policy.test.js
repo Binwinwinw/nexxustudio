@@ -9,7 +9,7 @@ import {
   buildQueryUnderstandingSlotTelemetry,
   GUIDED_PRODUCT_WEB_MAX_SOURCES,
   GUIDED_PRODUCT_WEB_TIMEOUT_MS,
-} from "../src/agent/policies/guidedProductRecommendationPolicy.js";
+} from "../src/agent/policies/guided/index.js";
 import {
   filterProductRecoWebSources,
   validateProductRecommendationReply,
@@ -17,10 +17,10 @@ import {
   assessProductRecoWebSources,
   buildProductSourcesInsufficientReply,
   scoreProductRecoSourceRelevance,
-} from "../src/agent/policies/productRecoValidator.js";
+} from "../src/agent/policies/guided/index.js";
 import {
   deriveGuidedProductWebSearchQuery,
-} from "../src/agent/policies/guidedProductRecommendationPolicy.js";
+} from "../src/agent/policies/guided/index.js";
 import { understandQuery, buildRequestWorkup, applyWorkupRetrievalGate } from "../src/agent/policies/conversationQueryUnderstanding.js";
 
 const GUIDED_SMARTPHONE_QUERY =

@@ -58,7 +58,7 @@ import {
   isRepoAnalysisContractViolation,
 } from "../micro/replies/repoAnalysisComposer.js";
 import { getRepoAnalysisSystemPrompt } from "../analysis/repoAnalysisContract.js";
-import { buildProductSourcesInsufficientReply } from "../policies/productRecoValidator.js";
+import { buildProductSourcesInsufficientReply } from "../policies/guided/index.js";
 import { wasWebSearchAttempted } from "../policies/explicitWebSearchRequestPolicy.js";
 import { ensureExplicitWebSourceLinks } from "../policies/webEvidenceFidelityValidator.js";
 import {

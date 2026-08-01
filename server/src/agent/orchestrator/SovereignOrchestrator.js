@@ -57,8 +57,10 @@ import {
   isCurrentWebFactRequest,
   parseCurrentWebFactTask,
 } from "../policies/currentWebFactPolicy.js";
-import { resolveGuidedProductWebSearchLimits } from "../policies/guidedProductRecommendationPolicy.js";
-import { deriveGuidedProductWebSearchQuery } from "../policies/guidedProductRecommendationPolicy.js";
+import {
+  resolveGuidedProductWebSearchLimits,
+  deriveGuidedProductWebSearchQuery,
+} from "../policies/guided/index.js";
 import {
   findLastExplicitWebSearchUserMessage,
   isWebSearchThreadMaintenanceMessage,
@@ -68,7 +70,7 @@ import { deriveRepoAnalysisWebQuery } from "../utils/repoAnalysisIntentGuards.js
 import {
   applyProductRecoValidationToWebPacket,
   assessProductRecoWebSources,
-} from "../policies/productRecoValidator.js";
+} from "../policies/guided/index.js";
 import { extractProductRecommendationSlots } from "../policies/compareChooseCompositePolicy.js";
 
 // ── Matrice de réveil des experts ────────────────────────────────────────────

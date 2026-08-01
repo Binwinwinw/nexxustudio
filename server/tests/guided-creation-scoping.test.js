@@ -11,7 +11,7 @@ import {
   extractCreationConstraints,
   buildGuidedCreationScopingSystemAddon,
   resolveGuidedCreationScopingShortCircuit,
-} from "../src/agent/policies/guidedCreationScopingPolicy.js";
+} from "../src/agent/policies/guided/index.js";
 import { isClearConstructiveDeliverable } from "../src/agent/policies/constructiveDeliveryPolicy.js";
 import { isCodeGenerationRequest } from "../src/agent/policies/codeDeliveryPolicy.js";
 import { isTechnicalOverviewRequest } from "../src/agent/utils/technicalOverviewIntentGuards.js";

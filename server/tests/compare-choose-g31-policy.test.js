@@ -14,7 +14,7 @@ import {
   understandQuery,
   buildRequestWorkup,
 } from "../src/agent/policies/conversationQueryUnderstanding.js";
-import { resolveGuidedProductIntentContractId } from "../src/agent/policies/guidedProductRecommendationPolicy.js";
+import { resolveGuidedProductIntentContractId } from "../src/agent/policies/guided/index.js";
 import { resolveClarificationGate } from "../src/agent/policies/clarificationDecisionPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
 import { classifySelectiveDecisionIntent } from "../src/agent/utils/selectiveDecisionIntentGuards.js";

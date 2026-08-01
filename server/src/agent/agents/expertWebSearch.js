@@ -16,10 +16,8 @@ import {
 import { MAX_RESULTS } from "../policies/webSourcePolicy.js";
 import {
   resolveGuidedProductWebSearchLimits,
-} from "../policies/guidedProductRecommendationPolicy.js";
-import {
   applyProductRecoValidationToWebPacket,
-} from "../policies/productRecoValidator.js";
+} from "../policies/guided/index.js";
 import { extractProductRecommendationSlots } from "../policies/compareChooseCompositePolicy.js";
 import { sanitizeWebSearchPacket } from "../../services/tool-output-sanitizer.js";
 

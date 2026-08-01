@@ -39,7 +39,7 @@ import {
   isCompareChooseRequest,
   extractCompareDomain,
 } from "../../utils/compareChooseIntentGuards.js";
-import { isGuidedProductRecommendationRequest } from "../guidedProductRecommendationPolicy.js";
+import { isGuidedProductRecommendationRequest } from "../guided/index.js";
 
 export const MOVE_CONTRACT_PROFILES = Object.freeze({
   HOW_TO_PROCEDURAL: "how_to_procedural",
