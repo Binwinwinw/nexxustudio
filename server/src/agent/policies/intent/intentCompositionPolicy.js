@@ -16,7 +16,7 @@ import {
   buildLexiconScienceTakeawayReply,
   pedagogicalSubjectLabel,
 } from "../lexiconExplainLightPolicy.js";
-import { resolveRequestWorkloadSignal } from "../requestWorkloadSignalPolicy.js";
+import { resolveRequestWorkloadSignal } from "../workload/index.js";
 import { shouldDeferSocialRouting } from "../voiceContinuityPolicy.js";
 
 export const INTENT_COMPOSITION_CONTRACT = "INTENT_COMPOSITION_V1";

@@ -7,8 +7,8 @@ import {
   normalizeWorkUnits,
   resolveWorkUnitExecutionMode,
   resolveWorkUnitCountAndPlan,
-} from "../src/agent/policies/workUnitCountAndPlanPolicy.js";
-import { resolveRequestWorkloadSignal } from "../src/agent/policies/requestWorkloadSignalPolicy.js";
+} from "../src/agent/policies/workload/index.js";
+import { resolveRequestWorkloadSignal } from "../src/agent/policies/workload/index.js";
 
 describe("WorkUnitCountAndPlanPolicy", () => {
   it("4 choses indépendantes → reconcile ok + multi_unit_parallel", () => {

@@ -252,7 +252,7 @@ describe("lexicon_explain_light — guards", () => {
   it("workload — 4 choses à faire (hors glossaire inclus) → 4 unités planifiées", async () => {
     const {
       resolveRequestWorkloadSignal,
-    } = await import("../src/agent/policies/requestWorkloadSignalPolicy.js");
+    } = await import("../src/agent/policies/workload/index.js");
     const {
       resolvePedagogicalScheduledExplain,
       assertPedagogicalWorkloadCardinality,
