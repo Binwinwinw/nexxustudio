@@ -8,7 +8,7 @@ import {
   hasCodeDeliveryStructure,
   isCodeGenerationRequest,
   resolveCodeDeliveryLanguage,
-} from "../codeDeliveryPolicy.js";
+} from "../code/codeDeliveryPolicy.js";
 import {
   buildHtmlProjectFallback,
   buildHtmlProjectUserAddon,

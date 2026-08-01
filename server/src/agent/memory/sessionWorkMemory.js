@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { extractFilePathsFromText } from "../policies/guards/index.js";
-import { classifyErrorCategory } from "../policies/codeErrorPriorityPolicy.js";
+import { classifyErrorCategory } from "../policies/code/codeErrorPriorityPolicy.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SERVER_ROOT = path.resolve(__dirname, "../../..");

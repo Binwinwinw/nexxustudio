@@ -6,13 +6,13 @@ import {
   isCodeReviewRequest,
   buildCodeReviewAddon,
   CODE_REVIEW_CONTRACT_ID,
-} from "../src/agent/policies/codeReviewPolicy.js";
+} from "../src/agent/policies/code/codeReviewPolicy.js";
 import {
   evaluateCodeReviewSentinels,
   mustLeadWithBlockingErrors,
   mustNotIntroduceTyposInFix,
   mustNotUseGenericFluff,
-} from "../src/agent/policies/codeReviewSentinels.js";
+} from "../src/agent/policies/code/codeReviewSentinels.js";
 import { shouldBypassSimpleFast } from "../src/agent/config/intentContractRegistry.js";
 import {
   CODE_REVIEW_PRODUCTION_BUG_QUERIES,

@@ -8,7 +8,7 @@ import {
   INTENT_ACTIONS,
 } from "../../../../../shared/justIntentCatalog.js";
 import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { isCodeConceptExplainRequest } from "../codeConceptExplainPolicy.js";
+import { isCodeConceptExplainRequest } from "../code/codeConceptExplainPolicy.js";
 import { isExistingSourceAnalysisRequest } from "../../utils/localFileUriIntentGuards.js";
 import { isExistingFilePathAnalysisRequest } from "../../../../../shared/generatorFirstPolicy.js";
 import { isLearningRequestWithTarget } from "../../utils/learningRequestIntentGuards.js";

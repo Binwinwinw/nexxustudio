@@ -9,7 +9,7 @@ import {
   isInlineProductBriefPaste,
   isProjectScopingAssistRequest,
 } from "../policies/guided/index.js";
-import { isCodeConceptExplainRequest } from "../policies/codeConceptExplainPolicy.js";
+import { isCodeConceptExplainRequest } from "../policies/code/codeConceptExplainPolicy.js";
 
 export const ARCHITECTURE_DESIGN_RULE = "architecture_options_not_execution";
 

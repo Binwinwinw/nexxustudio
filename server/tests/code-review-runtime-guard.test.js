@@ -9,7 +9,7 @@ import {
   enforceCodeReviewPipelineDelivery,
   validatePythonFencesWithPyCompile,
   MAX_CODE_REVIEW_RUNTIME_RETRIES,
-} from "../src/agent/policies/codeReviewRuntimeGuard.js";
+} from "../src/agent/policies/code/codeReviewRuntimeGuard.js";
 import {
   CODE_REVIEW_PRODUCTION_BUG_QUERIES,
   NEXXUS_FAILED_REVIEW_SAMPLES,

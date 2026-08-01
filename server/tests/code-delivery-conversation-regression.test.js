@@ -11,8 +11,8 @@ import {
   buildCodeDeliveryAddon,
   hasCodeDeliveryStructure,
   CODE_DELIVERY_SECTION_MARKERS,
-} from "../src/agent/policies/codeDeliveryPolicy.js";
-import { evaluateCodeDeliverySentinels } from "../src/agent/policies/codeDeliverySentinels.js";
+} from "../src/agent/policies/code/codeDeliveryPolicy.js";
+import { evaluateCodeDeliverySentinels } from "../src/agent/policies/code/codeDeliverySentinels.js";
 import {
   CODE_DELIVERY_GOLDEN_QUERIES,
   CODE_DELIVERY_DEMO_QUERIES,

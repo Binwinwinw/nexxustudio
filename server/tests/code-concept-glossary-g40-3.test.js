@@ -3,17 +3,17 @@ import assert from "node:assert/strict";
 import {
   resolveCodeConceptGlossaryEntry,
   resolveCodeConceptGlossaryFallback,
-} from "../src/agent/policies/codeConceptGlossaryPolicy.js";
+} from "../src/agent/policies/code/codeConceptGlossaryPolicy.js";
 import {
   buildCodeConceptExplainFallbackReply,
   CODE_CONCEPT_EXECUTION_PATHS,
-} from "../src/agent/policies/codeConceptExplainExecutionPolicy.js";
+} from "../src/agent/policies/code/codeConceptExplainExecutionPolicy.js";
 import {
   composeMannerReply,
   detectPriorAssistantFailure,
   RESPONSE_MANNER_FAMILIES,
 } from "../src/agent/policies/posture/index.js";
-import { CODE_CONCEPT_GLOSSARY_SOURCES } from "../src/agent/policies/codeConceptGlossaryPolicy.js";
+import { CODE_CONCEPT_GLOSSARY_SOURCES } from "../src/agent/policies/code/codeConceptGlossaryPolicy.js";
 
 const DIV_QUERY = "pourrais-tu faire un résumé du rôle de <div> en HTML?";
 const IMPORT_QUERY =
@@ -100,7 +100,7 @@ describe("G41 — response manner", () => {
 describe("G40.4 — glossary prioritaire", () => {
   it("G40.4-T01 short-circuit direct sans LLM", async () => {
     const { resolveCodeConceptExplainShortCircuit } = await import(
-      "../src/agent/policies/codeConceptExplainExecutionPolicy.js"
+      "../src/agent/policies/code/codeConceptExplainExecutionPolicy.js"
     );
     const hit = resolveCodeConceptExplainShortCircuit(DIV_QUERY);
     assert.equal(hit?.path, "code_concept_glossary_direct");

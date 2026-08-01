@@ -9,9 +9,9 @@ import {
   shouldBypassDocumentAnalysisRoute,
   derivePythonAnalysisFlags,
   buildCodeReviewSourceText,
-} from "../src/agent/policies/codeReviewRoutingGuard.js";
+} from "../src/agent/policies/code/codeReviewRoutingGuard.js";
 import { resolveWantsAnalysisFromTriage } from "../src/agent/classifiers/intentTriageClassifier.js";
-import { buildCodeReviewScenario } from "../src/agent/policies/codeReviewRuntimeGuard.js";
+import { buildCodeReviewScenario } from "../src/agent/policies/code/codeReviewRuntimeGuard.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { TRIAGE_INTENTS, TRIAGE_CONFIDENCE } from "../src/agent/classifiers/intentTriageClassifier.js";
 import { BROKEN_CALCULATRICE_PY_SNIPPET } from "./fixtures/codeReviewGoldenQueries.js";

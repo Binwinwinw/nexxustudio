@@ -7,7 +7,7 @@ import {
   runContractQualityLoop,
 } from "../src/agent/quality/contractQualityLoop.js";
 import { frontPresentationQualityPolicy } from "../src/agent/quality/policies/frontPresentationQualityPolicy.js";
-import { FRONT_PRESENTATION_CONTRACT_ID } from "../src/agent/policies/frontendPresentationQualityContract.js";
+import { FRONT_PRESENTATION_CONTRACT_ID } from "../src/agent/policies/code/frontendPresentationQualityContract.js";
 
 function makePolicy(overrides = {}) {
   return defineContractQualityPolicy({

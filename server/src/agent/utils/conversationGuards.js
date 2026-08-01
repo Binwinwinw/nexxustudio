@@ -6,7 +6,7 @@ import {
   classifyArchitectureDesignSignal,
 } from "./architectureDesignIntentGuards.js";
 import { isAnalyticalCritiqueIntent } from "./analyticalCritiqueIntentGuards.js";
-import { isCodeIntentRequest } from "../policies/codeIntentPolicy.js";
+import { isCodeIntentRequest } from "../policies/code/codeIntentPolicy.js";
 import { isMetaConversationIntent } from "./metaConversationIntentGuards.js";
 import { isMetaCapabilitiesIntent } from "../policies/metaCapabilitiesPolicy.js";
 

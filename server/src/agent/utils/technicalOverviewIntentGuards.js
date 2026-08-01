@@ -8,15 +8,15 @@ import { isPedagogicalOverviewRequest } from "./pedagogicalOverviewIntentGuards.
 import { classifySelectiveDecisionIntent } from "./selectiveDecisionIntentGuards.js";
 import { isExploitableProcedureIntent } from "./procedureIntentGuards.js";
 import { isPedagogicalStructuredExplainRequest } from "../policies/pedagogical/index.js";
-import { isCodeReviewRequest } from "../policies/codeReviewPolicy.js";
+import { isCodeReviewRequest } from "../policies/code/codeReviewPolicy.js";
 import { isGeneralKnowledgeRequest } from "./generalKnowledgeIntentGuards.js";
 import {
   isDebugDiagnosticSignal,
   DEBUG_DIAGNOSTIC_SIGNAL_RE,
 } from "./debugDiagnosticIntentGuards.js";
 import { isTechnicalLearningPathSignal } from "./technicalLearningPathIntentGuards.js";
-import { isCodeConceptExplainRequest } from "../policies/codeConceptExplainPolicy.js";
-import { extractCodeConceptExplainSubject } from "../policies/codeConceptExplainExecutionPolicy.js";
+import { isCodeConceptExplainRequest } from "../policies/code/codeConceptExplainPolicy.js";
+import { extractCodeConceptExplainSubject } from "../policies/code/codeConceptExplainExecutionPolicy.js";
 import { isArchitectureDesignIntent } from "./architectureDesignIntentGuards.js";
 
 export const TECHNICAL_OVERVIEW_ROUTING_RULE =

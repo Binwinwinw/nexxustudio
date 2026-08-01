@@ -5,18 +5,18 @@ import {
   isCodeConceptExplainRequest,
   suppressesCulturalSummaryForConceptExplain,
   suppressesCodeGenerationForConceptExplain,
-} from "../src/agent/policies/codeConceptExplainPolicy.js";
+} from "../src/agent/policies/code/codeConceptExplainPolicy.js";
 import { isCulturalContentSummaryRequest } from "../src/agent/policies/summary/index.js";
 import { classifySummaryContract, SUMMARY_INTENTS } from "../src/agent/policies/summary/index.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { isCodeGenerationRequest } from "../src/agent/policies/codeDeliveryPolicy.js";
-import { classifyCodeIntent } from "../src/agent/policies/codeIntentPolicy.js";
+import { isCodeGenerationRequest } from "../src/agent/policies/code/codeDeliveryPolicy.js";
+import { classifyCodeIntent } from "../src/agent/policies/code/codeIntentPolicy.js";
 import { triageUserIntent } from "../src/agent/classifiers/intentTriageClassifier.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
 import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
 import { evaluateClarificationDecision } from "../src/agent/policies/clarificationDecisionPolicy.js";
 import { isHtmlProjectDeliverable } from "../src/agent/policies/delivery/index.js";
-import { buildCodeConceptExplainFallbackReply } from "../src/agent/policies/codeConceptExplainExecutionPolicy.js";
+import { buildCodeConceptExplainFallbackReply } from "../src/agent/policies/code/codeConceptExplainExecutionPolicy.js";
 import { resolveSimpleFastAllowRefusal } from "../src/agent/paths/simpleFastPath.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseContracts.js";
 

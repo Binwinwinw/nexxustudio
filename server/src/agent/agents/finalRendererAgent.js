@@ -17,12 +17,12 @@ import {
   validateRendererWithMakersChecker,
 } from "../verification/makersCheckerBridge.js";
 import { resolvePipelineFallback } from "../utils/genericGreetingGuards.js";
-import { isCodeReviewRequest } from "../policies/codeReviewPolicy.js";
+import { isCodeReviewRequest } from "../policies/code/codeReviewPolicy.js";
 import {
   applyCodeReviewRuntimeGuard,
   evaluateCodeReviewRuntime,
   MAX_CODE_REVIEW_RUNTIME_RETRIES,
-} from "../policies/codeReviewRuntimeGuard.js";
+} from "../policies/code/codeReviewRuntimeGuard.js";
 import {
   enforceFileContextGuard,
   shouldApplyFileContextGuard,
@@ -63,8 +63,8 @@ import { wasWebSearchAttempted } from "../policies/explicitWebSearchRequestPolic
 import { ensureExplicitWebSourceLinks } from "../policies/webEvidenceFidelityValidator.js";
 import {
   isCodeGenerationRequest,
-} from "../policies/codeDeliveryPolicy.js";
-import { isCodeProjectLightRequest } from "../policies/codeProjectLightPolicy.js";
+} from "../policies/code/codeDeliveryPolicy.js";
+import { isCodeProjectLightRequest } from "../policies/code/codeProjectLightPolicy.js";
 import { runContractQualityLoop } from "../quality/contractQualityLoop.js";
 import { frontPresentationQualityPolicy } from "../quality/policies/frontPresentationQualityPolicy.js";
 import { htmlWorkshopQualityPolicy } from "../quality/policies/htmlWorkshopQualityPolicy.js";

@@ -7,7 +7,7 @@ import {
   evaluateHtmlWorkshopQuality,
   buildHtmlWorkshopRepairUserAddon,
 } from "../../policies/delivery/index.js";
-import { isCodeProjectLightRequest } from "../../policies/codeProjectLightPolicy.js";
+import { isCodeProjectLightRequest } from "../../policies/code/codeProjectLightPolicy.js";
 import { defineContractQualityPolicy } from "../contractQualityLoop.js";
 
 export const htmlWorkshopQualityPolicy = defineContractQualityPolicy({

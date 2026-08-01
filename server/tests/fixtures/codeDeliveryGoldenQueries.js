@@ -8,7 +8,7 @@
  *
  * Réponses golden : modèles minimaux pour hasCodeDeliveryStructure (pas des sorties LLM figées).
  */
-import { CODE_LANGUAGES } from "../../src/agent/policies/codeDeliveryPolicy.js";
+import { CODE_LANGUAGES } from "../../src/agent/policies/code/codeDeliveryPolicy.js";
 
 export const GOLDEN_QUERY_CATEGORIES = Object.freeze({
   DEMO: "demo",

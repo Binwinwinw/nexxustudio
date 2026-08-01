@@ -15,7 +15,7 @@ import {
 import { shouldSuppressPrematureClarify } from "../posture/index.js";
 import { isPedagogicalOverviewRequest } from "../../utils/pedagogicalOverviewIntentGuards.js";
 import { isBeginnerTopicOverviewRequest } from "../../utils/beginnerTopicOverviewIntentGuards.js";
-import { isCodeConceptExplainRequest } from "../codeConceptExplainPolicy.js";
+import { isCodeConceptExplainRequest } from "../code/codeConceptExplainPolicy.js";
 import { isTechnicalOverviewRequest } from "../../utils/technicalOverviewIntentGuards.js";
 import { isDebugDiagnosticRequest } from "../../utils/debugDiagnosticIntentGuards.js";
 import { isCompareChooseRequest, extractCompareDomain } from "../../utils/compareChooseIntentGuards.js";

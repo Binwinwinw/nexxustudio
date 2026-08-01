@@ -14,7 +14,7 @@ import {
   extractCulturalSummarySubject,
   CULTURAL_WORK_MARKER_RE,
 } from "./culturalContentSummaryPolicy.js";
-import { isCodeConceptExplainRequest } from "../codeConceptExplainPolicy.js";
+import { isCodeConceptExplainRequest } from "../code/codeConceptExplainPolicy.js";
 import { isResearchThenSummarizeRequest } from "../researchThenSummarizePolicy.js";
 import { shouldSuppressSummaryContractForAttachment } from "../attachment/index.js";
 

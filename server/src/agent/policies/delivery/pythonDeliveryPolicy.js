@@ -11,7 +11,7 @@ import {
   resolveCodeDeliveryLanguage,
   CODE_DELIVERY_SECTION_MARKERS,
   CODE_DELIVERY_CONTRACT_ID,
-} from "../codeDeliveryPolicy.js";
+} from "../code/codeDeliveryPolicy.js";
 
 export const PYTHON_DELIVERY_CONTRACT_ID = contract.id;
 export const PYTHON_DELIVERY_SECTION_MARKERS = CODE_DELIVERY_SECTION_MARKERS;

@@ -12,7 +12,7 @@ import {
   hasCodeDeliveryStructure,
   CODE_DELIVERY_CONTRACT_ID,
   CODE_LANGUAGES,
-} from "../src/agent/policies/codeDeliveryPolicy.js";
+} from "../src/agent/policies/code/codeDeliveryPolicy.js";
 
 describe("codeDeliveryPolicy", () => {
   it("détecte PHP explicite", () => {

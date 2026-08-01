@@ -6,7 +6,7 @@ import { normalizeFamiliarityQuery } from "./familiarityIntentGuards.js";
 import { isTechnicalLearningPathRequest } from "./technicalLearningPathIntentGuards.js";
 import { isCareerLearningPathRequest } from "./careerLearningPathIntentGuards.js";
 import { isHtmlProjectDeliverable } from "../policies/delivery/index.js";
-import { isCodeGenerationRequest } from "../policies/codeDeliveryPolicy.js";
+import { isCodeGenerationRequest } from "../policies/code/codeDeliveryPolicy.js";
 import { isInformationSeekingWithTarget } from "./informationSeekingIntentGuards.js";
 import { isMetaAssistantBehaviorRequest } from "./metaAssistantBehaviorGuards.js";
 import { isIdeationIntent } from "./ideationIntentGuards.js";

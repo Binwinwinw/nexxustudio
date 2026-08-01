@@ -12,10 +12,10 @@ import {
   evaluateCodeDiagnosticContract,
   buildCodeDiagnosticAddon,
   PATCH_FORMAT,
-} from "../src/agent/policies/codeDiagnosticContract.js";
-import { buildCodeIntentAddon } from "../src/agent/policies/codeReviewPolicy.js";
-import { enforceCodeErrorPriorityPipelineDelivery } from "../src/agent/policies/codeReviewRuntimeGuard.js";
-import { CODE_INTENT_KINDS } from "../src/agent/policies/codeIntentPolicy.js";
+} from "../src/agent/policies/code/codeDiagnosticContract.js";
+import { buildCodeIntentAddon } from "../src/agent/policies/code/codeReviewPolicy.js";
+import { enforceCodeErrorPriorityPipelineDelivery } from "../src/agent/policies/code/codeReviewRuntimeGuard.js";
+import { CODE_INTENT_KINDS } from "../src/agent/policies/code/codeIntentPolicy.js";
 import {
   CODE_REVIEW_PRODUCTION_BUG_QUERIES,
   BROKEN_CALCULATRICE_PY_SNIPPET,

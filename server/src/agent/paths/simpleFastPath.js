@@ -15,7 +15,7 @@ import { isDebugDiagnosticRequest } from "../utils/debugDiagnosticIntentGuards.j
 import { isCareerLearningPathRequest } from "../utils/careerLearningPathIntentGuards.js";
 import { isTechnicalLearningPathRequest } from "../utils/technicalLearningPathIntentGuards.js";
 import { isPresentationOutlineRequest } from "../utils/presentationOutlineIntentGuards.js";
-import { isCodeConceptExplainRequest } from "../policies/codeConceptExplainPolicy.js";
+import { isCodeConceptExplainRequest } from "../policies/code/codeConceptExplainPolicy.js";
 import {
   finalizeSimpleFactualAnswer,
   resolveLocalSimpleFactualAnswer,
@@ -348,7 +348,7 @@ export async function applySimpleFastDeliveryPipeline({
   if (!String(fastOut || "").trim()) {
     if (codeConceptExplain && technicalOverview) {
       const { resolveCodeConceptGlossaryFallback } = await import(
-        "../policies/codeConceptGlossaryPolicy.js"
+        "../policies/code/codeConceptGlossaryPolicy.js"
       );
       const glossaryHit = resolveCodeConceptGlossaryFallback(query, {
         history,
@@ -464,7 +464,7 @@ export async function applySimpleFastDeliveryPipeline({
   if (!String(fastOut || "").trim()) {
     if (technicalOverview || guidedCreationScoping) {
       const { resolveCodeCreateLocalFallback, isCodeCreateRequest } =
-        await import("../policies/codeCreateFallbackPolicy.js");
+        await import("../policies/code/codeCreateFallbackPolicy.js");
       if (isCodeCreateRequest(query)) {
         fastOut = resolveCodeCreateLocalFallback(query) || "";
       }

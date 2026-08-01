@@ -2,7 +2,7 @@
  * G40 — explain concept technique vs code_generation / summary/known_entity.
  * « rôle de import », « résumé du rôle de div » → explication, pas œuvre culturelle ni livraison code.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { sanitizeQuery } from "../../micro/normalization/querySanitizer.js";
 
 const CONCEPT_ROLE_SHELL_RE =
   /\b(?:resume|resumé|résumé|synthese|synthèse|summary)\s+(?:du|de\s+la|de\s+l|d)?\s*(?:role|rôle)\b/i;
@@ -47,7 +47,7 @@ const WORK_CULTURAL_MARKER_RE =
  * @returns {string}
  */
 function normalizeQuery(query = "") {
-  return normalizeFamiliarityQuery(query);
+  return sanitizeQuery(query);
 }
 
 /**

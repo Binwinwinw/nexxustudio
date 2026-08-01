@@ -11,16 +11,16 @@ import {
   extractCodeProjectLightSlots,
   resolveCodeProjectLightTargetDir,
   buildCodeProjectLightSystemAddon,
-} from "../src/agent/policies/codeProjectLightPolicy.js";
+} from "../src/agent/policies/code/codeProjectLightPolicy.js";
 import {
   extractHtmlTrioArtifacts,
   resolveHtmlTrioArtifacts,
   writeCodeProjectLightArtifacts,
   buildCodeProjectLightWriteSummary,
-} from "../src/agent/policies/codeProjectLightWriter.js";
-import { applyCodeProjectLightWrite } from "../src/agent/policies/codeProjectLightExecutionPolicy.js";
+} from "../src/agent/policies/code/codeProjectLightWriter.js";
+import { applyCodeProjectLightWrite } from "../src/agent/policies/code/codeProjectLightExecutionPolicy.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
-import { isCodeGenerationRequest } from "../src/agent/policies/codeDeliveryPolicy.js";
+import { isCodeGenerationRequest } from "../src/agent/policies/code/codeDeliveryPolicy.js";
 import { suppressesCodeGenerationForProgrammingPedagogy } from "../src/agent/utils/programmingPedagogyLightIntentGuards.js";
 
 export const CODE_PROJECT_LIGHT_CANONICAL_QUERY =

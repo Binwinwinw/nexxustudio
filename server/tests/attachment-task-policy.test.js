@@ -21,11 +21,11 @@ import { applySimpleFastDeliveryPipeline } from "../src/agent/paths/simpleFastPa
 import {
   shouldBypassDocumentAnalysisRoute,
   hasCodeAttachmentSignal,
-} from "../src/agent/policies/codeReviewRoutingGuard.js";
+} from "../src/agent/policies/code/codeReviewRoutingGuard.js";
 import {
   classifyCodeIntent,
   isCodeIntentRequest,
-} from "../src/agent/policies/codeIntentPolicy.js";
+} from "../src/agent/policies/code/codeIntentPolicy.js";
 import { hasTextAttachments } from "../src/agent/utils/conversationGuards.js";
 import {
   isDocxFile,

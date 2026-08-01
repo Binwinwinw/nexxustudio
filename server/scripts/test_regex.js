@@ -1,4 +1,4 @@
-import { classifyCodeIntent, hasCodeContext } from "../src/agent/policies/codeIntentPolicy.js";
+import { classifyCodeIntent, hasCodeContext } from "../src/agent/policies/code/codeIntentPolicy.js";
 
 const q1 = "salut salut comment ça va j'ai besoin de ton aide pour la correction de mon index.php <?php echo 'hello'; ?>";
 console.log("hasCodeContext: ", hasCodeContext(q1));

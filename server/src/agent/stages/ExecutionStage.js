@@ -8,7 +8,7 @@ import { OTEL_ATTRIBUTES, SPAN_NAMES } from '../telemetry/otelSemanticMap.js';
 import {
   getCodeDeliveryLlmOptions,
   isCodeGenerationRequest,
-} from "../policies/codeDeliveryPolicy.js";
+} from "../policies/code/codeDeliveryPolicy.js";
 
 export class ExecutionStage {
   static async run(pipeline, query, { 

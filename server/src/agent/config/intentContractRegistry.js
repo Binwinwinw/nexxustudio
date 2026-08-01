@@ -23,9 +23,9 @@ import {
   isOpenProjectIdeation,
   isGreetingOrIntroduction,
 } from "./modeResponseContracts.js";
-import { isCodeGenerationRequest } from "../policies/codeDeliveryPolicy.js";
-import { isCodeIntentRequest } from "../policies/codeIntentPolicy.js";
-import { isCodeReviewRequest } from "../policies/codeReviewPolicy.js";
+import { isCodeGenerationRequest } from "../policies/code/codeDeliveryPolicy.js";
+import { isCodeIntentRequest } from "../policies/code/codeIntentPolicy.js";
+import { isCodeReviewRequest } from "../policies/code/codeReviewPolicy.js";
 import { requiresGenerousComposerResponse } from "../policies/practicalAdviceRoutingGuard.js";
 import { isSocialAcceptanceOfOffer } from "../policies/socialAcceptanceOfOfferPolicy.js";
 import { isMetaCapabilitiesIntent } from "../policies/metaCapabilitiesPolicy.js";
@@ -47,7 +47,7 @@ import { isRepoAnalysisRequest } from "../utils/repoAnalysisIntentGuards.js";
 import {
   extractCodeProjectLightSlots,
   isCodeProjectLightRequest,
-} from "../policies/codeProjectLightPolicy.js";
+} from "../policies/code/codeProjectLightPolicy.js";
 import { isFormalLetterTemplateRequest } from "../policies/delivery/index.js";
 
 const GUARDS = {

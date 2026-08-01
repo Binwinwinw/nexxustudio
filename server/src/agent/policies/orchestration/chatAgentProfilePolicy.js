@@ -11,7 +11,7 @@ import {
   isCodeIntentRequest,
   classifyCodeIntent,
   hasExecutableSnippet,
-} from "../codeIntentPolicy.js";
+} from "../code/codeIntentPolicy.js";
 import { isHtmlProjectDeliverable } from "../delivery/index.js";
 import { deriveGuidedProductWebSearchQuery } from "../guided/index.js";
 import {

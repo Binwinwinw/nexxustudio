@@ -13,7 +13,7 @@ import {
   resolveConstructiveDeliveryModules,
 } from "../src/agent/policies/delivery/index.js";
 import { enforceModeContract } from "../src/agent/config/modeResponseContracts.js";
-import { isCodeGenerationRequest } from "../src/agent/policies/codeDeliveryPolicy.js";
+import { isCodeGenerationRequest } from "../src/agent/policies/code/codeDeliveryPolicy.js";
 
 const NOTION_WORKSHOP_QUERY =
   "sais tu créer un atelier d'initiation à l'application NOTION sous forme de fichier html avec header sidebar sur les différents thèmes comme menus?";

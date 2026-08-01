@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import {
   isCodeCreateRequest,
   resolveCodeCreateLocalFallback,
-} from "../src/agent/policies/codeCreateFallbackPolicy.js";
+} from "../src/agent/policies/code/codeCreateFallbackPolicy.js";
 import {
   isGuidedCreationScopingRequest,
   isObviousCodeDeliverableRequest,
@@ -13,7 +13,7 @@ import {
   resolveGuidedCreationScopingShortCircuit,
 } from "../src/agent/policies/guided/index.js";
 import { isClearConstructiveDeliverable } from "../src/agent/policies/delivery/index.js";
-import { isCodeGenerationRequest } from "../src/agent/policies/codeDeliveryPolicy.js";
+import { isCodeGenerationRequest } from "../src/agent/policies/code/codeDeliveryPolicy.js";
 import { isTechnicalOverviewRequest } from "../src/agent/utils/technicalOverviewIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";

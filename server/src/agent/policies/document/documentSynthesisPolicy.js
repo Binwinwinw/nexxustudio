@@ -5,13 +5,13 @@
 import { hasTextAttachments } from "../../utils/conversationGuards.js";
 import { isAnalyticalCritiqueIntent } from "../../utils/analyticalCritiqueIntentGuards.js";
 import { isMetaCapabilitiesIntent } from "../metaCapabilitiesPolicy.js";
-import { isCodeIntentRequest } from "../codeIntentPolicy.js";
+import { isCodeIntentRequest } from "../code/codeIntentPolicy.js";
 import { inferDocumentStateFromHistory } from "../../micro/continuity/documentContinuityContext.js";
 import { hasReusableDocumentBriefing } from "../../micro/continuity/documentBriefingEncoder.js";
 import { isExistingSourceAnalysisRequest } from "../../utils/localFileUriIntentGuards.js";
 import { isRepoAnalysisRequest } from "../../utils/repoAnalysisIntentGuards.js";
 import { suppressesDocumentSynthesisForCulturalSummary } from "../summary/index.js";
-import { isCodeConceptExplainRequest } from "../codeConceptExplainPolicy.js";
+import { isCodeConceptExplainRequest } from "../code/codeConceptExplainPolicy.js";
 import { isResearchThenSummarizeRequest } from "../researchThenSummarizePolicy.js";
 import { isFormalLetterTemplateRequest } from "../delivery/index.js";
 import { shouldSuppressSummaryContractForAttachment } from "../attachment/index.js";

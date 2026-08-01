@@ -9,8 +9,8 @@ import {
   buildFrontPresentationRepairUserAddon,
   validateCodeProjectLightArtifacts,
   countJsInteractionSignals,
-} from "../src/agent/policies/frontendPresentationQualityContract.js";
-import { buildCodeProjectLightSystemAddon } from "../src/agent/policies/codeProjectLightPolicy.js";
+} from "../src/agent/policies/code/frontendPresentationQualityContract.js";
+import { buildCodeProjectLightSystemAddon } from "../src/agent/policies/code/codeProjectLightPolicy.js";
 
 const CODE_PROJECT_LIGHT_CANONICAL_QUERY =
   "Crée une page HTML/CSS/JS simple pour présenter La Citadelle, enregistre les fichiers dans projects/demo-citadelle";

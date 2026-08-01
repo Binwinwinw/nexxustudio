@@ -4,8 +4,8 @@
  */
 import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
 import { suppressesBuildIntentForTechnicalLearning } from "../../utils/technicalLearningPathIntentGuards.js";
-import { detectCodeDeliveryLanguage } from "../codeDeliveryPolicy.js";
-import { isCodeConceptExplainRequest } from "../codeConceptExplainPolicy.js";
+import { detectCodeDeliveryLanguage } from "../code/codeDeliveryPolicy.js";
+import { isCodeConceptExplainRequest } from "../code/codeConceptExplainPolicy.js";
 import {
   buildNotionWorkshopProductionDelivery,
   buildHtmlWorkshopQualitySystemAddon,

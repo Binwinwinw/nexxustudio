@@ -7,7 +7,7 @@ import {
   suppressesCodeGenerationForProgrammingPedagogy,
 } from "../src/agent/utils/programmingPedagogyLightIntentGuards.js";
 import { isBeginnerTopicOverviewRequest } from "../src/agent/utils/beginnerTopicOverviewIntentGuards.js";
-import { isCodeGenerationRequest } from "../src/agent/policies/codeDeliveryPolicy.js";
+import { isCodeGenerationRequest } from "../src/agent/policies/code/codeDeliveryPolicy.js";
 import {
   triageUserIntent,
   TRIAGE_INTENTS,

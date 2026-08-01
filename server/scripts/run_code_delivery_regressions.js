@@ -12,8 +12,8 @@ import {
   CODE_DELIVERY_GOLDEN_QUERIES,
   GOLDEN_QUERY_CATEGORIES,
 } from "../tests/fixtures/codeDeliveryGoldenQueries.js";
-import { CODE_DELIVERY_SECTION_MARKERS } from "../src/agent/policies/codeDeliveryPolicy.js";
-import { evaluateCodeDeliverySentinels } from "../src/agent/policies/codeDeliverySentinels.js";
+import { CODE_DELIVERY_SECTION_MARKERS } from "../src/agent/policies/code/codeDeliveryPolicy.js";
+import { evaluateCodeDeliverySentinels } from "../src/agent/policies/code/codeDeliverySentinels.js";
 
 function includesAll(text, patterns = []) {
   const body = String(text || "").toLowerCase();

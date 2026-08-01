@@ -23,7 +23,7 @@ import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseCon
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/practicalAdviceRoutingGuard.js";
 import { isTechnicalOverviewRequest } from "../src/agent/utils/technicalOverviewIntentGuards.js";
-import { isCodeReviewRequest } from "../src/agent/policies/codeReviewPolicy.js";
+import { isCodeReviewRequest } from "../src/agent/policies/code/codeReviewPolicy.js";
 
 describe("debugDiagnostic — lot 8", () => {
   it("pourquoi Redis crash ECONNREFUSED → debug_diagnostic", async () => {

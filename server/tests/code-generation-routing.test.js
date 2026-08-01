@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { isCodeGenerationRequest } from "../src/agent/policies/codeDeliveryPolicy.js";
+import { isCodeGenerationRequest } from "../src/agent/policies/code/codeDeliveryPolicy.js";
 import { triageUserIntent, TRIAGE_INTENTS, TRIAGE_ROUTING_ACTION } from "../src/agent/classifiers/intentTriageClassifier.js";
 
 describe("Code Generation Routing Guards", () => {

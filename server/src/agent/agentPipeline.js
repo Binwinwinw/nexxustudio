@@ -1976,7 +1976,7 @@ class AgentPipeline {
               shortCircuit.guidedCreationScoping
             ) {
               const { resolveCodeCreateLocalFallback, isCodeCreateRequest } =
-                await import("./policies/codeCreateFallbackPolicy.js");
+                await import("./policies/code/codeCreateFallbackPolicy.js");
               if (isCodeCreateRequest(pipelineQuery)) {
                 const codeFallback =
                   resolveCodeCreateLocalFallback(pipelineQuery);

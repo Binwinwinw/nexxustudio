@@ -2,16 +2,16 @@
  * Cerveau de tri — classification d'intention hybride (règles + scores)
  * avant routage pipeline. Produit top_intent, runner_up, confiance, clarification.
  */
-import { isCodeGenerationRequest } from "../policies/codeDeliveryPolicy.js";
+import { isCodeGenerationRequest } from "../policies/code/codeDeliveryPolicy.js";
 import {
   hasCodeContext,
   hasExecutableSnippet,
   classifyCodeIntent,
   getCodeIntentLabel,
-} from "../policies/codeIntentPolicy.js";
+} from "../policies/code/codeIntentPolicy.js";
 import { isDocumentAnalysisIntent } from "../utils/conversationGuards.js";
-import { isCodeIntentRequest } from "../policies/codeIntentPolicy.js";
-import { isCodeConceptExplainTriageSignal } from "../policies/codeConceptExplainPolicy.js";
+import { isCodeIntentRequest } from "../policies/code/codeIntentPolicy.js";
+import { isCodeConceptExplainTriageSignal } from "../policies/code/codeConceptExplainPolicy.js";
 import { suppressesCodeGenerationForProgrammingPedagogy } from "../utils/programmingPedagogyLightIntentGuards.js";
 
 const CODE_ATTACHMENT_EXT_RE = /\.(py|js|ts|tsx|jsx|php|rb|go|rs|java|cs|cpp|c|h)\b/i;

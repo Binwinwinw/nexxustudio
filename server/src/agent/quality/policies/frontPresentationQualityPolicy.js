@@ -1,14 +1,14 @@
 /**
  * Adaptateur CODE_PROJECT_LIGHT / FRONT_PRESENTATION_V1 → ContractQualityLoop.
  */
-import { isCodeProjectLightRequest } from "../../policies/codeProjectLightPolicy.js";
+import { isCodeProjectLightRequest } from "../../policies/code/codeProjectLightPolicy.js";
 import {
   FRONT_PRESENTATION_CONTRACT_ID,
   FRONT_PRESENTATION_THRESHOLDS,
   buildFrontPresentationRepairUserAddon,
   validateCodeProjectLightArtifacts,
-} from "../../policies/frontendPresentationQualityContract.js";
-import { resolveHtmlTrioArtifacts } from "../../policies/codeProjectLightWriter.js";
+} from "../../policies/code/frontendPresentationQualityContract.js";
+import { resolveHtmlTrioArtifacts } from "../../policies/code/codeProjectLightWriter.js";
 import { defineContractQualityPolicy } from "../contractQualityLoop.js";
 
 /**

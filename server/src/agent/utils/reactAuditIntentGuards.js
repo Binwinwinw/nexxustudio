@@ -2,12 +2,12 @@
  * G48 — guards intention audit React Doctor (repo / diff / score).
  */
 import { normalizeText } from "./normalizationGuards.js";
-import { isCodeConceptExplainRequest } from "../policies/codeConceptExplainPolicy.js";
+import { isCodeConceptExplainRequest } from "../policies/code/codeConceptExplainPolicy.js";
 import {
   isComprehensionDemonstrationRequest,
   isMetaAssistantBehaviorRequest,
 } from "./metaAssistantBehaviorGuards.js";
-import { hasExecutableSnippet } from "../policies/codeIntentPolicy.js";
+import { hasExecutableSnippet } from "../policies/code/codeIntentPolicy.js";
 import { resolveAttachmentFileKind, ATTACHMENT_FILE_KINDS } from "../policies/attachment/index.js";
 import { isUiNavigationRestructureFeedback } from "./uiNavigationFeedbackGuards.js";
 

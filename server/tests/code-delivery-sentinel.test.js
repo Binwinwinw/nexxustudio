@@ -8,7 +8,7 @@ import {
   mustNotAskClarificationWhenSpecSufficient,
   mustIncludeMultiFileStructure,
   SENTINEL_IDS,
-} from "../src/agent/policies/codeDeliverySentinels.js";
+} from "../src/agent/policies/code/codeDeliverySentinels.js";
 import { GENERIC_READY_GREETING } from "../src/agent/utils/genericGreetingGuards.js";
 import {
   CODE_DELIVERY_GOLDEN_QUERIES,

@@ -5,7 +5,7 @@ import {
   ATTACHMENT_TASKS,
   classifyAttachmentTask,
 } from "../src/agent/policies/attachment/index.js";
-import { shouldBypassDocumentAnalysisRoute } from "../src/agent/policies/codeReviewRoutingGuard.js";
+import { shouldBypassDocumentAnalysisRoute } from "../src/agent/policies/code/codeReviewRoutingGuard.js";
 import {
   GUARD_MODES,
   buildAttachmentResponseState,

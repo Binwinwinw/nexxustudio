@@ -6,12 +6,12 @@ import { normalizeFamiliarityQuery } from "./familiarityIntentGuards.js";
 import { isBeginnerTopicOverviewRequest } from "./beginnerTopicOverviewIntentGuards.js";
 import { isPedagogicalOverviewRequest } from "./pedagogicalOverviewIntentGuards.js";
 import { isExploitableProcedureIntent } from "./procedureIntentGuards.js";
-import { isCodeReviewRequest } from "../policies/codeReviewPolicy.js";
+import { isCodeReviewRequest } from "../policies/code/codeReviewPolicy.js";
 import {
   hasCodeContext,
   hasExecutableSnippet,
   isCodeIntentRequest,
-} from "../policies/codeIntentPolicy.js";
+} from "../policies/code/codeIntentPolicy.js";
 import { classifySelectiveDecisionIntent } from "./selectiveDecisionIntentGuards.js";
 import { isMetaCapabilitiesIntent } from "../policies/metaCapabilitiesPolicy.js";
 

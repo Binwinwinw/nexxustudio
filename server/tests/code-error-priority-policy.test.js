@@ -9,12 +9,12 @@ import {
   buildCodeErrorPriorityAddon,
   appliesCodeErrorPriorityPolicy,
   CODE_ERROR_PRIORITY_CONTRACT_ID,
-} from "../src/agent/policies/codeErrorPriorityPolicy.js";
+} from "../src/agent/policies/code/codeErrorPriorityPolicy.js";
 import {
   enforceCodeErrorPriorityPipelineDelivery,
-} from "../src/agent/policies/codeReviewRuntimeGuard.js";
-import { buildCodeIntentAddon } from "../src/agent/policies/codeReviewPolicy.js";
-import { CODE_INTENT_KINDS } from "../src/agent/policies/codeIntentPolicy.js";
+} from "../src/agent/policies/code/codeReviewRuntimeGuard.js";
+import { buildCodeIntentAddon } from "../src/agent/policies/code/codeReviewPolicy.js";
+import { CODE_INTENT_KINDS } from "../src/agent/policies/code/codeIntentPolicy.js";
 
 describe("codeErrorPriorityPolicy — priorisation", () => {
   it("expose la hiérarchie compile → runtime → logique → style", () => {

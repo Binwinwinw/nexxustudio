@@ -10,7 +10,7 @@ import {
   isCodeIntentRequest,
   hasCodeContext,
   hasExecutableSnippet,
-} from "../codeIntentPolicy.js";
+} from "../code/codeIntentPolicy.js";
 import {
   classifyAttachmentTask,
   isCodeAttachmentTask,

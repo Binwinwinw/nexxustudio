@@ -35,8 +35,8 @@ import {
   classifyCodeIntent,
   hasCodeContext,
   hasExecutableSnippet,
-} from "../codeIntentPolicy.js";
-import { isCodeConceptExplainRequest } from "../codeConceptExplainPolicy.js";
+} from "../code/codeIntentPolicy.js";
+import { isCodeConceptExplainRequest } from "../code/codeConceptExplainPolicy.js";
 import { isPedagogicalStructuredExplainRequest } from "../pedagogical/index.js";
 import {
   evaluateHtmlProjectDelivery,

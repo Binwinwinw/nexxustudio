@@ -4,7 +4,7 @@
  */
 import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
 import { extractPastedSourceText } from "../document/index.js";
-import { suppressesCulturalSummaryForConceptExplain } from "../codeConceptExplainPolicy.js";
+import { suppressesCulturalSummaryForConceptExplain } from "../code/codeConceptExplainPolicy.js";
 
 export const CULTURAL_CONTENT_SUMMARY_RULE = "cultural_content_summary_g37";
 

@@ -27,7 +27,7 @@ import { sanitizeUnverifiedSkillExecutionClaims } from "../utils/skillExecutionC
 import {
   buildCodeDeliveryAddon,
   isCodeGenerationRequest,
-} from "../policies/codeDeliveryPolicy.js";
+} from "../policies/code/codeDeliveryPolicy.js";
 import {
   buildConstructiveDeliverySystemAddon,
   isClearConstructiveDeliverable,
@@ -35,7 +35,7 @@ import {
   buildHtmlProjectSystemAddon,
   isHtmlProjectDeliverable,
 } from "../policies/delivery/index.js";
-import { buildCodeProjectLightSystemAddon } from "../policies/codeProjectLightPolicy.js";
+import { buildCodeProjectLightSystemAddon } from "../policies/code/codeProjectLightPolicy.js";
 import { TUTOIEMENT_COMPOSER_LINE } from "../policies/posture/index.js";
 import {
   VOICE_CONTINUITY_COMPOSER_LINE,
@@ -43,7 +43,7 @@ import {
   applyVoiceContinuityVisibleText,
 } from "../policies/posture/index.js";
 import { buildPostureDeliveryAddon } from "../policies/posture/index.js";
-import { buildCodeIntentAddon } from "../policies/codeReviewPolicy.js";
+import { buildCodeIntentAddon } from "../policies/code/codeReviewPolicy.js";
 import {
   buildFileContextGuardAddon,
   buildFileContextInventory,

@@ -7,14 +7,14 @@ import {
   requiresBlockingFirstContract,
   buildCodeIntentUserPrompt,
   getCodeIntentUserTemplates,
-} from "../src/agent/policies/codeIntentPolicy.js";
+} from "../src/agent/policies/code/codeIntentPolicy.js";
 import {
   isCodeReviewRequest,
   buildCodeIntentAddon,
   CODE_REVIEW_CONTRACT_ID,
   CODE_EXPLAIN_CONTRACT_ID,
   CODE_DIAGNOSTIC_CONTRACT_ID,
-} from "../src/agent/policies/codeReviewPolicy.js";
+} from "../src/agent/policies/code/codeReviewPolicy.js";
 import { isDocumentAnalysisIntent } from "../src/agent/utils/conversationGuards.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
 import {

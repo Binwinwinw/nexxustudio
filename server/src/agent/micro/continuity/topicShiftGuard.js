@@ -5,7 +5,7 @@
  */
 import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
 import { isStructuredAssistanceRequest } from "../../utils/conversationGuards.js";
-import { isCodeGenerationRequest } from "../../policies/codeDeliveryPolicy.js";
+import { isCodeGenerationRequest } from "../../policies/code/codeDeliveryPolicy.js";
 import {
   isShortFollowupText,
   readRecentTurns,

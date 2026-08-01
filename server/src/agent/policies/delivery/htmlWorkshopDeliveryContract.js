@@ -2,7 +2,7 @@
  * Contrat qualité CODE_DELIVERY_V1 — ateliers HTML (sidebar réelle, sémantique, responsive).
  */
 import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { detectCodeDeliveryLanguage } from "../codeDeliveryPolicy.js";
+import { detectCodeDeliveryLanguage } from "../code/codeDeliveryPolicy.js";
 import {
   buildNotionWorkshopProductionHtml,
   NOTION_WORKSHOP_MODULES,
