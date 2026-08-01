@@ -6,7 +6,7 @@ import { isCapabilityOverviewRequest } from "../../utils/metaConversationIntentG
 import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
-} from "../responseMannerPolicy.js";
+} from "../posture/index.js";
 
 export const SOCIAL_COMPOSITE_RULE = "social_composite_g41_1";
 

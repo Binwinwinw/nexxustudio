@@ -3,7 +3,7 @@ import { normalizeText } from "./normalizationGuards.js";
 import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
-} from "../policies/responseMannerPolicy.js";
+} from "../policies/posture/index.js";
 
 export const IDENTITY_MAX_WORDS = 12;
 

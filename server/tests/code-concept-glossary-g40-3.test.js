@@ -12,7 +12,7 @@ import {
   composeMannerReply,
   detectPriorAssistantFailure,
   RESPONSE_MANNER_FAMILIES,
-} from "../src/agent/policies/responseMannerPolicy.js";
+} from "../src/agent/policies/posture/index.js";
 import { CODE_CONCEPT_GLOSSARY_SOURCES } from "../src/agent/policies/codeConceptGlossaryPolicy.js";
 
 const DIV_QUERY = "pourrais-tu faire un résumé du rôle de <div> en HTML?";

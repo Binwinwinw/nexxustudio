@@ -7,11 +7,11 @@ import {
   POSTURE_INTENSITIES,
   createDefaultSessionModeState,
   tickSessionModeTtl,
-} from "../src/agent/policies/sessionModeState.js";
+} from "../src/agent/policies/posture/index.js";
 import {
   detectExplicitPostureSwitch,
   resolvePosture,
-} from "../src/agent/policies/posturePolicy.js";
+} from "../src/agent/policies/posture/index.js";
 
 describe("SessionModeState + PosturePolicy P0/P0.1", () => {
   it("switch explicite mentor + lockedByUser", () => {

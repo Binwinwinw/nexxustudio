@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { runSemanticPreProcessing } from "../src/agent/stages/semanticPreProcessor.js";
-import { resolveResponseMode } from "../src/agent/policies/responseStylePolicy.js";
+import { resolveResponseMode } from "../src/agent/policies/posture/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATASET_PATH = path.join(__dirname, "../../citadelle-vault/Citadelle/04-Operations/audits/golden_dataset.json");

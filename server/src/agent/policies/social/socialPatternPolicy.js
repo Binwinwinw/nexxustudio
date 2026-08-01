@@ -7,7 +7,7 @@ import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIn
 import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
-} from "../responseMannerPolicy.js";
+} from "../posture/index.js";
 import { isOpenExplorationFrame } from "../openExplorationFramePolicy.js";
 
 export const SOCIAL_PATTERN_HARDENING_RULE = "social_pattern_hardening_g35";

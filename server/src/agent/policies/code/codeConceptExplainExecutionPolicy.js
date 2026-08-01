@@ -11,7 +11,7 @@ import {
 import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
-} from "../responseMannerPolicy.js";
+} from "../posture/index.js";
 
 export const CODE_CONCEPT_EXPLAIN_PIPELINE_PATH = "code_concept_explain";
 export const CODE_CONCEPT_EXPLAIN_FALLBACK_PIPELINE_PATH =

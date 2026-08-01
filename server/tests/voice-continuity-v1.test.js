@@ -10,7 +10,7 @@ import {
   shouldSuppressPrematureClarify,
   shouldDeferSocialRouting,
   applyVoiceContinuityVisibleText,
-} from "../src/agent/policies/voiceContinuityPolicy.js";
+} from "../src/agent/policies/posture/index.js";
 import {
   evaluateClarificationDecision,
   CLARIFICATION_DECISIONS,
@@ -24,8 +24,8 @@ import {
   enforceModeContract,
   INSUFFICIENT_SIGNAL_REFUSAL,
 } from "../src/agent/config/modeResponseContracts.js";
-import { POSTURES } from "../src/agent/policies/sessionModeState.js";
-import { buildPostureDeliveryAddon } from "../src/agent/policies/posturePolicy.js";
+import { POSTURES } from "../src/agent/policies/posture/index.js";
+import { buildPostureDeliveryAddon } from "../src/agent/policies/posture/index.js";
 import { resolveSimpleFastAllowRefusal } from "../src/agent/paths/simpleFastPath.js";
 
 describe("VOICE_CONTINUITY_V1", () => {

@@ -12,7 +12,7 @@ import {
   normalizeFamiliarityQuery,
   parseFamiliarityQuery,
 } from "../../utils/familiarityIntentGuards.js";
-import { shouldSuppressPrematureClarify } from "../voiceContinuityPolicy.js";
+import { shouldSuppressPrematureClarify } from "../posture/index.js";
 import { isPedagogicalOverviewRequest } from "../../utils/pedagogicalOverviewIntentGuards.js";
 import { isBeginnerTopicOverviewRequest } from "../../utils/beginnerTopicOverviewIntentGuards.js";
 import { isCodeConceptExplainRequest } from "../codeConceptExplainPolicy.js";

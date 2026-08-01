@@ -9,8 +9,8 @@ import { buildTemporalAwarenessReply } from "../../memory/sessionWorkMemory.js";
 import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
-} from "../../policies/responseMannerPolicy.js";
-import { buildStructuredGenerativeAddon } from "../../policies/structuredGenerativeTemplatePolicy.js";
+} from "../../policies/posture/index.js";
+import { buildStructuredGenerativeAddon } from "../../policies/posture/index.js";
 import { isInsufficientSignalRefusal } from "../../config/modeResponseContracts.js";
 
 const CAPABILITY_LEARN_REPLY = `Sur mes fonctionnalités actuelles, voici l'essentiel : conversation gouvernée par intentions, atelier Document Analysis, Cockpit/Forge pour pipelines locaux, et routage déterministe avant tout appel LLM lourd. Dis-moi ce que tu veux explorer en premier (document, code, conception, audit).`;

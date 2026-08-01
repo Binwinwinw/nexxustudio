@@ -1,6 +1,6 @@
 import test, { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { resolveResponseMode, RESPONSE_MODES } from "../src/agent/policies/responseStylePolicy.js";
+import { resolveResponseMode, RESPONSE_MODES } from "../src/agent/policies/posture/index.js";
 
 describe("responseStylePolicy - Caractérisation", () => {
   describe("resolveResponseMode", () => {

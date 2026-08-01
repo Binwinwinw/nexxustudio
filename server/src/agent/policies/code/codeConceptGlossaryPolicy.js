@@ -7,7 +7,7 @@ import { isCodeConceptExplainRequest } from "./codeConceptExplainPolicy.js";
 import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
-} from "../responseMannerPolicy.js";
+} from "../posture/index.js";
 
 export const CODE_CONCEPT_GLOSSARY_SOURCES = Object.freeze({
   GLOSSARY: "glossary",

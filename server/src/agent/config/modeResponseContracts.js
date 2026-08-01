@@ -36,13 +36,13 @@ import {
   isHtmlProjectDeliverable,
 } from "../policies/delivery/index.js";
 import { buildCodeProjectLightSystemAddon } from "../policies/codeProjectLightPolicy.js";
-import { TUTOIEMENT_COMPOSER_LINE } from "../policies/addressingPolicy.js";
+import { TUTOIEMENT_COMPOSER_LINE } from "../policies/posture/index.js";
 import {
   VOICE_CONTINUITY_COMPOSER_LINE,
   shouldBlockGenericInsufficientRefusal,
   applyVoiceContinuityVisibleText,
-} from "../policies/voiceContinuityPolicy.js";
-import { buildPostureDeliveryAddon } from "../policies/posturePolicy.js";
+} from "../policies/posture/index.js";
+import { buildPostureDeliveryAddon } from "../policies/posture/index.js";
 import { buildCodeIntentAddon } from "../policies/codeReviewPolicy.js";
 import {
   buildFileContextGuardAddon,

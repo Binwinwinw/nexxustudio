@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { TUTOIEMENT_RULE, TUTOIEMENT_COMPOSER_LINE } from "../src/agent/policies/addressingPolicy.js";
+import { TUTOIEMENT_RULE, TUTOIEMENT_COMPOSER_LINE } from "../src/agent/policies/posture/index.js";
 import { MODE_SYSTEM_PROMPTS } from "../src/agent/config/modeResponseContracts.js";
 import { buildSystemPrompt } from "../src/agent/prompts/systemPromptBuilder.js";
 

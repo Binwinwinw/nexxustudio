@@ -17,7 +17,7 @@ import {
   pedagogicalSubjectLabel,
 } from "../lexiconExplainLightPolicy.js";
 import { resolveRequestWorkloadSignal } from "../workload/index.js";
-import { shouldDeferSocialRouting } from "../voiceContinuityPolicy.js";
+import { shouldDeferSocialRouting } from "../posture/index.js";
 
 export const INTENT_COMPOSITION_CONTRACT = "INTENT_COMPOSITION_V1";
 export const INTENT_COMPOSITION_RULE = "intent_composition_policy_p0_observe";

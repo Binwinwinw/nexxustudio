@@ -7,7 +7,7 @@ import { classifySocialPattern } from "../socialPatternPolicy.js";
 import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
-} from "../responseMannerPolicy.js";
+} from "../posture/index.js";
 
 export const OPEN_PROMPT_CONTINUITY_RULE = "open_prompt_continuity_g42";
 

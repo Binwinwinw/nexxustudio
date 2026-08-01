@@ -5,7 +5,7 @@ import {
   enforceModeContract,
   RESPONSE_MODES,
 } from "../config/modeResponseContracts.js";
-import { shouldBlockGenericInsufficientRefusal } from "../policies/voiceContinuityPolicy.js";
+import { shouldBlockGenericInsufficientRefusal } from "../policies/posture/index.js";
 import { isSimpleFactualQuestion } from "../policies/justIntentDetectionPolicy.js";
 import { isPedagogicalOverviewRequest } from "../utils/pedagogicalOverviewIntentGuards.js";
 import { isBeginnerTopicOverviewRequest } from "../utils/beginnerTopicOverviewIntentGuards.js";
