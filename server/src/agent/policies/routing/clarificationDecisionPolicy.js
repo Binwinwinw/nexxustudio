@@ -80,7 +80,7 @@ import {
   decomposeRequest,
   suppressesClarificationForDecomposedRequest,
 } from "./requestDecompositionPolicy.js";
-import { isBenignProceduralHowToRequest } from "../howToQualificationPolicy.js";
+import { isBenignProceduralHowToRequest } from "../qualification/howToQualificationPolicy.js";
 import { isConversationSocialOnlyQuery } from "../conversationIntentFrame.js";
 import { isKnownSocialPattern } from "../socialPatternPolicy.js";
 import { isOpenExplorationFrame } from "../openExplorationFramePolicy.js";
@@ -88,7 +88,7 @@ import {
   isInlineProductBriefPaste,
   isProjectScopingAssistRequest,
 } from "../guided/index.js";
-import { isAssistantUtteranceClarifyRequest } from "../assistantUtteranceClarifyPolicy.js";
+import { isAssistantUtteranceClarifyRequest } from "../qualification/assistantUtteranceClarifyPolicy.js";
 import {
   classifySummaryContract,
   SUMMARY_INTENTS,

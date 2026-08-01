@@ -26,7 +26,7 @@ import {
   buildHowToComplexReply,
   hasRichHowToLocalTemplate,
   HOW_TO_QUALIFICATIONS,
-} from "../howToQualificationPolicy.js";
+} from "../qualification/howToQualificationPolicy.js";
 import { isHowToRequestShell } from "../../utils/howToRequestIntentGuards.js";
 import {
   isRecipeKnowledgeRequest,

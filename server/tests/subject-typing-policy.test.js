@@ -10,11 +10,11 @@ import {
   resolveSubjectTyping,
   resolveSubjectTypingFromQuery,
   resumeSubjectTypeClarification,
-} from "../src/agent/policies/subjectTypingPolicy.js";
+} from "../src/agent/policies/qualification/subjectTypingPolicy.js";
 import { classifySubjectCategory, SUBJECT_CATEGORIES } from "../src/agent/utils/familiarityIntentGuards.js";
 import { buildFamiliarityReply } from "../src/agent/micro/replies/familiarityReplyBuilder.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { resumePendingClarification } from "../src/agent/policies/pendingClarificationResumePolicy.js";
+import { resumePendingClarification } from "../src/agent/policies/qualification/pendingClarificationResumePolicy.js";
 
 describe("subjectTypingPolicy — batterie #28", () => {
   it("Jaguar → candidates vehicle/animal/brand + disambiguation", () => {

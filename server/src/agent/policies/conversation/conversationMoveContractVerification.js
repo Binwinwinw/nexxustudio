@@ -11,7 +11,7 @@ import {
   isHowToProceduralSocialDrift,
   isHowToProceduralTopicViolation,
   enforceHowToProceduralDirectness,
-} from "../howToQualificationPolicy.js";
+} from "../qualification/howToQualificationPolicy.js";
 import {
   isSimpleFactualContractViolation,
   enforceSimpleFactualDirectness,

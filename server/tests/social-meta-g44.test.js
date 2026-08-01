@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 import {
   isAssistantUtteranceClarifyRequest,
-} from "../src/agent/policies/assistantUtteranceClarifyPolicy.js";
+} from "../src/agent/policies/qualification/assistantUtteranceClarifyPolicy.js";
 import { isMetaAssistantBehaviorRequest } from "../src/agent/utils/metaAssistantBehaviorGuards.js";
 import { resolveMetaAssistantBehaviorShortCircuit } from "../src/agent/policies/meta/metaAssistantBehaviorPolicy.js";
 import { classifyConversationTurn } from "../src/agent/micro/classifiers/conversationTurnType.js";

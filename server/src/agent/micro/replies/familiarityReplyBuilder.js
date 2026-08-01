@@ -29,7 +29,7 @@ import { isTranslationRequest } from "../../utils/translationIntentGuards.js";
 import {
   resolveSubjectTyping,
   buildSubjectTypeClarifyReply,
-} from "../../policies/subjectTypingPolicy.js";
+} from "../../policies/qualification/subjectTypingPolicy.js";
 
 /**
  * Fusionne résolution SIL + lexique familiarité.

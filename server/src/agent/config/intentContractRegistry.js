@@ -35,7 +35,7 @@ import { isGuidedDocumentSynthesisRequest } from "../policies/guided/index.js";
 import { isGuidedCreationScopingContractRequest } from "../policies/guided/index.js";
 import { isMetaAssistantBehaviorRequest, isComprehensionDemonstrationRequest } from "../utils/metaAssistantBehaviorGuards.js";
 import { isIdeationIntent } from "../utils/ideationIntentGuards.js";
-import { isAssistantUtteranceClarifyRequest } from "../policies/assistantUtteranceClarifyPolicy.js";
+import { isAssistantUtteranceClarifyRequest } from "../policies/qualification/assistantUtteranceClarifyPolicy.js";
 import { isReactAuditRequest } from "../utils/reactAuditIntentGuards.js";
 import {
   isExplicitWebSearchRequest,

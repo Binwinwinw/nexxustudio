@@ -23,7 +23,7 @@ import {
   CONVERSATION_MOVE_SHADOW_MODE,
 } from "../src/agent/telemetry/conversationMoveShadowTelemetry.js";
 import { applyConversationMoveAuthority } from "../src/agent/policies/conversationMoveAuthority.js";
-import { enforceHowToProceduralDirectness } from "../src/agent/policies/howToQualificationPolicy.js";
+import { enforceHowToProceduralDirectness } from "../src/agent/policies/qualification/howToQualificationPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseContracts.js";
 

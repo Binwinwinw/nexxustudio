@@ -7,7 +7,7 @@ import {
   matchHowToScopeSlot,
   CLARIFICATION_RESUME_STATUS,
   HOW_TO_SCOPE_SLOTS,
-} from "../src/agent/policies/pendingClarificationResumePolicy.js";
+} from "../src/agent/policies/qualification/pendingClarificationResumePolicy.js";
 
 const airplaneClarifyAssistant =
   "Salut ! Ça va bien de mon côté. Nous sommes vendredi 3 juillet 2026 et il est 02:18. Tu parles d'un avion en papier, d'une maquette ou d'un vrai avion ?";

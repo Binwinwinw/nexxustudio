@@ -13,7 +13,7 @@ import { normalizeForParse } from "../../micro/parsing/requestSegmentParser.js";
 import {
   enrichHowToUnit,
   HOW_TO_QUALIFICATIONS,
-} from "../howToQualificationPolicy.js";
+} from "../qualification/howToQualificationPolicy.js";
 import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/externalCalendarLookupIntentGuards.js";
 
 export const REQUEST_DECOMPOSITION_RULE = "request_decomposition_v1";

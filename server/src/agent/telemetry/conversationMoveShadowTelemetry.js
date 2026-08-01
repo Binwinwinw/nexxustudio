@@ -11,7 +11,7 @@ import { isInsufficientSignalRefusal } from "../config/modeResponseContracts.js"
 import {
   isHowToProceduralSocialDrift,
   isHowToProceduralTopicViolation,
-} from "../policies/howToQualificationPolicy.js";
+} from "../policies/qualification/howToQualificationPolicy.js";
 import { isDebugDiagnosticOverRefusal } from "../micro/replies/debugDiagnosticComposer.js";
 import { isSimpleFactualContractViolation } from "../micro/replies/simpleFactualComposer.js";
 import {

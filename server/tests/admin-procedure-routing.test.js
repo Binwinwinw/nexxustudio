@@ -8,7 +8,7 @@ import {
   isAdminProcedureShell,
 } from "../src/agent/utils/adminProcedureIntentGuards.js";
 import { resolveAdminProcedureShortCircuit } from "../src/agent/micro/replies/adminProcedureComposer.js";
-import { resolveAdminProcedureCoverage } from "../src/agent/policies/adminProcedureCoveragePolicy.js";
+import { resolveAdminProcedureCoverage } from "../src/agent/policies/qualification/adminProcedureCoveragePolicy.js";
 import { resolveKnowledgeEnrichmentPolicy } from "../src/agent/policies/knowledgeEnrichmentPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/practicalAdviceRoutingGuard.js";

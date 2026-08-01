@@ -33,7 +33,7 @@ import {
   buildTranslationReflectiveHint,
   validateMultiTargetTranslationOutput,
 } from "../utils/translationRequestPlan.js";
-import { enforceHowToProceduralDirectness } from "../policies/howToQualificationPolicy.js";
+import { enforceHowToProceduralDirectness } from "../policies/qualification/howToQualificationPolicy.js";
 import { enforceSimpleFactualDirectness } from "../micro/replies/simpleFactualComposer.js";
 import { enforceDebugDiagnosticDirectness } from "../micro/replies/debugDiagnosticComposer.js";
 

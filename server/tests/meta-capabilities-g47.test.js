@@ -16,7 +16,7 @@ import {
 } from "../src/agent/policies/meta/metaCapabilitiesPolicy.js";
 import { isDocumentAnalysisIntent } from "../src/agent/utils/conversationGuards.js";
 import { isConversationMemoryRecallRequest } from "../src/agent/utils/conversationGuards.js";
-import { resolveAssistantUtteranceClarifyShortCircuit } from "../src/agent/policies/assistantUtteranceClarifyPolicy.js";
+import { resolveAssistantUtteranceClarifyShortCircuit } from "../src/agent/policies/qualification/assistantUtteranceClarifyPolicy.js";
 import { resolveWantsAnalysisFromTriage } from "../src/agent/classifiers/intentTriageClassifier.js";
 
 const CAPABILITY_QUERY =

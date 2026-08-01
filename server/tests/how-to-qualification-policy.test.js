@@ -13,7 +13,7 @@ import {
   isHowToProceduralSocialDrift,
   isHowToProceduralContractViolation,
   HOW_TO_QUALIFICATIONS,
-} from "../src/agent/policies/howToQualificationPolicy.js";
+} from "../src/agent/policies/qualification/howToQualificationPolicy.js";
 import {
   INSUFFICIENT_SIGNAL_REFUSAL,
   enforceModeContract,

@@ -8,7 +8,7 @@ import {
 import {
   resolveAdminProcedureCoverage,
   buildAdminProcedureWebGroundedAddon,
-} from "../../policies/adminProcedureCoveragePolicy.js";
+} from "../../policies/qualification/adminProcedureCoveragePolicy.js";
 
 export const ADMIN_PROCEDURE_COMPOSER_RULE =
   "admin_procedure_web_rag_grounded";

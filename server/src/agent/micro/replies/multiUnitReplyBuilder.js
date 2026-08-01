@@ -7,7 +7,7 @@ import {
   buildHowToSimpleLocalContent,
   HOW_TO_QUALIFICATIONS,
   extractHowToTopic,
-} from "../../policies/howToQualificationPolicy.js";
+} from "../../policies/qualification/howToQualificationPolicy.js";
 import { canServeMultiUnitPartialDecomposition } from "../../policies/requestDecompositionPolicy.js";
 
 export const MULTI_UNIT_SURFACE_STYLES = Object.freeze({
