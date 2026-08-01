@@ -17,7 +17,7 @@ import {
   clearCapabilityToolsForTurn,
   isCapabilityToolEnabled,
 } from "../src/agent/capabilities/capabilityToolSession.js";
-import { getAllowedTools } from "../src/agent/policies/toolPolicy.js";
+import { getAllowedTools } from "../src/agent/policies/prompt/index.js";
 
 const baseInput = {
   query: "",

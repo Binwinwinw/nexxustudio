@@ -1,5 +1,5 @@
 /* server/src/agent/harness/toolGuard.js */
-import { getAllowedTools } from '../policies/toolPolicy.js';
+import { getAllowedTools } from '../policies/prompt/index.js';
 import turnTelemetry from '../telemetry/turnTelemetry.js';
 import { memoryOrchestrator } from '../memory/MemoryOrchestrator.js';
 

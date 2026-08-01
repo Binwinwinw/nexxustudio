@@ -21,7 +21,7 @@ import {
   isCapabilityToolEnabled,
 } from "../src/agent/capabilities/capabilityToolSession.js";
 import { isToolAvailable } from "../src/agent/utils/toolRegistry.js";
-import { getAllowedTools } from "../src/agent/policies/toolPolicy.js";
+import { getAllowedTools } from "../src/agent/policies/prompt/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SERVER_ROOT = path.resolve(__dirname, "../");
