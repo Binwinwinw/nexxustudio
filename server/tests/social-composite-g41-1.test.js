@@ -5,7 +5,7 @@ import {
   isIdentityCapabilityCompositeRequest,
   buildIdentityCapabilityCompositeReply,
   resolveSocialCompositeShortCircuit,
-} from "../src/agent/policies/socialCompositeReplyPolicy.js";
+} from "../src/agent/policies/social/index.js";
 import { isCapabilityOverviewRequest } from "../src/agent/utils/metaConversationIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 

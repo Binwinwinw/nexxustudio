@@ -68,7 +68,8 @@ import { isExploratoryTopicIntent } from "../../utils/exploratoryConversationGua
 import {
   isSocialChatThreadActive,
   isSoftSocialChatFollowup,
-} from "../socialChatContinuityPolicy.js";
+  isKnownSocialPattern,
+} from "../social/index.js";
 import {
   EPISTEMIC_ACTIONS,
   evaluateEpistemicUncertaintyResolution,
@@ -82,7 +83,6 @@ import {
 } from "./requestDecompositionPolicy.js";
 import { isBenignProceduralHowToRequest } from "../qualification/howToQualificationPolicy.js";
 import { isConversationSocialOnlyQuery } from "../conversationIntentFrame.js";
-import { isKnownSocialPattern } from "../socialPatternPolicy.js";
 import { isOpenExplorationFrame } from "../openExplorationFramePolicy.js";
 import {
   isInlineProductBriefPaste,

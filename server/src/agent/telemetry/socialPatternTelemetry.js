@@ -4,7 +4,7 @@
 import {
   classifySocialPattern,
   SOCIAL_PATTERN_BLOCKED_PATHS,
-} from "../policies/socialPatternPolicy.js";
+} from "../policies/social/index.js";
 
 /**
  * @param {{

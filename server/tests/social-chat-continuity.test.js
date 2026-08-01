@@ -6,7 +6,7 @@ import {
   isSoftSocialChatFollowup,
   resolveCulturalReferenceHypothesis,
   resolveSocialChatContinuityShortCircuit,
-} from "../src/agent/policies/socialChatContinuityPolicy.js";
+} from "../src/agent/policies/social/index.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import {
   CLARIFICATION_DECISIONS,

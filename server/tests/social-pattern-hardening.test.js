@@ -2,12 +2,13 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  buildSocialPatternReply,
   classifySocialPattern,
   isKnownSocialPattern,
   isPhaticSocialCheckinIntent,
   resolveSocialPatternShortCircuit,
   SOCIAL_PATTERN_BLOCKED_PATHS,
-} from "../src/agent/policies/socialPatternPolicy.js";
+} from "../src/agent/policies/social/index.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
@@ -24,7 +25,6 @@ import { runConversationShortCircuit } from "../src/agent/micro/classifiers/inte
 import { isGeneralKnowledgeRequest } from "../src/agent/utils/generalKnowledgeIntentGuards.js";
 import { classifyMetaConversationIntent } from "../src/agent/utils/metaConversationIntentGuards.js";
 import { INTENT_DOMAINS } from "../../shared/justIntentCatalog.js";
-import { buildSocialPatternReply } from "../src/agent/policies/socialPatternPolicy.js";
 
 const CONVERSATION_CASES = [
   {

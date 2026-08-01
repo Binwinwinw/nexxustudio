@@ -60,7 +60,7 @@ import { isSubjectReferenceAvailabilityRequest } from "../micro/continuity/sessi
 import { isGeneralKnowledgeRequest } from "./generalKnowledgeIntentGuards.js";
 import { isPedagogicalOverviewRequest } from "./pedagogicalOverviewIntentGuards.js";
 import { isConversationSocialOnlyQuery } from "../policies/conversationIntentFrame.js";
-import { isKnownSocialPattern } from "../policies/socialPatternPolicy.js";
+import { isKnownSocialPattern } from "../policies/social/index.js";
 import { suppressesSocialForInformationSeeking } from "./informationSeekingIntentGuards.js";
 import {
   buildConversationContinuityContext,

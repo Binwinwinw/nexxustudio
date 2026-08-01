@@ -5,7 +5,7 @@
 import { isGeneralKnowledgeRequest } from "../../utils/generalKnowledgeIntentGuards.js";
 import { suppressesBuildIntentForTechnicalLearning } from "../../utils/technicalLearningPathIntentGuards.js";
 import { isCasualSocialCheckInQuery } from "../../utils/genericGreetingGuards.js";
-import { isKnownSocialPattern } from "../socialPatternPolicy.js";
+import { isKnownSocialPattern } from "../social/index.js";
 import { isOpenExplorationFrame } from "../openExplorationFramePolicy.js";
 import { isIdeationIntent } from "../../utils/ideationIntentGuards.js";
 import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIntentGuards.js";

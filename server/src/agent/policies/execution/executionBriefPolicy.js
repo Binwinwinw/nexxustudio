@@ -12,7 +12,7 @@ import { isContextReferenceRequest } from '../../utils/contextReferenceIntentGua
 import {
   isMetaAssistantBehaviorRequest,
 } from '../../utils/metaAssistantBehaviorGuards.js';
-import { classifySocialPattern } from '../socialPatternPolicy.js';
+import { classifySocialPattern } from "../social/index.js";
 import { isWarmToneSemiSocialQuery, matchesWarmToneSemiSocialShell } from '../../utils/warmToneSemiSocialGuards.js';
 
 export const EXECUTION_BRIEF_VERSION = '1.0.0';

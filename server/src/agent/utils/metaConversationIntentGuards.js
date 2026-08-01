@@ -3,7 +3,7 @@
  * Le motif large ne suffit pas : les marqueurs de nuance priment sur l'overview générique.
  */
 import { normalizeText as normalizeTextBase } from "./normalizationGuards.js";
-import { isPhaticSocialCheckinIntent } from "../policies/socialPatternPolicy.js";
+import { isPhaticSocialCheckinIntent } from "../policies/social/index.js";
 import {
   isNexxusCockpitUiDiscussion,
   isUiNavigationRestructureFeedback,

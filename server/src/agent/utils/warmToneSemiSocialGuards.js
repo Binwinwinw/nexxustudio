@@ -2,7 +2,7 @@
  * Humanity probe — relances semi-sociales et transitions conversationnelles.
  * Pas un rail social déterministe ; pas une requête métier/code/factual.
  */
-import { classifySocialPattern } from '../policies/socialPatternPolicy.js';
+import { classifySocialPattern } from '../policies/social/index.js';
 import { isSubstantiveWorkRequest } from './genericGreetingGuards.js';
 import { isInformationSeekingWithTarget } from './informationSeekingIntentGuards.js';
 import { isMetaAssistantBehaviorRequest } from './metaAssistantBehaviorGuards.js';

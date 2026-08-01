@@ -12,17 +12,15 @@ import {
 import {
   isAssistantSocialMenuOffer,
   isSocialAcceptanceOfOffer,
-} from "../../policies/socialAcceptanceOfOfferPolicy.js";
-import {
   isSocialChatThreadActive,
   isSoftSocialChatFollowup,
-} from "../../policies/socialChatContinuityPolicy.js";
+  isKnownSocialPattern,
+} from "../../policies/social/index.js";
 import {
   classifyMetaCapabilitiesSubKind,
   isMetaCapabilitiesIntent,
 } from "../../policies/meta/index.js";
 import { isExplicitWebSearchRequest } from "../../policies/explicitWebSearchRequestPolicy.js";
-import { isKnownSocialPattern } from "../../policies/socialPatternPolicy.js";
 
 export const CONVERSATION_TURN_FAMILIES = Object.freeze({
   SOCIAL_CHECKIN: "social_checkin",

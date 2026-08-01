@@ -3,7 +3,7 @@
  */
 import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
 import { isIdeationIntent, getIdeationDeterministicReply } from "../../utils/ideationIntentGuards.js";
-import { classifySocialPattern } from "../socialPatternPolicy.js";
+import { classifySocialPattern } from "../social/index.js";
 import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,

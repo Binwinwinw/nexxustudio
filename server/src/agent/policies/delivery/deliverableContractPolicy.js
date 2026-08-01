@@ -10,11 +10,9 @@ import { isSubstantiveWorkRequest } from "../../utils/genericGreetingGuards.js";
 import {
   classifySocialPattern,
   isKnownSocialPattern,
-} from "../socialPatternPolicy.js";
-import {
   isSocialChatThreadActive,
   isSoftSocialChatFollowup,
-} from "../socialChatContinuityPolicy.js";
+} from "../social/index.js";
 import { isOpenExplorationFrame } from "../openExplorationFramePolicy.js";
 
 export const DELIVERABLE_CONTRACT_ID = "DELIVERABLE_CONTRACT_V1";

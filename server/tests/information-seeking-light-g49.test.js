@@ -11,7 +11,7 @@ import {
   isCasualExplanationFollowUp,
   extractCasualThreadTopic,
   resolveCasualExplanationLightShortCircuit,
-} from "../src/agent/policies/casualExplanationLightPolicy.js";
+} from "../src/agent/policies/social/index.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { isInformationSeekingWithTarget } from "../src/agent/utils/informationSeekingIntentGuards.js";
 

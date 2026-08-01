@@ -12,7 +12,7 @@ import { isMetaAssistantBehaviorRequest } from "./metaAssistantBehaviorGuards.js
 import { isIdeationIntent } from "./ideationIntentGuards.js";
 import { isMetaModelStackOpinionQuery, isMetaPredictionLimitsQuery, isMetaPeerAssistantsQuery } from "../policies/meta/metaCapabilitiesPolicy.js";
 import { isInformationSeekingLightQuery } from "../policies/informationSeekingLightPolicy.js";
-import { isCasualExplanationFollowUp } from "../policies/casualExplanationLightPolicy.js";
+import { isCasualExplanationFollowUp } from "../policies/social/index.js";
 import { isCompareChooseRequest } from "./compareChooseIntentGuards.js";
 
 export const PRESENTATION_OUTLINE_ROUTING_RULE =

@@ -15,7 +15,7 @@ import {
 import { hasExplicitDecisionCriterion } from "../micro/replies/directArbitrationComposerContract.js";
 import { classifySelectiveDecisionIntent } from "./selectiveDecisionIntentGuards.js";
 import { isAdminProcedureRequest } from "./adminProcedureIntentGuards.js";
-import { isPhaticSocialCheckinIntent } from "../policies/socialPatternPolicy.js";
+import { isPhaticSocialCheckinIntent } from "../policies/social/index.js";
 import { isRecipeKnowledgeRequest, extractRecipeSubject } from "./recipeKnowledgeIntentGuards.js";
 import { isHowToRequestShell } from "./howToRequestIntentGuards.js";
 import {

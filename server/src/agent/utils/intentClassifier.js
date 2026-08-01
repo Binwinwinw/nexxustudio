@@ -10,7 +10,7 @@ import {
 } from "./conversationGuards.js";
 import { isMetaModelStackOpinionQuery, isMetaPredictionLimitsQuery, isMetaPeerAssistantsQuery } from "../policies/meta/metaCapabilitiesPolicy.js";
 import { isInformationSeekingLightQuery } from "../policies/informationSeekingLightPolicy.js";
-import { isCasualExplanationFollowUp } from "../policies/casualExplanationLightPolicy.js";
+import { isCasualExplanationFollowUp } from "../policies/social/index.js";
 
 const INTENT_TAXONOMY = {
   SOCIAL_CHIT_CHAT: "social_chit_chat", // Salutations pures, invitations à discuter

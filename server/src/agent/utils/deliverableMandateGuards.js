@@ -6,7 +6,7 @@ import { isExploratoryTopicIntent } from "./exploratoryConversationGuards.js";
 import { isMetaAssistantBehaviorRequest } from "./metaAssistantBehaviorGuards.js";
 import { isMetaConversationIntent } from "./metaConversationIntentGuards.js";
 import { isHowToRequestShell } from "./howToRequestIntentGuards.js";
-import { isKnownSocialPattern } from "../policies/socialPatternPolicy.js";
+import { isKnownSocialPattern } from "../policies/social/index.js";
 
 const DELIVERABLE_ACTION_RE =
   /\b(?:fais|faire|crée|cree|creer|génère|genere|prepare|prépare|organise|produis|produire|rédige|redige|construis|élabore|elabore|planifie|livre|fournis|écris|ecris|developpe|développe)\b/i;

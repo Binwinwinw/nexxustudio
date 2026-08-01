@@ -19,7 +19,7 @@ import {
   extractTemporalTarget,
   TEMPORAL_TARGET_KIND,
 } from "../conversationSubjectExtraction.js";
-import { classifySocialPattern, isPhaticSocialCheckinIntent, isGratitudeClosureIntent } from "../socialPatternPolicy.js";
+import { classifySocialPattern, isPhaticSocialCheckinIntent, isGratitudeClosureIntent } from "../social/index.js";
 
 function isSubstantiveWorkRequest(query = "") {
   const q = normalizeText(query);

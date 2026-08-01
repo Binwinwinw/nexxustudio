@@ -18,7 +18,7 @@ import {
   isSocialChatThreadActive,
   isSoftSocialChatFollowup,
   resolveCulturalReferenceHypothesis,
-} from "../socialChatContinuityPolicy.js";
+} from "../social/index.js";
 
 export const EPISTEMIC_RESOLUTION_RULE =
   "Nexxus ne prétend jamais savoir ce qu'il ne sait pas ; il essaie d'inférer, puis de clarifier, puis de vérifier, et seulement ensuite de répondre.";

@@ -10,7 +10,7 @@ import {
 import {
   classifySocialPattern,
   isKnownSocialPattern,
-} from "../src/agent/policies/socialPatternPolicy.js";
+} from "../src/agent/policies/social/index.js";
 import {
   evaluateJustIntent,
   resolveIntentDomain,

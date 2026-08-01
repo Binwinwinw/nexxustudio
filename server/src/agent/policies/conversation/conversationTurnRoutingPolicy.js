@@ -20,7 +20,7 @@ import { isMetaAssistantBehaviorRequest } from "../../utils/metaAssistantBehavio
 import {
   isSocialAcceptanceOfOffer,
   resolveSocialAcceptanceOfOfferShortCircuit,
-} from "../socialAcceptanceOfOfferPolicy.js";
+} from "../social/index.js";
 import {
   isMetaCapabilitiesIntent,
   resolveMetaCapabilitiesShortCircuit,
