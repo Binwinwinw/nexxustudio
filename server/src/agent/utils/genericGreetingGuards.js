@@ -34,7 +34,7 @@ import {
   buildDocumentSynthesisRecoveryMessage,
   hasDocumentSynthesisShell,
   resolveDocumentSynthesisBypassReply,
-} from "../policies/documentSynthesisPolicy.js";
+} from "../policies/document/index.js";
 import {
   buildFamiliarityDomainOverviewRecoveryMessage,
   isFamiliarityDomainOverviewSatisfiable,

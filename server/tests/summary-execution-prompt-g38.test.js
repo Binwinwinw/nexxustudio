@@ -21,7 +21,7 @@ import {
   isExternalKnowledgeLeakReply,
   isWebLayoutPollutionReply,
   scoreWebMainContentFocus,
-} from "../src/agent/policies/documentSynthesisValidator.js";
+} from "../src/agent/policies/document/index.js";
 
 const PASTED_ARTICLE = `Résume ce passage :
 

@@ -13,7 +13,7 @@ import {
   isDocumentSynthesisSatisfiable,
   resolveDocumentSynthesisContext,
   resolveDocumentSynthesisShortCircuit,
-} from "../src/agent/policies/documentSynthesisPolicy.js";
+} from "../src/agent/policies/document/index.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,

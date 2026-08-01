@@ -2,7 +2,7 @@ import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs/promises';
-import { resolvePdfExtractionContract } from '../agent/policies/documentCapabilityContract.js';
+import { resolvePdfExtractionContract } from '../agent/policies/document/index.js';
 
 const require = createRequire(import.meta.url);
 

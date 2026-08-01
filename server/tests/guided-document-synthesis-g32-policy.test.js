@@ -7,11 +7,11 @@ import {
   detectDocumentSynthesisIntent,
   getMissingDocumentSynthesisSlots,
   GUIDED_SYNTHESIS_STRATEGY,
-} from "../src/agent/policies/documentSynthesisCompositePolicy.js";
+} from "../src/agent/policies/document/index.js";
 import {
   DOCUMENT_SYNTHESIS_CANONICAL_PASTED_QUERY,
   DOCUMENT_SYNTHESIS_CANONICAL_MISSING_SOURCE_QUERY,
-} from "../src/agent/policies/documentSynthesisPolicy.js";
+} from "../src/agent/policies/document/index.js";
 import {
   isGuidedDocumentSynthesisRequest,
   resolveGuidedDocumentSynthesisIntentContractId,
@@ -22,7 +22,7 @@ import {
   scoreSynthesisGroundedness,
   isGenericSynthesisReply,
   validateDocumentSynthesisReply,
-} from "../src/agent/policies/documentSynthesisValidator.js";
+} from "../src/agent/policies/document/index.js";
 import { understandQuery } from "../src/agent/policies/conversationQueryUnderstanding.js";
 import { resolveClarificationGate } from "../src/agent/policies/clarificationDecisionPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";

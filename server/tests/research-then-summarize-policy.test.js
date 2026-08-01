@@ -18,7 +18,7 @@ import {
 import {
   extractPastedSourceText,
   isDocumentSynthesisExcluded,
-} from "../src/agent/policies/documentSynthesisPolicy.js";
+} from "../src/agent/policies/document/index.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import {
   understandQuery,

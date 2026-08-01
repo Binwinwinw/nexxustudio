@@ -22,11 +22,11 @@ import {
   splitNumberedTaskSegments,
   shouldAppendDatetimeToDocumentAnalysis,
   extractDocumentAnalysisQuery,
-} from "../documentAnalysisCompositePolicy.js";
+} from "../document/index.js";
 import {
   shouldAppendDatetimeToDocumentSynthesis,
   extractDocumentSynthesisQuery,
-} from "../documentSynthesisCompositePolicy.js";
+} from "../document/index.js";
 import {
   isExplicitWebSearchRequest,
   isFreshFactualCompareWithWebRequest,
@@ -52,11 +52,11 @@ import {
 export {
   shouldAppendDatetimeToDocumentAnalysis,
   extractDocumentAnalysisQuery,
-} from "../documentAnalysisCompositePolicy.js";
+} from "../document/index.js";
 export {
   shouldAppendDatetimeToDocumentSynthesis,
   extractDocumentSynthesisQuery,
-} from "../documentSynthesisCompositePolicy.js";
+} from "../document/index.js";
 
 export { QUERY_DOMAINS, RESPONSE_STRATEGIES } from "./queryUnderstandingDomainRegistry.js";
 

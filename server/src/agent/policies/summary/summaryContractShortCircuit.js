@@ -6,7 +6,7 @@ import {
   SUMMARY_INTENTS,
   SUMMARY_CONTRACTS,
 } from "./summaryContractRouter.js";
-import { resolveDocumentSynthesisShortCircuit } from "../documentSynthesisPolicy.js";
+import { resolveDocumentSynthesisShortCircuit } from "../document/index.js";
 import { buildCulturalContentSummarySystemAddon } from "../../micro/replies/generalKnowledgeComposerContract.js";
 import { buildSummaryContractTelemetry } from "../../telemetry/summaryContractTelemetry.js";
 import { buildSummaryExecutionSystemAddon } from "./summaryExecutionPromptPolicy.js";

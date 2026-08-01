@@ -3,7 +3,7 @@
  * Web uniquement quand la valeur change dans le temps + fraîcheur explicite.
  */
 import { normalizeFamiliarityQuery } from "./familiarityIntentGuards.js";
-import { hasDocumentSynthesisShell } from "../policies/documentSynthesisPolicy.js";
+import { hasDocumentSynthesisShell } from "../policies/document/index.js";
 
 export const CURRENT_WEB_FACT_RULE = "current_web_fact_v1";
 

@@ -6,7 +6,7 @@ import {
   detectDocumentSynthesisIntent,
   isDocumentSynthesisSegment,
   shouldAppendDatetimeToDocumentSynthesis,
-} from "../src/agent/policies/documentSynthesisCompositePolicy.js";
+} from "../src/agent/policies/document/index.js";
 import {
   understandQuery,
   buildExecutionPlan,
@@ -14,7 +14,7 @@ import {
   shouldAppendDatetimeToDocumentWork,
   mergeDocumentAnalysisWithDatetimeSections,
 } from "../src/agent/policies/conversationQueryUnderstanding.js";
-import { buildMissingSourceClarifyReply } from "../src/agent/policies/documentSynthesisPolicy.js";
+import { buildMissingSourceClarifyReply } from "../src/agent/policies/document/index.js";
 
 describe("documentSynthesisCompositePolicy — G30.1 détection", () => {
   it("isDocumentSynthesisSegment — résumé texte WWII", () => {

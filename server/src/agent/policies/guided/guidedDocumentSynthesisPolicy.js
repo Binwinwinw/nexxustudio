@@ -5,8 +5,8 @@ import {
   DOCUMENT_SYNTHESIS_REQUIRED_SLOTS,
   getMissingDocumentSynthesisSlots,
   isDocumentSynthesisSegment,
-} from "../documentSynthesisCompositePolicy.js";
-import { hasDocumentSynthesisShell } from "../documentSynthesisPolicy.js";
+} from "../document/index.js";
+import { hasDocumentSynthesisShell } from "../document/index.js";
 import { isMetaCapabilitiesIntent } from "../metaCapabilitiesPolicy.js";
 import { stripHttpUrlSpans } from "../../../../../shared/generatorFirstPolicy.js";
 import { extractLocalFileReference } from "../../utils/localFileUriIntentGuards.js";

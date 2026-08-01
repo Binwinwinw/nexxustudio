@@ -12,7 +12,7 @@ import {
   isExplicitClearDocumentRequest,
   isExplicitNewDocumentRequest,
 } from "./documentFollowUpGuards.js";
-import { prepareDocumentAnalysisContext } from "../../policies/documentWebComparePolicy.js";
+import { prepareDocumentAnalysisContext } from "../../policies/document/index.js";
 import {
   clearActiveDocumentContext,
   DOCUMENT_CONTINUITY_RULE,

@@ -17,7 +17,7 @@ import {
 } from "../src/agent/utils/pedagogySoftOverviewIntentGuards.js";
 import { isTechnicalOverviewRequest } from "../src/agent/utils/technicalOverviewIntentGuards.js";
 import { isPedagogicalOverviewRequest } from "../src/agent/utils/pedagogicalOverviewIntentGuards.js";
-import { hasDocumentSynthesisShell } from "../src/agent/policies/documentSynthesisPolicy.js";
+import { hasDocumentSynthesisShell } from "../src/agent/policies/document/index.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,

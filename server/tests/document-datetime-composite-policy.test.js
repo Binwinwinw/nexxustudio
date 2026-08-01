@@ -8,7 +8,7 @@ import {
   isDatetimeCompoundSegment,
   shouldAppendDatetimeToDocumentAnalysis,
   splitNumberedTaskSegments,
-} from "../src/agent/policies/documentAnalysisCompositePolicy.js";
+} from "../src/agent/policies/document/index.js";
 import {
   understandQuery,
   buildDatetimeSectionsFromUnderstanding,

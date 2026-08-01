@@ -42,11 +42,11 @@ import {
   isDocumentSynthesisSatisfiable,
   buildMissingSourceClarifyReply,
   hasDocumentSynthesisShell,
-} from "../documentSynthesisPolicy.js";
+} from "../document/index.js";
 import {
   getMissingDocumentSynthesisSlots,
   isDocumentSynthesisSegment,
-} from "../documentSynthesisCompositePolicy.js";
+} from "../document/index.js";
 import {
   isFamiliarityDomainOverviewSatisfiable,
   isSubjectReferenceResumeSatisfiable,

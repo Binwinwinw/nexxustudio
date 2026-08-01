@@ -19,7 +19,7 @@ import {
   requiresKnowledgeFreshnessComposerContract,
   buildKnowledgeFreshnessSystemAddon,
 } from "../micro/replies/knowledgeFreshnessComposerContract.js";
-import { getDocumentWebComparePromptAddon } from "../policies/documentWebComparePolicy.js";
+import { getDocumentWebComparePromptAddon } from "../policies/document/index.js";
 import { sanitizeUnverifiedToolExecutionClaims } from "../utils/toolExecutionClaimGuard.js";
 import { evaluateRefusalSufficiency } from "../micro/parsing/refusalSufficiencyEvaluator.js";
 import { isExploitableProcedureIntent } from "../utils/procedureIntentGuards.js";

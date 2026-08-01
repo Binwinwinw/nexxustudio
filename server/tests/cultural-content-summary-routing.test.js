@@ -7,7 +7,7 @@ import {
   suppressesDocumentSynthesisForCulturalSummary,
 } from "../src/agent/policies/summary/index.js";
 import { isGeneralKnowledgeRequest } from "../src/agent/utils/generalKnowledgeIntentGuards.js";
-import { hasDocumentSynthesisShell, isDocumentSynthesisExcluded } from "../src/agent/policies/documentSynthesisPolicy.js";
+import { hasDocumentSynthesisShell, isDocumentSynthesisExcluded } from "../src/agent/policies/document/index.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,

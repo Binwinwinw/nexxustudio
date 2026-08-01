@@ -450,7 +450,7 @@ export async function applySimpleFastDeliveryPipeline({
 
   if (!String(fastOut || "").trim() && documentSynthesis) {
     const { buildDocumentSynthesisRecoveryMessage } = await import(
-      "../policies/documentSynthesisPolicy.js"
+      "../policies/document/index.js"
     );
     fastOut =
       buildDocumentSynthesisRecoveryMessage(

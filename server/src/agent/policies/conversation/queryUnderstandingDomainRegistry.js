@@ -14,8 +14,8 @@ import { isGeneralKnowledgeRequest } from "../../utils/generalKnowledgeIntentGua
 import { isPedagogicalOverviewRequest } from "../../utils/pedagogicalOverviewIntentGuards.js";
 import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/externalCalendarLookupIntentGuards.js";
 import { detectGovernanceExplainIntent } from "../governanceExplainPolicy.js";
-import { detectDocumentAnalysisIntent } from "../documentAnalysisCompositePolicy.js";
-import { detectDocumentSynthesisIntent } from "../documentSynthesisCompositePolicy.js";
+import { detectDocumentAnalysisIntent } from "../document/index.js";
+import { detectDocumentSynthesisIntent } from "../document/index.js";
 import { detectCompareChooseIntent } from "../compareChooseCompositePolicy.js";
 
 export const QUERY_DOMAINS = Object.freeze({

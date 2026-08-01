@@ -3,7 +3,7 @@
  * Distinct de document_synthesis (passage / PJ / texte collé).
  */
 import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { extractPastedSourceText } from "../documentSynthesisPolicy.js";
+import { extractPastedSourceText } from "../document/index.js";
 import { suppressesCulturalSummaryForConceptExplain } from "../codeConceptExplainPolicy.js";
 
 export const CULTURAL_CONTENT_SUMMARY_RULE = "cultural_content_summary_g37";

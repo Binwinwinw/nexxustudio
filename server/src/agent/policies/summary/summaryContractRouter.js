@@ -7,7 +7,7 @@ import {
   hasDocumentSynthesisShell,
   extractPastedSourceText,
   normalizeDocumentSynthesisQuery,
-} from "../documentSynthesisPolicy.js";
+} from "../document/index.js";
 import {
   isCulturalContentSummaryRequest,
   isConversationTakeawaySummaryRequest,

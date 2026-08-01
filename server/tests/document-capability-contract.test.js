@@ -13,7 +13,7 @@ import {
   inspectPdfAttachmentResult,
   resolvePdfExtractionContract,
   resolvePlatformDocumentCapabilities,
-} from "../src/agent/policies/documentCapabilityContract.js";
+} from "../src/agent/policies/document/index.js";
 import { processPdfAttachment } from "../src/services/pdf-extractor.js";
 import contextAgent from "../src/agent/utils/contextAgent.js";
 

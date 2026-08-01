@@ -11,12 +11,12 @@ import {
   prepareDocumentAnalysisContext,
   resolveDocumentWebComparePlan,
   runDocumentWebProbe,
-} from "../src/agent/policies/documentWebComparePolicy.js";
+} from "../src/agent/policies/document/index.js";
 import {
   classifyDocumentFollowUpKind,
   isDocumentFollowUpIntent,
 } from "../src/agent/micro/continuity/documentFollowUpGuards.js";
-import { getDocumentWebComparePromptAddon } from "../src/agent/policies/documentWebComparePolicy.js";
+import { getDocumentWebComparePromptAddon } from "../src/agent/policies/document/index.js";
 import { getDocumentAnalysisSystemPrompt } from "../src/agent/config/modeResponseContracts.js";
 import { expertWebSearch } from "../src/agent/agents/expertWebSearch.js";
 

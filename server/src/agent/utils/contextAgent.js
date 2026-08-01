@@ -12,7 +12,7 @@ import {
   isLegacyDocFile,
   extractDocxToText,
 } from '../../services/document-analysis/docxExtractor.js';
-import { formatCapabilityBriefingBlock } from '../policies/documentCapabilityContract.js';
+import { formatCapabilityBriefingBlock } from '../policies/document/index.js';
 
 /**
  * ContextAgent - Gère l'ingestion de documents et fichiers textes dans le pipeline.

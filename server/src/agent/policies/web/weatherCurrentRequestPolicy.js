@@ -3,7 +3,7 @@
  * Patron transverse : web prioritaire, pas de déclenchement lexical sur narration/collé.
  */
 import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { hasDocumentSynthesisShell } from "../documentSynthesisPolicy.js";
+import { hasDocumentSynthesisShell } from "../document/index.js";
 
 export const WEATHER_CURRENT_REQUEST_RULE = "weather_current_request_v1";
 
