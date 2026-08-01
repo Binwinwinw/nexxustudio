@@ -120,17 +120,43 @@ Ce qui ne doit plus être ajouté dans `agent.js` :
 
 Objectif : réduire le bruit d’un dossier plat (~140 fichiers) sans big bang.
 
-**État :** audit move-only terminé — la racine `policies/` ne contient plus que des wrappers `@deprecated` ; les implémentations vivent sous `policies/<domaine>/`. Phase 2 = migration progressive des imports restants hors pilotes, puis suppression des wrappers.
+### 4.1 État (2026-08-01)
 
-**Règles :**
+| Phase | Statut | Contenu |
+|-------|--------|---------|
+| **1 — Move-only** | **Terminée** | Implémentations sous `policies/<domaine>/` ; wrappers `@deprecated` à la racine tant qu’il reste des appelants. |
+| **2 — Migration imports** | **En cours** | Pointer les consommateurs vers le barrel domaine ou le fichier cible ; supprimer le wrapper racine quand plus aucun appelant. Un domaine = un commit atomique. |
+| **B — Routage déterministe** | **Hors périmètre move** | Rouges d’ordre de short-circuits / contrats ; ne bloquent pas la clôture structurelle de la phase 2. |
+
+**Imports pilotes déjà migrés :** `agentPipeline.js`, `intentShortCircuit.js`, `systemPromptBuilder.js`, `socialPrompt.js`.
+
+### 4.2 Règles
 
 - **Move-only** d’abord : pas de renommage de symboles exportés dans la première passe.
 - **Wrappers** à l’ancien chemin (`policies/fooPolicy.js` → `export * from "./domain/fooPolicy.js"`) jusqu’à migration des imports.
 - **Barrel par domaine** (`policies/math/index.js`, `policies/connectors/index.js`, etc.) pour les nouveaux imports — pas d’usage omniprésent d’un `policies/index.js` global.
 - Les barrels sont des **façades de domaine** destinées à réduire le bruit local et à faciliter la migration ; ils ne constituent **pas** un point d’entrée universel pour tout `policies/`. Préférer `./policies/<domaine>/<fichier>.js` quand un seul module suffit.
-- **Phase 2 fusion** seulement si >80 % des PR touchent le lot entier (co-évolution).
+- **Phase 2 :** un lot logique = un domaine = un commit (`refactor(agent/policies): phase 2 migrate <domaine> imports`). Ne pas mélanger deux domaines dans le même commit. Figer (commit) avant d’élargir.
+- **Phase 2 fusion** de modules seulement si >80 % des PR touchent le lot entier (co-évolution).
 
-**Domaines validés :**
+### 4.3 Phase 2 — lots déjà migrés (wrappers racine retirés)
+
+`math`, `connectors`, `epistemic`, `execution`, `guards`, `core`, `orchestration`, `analysis`, `familiarity`, `workload`, `attachment`, `summary`, `document`, `guided`, `posture`, `prompt`, `delivery`, `pedagogical`, `code`, `meta`, `qualification` (`ec963a7`), `social` (`105af74`).
+
+### 4.4 Phase 2 — reste à faire (~40 wrappers racine)
+
+Ordre recommandé : **web → conversation → intent → routing** (routing en dernier : plus d’appelants, hub de dépendances).
+
+| Domaine | Wrappers restants (approx.) | Notes |
+|---------|----------------------------:|-------|
+| `web` | 8 | **Prochain lot.** |
+| `conversation` | 10 | Après web. |
+| `intent` | 7 | Après conversation. |
+| `routing` | 15 | **Dernier** — beaucoup d’imports croisés. |
+
+Pour chaque lot : migrer les imports → supprimer les wrappers racine du domaine → tests ciblés du domaine → commit atomique. Les rouges chantier B déjà connus ne doivent pas bloquer le commit move-only.
+
+### 4.5 Domaines validés (carte)
 
 | Dossier | Contenu |
 |---------|---------|
@@ -161,13 +187,13 @@ Objectif : réduire le bruit d’un dossier plat (~140 fichiers) sans big bang.
 | `policies/web/` | `webSource`, `webSearchThreadContinuity`, `currentWebFact`, `knowledgeFreshness`, `externalCalendarLookup`, `trafficCurrentRequest`, `weatherCurrentRequest`, `webEvidenceFidelity` |
 | `policies/workload/` | `requestWorkloadSignal`, `workUnitCountAndPlan` |
 
-**Imports pilotes migrés :** `agentPipeline.js`, `intentShortCircuit.js`, `systemPromptBuilder.js`, `socialPrompt.js`.
+### 4.6 Chantier B — hors périmètre move-only
 
-**Phase 2 suivante :** migration des imports restants vers barrels ou chemins domaine ; suppression des wrappers racine quand plus aucun appelant.
-
-**Routage connu hors périmètre move-only** (chantier B — ordre des short-circuits, même famille causale) :
+Routage connu (ordre des short-circuits, même famille causale) — **ne bloque pas** la phase 2 :
 
 - `social-composite-g41-1` — G41.1-T03 : `meta_conversation_deterministic` gagne avant `social_composite_deterministic`.
+- G44 / G45 — `exploratory_conversation_light` peut gagner avant `assistant_utterance_clarify_deterministic` / `assistant_repair_deterministic`.
+- G11 web_project_scoping — `ideation_deterministic` peut gagner avant `web_project_scoping_direct` (type de site explicite).
 - `connector-registry` / `connector-phase-c` — fiches JSX / `technical_learning_path` : `local_deterministic` (ideation ou reply prête) avant `local_generative`.
 - `clarification-decision-policy` — corpus `encyclopedic_familiarity` / `explanatory_general_knowledge`.
 - `traffic-current-request-policy` — Paris + en ce moment → web prioritaire.
@@ -176,4 +202,4 @@ Objectif : réduire le bruit d’un dossier plat (~140 fichiers) sans big bang.
 - `familiarity-domain-overview` — `lexicon_explain_light` vs `familiarity_domain_overview`.
 - `repo-analysis-v1` — GitHub → mauvais contrat LLM.
 
-Ne pas bloquer la validation structurelle sur ces rouges ; les traiter dans une passe dédiée routage déterministe vs génératif (chantier B).
+Les traiter dans une passe dédiée routage déterministe vs génératif (chantier B), pas dans les commits phase 2.
