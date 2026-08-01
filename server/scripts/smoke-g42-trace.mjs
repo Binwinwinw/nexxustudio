@@ -1,5 +1,5 @@
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { resolveOpenPromptContinuityShortCircuit } from "../src/agent/policies/openPromptContinuityPolicy.js";
+import { resolveOpenPromptContinuityShortCircuit } from "../src/agent/policies/meta/openPromptContinuityPolicy.js";
 import { isCompareChooseRequest } from "../src/agent/utils/compareChooseIntentGuards.js";
 
 const Q =

@@ -8,7 +8,7 @@ import {
 import { isAnalyticalCritiqueIntent } from "./analyticalCritiqueIntentGuards.js";
 import { isCodeIntentRequest } from "../policies/code/codeIntentPolicy.js";
 import { isMetaConversationIntent } from "./metaConversationIntentGuards.js";
-import { isMetaCapabilitiesIntent } from "../policies/metaCapabilitiesPolicy.js";
+import { isMetaCapabilitiesIntent } from "../policies/meta/metaCapabilitiesPolicy.js";
 
 export function isPureSocial(query = "", isDiscussion = false) {
   const q = normalizeText(query).toLowerCase();

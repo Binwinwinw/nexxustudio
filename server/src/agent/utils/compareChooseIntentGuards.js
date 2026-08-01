@@ -18,7 +18,7 @@ import { isTechnicalOverviewRequest } from "./technicalOverviewIntentGuards.js";
 import { isDebugDiagnosticRequest } from "./debugDiagnosticIntentGuards.js";
 import { isExploitableProcedureIntent } from "./procedureIntentGuards.js";
 import { suppressesCompareChooseForLearningRequest } from "./learningRequestIntentGuards.js";
-import { suppressesCompareChooseForOpenPrompt } from "../policies/openPromptContinuityPolicy.js";
+import { suppressesCompareChooseForOpenPrompt } from "../policies/meta/openPromptContinuityPolicy.js";
 
 export const COMPARE_CHOOSE_ROUTING_RULE =
   "compare_choose_full_pipeline_generative";

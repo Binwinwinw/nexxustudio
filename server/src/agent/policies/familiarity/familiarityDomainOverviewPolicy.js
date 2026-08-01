@@ -7,7 +7,7 @@ import {
   isFamiliarityDomainOverviewRequest,
   parseFamiliarityQuery,
 } from "../../utils/familiarityIntentGuards.js";
-import { isMetaCapabilitiesIntent } from "../metaCapabilitiesPolicy.js";
+import { isMetaCapabilitiesIntent } from "../meta/metaCapabilitiesPolicy.js";
 
 export const FAMILIARITY_DOMAIN_OVERVIEW_RULE =
   "familiarity_domain_overview_policy_v1";

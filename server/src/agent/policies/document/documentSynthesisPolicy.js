@@ -4,7 +4,7 @@
  */
 import { hasTextAttachments } from "../../utils/conversationGuards.js";
 import { isAnalyticalCritiqueIntent } from "../../utils/analyticalCritiqueIntentGuards.js";
-import { isMetaCapabilitiesIntent } from "../metaCapabilitiesPolicy.js";
+import { isMetaCapabilitiesIntent } from "../meta/metaCapabilitiesPolicy.js";
 import { isCodeIntentRequest } from "../code/codeIntentPolicy.js";
 import { inferDocumentStateFromHistory } from "../../micro/continuity/documentContinuityContext.js";
 import { hasReusableDocumentBriefing } from "../../micro/continuity/documentBriefingEncoder.js";

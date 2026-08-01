@@ -16,7 +16,7 @@ import {
   applyVirginSessionResumeGuard,
   SUBJECT_REFERENCE_RESOLUTION,
 } from "../../micro/continuity/sessionSubjectReferenceGuards.js";
-import { isMetaCapabilitiesIntent } from "../metaCapabilitiesPolicy.js";
+import { isMetaCapabilitiesIntent } from "../meta/metaCapabilitiesPolicy.js";
 
 export const SUBJECT_REFERENCE_RESUME_POLICY =
   "subject_reference_resume_policy_v1";

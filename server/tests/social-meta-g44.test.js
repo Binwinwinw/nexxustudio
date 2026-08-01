@@ -5,13 +5,13 @@ import {
   isAssistantUtteranceClarifyRequest,
 } from "../src/agent/policies/assistantUtteranceClarifyPolicy.js";
 import { isMetaAssistantBehaviorRequest } from "../src/agent/utils/metaAssistantBehaviorGuards.js";
-import { resolveMetaAssistantBehaviorShortCircuit } from "../src/agent/policies/metaAssistantBehaviorPolicy.js";
+import { resolveMetaAssistantBehaviorShortCircuit } from "../src/agent/policies/meta/metaAssistantBehaviorPolicy.js";
 import { classifyConversationTurn } from "../src/agent/micro/classifiers/conversationTurnType.js";
 import { resolveMetaFeedbackShortCircuit } from "../src/agent/micro/replies/metaFeedbackReplyBuilder.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { isPresentationOutlineRequest } from "../src/agent/utils/presentationOutlineIntentGuards.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
-import { resolveComprehensionGroundingShortCircuit } from "../src/agent/policies/comprehensionGroundingPolicy.js";
+import { resolveComprehensionGroundingShortCircuit } from "../src/agent/policies/meta/comprehensionGroundingPolicy.js";
 import { isComprehensionDemonstrationRequest } from "../src/agent/utils/metaAssistantBehaviorGuards.js";
 
 const SALUT_HISTORY = [

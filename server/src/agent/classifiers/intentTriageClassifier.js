@@ -24,7 +24,7 @@ function hasCodeFileAttachment(attachments = [], query = "") {
   return CODE_ATTACHMENT_EXT_RE.test(String(query || ""));
 }
 import { isMetaConversationIntent } from "../utils/metaConversationIntentGuards.js";
-import { isMetaCapabilitiesIntent } from "../policies/metaCapabilitiesPolicy.js";
+import { isMetaCapabilitiesIntent } from "../policies/meta/metaCapabilitiesPolicy.js";
 import { isSelfModificationQuery } from "../utils/intentGuards.js";
 import { getCodeIntentLabel as labelFromCatalog } from "../../../../shared/codeIntentCatalog.js";
 

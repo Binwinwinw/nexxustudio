@@ -16,7 +16,7 @@ import {
   QUERY_DOMAINS,
   RESPONSE_STRATEGIES,
 } from "./queryUnderstandingDomainRegistry.js";
-import { refineSegmentsForGovernance } from "../governanceExplainPolicy.js";
+import { refineSegmentsForGovernance } from "../meta/governanceExplainPolicy.js";
 import {
   isDatetimeCompoundSegment,
   splitNumberedTaskSegments,

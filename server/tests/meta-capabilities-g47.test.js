@@ -13,7 +13,7 @@ import {
   isMetaPeerAssistantsQuery,
   isMetaKnownPeerProductQuery,
   extractKnownPeerProduct,
-} from "../src/agent/policies/metaCapabilitiesPolicy.js";
+} from "../src/agent/policies/meta/metaCapabilitiesPolicy.js";
 import { isDocumentAnalysisIntent } from "../src/agent/utils/conversationGuards.js";
 import { isConversationMemoryRecallRequest } from "../src/agent/utils/conversationGuards.js";
 import { resolveAssistantUtteranceClarifyShortCircuit } from "../src/agent/policies/assistantUtteranceClarifyPolicy.js";

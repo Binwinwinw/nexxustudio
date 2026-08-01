@@ -28,7 +28,7 @@ import { isCodeIntentRequest } from "../policies/code/codeIntentPolicy.js";
 import { isCodeReviewRequest } from "../policies/code/codeReviewPolicy.js";
 import { requiresGenerousComposerResponse } from "../policies/practicalAdviceRoutingGuard.js";
 import { isSocialAcceptanceOfOffer } from "../policies/socialAcceptanceOfOfferPolicy.js";
-import { isMetaCapabilitiesIntent } from "../policies/metaCapabilitiesPolicy.js";
+import { isMetaCapabilitiesIntent } from "../policies/meta/metaCapabilitiesPolicy.js";
 import { isPresentationOutlineRequest } from "../utils/presentationOutlineIntentGuards.js";
 import { isGuidedProductRecommendationRequest } from "../policies/guided/index.js";
 import { isGuidedDocumentSynthesisRequest } from "../policies/guided/index.js";

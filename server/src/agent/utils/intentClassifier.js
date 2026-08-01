@@ -8,7 +8,7 @@ import {
   isArchitectureDesignIntent,
   isAnalyticalTechnicalRequest,
 } from "./conversationGuards.js";
-import { isMetaModelStackOpinionQuery, isMetaPredictionLimitsQuery, isMetaPeerAssistantsQuery } from "../policies/metaCapabilitiesPolicy.js";
+import { isMetaModelStackOpinionQuery, isMetaPredictionLimitsQuery, isMetaPeerAssistantsQuery } from "../policies/meta/metaCapabilitiesPolicy.js";
 import { isInformationSeekingLightQuery } from "../policies/informationSeekingLightPolicy.js";
 import { isCasualExplanationFollowUp } from "../policies/casualExplanationLightPolicy.js";
 

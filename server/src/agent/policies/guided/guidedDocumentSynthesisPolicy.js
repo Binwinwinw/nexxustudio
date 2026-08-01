@@ -7,7 +7,7 @@ import {
   isDocumentSynthesisSegment,
 } from "../document/index.js";
 import { hasDocumentSynthesisShell } from "../document/index.js";
-import { isMetaCapabilitiesIntent } from "../metaCapabilitiesPolicy.js";
+import { isMetaCapabilitiesIntent } from "../meta/metaCapabilitiesPolicy.js";
 import { stripHttpUrlSpans } from "../../../../../shared/generatorFirstPolicy.js";
 import { extractLocalFileReference } from "../../utils/localFileUriIntentGuards.js";
 import { extractSummaryUrl } from "../summary/index.js";

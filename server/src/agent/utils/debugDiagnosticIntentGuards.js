@@ -13,7 +13,7 @@ import {
   isCodeIntentRequest,
 } from "../policies/code/codeIntentPolicy.js";
 import { classifySelectiveDecisionIntent } from "./selectiveDecisionIntentGuards.js";
-import { isMetaCapabilitiesIntent } from "../policies/metaCapabilitiesPolicy.js";
+import { isMetaCapabilitiesIntent } from "../policies/meta/metaCapabilitiesPolicy.js";
 
 export const DEBUG_DIAGNOSTIC_ROUTING_RULE =
   "debug_diagnostic_local_generative";

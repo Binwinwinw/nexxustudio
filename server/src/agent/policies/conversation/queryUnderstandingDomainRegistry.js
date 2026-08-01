@@ -13,7 +13,7 @@ import { isDebugDiagnosticRequest } from "../../utils/debugDiagnosticIntentGuard
 import { isGeneralKnowledgeRequest } from "../../utils/generalKnowledgeIntentGuards.js";
 import { isPedagogicalOverviewRequest } from "../../utils/pedagogicalOverviewIntentGuards.js";
 import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/externalCalendarLookupIntentGuards.js";
-import { detectGovernanceExplainIntent } from "../governanceExplainPolicy.js";
+import { detectGovernanceExplainIntent } from "../meta/governanceExplainPolicy.js";
 import { detectDocumentAnalysisIntent } from "../document/index.js";
 import { detectDocumentSynthesisIntent } from "../document/index.js";
 import { detectCompareChooseIntent } from "../compareChooseCompositePolicy.js";

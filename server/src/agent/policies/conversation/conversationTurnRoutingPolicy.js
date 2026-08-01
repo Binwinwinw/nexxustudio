@@ -8,10 +8,10 @@ import {
 import {
   resolveComprehensionGroundingShortCircuit,
   buildConversationGroundingReply,
-} from "../comprehensionGroundingPolicy.js";
-import { resolveMetaAssistantBehaviorShortCircuit } from "../metaAssistantBehaviorPolicy.js";
+} from "../meta/comprehensionGroundingPolicy.js";
+import { resolveMetaAssistantBehaviorShortCircuit } from "../meta/metaAssistantBehaviorPolicy.js";
 import { resolveAssistantRepairShortCircuit } from "../../micro/replies/assistantRepairReplyBuilder.js";
-import { resolveOpenPromptContinuityShortCircuit } from "../openPromptContinuityPolicy.js";
+import { resolveOpenPromptContinuityShortCircuit } from "../meta/openPromptContinuityPolicy.js";
 import { getIdeationDeterministicReply } from "../../utils/ideationIntentGuards.js";
 import { isComprehensionDemonstrationRequest } from "../../utils/metaAssistantBehaviorGuards.js";
 import { isIdeationIntent } from "../../utils/ideationIntentGuards.js";
@@ -24,7 +24,7 @@ import {
 import {
   isMetaCapabilitiesIntent,
   resolveMetaCapabilitiesShortCircuit,
-} from "../metaCapabilitiesPolicy.js";
+} from "../meta/metaCapabilitiesPolicy.js";
 import { isExplicitWebSearchRequest } from "../explicitWebSearchRequestPolicy.js";
 
 const SOCIAL_HEALTH_RE =

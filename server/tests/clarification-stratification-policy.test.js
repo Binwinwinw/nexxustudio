@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import {
   META_BEHAVIOR_CANONICAL_REFLECT_QUERY,
   resolveMetaAssistantBehaviorShortCircuit,
-} from "../src/agent/policies/metaAssistantBehaviorPolicy.js";
+} from "../src/agent/policies/meta/metaAssistantBehaviorPolicy.js";
 import {
   EXPLORATORY_CANONICAL_MARTIAL_QUERY,
   resolveExploratoryConversationShortCircuit,

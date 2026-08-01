@@ -9,7 +9,7 @@ import {
   TRIAGE_CONFIDENCE,
   shouldBlockDocumentAnalysisRoute,
 } from "../../classifiers/intentTriageClassifier.js";
-import { isMetaCapabilitiesIntent } from "../metaCapabilitiesPolicy.js";
+import { isMetaCapabilitiesIntent } from "../meta/metaCapabilitiesPolicy.js";
 import {
   classifyAttachmentTask,
   isCodeAttachmentTask,

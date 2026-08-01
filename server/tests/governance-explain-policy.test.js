@@ -8,7 +8,7 @@ import {
   isGovernanceExplainRequest,
   parseGovernanceExplainTask,
   refineSegmentsForGovernance,
-} from "../src/agent/policies/governanceExplainPolicy.js";
+} from "../src/agent/policies/meta/governanceExplainPolicy.js";
 import {
   understandQuery,
   resolveQueryCompositeShortCircuit,

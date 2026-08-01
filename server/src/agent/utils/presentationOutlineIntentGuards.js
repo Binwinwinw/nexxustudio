@@ -10,7 +10,7 @@ import { isCodeGenerationRequest } from "../policies/code/codeDeliveryPolicy.js"
 import { isInformationSeekingWithTarget } from "./informationSeekingIntentGuards.js";
 import { isMetaAssistantBehaviorRequest } from "./metaAssistantBehaviorGuards.js";
 import { isIdeationIntent } from "./ideationIntentGuards.js";
-import { isMetaModelStackOpinionQuery, isMetaPredictionLimitsQuery, isMetaPeerAssistantsQuery } from "../policies/metaCapabilitiesPolicy.js";
+import { isMetaModelStackOpinionQuery, isMetaPredictionLimitsQuery, isMetaPeerAssistantsQuery } from "../policies/meta/metaCapabilitiesPolicy.js";
 import { isInformationSeekingLightQuery } from "../policies/informationSeekingLightPolicy.js";
 import { isCasualExplanationFollowUp } from "../policies/casualExplanationLightPolicy.js";
 import { isCompareChooseRequest } from "./compareChooseIntentGuards.js";
