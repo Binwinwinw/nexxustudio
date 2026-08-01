@@ -21,7 +21,7 @@ import { runConversationShortCircuit } from "../src/agent/micro/classifiers/inte
 import { evaluateClarificationDecision, CLARIFICATION_DECISIONS } from "../src/agent/policies/clarificationDecisionPolicy.js";
 import { evaluateJustIntent, shouldApplyJustIntentClarification } from "../src/agent/policies/justIntentDetectionPolicy.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseContracts.js";
-import { PEDAGOGICAL_DELIVERY_MODES } from "../src/agent/policies/pedagogicalCoveragePolicy.js";
+import { PEDAGOGICAL_DELIVERY_MODES } from "../src/agent/policies/pedagogical/index.js";
 
 const FRACTIONS_6E_Q =
   "que dois apprendre un élève de 6eme sur les fractions simples ?";

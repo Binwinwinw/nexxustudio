@@ -38,7 +38,7 @@ import {
 import { extractProductRecommendationSlots } from "../compareChooseCompositePolicy.js";
 import { assessKnowledgeFreshnessRisk } from "../knowledgeFreshnessPolicy.js";
 import { resolveActionDecision } from "../orchestration/index.js";
-import { isLightCulturalRecognitionRequest } from "../lexiconExplainLightPolicy.js";
+import { isLightCulturalRecognitionRequest } from "../pedagogical/index.js";
 import {
   deriveResearchThenSummarizeWebQuery,
   isResearchThenSummarizeRequest,

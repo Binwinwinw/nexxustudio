@@ -55,8 +55,8 @@ import { isSubjectReferenceAvailabilityRequest } from "../../micro/continuity/se
 import { isTrafficCurrentRequestSatisfiable } from "../trafficCurrentRequestPolicy.js";
 import { isWeatherCurrentRequestSatisfiable } from "../weatherCurrentRequestPolicy.js";
 import { isPromptForArtifactSatisfiable } from "../delivery/index.js";
-import { isPedagogySoftOverviewSatisfiable } from "../pedagogySoftOverviewPolicy.js";
-import { isLexiconExplainLightRequest } from "../lexiconExplainLightPolicy.js";
+import { isPedagogySoftOverviewSatisfiable } from "../pedagogical/index.js";
+import { isLexiconExplainLightRequest } from "../pedagogical/index.js";
 import {
   buildConversationContinuityContext,
   isFullExplanationResumeRequest,

@@ -18,7 +18,7 @@ import {
   PEDAGOGICAL_DELIVERY_MODES,
   resolvePedagogicalCoverage,
   buildPedagogicalWebGroundedAddon,
-} from "../../policies/pedagogicalCoveragePolicy.js";
+} from "../../policies/pedagogical/index.js";
 
 export const PEDAGOGICAL_OVERVIEW_COMPOSER_RULE =
   "answerable_overview_pedagogic_local_first";

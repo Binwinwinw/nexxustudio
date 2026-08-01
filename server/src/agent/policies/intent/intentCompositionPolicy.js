@@ -15,7 +15,7 @@ import {
   parsePedagogicalStructuredUnits,
   buildLexiconScienceTakeawayReply,
   pedagogicalSubjectLabel,
-} from "../lexiconExplainLightPolicy.js";
+} from "../pedagogical/index.js";
 import { resolveRequestWorkloadSignal } from "../workload/index.js";
 import { shouldDeferSocialRouting } from "../posture/index.js";
 

@@ -7,7 +7,7 @@ import { isBeginnerTopicOverviewRequest } from "./beginnerTopicOverviewIntentGua
 import { isPedagogicalOverviewRequest } from "./pedagogicalOverviewIntentGuards.js";
 import { classifySelectiveDecisionIntent } from "./selectiveDecisionIntentGuards.js";
 import { isExploitableProcedureIntent } from "./procedureIntentGuards.js";
-import { isPedagogicalStructuredExplainRequest } from "../policies/lexiconExplainLightPolicy.js";
+import { isPedagogicalStructuredExplainRequest } from "../policies/pedagogical/index.js";
 import { isCodeReviewRequest } from "../policies/codeReviewPolicy.js";
 import { isGeneralKnowledgeRequest } from "./generalKnowledgeIntentGuards.js";
 import {

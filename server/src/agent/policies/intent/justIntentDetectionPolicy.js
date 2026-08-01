@@ -37,7 +37,7 @@ import {
   hasExecutableSnippet,
 } from "../codeIntentPolicy.js";
 import { isCodeConceptExplainRequest } from "../codeConceptExplainPolicy.js";
-import { isPedagogicalStructuredExplainRequest } from "../lexiconExplainLightPolicy.js";
+import { isPedagogicalStructuredExplainRequest } from "../pedagogical/index.js";
 import {
   evaluateHtmlProjectDelivery,
   isHtmlProjectDeliverable,

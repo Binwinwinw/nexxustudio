@@ -14,7 +14,7 @@ import { assessConversationTopicShift } from "./topicShiftGuard.js";
 import {
   buildLexiconPedagogicalSchemaReply,
   buildLexiconScienceTakeawayReply,
-} from "../../policies/lexiconExplainLightPolicy.js";
+} from "../../policies/pedagogical/index.js";
 import { isConversationTakeawaySummaryRequest } from "../../policies/summary/index.js";
 
 export const CONTINUITY_DEFAULT_WINDOW = 6;

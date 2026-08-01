@@ -365,7 +365,7 @@ export async function applySimpleFastDeliveryPipeline({
       buildLexiconRecognitionFallbackReply,
       buildLexiconConceptExplainFallbackReply,
       isLexiconAngleMenuLeak,
-    } = await import("../policies/lexiconExplainLightPolicy.js");
+    } = await import("../policies/pedagogical/index.js");
     const empty = !String(fastOut || "").trim();
     const menuLeak =
       lexiconSchoolScienceExplain && isLexiconAngleMenuLeak(fastOut);
@@ -382,7 +382,7 @@ export async function applySimpleFastDeliveryPipeline({
       buildLexiconPedagogicalSchemaReply,
       extractPedagogicalScienceSubject,
       validatePedagogicalTableResponse,
-    } = await import("../policies/lexiconExplainLightPolicy.js");
+    } = await import("../policies/pedagogical/index.js");
     const { splitPedagogicalMarkdownBlocks } = await import(
       "../../../../shared/pedagogicalTableContract.js"
     );

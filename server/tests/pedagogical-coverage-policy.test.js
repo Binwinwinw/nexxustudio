@@ -7,12 +7,12 @@ import {
   PEDAGOGICAL_DISCIPLINE_INDEX,
   resolveExpectedCoverageTier,
   summarizePedagogicalCoverageRegistry,
-} from "../src/agent/policies/pedagogicalCoverageRegistry.js";
+} from "../src/agent/policies/pedagogical/index.js";
 import {
   PEDAGOGICAL_DELIVERY_MODES,
   PEDAGOGICAL_PROVENANCE,
   resolvePedagogicalCoverage,
-} from "../src/agent/policies/pedagogicalCoveragePolicy.js";
+} from "../src/agent/policies/pedagogical/index.js";
 import { resolvePedagogicalOverviewShortCircuit } from "../src/agent/micro/replies/pedagogicalOverviewComposer.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 

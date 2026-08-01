@@ -28,7 +28,7 @@ import {
   extractCulturalSummarySubject,
   isCulturalContentSummaryRequest,
 } from "../policies/summary/index.js";
-import { isLightCulturalRecognitionRequest } from "../policies/lexiconExplainLightPolicy.js";
+import { isLightCulturalRecognitionRequest } from "../policies/pedagogical/index.js";
 
 export const GENERAL_KNOWLEDGE_ROUTING_RULE =
   "general_knowledge_generous_human_response";

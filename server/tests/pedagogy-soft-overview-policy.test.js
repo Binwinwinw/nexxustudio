@@ -9,7 +9,7 @@ import {
   PEDAGOGY_SOFT_CANONICAL_VOLCANO_QUERY,
   isPedagogySoftOverviewSatisfiable,
   resolvePedagogySoftOverviewShortCircuit,
-} from "../src/agent/policies/pedagogySoftOverviewPolicy.js";
+} from "../src/agent/policies/pedagogical/index.js";
 import {
   isPedagogySoftOverviewRequest,
   parsePedagogySoftOverviewTask,

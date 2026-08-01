@@ -17,7 +17,7 @@ import {
   validatePedagogicalTableResponse,
   PEDAGOGICAL_TABLE_HEADERS,
   parsePedagogicalStructuredUnits,
-} from "../src/agent/policies/lexiconExplainLightPolicy.js";
+} from "../src/agent/policies/pedagogical/index.js";
 import {
   splitPedagogicalMarkdown,
   splitPedagogicalMarkdownBlocks,
@@ -256,7 +256,7 @@ describe("lexicon_explain_light — guards", () => {
     const {
       resolvePedagogicalScheduledExplain,
       assertPedagogicalWorkloadCardinality,
-    } = await import("../src/agent/policies/pedagogicalTableSchedulerPolicy.js");
+    } = await import("../src/agent/policies/pedagogical/index.js");
 
     const q =
       "fait 4 choses à faire : 1 - tu dois faire un tableau avec des détails expliquant le cycle de la lune 2 - tu dois faire un tableau avec des détails expliquant le cycle de vie d'une libellule 3 - tu dois faire un tableau avec des détails expliquant la pollinisation 4 - tu dois faire un tableau avec des détails expliquant le concept de l'addition";
@@ -301,7 +301,7 @@ describe("lexicon_explain_light — guards", () => {
       materializePedagogicalBatchPlan,
       PEDAGOGICAL_BATCH_MODES,
       MAX_PEDAGOGICAL_UNITS_PER_BATCH,
-    } = await import("../src/agent/policies/pedagogicalTableSchedulerPolicy.js");
+    } = await import("../src/agent/policies/pedagogical/index.js");
 
     assert.equal(resolvePedagogicalBatchMode(2), PEDAGOGICAL_BATCH_MODES.SINGLE_BATCH);
     assert.equal(resolvePedagogicalBatchMode(5), PEDAGOGICAL_BATCH_MODES.MULTI_BATCH_AUTO);
@@ -390,7 +390,7 @@ describe("lexicon_explain_light — guards", () => {
   it("solo — photosynthèse … tableau → LLM sous contrat (hors glossaire local)", async () => {
     const {
       resolvePedagogicalStructuredExplainShortCircuit,
-    } = await import("../src/agent/policies/lexiconExplainLightPolicy.js");
+    } = await import("../src/agent/policies/pedagogical/index.js");
     const q =
       "pourrais tu expliquer en détail la photosynthese sous forme de tableau";
     assert.equal(isPedagogicalStructuredExplainRequest(q), true);

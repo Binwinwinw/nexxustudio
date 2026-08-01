@@ -51,7 +51,7 @@ import {
 import {
   buildPedagogySoftOverviewRecoveryMessage,
   isPedagogySoftOverviewSatisfiable,
-} from "../policies/pedagogySoftOverviewPolicy.js";
+} from "../policies/pedagogical/index.js";
 import {
   buildPromptForArtifactRecoveryMessage,
   isPromptForArtifactSatisfiable,
