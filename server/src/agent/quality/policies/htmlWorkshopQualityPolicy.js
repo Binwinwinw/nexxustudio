@@ -6,7 +6,7 @@ import {
   isHtmlWorkshopDeliverable,
   evaluateHtmlWorkshopQuality,
   buildHtmlWorkshopRepairUserAddon,
-} from "../../policies/htmlWorkshopDeliveryContract.js";
+} from "../../policies/delivery/index.js";
 import { isCodeProjectLightRequest } from "../../policies/codeProjectLightPolicy.js";
 import { defineContractQualityPolicy } from "../contractQualityLoop.js";
 

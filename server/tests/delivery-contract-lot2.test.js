@@ -5,7 +5,7 @@ import {
   DELIVERY_CONTRACT_V1,
   DELIVERY_MODES,
   ensureTerminalDeliveryText,
-} from "../src/agent/policies/deliveryContract.js";
+} from "../src/agent/policies/delivery/index.js";
 import AgentPipeline from "../src/agent/agentPipeline.js";
 import turnTelemetry from "../src/agent/telemetry/turnTelemetry.js";
 import { createPipelineTelemetryContext } from "../src/agent/telemetry/telemetryObservabilityBridge.js";

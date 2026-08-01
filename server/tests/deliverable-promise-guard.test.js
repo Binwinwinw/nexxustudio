@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { validateDeliverablePromise } from "../src/agent/policies/deliverablePromiseGuard.js";
+import { validateDeliverablePromise } from "../src/agent/policies/delivery/index.js";
 
 describe("deliverablePromiseGuard", () => {
   it("doit ignorer les branches autorisées (CODE_DELIVERY)", () => {

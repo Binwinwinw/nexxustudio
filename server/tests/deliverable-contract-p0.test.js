@@ -9,7 +9,7 @@ import {
   PROMISED_VALUES,
   REPLY_SHAPES,
   DELIVERABLE_POLICY_MODE,
-} from "../src/agent/policies/deliverableContractPolicy.js";
+} from "../src/agent/policies/delivery/index.js";
 
 describe("DeliverableContractPolicy P0.1 — observe", () => {
   it("open_prompt → exploration_proposal, clarify false, gateSuppressed", () => {

@@ -47,7 +47,7 @@ import {
 import {
   isFormalLetterTemplateRequest,
   resolveFormalLetterTemplateIntentContractId,
-} from "../formalLetterTemplatePolicy.js";
+} from "../delivery/index.js";
 
 export {
   shouldAppendDatetimeToDocumentAnalysis,

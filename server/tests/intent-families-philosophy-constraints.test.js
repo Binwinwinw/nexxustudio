@@ -30,7 +30,7 @@ import {
   evaluateJustIntent,
   buildJustIntentAddon,
 } from "../src/agent/policies/justIntentDetectionPolicy.js";
-import { isHtmlProjectDeliverable } from "../src/agent/policies/htmlProjectDeliveryPolicy.js";
+import { isHtmlProjectDeliverable } from "../src/agent/policies/delivery/index.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import {
   buildConnectorResolutionContext,

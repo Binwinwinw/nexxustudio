@@ -12,13 +12,13 @@ import {
   classifyCodeIntent,
   hasExecutableSnippet,
 } from "../codeIntentPolicy.js";
-import { isHtmlProjectDeliverable } from "../htmlProjectDeliveryPolicy.js";
+import { isHtmlProjectDeliverable } from "../delivery/index.js";
 import { deriveGuidedProductWebSearchQuery } from "../guided/index.js";
 import {
   deriveResearchThenSummarizeWebQuery,
   isResearchThenSummarizeRequest,
 } from "../researchThenSummarizePolicy.js";
-import { isFormalLetterTemplateRequest } from "../formalLetterTemplatePolicy.js";
+import { isFormalLetterTemplateRequest } from "../delivery/index.js";
 import { hasTextAttachments } from "../../utils/conversationGuards.js";
 
 export const CHAT_AGENT_PROFILE_RULE = "chat_agent_profile_v1";

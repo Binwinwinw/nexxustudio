@@ -11,7 +11,7 @@ import {
   isNotionWorkshopDeliverable,
   NOTION_WORKSHOP_DEFAULT_MODULES,
   resolveConstructiveDeliveryModules,
-} from "../src/agent/policies/constructiveDeliveryPolicy.js";
+} from "../src/agent/policies/delivery/index.js";
 import { enforceModeContract } from "../src/agent/config/modeResponseContracts.js";
 import { isCodeGenerationRequest } from "../src/agent/policies/codeDeliveryPolicy.js";
 

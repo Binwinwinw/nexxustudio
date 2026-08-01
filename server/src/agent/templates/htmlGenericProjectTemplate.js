@@ -1,7 +1,7 @@
 /**
  * Gabarit HTML générique — fallback HTML_PROJECT_DELIVERY_V1 (hors atelier spécialisé).
  */
-import { HTML_PROJECT_PROFILES } from "../policies/htmlProjectDeliveryPolicy.js";
+import { HTML_PROJECT_PROFILES } from "../policies/delivery/index.js";
 
 function resolveTitle(query = "", profile = HTML_PROJECT_PROFILES.GENERIC) {
   const q = String(query || "");

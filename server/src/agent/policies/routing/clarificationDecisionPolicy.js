@@ -54,7 +54,7 @@ import {
 import { isSubjectReferenceAvailabilityRequest } from "../../micro/continuity/sessionSubjectReferenceGuards.js";
 import { isTrafficCurrentRequestSatisfiable } from "../trafficCurrentRequestPolicy.js";
 import { isWeatherCurrentRequestSatisfiable } from "../weatherCurrentRequestPolicy.js";
-import { isPromptForArtifactSatisfiable } from "../promptForArtifactPolicy.js";
+import { isPromptForArtifactSatisfiable } from "../delivery/index.js";
 import { isPedagogySoftOverviewSatisfiable } from "../pedagogySoftOverviewPolicy.js";
 import { isLexiconExplainLightRequest } from "../lexiconExplainLightPolicy.js";
 import {

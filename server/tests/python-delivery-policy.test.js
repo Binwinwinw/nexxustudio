@@ -10,7 +10,7 @@ import {
   getPythonDeliveryLlmOptions,
   hasPythonDeliveryStructure,
   PYTHON_DELIVERY_CONTRACT_ID,
-} from "../src/agent/policies/pythonDeliveryPolicy.js";
+} from "../src/agent/policies/delivery/index.js";
 
 describe("pythonDeliveryPolicy", () => {
   it("détecte une demande de script Python complet", () => {

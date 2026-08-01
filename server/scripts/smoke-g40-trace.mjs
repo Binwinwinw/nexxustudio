@@ -5,7 +5,7 @@ import { resolveIntentContract } from "../src/agent/config/intentContractRegistr
 import { isCodeConceptExplainRequest } from "../src/agent/policies/codeConceptExplainPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
 import { evaluateClarificationDecision } from "../src/agent/policies/clarificationDecisionPolicy.js";
-import { isHtmlProjectDeliverable } from "../src/agent/policies/htmlProjectDeliveryPolicy.js";
+import { isHtmlProjectDeliverable } from "../src/agent/policies/delivery/index.js";
 
 const QUERIES = [
   'pourrais-tu faire un résumé du rôle de "import" dans un fichier python ?',

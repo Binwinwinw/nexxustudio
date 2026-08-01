@@ -5,8 +5,8 @@
 import {
   evaluateHtmlProjectDelivery,
   isHtmlProjectDeliverable,
-} from "../src/agent/policies/htmlProjectDeliveryPolicy.js";
-import { HTML_PROJECT_THRESHOLDS } from "../src/agent/policies/htmlProjectDeliveryThresholds.js";
+} from "../src/agent/policies/delivery/index.js";
+import { HTML_PROJECT_THRESHOLDS } from "../src/agent/policies/delivery/index.js";
 import {
   buildHtmlProjectTelemetryEvent,
   shortenHtmlProjectProfile,

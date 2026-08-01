@@ -13,7 +13,7 @@ import { isRepoAnalysisRequest } from "../../utils/repoAnalysisIntentGuards.js";
 import { suppressesDocumentSynthesisForCulturalSummary } from "../summary/index.js";
 import { isCodeConceptExplainRequest } from "../codeConceptExplainPolicy.js";
 import { isResearchThenSummarizeRequest } from "../researchThenSummarizePolicy.js";
-import { isFormalLetterTemplateRequest } from "../formalLetterTemplatePolicy.js";
+import { isFormalLetterTemplateRequest } from "../delivery/index.js";
 import { shouldSuppressSummaryContractForAttachment } from "../attachment/index.js";
 
 /** Lot #35 — « dis-moi l'essentiel sur [sujet scolaire] » sans document joint. */

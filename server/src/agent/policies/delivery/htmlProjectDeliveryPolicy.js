@@ -373,10 +373,3 @@ export function buildHtmlProjectFallback(query = "") {
   return buildGenericHtmlProjectProductionDelivery(query, evaluation.profile);
 }
 
-/** @deprecated alias — atelier ⊂ projet HTML */
-export function isHtmlWorkshopDeliverable(query = "") {
-  return (
-    isHtmlProjectDeliverable(query) &&
-    resolveHtmlProjectProfile(query) === HTML_PROJECT_PROFILES.WORKSHOP
-  );
-}

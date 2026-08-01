@@ -2,7 +2,7 @@
  * prompt_for_artifact — shells « demander un prompt pour fabriquer X » (lot #37).
  */
 import { normalizeFamiliarityQuery } from "./familiarityIntentGuards.js";
-import { isHtmlProjectDeliverable } from "../policies/htmlProjectDeliveryPolicy.js";
+import { isHtmlProjectDeliverable } from "../policies/delivery/index.js";
 
 export const PROMPT_FOR_ARTIFACT_RULE = "prompt_for_artifact_v1";
 

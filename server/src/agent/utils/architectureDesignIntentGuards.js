@@ -4,7 +4,7 @@
  */
 import { normalizeText } from "./normalizationGuards.js";
 import { isExploitableProcedureIntent } from "./procedureIntentGuards.js";
-import { isHtmlProjectDeliverable } from "../policies/htmlProjectDeliveryPolicy.js";
+import { isHtmlProjectDeliverable } from "../policies/delivery/index.js";
 import {
   isInlineProductBriefPaste,
   isProjectScopingAssistRequest,

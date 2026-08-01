@@ -68,17 +68,17 @@ import { isCodeProjectLightRequest } from "../policies/codeProjectLightPolicy.js
 import { runContractQualityLoop } from "../quality/contractQualityLoop.js";
 import { frontPresentationQualityPolicy } from "../quality/policies/frontPresentationQualityPolicy.js";
 import { htmlWorkshopQualityPolicy } from "../quality/policies/htmlWorkshopQualityPolicy.js";
-import { isHtmlWorkshopDeliverable } from "../policies/htmlWorkshopDeliveryContract.js";
+import { isHtmlWorkshopDeliverable } from "../policies/delivery/index.js";
 import {
   buildConstructiveDeliveryFallback,
   buildConstructiveDeliveryUserPrompt,
   isClearConstructiveDeliverable,
   isCodeDeliveryContractViolation,
-} from "../policies/constructiveDeliveryPolicy.js";
+} from "../policies/delivery/index.js";
 import {
   buildHtmlProjectUserAddon,
   evaluateHtmlProjectDelivery,
-} from "../policies/htmlProjectDeliveryPolicy.js";
+} from "../policies/delivery/index.js";
 import { recordHtmlProjectComposerOutcome } from "../telemetry/htmlProjectDeliveryTelemetry.js";
 import { sanitizeUnverifiedToolExecutionClaims } from "../utils/toolExecutionClaimGuard.js";
 

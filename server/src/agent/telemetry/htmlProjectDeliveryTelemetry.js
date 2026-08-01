@@ -6,13 +6,13 @@ import {
   isHtmlProjectDeliverable,
   isHtmlProjectQualityViolation,
   HTML_PROJECT_PROFILES,
-} from "../policies/htmlProjectDeliveryPolicy.js";
-import { HTML_PROJECT_THRESHOLDS } from "../policies/htmlProjectDeliveryThresholds.js";
+} from "../policies/delivery/index.js";
+import { HTML_PROJECT_THRESHOLDS } from "../policies/delivery/index.js";
 import { normalizeFamiliarityQuery } from "../utils/familiarityIntentGuards.js";
 
 export const HTML_PROJECT_TELEMETRY_EVENT = "html_project_delivery";
 
-/** @type {import('../policies/htmlProjectDeliveryPolicy.js').HtmlProjectStrategy[]} */
+/** @type {import('../policies/delivery/index.js').HtmlProjectStrategy[]} */
 const STRATEGIES = ["build_v1", "build_with_smart_defaults", "clarify_then_build"];
 
 /**

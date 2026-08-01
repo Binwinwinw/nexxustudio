@@ -19,7 +19,7 @@ import {
   CLARIFICATION_DECISIONS,
   resolveClarificationGate,
 } from "../src/agent/policies/clarificationDecisionPolicy.js";
-import { resolveDeliverableContract, PROMISED_VALUES } from "../src/agent/policies/deliverableContractPolicy.js";
+import { resolveDeliverableContract, PROMISED_VALUES } from "../src/agent/policies/delivery/index.js";
 import { INTENT_DOMAINS } from "../../shared/justIntentCatalog.js";
 
 const FRAME_YES = [

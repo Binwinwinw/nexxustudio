@@ -5,7 +5,7 @@ import {
   suppressesBuildIntentForTechnicalLearning,
   isTechnicalLearningPathRequest,
 } from "../src/agent/utils/technicalLearningPathIntentGuards.js";
-import { isHtmlProjectDeliverable } from "../src/agent/policies/htmlProjectDeliveryPolicy.js";
+import { isHtmlProjectDeliverable } from "../src/agent/policies/delivery/index.js";
 import {
   evaluateJustIntent,
   buildJustIntentAddon,

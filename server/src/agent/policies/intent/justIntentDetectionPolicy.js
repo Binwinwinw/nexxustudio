@@ -42,7 +42,7 @@ import {
   evaluateHtmlProjectDelivery,
   isHtmlProjectDeliverable,
   resolveHtmlProjectProfile,
-} from "../htmlProjectDeliveryPolicy.js";
+} from "../delivery/index.js";
 import { resolveAiVerificationNotice } from "../epistemic/index.js";
 import { JUST_INTENT_THRESHOLDS } from "./justIntentThresholds.js";
 import {

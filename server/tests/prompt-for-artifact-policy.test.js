@@ -8,12 +8,12 @@ import {
   buildPromptForArtifactReply,
   isPromptForArtifactSatisfiable,
   resolvePromptForArtifactShortCircuit,
-} from "../src/agent/policies/promptForArtifactPolicy.js";
+} from "../src/agent/policies/delivery/index.js";
 import {
   isPromptForArtifactRequest,
   parsePromptForArtifactTask,
 } from "../src/agent/utils/promptForArtifactIntentGuards.js";
-import { isHtmlProjectDeliverable } from "../src/agent/policies/htmlProjectDeliveryPolicy.js";
+import { isHtmlProjectDeliverable } from "../src/agent/policies/delivery/index.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,

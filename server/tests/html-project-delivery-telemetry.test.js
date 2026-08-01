@@ -4,7 +4,7 @@ import {
   buildHtmlProjectTelemetryEvent,
   shortenHtmlProjectProfile,
 } from "../src/agent/telemetry/htmlProjectDeliveryTelemetry.js";
-import { HTML_PROJECT_THRESHOLDS } from "../src/agent/policies/htmlProjectDeliveryThresholds.js";
+import { HTML_PROJECT_THRESHOLDS } from "../src/agent/policies/delivery/index.js";
 
 const NOTION_QUERY =
   "sais tu créer un atelier d'initiation à l'application NOTION sous forme de fichier html avec header sidebar sur les différents thèmes comme menus?";

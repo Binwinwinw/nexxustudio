@@ -6,18 +6,18 @@ import {
   isHtmlWorkshopQualityViolation,
   evaluateHtmlWorkshopQuality,
   buildHtmlWorkshopRepairUserAddon,
-} from "../src/agent/policies/htmlWorkshopDeliveryContract.js";
+} from "../src/agent/policies/delivery/index.js";
 import {
   buildHtmlProjectSystemAddon,
   isHtmlWorkshopDeliverable,
-} from "../src/agent/policies/htmlProjectDeliveryPolicy.js";
+} from "../src/agent/policies/delivery/index.js";
 import { buildNotionWorkshopProductionHtml } from "../src/agent/templates/notionWorkshopHtmlTemplate.js";
 import { htmlWorkshopQualityPolicy } from "../src/agent/quality/policies/htmlWorkshopQualityPolicy.js";
 import {
   QUALITY_STOP_REASONS,
   runContractQualityLoop,
 } from "../src/agent/quality/contractQualityLoop.js";
-import { HTML_WORKSHOP_QUALITY_CONTRACT_ID } from "../src/agent/policies/htmlWorkshopDeliveryContract.js";
+import { HTML_WORKSHOP_QUALITY_CONTRACT_ID } from "../src/agent/policies/delivery/index.js";
 
 const NOTION_WORKSHOP_QUERY =
   "sais tu créer un atelier d'initiation à l'application NOTION sous forme de fichier html avec header sidebar sur les différents thèmes comme menus?";

@@ -6,7 +6,7 @@ import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.j
 import {
   isExplorationPanelOffer,
   isGuidedChoiceSurface,
-} from "../deliverableContractPolicy.js";
+} from "../delivery/index.js";
 
 export const GUIDED_CHOICE_RULE = "guided_choice_continuity_p1";
 export const GUIDED_CHOICE_PIPELINE_PATH = "guided_choice_deterministic";

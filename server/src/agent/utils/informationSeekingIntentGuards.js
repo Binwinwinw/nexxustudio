@@ -7,7 +7,7 @@ import {
   extractResearchThenSummarizeTarget,
   isResearchThenSummarizeRequest,
 } from "../policies/researchThenSummarizePolicy.js";
-import { isFormalLetterTemplateRequest } from "../policies/formalLetterTemplatePolicy.js";
+import { isFormalLetterTemplateRequest } from "../policies/delivery/index.js";
 
 const INFORMATION_SEEKING_SHELL_RE =
   /\b(?:je cherche|j cherche|chercher|je voudrais|j aimerais|j'aimerais|besoin d(?:e|'|)?\s*(?:infos?|informations?|renseignements?)|j ai besoin d(?:e|'|)?\s*(?:infos?|informations?|renseignements?)|tu peux me dire|peux[- ]?tu me dire|dis[- ]?moi ce que tu sais|explique[- ]?moi|m['']?expliquer|m['']?informer|informe[- ]?moi)\b/i;

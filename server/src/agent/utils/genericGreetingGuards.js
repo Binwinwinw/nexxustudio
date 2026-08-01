@@ -55,7 +55,7 @@ import {
 import {
   buildPromptForArtifactRecoveryMessage,
   isPromptForArtifactSatisfiable,
-} from "../policies/promptForArtifactPolicy.js";
+} from "../policies/delivery/index.js";
 import { isSubjectReferenceAvailabilityRequest } from "../micro/continuity/sessionSubjectReferenceGuards.js";
 import { isGeneralKnowledgeRequest } from "./generalKnowledgeIntentGuards.js";
 import { isPedagogicalOverviewRequest } from "./pedagogicalOverviewIntentGuards.js";

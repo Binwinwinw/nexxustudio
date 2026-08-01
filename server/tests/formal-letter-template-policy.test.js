@@ -9,7 +9,7 @@ import {
   buildFormalLetterTemplateReply,
   resolveFormalLetterTemplateShortCircuit,
   resolveFormalLetterTemplateIntentContractId,
-} from "../src/agent/policies/formalLetterTemplatePolicy.js";
+} from "../src/agent/policies/delivery/index.js";
 import {
   resolveIntentContract,
   shouldSkipWebSearchForIntent,

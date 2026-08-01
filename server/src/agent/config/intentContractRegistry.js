@@ -48,7 +48,7 @@ import {
   extractCodeProjectLightSlots,
   isCodeProjectLightRequest,
 } from "../policies/codeProjectLightPolicy.js";
-import { isFormalLetterTemplateRequest } from "../policies/formalLetterTemplatePolicy.js";
+import { isFormalLetterTemplateRequest } from "../policies/delivery/index.js";
 
 const GUARDS = {
   isIdeationRequest: (query, packet) => isIdeationRequest(query),

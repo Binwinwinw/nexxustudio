@@ -12,7 +12,7 @@ import {
   buildGuidedCreationScopingSystemAddon,
   resolveGuidedCreationScopingShortCircuit,
 } from "../src/agent/policies/guided/index.js";
-import { isClearConstructiveDeliverable } from "../src/agent/policies/constructiveDeliveryPolicy.js";
+import { isClearConstructiveDeliverable } from "../src/agent/policies/delivery/index.js";
 import { isCodeGenerationRequest } from "../src/agent/policies/codeDeliveryPolicy.js";
 import { isTechnicalOverviewRequest } from "../src/agent/utils/technicalOverviewIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
