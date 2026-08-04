@@ -2,9 +2,12 @@
  * intentShortCircuit — délestage conversationnel déterministe avant LLM.
  *
  * Audit priorités P2 (G11–G19) — ordre critique :
+ * 0. external_calendar + current_web_fact (~L507) — avant explicit web / G46 / épistémique
+ * 0b. query_composite + web_project_scoping (~L520) — avant G46 idéation / meta_capabilities
+ * 0c. social_composite (~L720) — avant meta_conversation (G41.1)
  * 1. multi_unit (~L750) — prime sur multi_segment via shouldPreemptMultiSegment
- * 2. historical date (~L906) — avant external_calendar et datetime
- * 3. external_calendar (~L930) — exclut historical ; prime sur relative si événement astronomique
+ * 2. historical date (~L906) — avant external_calendar tardif et datetime
+ * 3. external_calendar tardif (~L930) — filet si pas intercepté en amont
  * 4. relative datetime (~L950) — avant datetime social
  * 5. multi_segment_composite (~L1304) — dernier recours LLM composite
  */
@@ -175,6 +178,51 @@ function withPedagogicalComposition(query, reply) {
   if (!reply) return reply;
   const composition = resolveIntentComposition(query);
   return applyPedagogicalCompositionAugment(reply, composition);
+}
+
+function tryEmitExternalCalendarLookupShortCircuit(effectiveQuery, emit) {
+  const externalCalendarHit =
+    resolveExternalCalendarLookupShortCircuit(effectiveQuery);
+  if (!externalCalendarHit) return null;
+  return emit({
+    path: externalCalendarHit.path,
+    mode: RESPONSE_MODES.DOCUMENT,
+    reply: null,
+    deferToLlm: true,
+    deferToFullPipeline: true,
+    preferWebResearch: true,
+    simpleFactual: true,
+    externalCalendarLookup: true,
+    explicitWebToolRequest: Boolean(externalCalendarHit.explicitWebToolRequest),
+    currentWebFactWebQuery: externalCalendarHit.webQuery,
+    externalCalendarWebQuery: externalCalendarHit.webQuery,
+    step: externalCalendarHit.step,
+    enforce: { allowRefusal: false },
+  });
+}
+
+function tryEmitCurrentWebFactShortCircuit(effectiveQuery, emit) {
+  const currentWebFactHit = resolveCurrentWebFactShortCircuit(effectiveQuery);
+  if (!currentWebFactHit) return null;
+  return emit({
+    path: currentWebFactHit.path,
+    mode: RESPONSE_MODES.DOCUMENT,
+    reply: null,
+    deferToLlm: true,
+    deferToFullPipeline: true,
+    preferWebResearch: true,
+    simpleFactual: true,
+    currentWebFact: true,
+    currentWebFactType: currentWebFactHit.factType,
+    weatherCurrent: Boolean(currentWebFactHit.weatherCurrent),
+    trafficCurrent: Boolean(currentWebFactHit.trafficCurrent),
+    currentWebFactWebQuery: currentWebFactHit.currentWebFactWebQuery,
+    weatherWebQuery:
+      currentWebFactHit.weatherWebQuery || currentWebFactHit.currentWebFactWebQuery,
+    trafficWebQuery: currentWebFactHit.trafficWebQuery,
+    step: currentWebFactHit.step,
+    enforce: { allowRefusal: false },
+  });
 }
 import { isSubjectReferenceAvailabilityRequest } from "../../micro/continuity/sessionSubjectReferenceGuards.js";
 import {
@@ -504,6 +552,60 @@ export async function runConversationShortCircuit(query, options = {}) {
     return annotateShortCircuitCognitiveCycle(gated);
   };
 
+  // Avant explicit web / G46 : calendrier externe et faits web frais (trafic/météo).
+  const externalCalendarEarly = tryEmitExternalCalendarLookupShortCircuit(
+    effectiveQuery,
+    emit,
+  );
+  if (externalCalendarEarly) return externalCalendarEarly;
+
+  const currentWebFactEarly = tryEmitCurrentWebFactShortCircuit(
+    effectiveQuery,
+    emit,
+  );
+  if (currentWebFactEarly) return currentWebFactEarly;
+
+  const queryCompositeEarly = resolveQueryCompositeShortCircuit(
+    effectiveQuery,
+    history,
+  );
+  if (queryCompositeEarly?.reply) {
+    return emit({
+      path: queryCompositeEarly.path,
+      mode: RESPONSE_MODES.INSTANT,
+      reply: queryCompositeEarly.reply,
+      step:
+        queryCompositeEarly.path === "math_composite_deterministic"
+          ? "🔢 Maths composite — lecture multi-intent + réponse séquencée (G28)..."
+          : "🧭 Requête composite — compréhension multi-domaine + réponse séquencée...",
+      enforce: { allowRefusal: false, sectionedComposite: true },
+      queryUnderstanding: queryCompositeEarly.understanding,
+      executionPlan: queryCompositeEarly.plan,
+    });
+  }
+
+  const webScopingEarly = classifyWebProjectScopingRequest(query);
+  if (webScopingEarly) {
+    if (webScopingEarly.needsClarify && webScopingEarly.clarifyQuestion) {
+      return emit({
+        path: "web_project_scoping_clarify",
+        mode: RESPONSE_MODES.INSTANT,
+        reply: webScopingEarly.clarifyQuestion,
+        step: "🌐 Projet web — précision type de site (cadrage)...",
+        enforce: { allowRefusal: false },
+      });
+    }
+    if (webScopingEarly.directReply) {
+      return emit({
+        path: "web_project_scoping_direct",
+        mode: RESPONSE_MODES.OPEN_PROPOSITION,
+        reply: webScopingEarly.directReply,
+        step: "🌐 Projet web — cadrage et premières étapes...",
+        enforce: { allowRefusal: false },
+      });
+    }
+  }
+
   // Avant G46 idéation : « recherche sur internet » ≠ pistes projet RAG.
   // Inclut le follow-up sujet (« sur la mixtrack Pro 2 ») après clarify.
   const webHelpEarly = resolveExplicitWebSearchHelpShortCircuit(effectiveQuery, {
@@ -674,6 +776,21 @@ export async function runConversationShortCircuit(query, options = {}) {
     });
   }
 
+  const socialCompositeEarly = resolveSocialCompositeShortCircuit(effectiveQuery, {
+    history,
+  });
+  if (socialCompositeEarly?.reply) {
+    return emit({
+      path: socialCompositeEarly.path,
+      mode: RESPONSE_MODES.INSTANT,
+      reply: socialCompositeEarly.reply,
+      step: "⚡ Identité + capacités — réponse composée (G41.1)...",
+      enforce: { allowRefusal: false },
+      socialComposite: true,
+      compositeKind: socialCompositeEarly.compositeKind,
+    });
+  }
+
   const metaBeforeSocialChat = resolveMetaConversationRoute(effectiveQuery, {
     history,
   });
@@ -713,6 +830,32 @@ export async function runConversationShortCircuit(query, options = {}) {
   );
   if (attachedVisionEarly) {
     return emit(attachedVisionEarly);
+  }
+
+  // G44/G45 — avant social_chat_continuity (sinon exploratory_conversation_light).
+  const utteranceClarifyBeforeSocialChat =
+    resolveAssistantUtteranceClarifyShortCircuit(query, { history });
+  if (utteranceClarifyBeforeSocialChat?.reply) {
+    return emit({
+      path: utteranceClarifyBeforeSocialChat.path,
+      mode: RESPONSE_MODES.SIMPLE_FAST,
+      reply: utteranceClarifyBeforeSocialChat.reply,
+      step: "💬 Clarification — reformulation de ma phrase précédente (G44)...",
+      enforce: { allowRefusal: false },
+    });
+  }
+
+  const repairBeforeSocialChat = resolveAssistantRepairShortCircuit(query, {
+    history,
+  });
+  if (repairBeforeSocialChat?.reply) {
+    return emit({
+      path: repairBeforeSocialChat.path,
+      mode: RESPONSE_MODES.SIMPLE_FAST,
+      reply: repairBeforeSocialChat.reply,
+      step: "🔧 Réparation assistant — reformulation (sans méta)...",
+      enforce: { allowRefusal: false },
+    });
   }
 
   // Après chat_invite / offre papoter : sujet court → exploration conversationnelle
@@ -977,28 +1120,6 @@ export async function runConversationShortCircuit(query, options = {}) {
       step: guidedCreationHit.step,
       enforce: { allowRefusal: false },
     });
-  }
-
-  const webScopingEarly = classifyWebProjectScopingRequest(query);
-  if (webScopingEarly) {
-    if (webScopingEarly.needsClarify && webScopingEarly.clarifyQuestion) {
-      return emit({
-        path: "web_project_scoping_clarify",
-        mode: RESPONSE_MODES.INSTANT,
-        reply: webScopingEarly.clarifyQuestion,
-        step: "🌐 Projet web — précision type de site (cadrage)...",
-        enforce: { allowRefusal: false },
-      });
-    }
-    if (webScopingEarly.directReply) {
-      return emit({
-        path: "web_project_scoping_direct",
-        mode: RESPONSE_MODES.OPEN_PROPOSITION,
-        reply: webScopingEarly.directReply,
-        step: "🌐 Projet web — cadrage et premières étapes...",
-        enforce: { allowRefusal: false },
-      });
-    }
   }
 
   if (isTranslationPipelineReady(effectiveQuery, history)) {
@@ -1358,19 +1479,6 @@ export async function runConversationShortCircuit(query, options = {}) {
   }
 
   // Critique de réponse / réparation : avant debug (sinon « échec » → faux diagnostic)
-  const repairHitBeforeDebug = resolveAssistantRepairShortCircuit(query, {
-    history,
-  });
-  if (repairHitBeforeDebug?.reply) {
-    return emit({
-      path: repairHitBeforeDebug.path,
-      mode: RESPONSE_MODES.SIMPLE_FAST,
-      reply: repairHitBeforeDebug.reply,
-      step: "🔧 Réparation assistant — reformulation (sans méta)...",
-      enforce: { allowRefusal: false },
-    });
-  }
-
   const metaFeedbackBeforeDebug = resolveMetaFeedbackShortCircuit(query, {
     history,
   });
@@ -1812,23 +1920,6 @@ export async function runConversationShortCircuit(query, options = {}) {
   }
   }
 
-  const exploratoryHitEarly = resolveExploratoryConversationShortCircuit(
-    effectiveQuery,
-    { attachments: options.attachments || [] },
-  );
-  if (exploratoryHitEarly?.deferToLlm) {
-    return emit({
-      path: exploratoryHitEarly.path,
-      mode: RESPONSE_MODES.SIMPLE_FAST,
-      reply: null,
-      deferToLlm: true,
-      reflectiveHint: exploratoryHitEarly.reflectiveHint,
-      exploratoryConversation: true,
-      step: "🧭 Exploration — thème ouvert (sans mandat livrable)...",
-      enforce: { allowRefusal: false },
-    });
-  }
-
   if (isHistoricalDateQuestion(effectiveQuery)) {
     const local = tryResolveDeterministicSimpleFactual(effectiveQuery);
     if (local) {
@@ -1975,20 +2066,7 @@ export async function runConversationShortCircuit(query, options = {}) {
     });
   }
 
-  const utteranceClarifyHit = resolveAssistantUtteranceClarifyShortCircuit(query, {
-    history,
-  });
-  if (utteranceClarifyHit?.reply) {
-    return emit({
-      path: utteranceClarifyHit.path,
-      mode: RESPONSE_MODES.SIMPLE_FAST,
-      reply: utteranceClarifyHit.reply,
-      step: "💬 Clarification — reformulation de ma phrase précédente (G44)...",
-      enforce: { allowRefusal: false },
-    });
-  }
-
-  // repair / meta déjà traités avant debug (évite double branche)
+  // repair / utterance déjà traités avant social_chat ; meta ci-dessus
 
   const exploratoryHit = resolveExploratoryConversationShortCircuit(
     effectiveQuery,
