@@ -4,6 +4,7 @@
 import {
   normalizeFamiliarityQuery,
   parseFamiliarityQuery,
+  isFamiliarityDomainOverviewRequest,
 } from "../../utils/familiarityIntentGuards.js";
 import { isSubjectReferenceAvailabilityRequest } from "../../micro/continuity/sessionSubjectReferenceGuards.js";
 import { isRecipeKnowledgeRequest } from "../../utils/recipeKnowledgeIntentGuards.js";
@@ -71,6 +72,7 @@ export function isLexiconExplainLightRequest(query = "") {
   if (isRecipeKnowledgeRequest(query)) return false;
   if (isInformationSeekingLightQuery(query) && extractKnownGameEntity(query)) return false;
   if (isMetaKnownPeerProductQuery(query)) return false;
+  if (isFamiliarityDomainOverviewRequest(query)) return false;
   const parsed = parseFamiliarityQuery(query);
   if (!parsed?.rawSubject) return false;
   if (/\brecette\b/i.test(parsed.rawSubject)) return false;
