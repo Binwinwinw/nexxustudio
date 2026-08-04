@@ -22,6 +22,22 @@ export const DEBUG_DIAGNOSTIC_ROUTING_RULE =
 export const DEBUG_DIAGNOSTIC_SIGNAL_RE =
   /\b(?:erreur|error|exception|stack trace|stacktrace|bug|ne marche pas|ne fonctionne pas|casse|crash|plante|echec|échec|failed|unexpected|inattendu|logs?|diagnosti|symptome|symptôme|expected vs|obtenu vs|obtenu au lieu|line \d+|ligne \d+|undefined is not|cannot read|errno|status 5\d\d|pourquoi (?:ca|ça|mon|ma|mes|le|la|les)|why (?:my|the|is))\b/i;
 
+/** Dépannage matériel PC — LED, démarrage, marque (hors stack logicielle). */
+const HARDWARE_DEVICE_RE =
+  /\b(?:ordinateur|ordi|pc|laptop|portable|thinkpad|ideapad|lenovo|dell|hp|asus|acer|macbook|imac)\b/i;
+
+const HARDWARE_REPAIR_RE =
+  /\b(?:reparer|réparer|depann|dépann|reparation|réparation|panne)\b/i;
+
+const HARDWARE_SYMPTOM_RE =
+  /\b(?:led|voyant|clignot|ne (?:demarre|démarre|s allume|boot|boote)|ecran noir|écran noir|ventilateur|bip|beep|batterie|alimentation)\b/i;
+
+const HARDWARE_MODEL_RE =
+  /\b(?:thinkpad|ideapad|yoga|legion|x\d{1,2}|t\d{1,2}|p\d{1,2}|numero de serie|numéro de serie|numero de série|numéro de série)\b/i;
+
+const HARDWARE_LED_PATTERN_RE =
+  /\b\d+\s*(?:clignot|fois)|clignot(?:e|ement)?\s+\d+|code(?:s)?\s+(?:led|voyant|erreur)\b/i;
+
 const DEBUG_PROCEDURAL_ONLY_RE =
   /\b(?:installer|install(?:er|ation)?|comment configurer|how to install|how to set up|mettre en place pas a pas|etape par etape|étape par étape)\b/i;
 
@@ -31,7 +47,7 @@ const COMPONENT_HINT_RE =
 const CODE_FENCE_RE = /```[\s\S]{8,}/;
 
 /**
- * @typedef {'network'|'config'|'deployment'|'runtime'|'unknown'} DiagnosticContext
+ * @typedef {'network'|'config'|'deployment'|'runtime'|'hardware'|'unknown'} DiagnosticContext
  * @typedef {'blocking'|'degraded'|'unknown'} DiagnosticSeverity
  * @typedef {'high'|'medium'|'low'} SlotConfidence
  *
@@ -73,10 +89,48 @@ export function isAssistantResponseQualityFeedback(query = "") {
   );
 }
 
+/**
+ * Dépannage matériel incomplet — ThinkPad/IdeaPad sans modèle exact ni séquence LED.
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function isHardwareRepairDiagnosticSignal(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || q.length < 12) return false;
+  if (!HARDWARE_DEVICE_RE.test(q)) return false;
+  return HARDWARE_REPAIR_RE.test(q) || HARDWARE_SYMPTOM_RE.test(q);
+}
+
+/**
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function needsHardwareDiagnosticClarify(query = "") {
+  if (!isHardwareRepairDiagnosticSignal(query)) return false;
+  const q = normalizeFamiliarityQuery(query);
+  return !HARDWARE_MODEL_RE.test(q) || !HARDWARE_LED_PATTERN_RE.test(q);
+}
+
+/**
+ * Clarification matérielle minimale — modèle, séquence LED, alimentation.
+ * @returns {string}
+ */
+export function buildHardwareDiagnosticClarifyReply() {
+  return [
+    "Pour cibler le dépannage matériel :",
+    "- quel modèle exact (ThinkPad, IdeaPad, référence ou numéro de série sous la base) ?",
+    "- séquence des voyants / LED au démarrage (nombre de clignotements, couleur, code) ?",
+    "- alimentation sur secteur seul, batterie seule, ou les deux ?",
+  ].join("\n");
+}
+
 export function isDebugDiagnosticSignal(query = "") {
   const q = normalizeFamiliarityQuery(query);
   if (isAssistantResponseQualityFeedback(q)) return false;
-  return DEBUG_DIAGNOSTIC_SIGNAL_RE.test(q);
+  return (
+    DEBUG_DIAGNOSTIC_SIGNAL_RE.test(q) ||
+    isHardwareRepairDiagnosticSignal(query)
+  );
 }
 
 /**
@@ -110,6 +164,18 @@ export function extractDiagnosticComponent(query = "") {
     }
   }
 
+  if (isHardwareRepairDiagnosticSignal(query)) {
+    if (needsHardwareDiagnosticClarify(query)) {
+      return null;
+    }
+    const brand = q.match(
+      /\b(lenovo|thinkpad|ideapad|dell|hp|asus|acer|macbook|imac)\b/i,
+    );
+    if (brand) return brand[0];
+    const device = q.match(/\b(?:ordinateur|ordi|pc|laptop|portable)\b/i);
+    if (device) return device[0];
+  }
+
   if (COMPONENT_HINT_RE.test(q)) {
     const token = q.match(COMPONENT_HINT_RE);
     return token ? token[0] : null;
@@ -137,6 +203,20 @@ export function extractDiagnosticSymptom(query = "") {
   ];
   for (const re of phrases) {
     if (re.test(q)) return q.match(re)?.[0] || null;
+  }
+
+  if (/\b(?:led|voyant)\b/i.test(q) && /\bclignot/i.test(q)) {
+    return "voyant/LED clignote au démarrage";
+  }
+  if (/\bclignot/i.test(q)) {
+    return "voyant clignote";
+  }
+
+  if (needsHardwareDiagnosticClarify(query)) {
+    return (
+      "symptôme matériel signalé — préciser modèle exact, séquence LED/voyants " +
+      "et alimentation (secteur/batterie) avant diagnostic"
+    );
   }
 
   if (/\bpourquoi\b/i.test(q)) {
@@ -179,6 +259,9 @@ export function extractDiagnosticContext(query = "") {
     )
   ) {
     return "runtime";
+  }
+  if (isHardwareRepairDiagnosticSignal(query)) {
+    return "hardware";
   }
   return "unknown";
 }
@@ -224,11 +307,13 @@ export function parseDebugDiagnostic(query = "") {
     severity: extractDiagnosticSeverity(query),
     hasCodeSnippet: hasDiagnosticCodeSnippet(query),
     confidence:
-      component && isDebugDiagnosticSignal(query)
-        ? "high"
-        : isDebugDiagnosticSignal(query)
-          ? "medium"
-          : "low",
+      isHardwareRepairDiagnosticSignal(query) && needsHardwareDiagnosticClarify(query)
+        ? "low"
+        : component && isDebugDiagnosticSignal(query)
+          ? "high"
+          : isDebugDiagnosticSignal(query)
+            ? "medium"
+            : "low",
   };
 }
 

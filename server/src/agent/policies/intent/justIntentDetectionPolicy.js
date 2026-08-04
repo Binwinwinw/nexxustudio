@@ -60,7 +60,7 @@ export { JUST_INTENT_THRESHOLDS } from "./justIntentThresholds.js";
 export const JUST_INTENT_CONTRACT_ID = "JUST_INTENT_DETECTION_V1";
 
 const CREATE_RE =
-  /\b(cree|créer|creer|generer|générer|genere|fais|fait|produis|produire|construis|construire|developpe|développe|redige|rédige|ecris|écris|prepare|prépare)\b/i;
+  /\b(cree|créer|creer|generer|générer|genere|fais|(?<!\ben )fait|produis|produire|construis|construire|developpe|développe|redige|rédige|ecris|écris|prepare|prépare)\b/i;
 
 const SIMPLE_FACTUAL_START_RE =
   /^(qui|que|qu['’]est[- ]?ce que|quel(le)?s?|où|ou|quand|combien|est[- ]?ce que|dans quel(le)?)\b/i;

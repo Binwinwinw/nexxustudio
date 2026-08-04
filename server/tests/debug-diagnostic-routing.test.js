@@ -7,7 +7,18 @@ import {
   parseDebugDiagnostic,
   extractDiagnosticComponent,
   extractDiagnosticContext,
+  isHardwareRepairDiagnosticSignal,
+  needsHardwareDiagnosticClarify,
+  buildHardwareDiagnosticClarifyReply,
 } from "../src/agent/utils/debugDiagnosticIntentGuards.js";
+import {
+  evaluateJustIntent,
+  resolveIntentAction,
+} from "../src/agent/policies/justIntentDetectionPolicy.js";
+import {
+  INTENT_ACTIONS,
+  INTENT_DOMAINS,
+} from "../../shared/justIntentCatalog.js";
 import {
   resolveDebugDiagnosticShortCircuit,
   buildDebugDiagnosticDirectFallback,
@@ -191,5 +202,58 @@ describe("debugDiagnostic — P2 move + P3 directness (G13)", () => {
     assert.ok(cls);
     assert.equal(cls.needsClarify, false);
     assert.match(cls.slots?.component || "", /nginx/i);
+  });
+});
+
+const LENOVO_LED_QUERY =
+  "j'ai besoin d'aide pour réparer un ordinateur lenovo en fait la led d'allumage clignotte quand l'ordi s'allume";
+
+describe("debugDiagnostic — hardware Lenovo (lot 1)", () => {
+  it("détecte le dépannage matériel Lenovo LED", () => {
+    assert.equal(isHardwareRepairDiagnosticSignal(LENOVO_LED_QUERY), true);
+    assert.equal(isDebugDiagnosticRequest(LENOVO_LED_QUERY), true);
+    assert.equal(needsHardwareDiagnosticClarify(LENOVO_LED_QUERY), true);
+    assert.equal(extractDiagnosticContext(LENOVO_LED_QUERY), "hardware");
+    assert.equal(extractDiagnosticComponent(LENOVO_LED_QUERY), null);
+  });
+
+  it("short-circuit → debug_diagnostic sans defer orchestrateur web", async () => {
+    const hit = await runConversationShortCircuit(LENOVO_LED_QUERY);
+    assert.equal(hit?.path, "debug_diagnostic");
+    assert.equal(hit?.deferToLlm, true);
+    assert.notEqual(hit?.path, "general_knowledge_full_pipeline");
+    assert.equal(
+      shouldDeferShortCircuitToFullPipeline(hit, LENOVO_LED_QUERY),
+      false,
+    );
+    assert.match(hit?.reflectiveHint || "", /modèle|LED|alimentation|incertain/i);
+  });
+
+  it("clarify matériel — modèle, séquence LED, alimentation", () => {
+    const reply = buildHardwareDiagnosticClarifyReply();
+    assert.match(reply, /modèle/i);
+    assert.match(reply, /LED|voyant/i);
+    assert.match(reply, /alimentation/i);
+
+    const move = evaluateConversationMove(LENOVO_LED_QUERY);
+    assert.equal(move.family, "debug_diagnostic");
+    assert.equal(move.move, "clarify_one");
+    assert.equal(move.pipelinePath, "debug_diagnostic_clarify");
+  });
+
+  it("en fait ne déclenche plus CREATE (discours, pas action)", () => {
+    const q = LENOVO_LED_QUERY;
+    assert.notEqual(resolveIntentAction(q, INTENT_DOMAINS.GENERAL), INTENT_ACTIONS.CREATE);
+    const just = evaluateJustIntent(q);
+    assert.notEqual(just.action, INTENT_ACTIONS.CREATE);
+    assert.notEqual(`${just.domain}/${just.action}`, "general/create");
+  });
+
+  it("régression software — Redis ECONNREFUSED inchangé", async () => {
+    const q = "pourquoi mon Redis crash avec cette erreur ECONNREFUSED";
+    assert.equal(isDebugDiagnosticRequest(q), true);
+    assert.equal(isHardwareRepairDiagnosticSignal(q), false);
+    const hit = await runConversationShortCircuit(q);
+    assert.equal(hit?.path, "debug_diagnostic");
   });
 });
