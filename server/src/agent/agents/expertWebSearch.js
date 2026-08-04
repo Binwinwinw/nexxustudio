@@ -13,7 +13,7 @@ import {
   computeOverallConfidence,
   buildRawSummary,
 } from "../normalizers/webEvidenceNormalizer.js";
-import { MAX_RESULTS } from "../policies/webSourcePolicy.js";
+import { MAX_RESULTS } from "../policies/web/index.js";
 import {
   resolveGuidedProductWebSearchLimits,
   applyProductRecoValidationToWebPacket,

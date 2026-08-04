@@ -36,7 +36,7 @@ import {
   resolveGuidedProductIntentContractId,
 } from "../guided/index.js";
 import { extractProductRecommendationSlots } from "../compareChooseCompositePolicy.js";
-import { assessKnowledgeFreshnessRisk } from "../knowledgeFreshnessPolicy.js";
+import { assessKnowledgeFreshnessRisk } from "../web/index.js";
 import { resolveActionDecision } from "../orchestration/index.js";
 import { isLightCulturalRecognitionRequest } from "../pedagogical/index.js";
 import {

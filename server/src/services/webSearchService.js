@@ -13,7 +13,7 @@ import {
   MAX_RESULTS,
   AGENT_USER_AGENT,
   checkUrlPolicy,
-} from '../agent/policies/webSourcePolicy.js';
+} from '../agent/policies/web/index.js';
 import { createWebSearchHttpsAgent } from './webSearchTls.js';
 
 const webSearchHttpsAgent = createWebSearchHttpsAgent();

@@ -2,7 +2,7 @@
  * Shell « je cherche des informations sur X » — priorité factuelle/explicative sur le social.
  */
 import { normalizeFamiliarityQuery } from "./familiarityIntentGuards.js";
-import { isCurrentWebFactRequest } from "../policies/currentWebFactPolicy.js";
+import { isCurrentWebFactRequest } from "../policies/web/index.js";
 import {
   extractResearchThenSummarizeTarget,
   isResearchThenSummarizeRequest,

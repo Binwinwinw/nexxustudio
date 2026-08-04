@@ -2,7 +2,7 @@
  * Fetch HTML contrôlé pour Design Extract.
  */
 import axios from 'axios';
-import { AGENT_USER_AGENT } from '../../agent/policies/webSourcePolicy.js';
+import { AGENT_USER_AGENT } from '../../agent/policies/web/index.js';
 import {
   DESIGN_EXTRACT_TIMEOUT_MS,
   DESIGN_EXTRACT_MAX_HTML_BYTES,

@@ -14,7 +14,7 @@ import {
   isWeatherCurrentRequest,
   parseWeatherCurrentTask,
   resolveWeatherCurrentShortCircuit,
-} from "../src/agent/policies/weatherCurrentRequestPolicy.js";
+} from "../src/agent/policies/web/index.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,

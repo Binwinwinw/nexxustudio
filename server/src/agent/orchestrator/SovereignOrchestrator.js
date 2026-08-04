@@ -54,17 +54,15 @@ import {
 } from "../verification/makersCheckerBridge.js";
 import {
   buildCurrentWebFactRecoveryMessage,
+  findLastExplicitWebSearchUserMessage,
   isCurrentWebFactRequest,
+  isWebSearchThreadMaintenanceMessage,
   parseCurrentWebFactTask,
-} from "../policies/currentWebFactPolicy.js";
+} from "../policies/web/index.js";
 import {
   resolveGuidedProductWebSearchLimits,
   deriveGuidedProductWebSearchQuery,
 } from "../policies/guided/index.js";
-import {
-  findLastExplicitWebSearchUserMessage,
-  isWebSearchThreadMaintenanceMessage,
-} from "../policies/webSearchThreadContinuityPolicy.js";
 import { deriveResearchThenSummarizeWebQuery } from "../policies/researchThenSummarizePolicy.js";
 import { deriveRepoAnalysisWebQuery } from "../utils/repoAnalysisIntentGuards.js";
 import {

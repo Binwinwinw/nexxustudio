@@ -52,8 +52,10 @@ import {
   isSubjectReferenceResumeSatisfiable,
 } from "../familiarity/index.js";
 import { isSubjectReferenceAvailabilityRequest } from "../../micro/continuity/sessionSubjectReferenceGuards.js";
-import { isTrafficCurrentRequestSatisfiable } from "../trafficCurrentRequestPolicy.js";
-import { isWeatherCurrentRequestSatisfiable } from "../weatherCurrentRequestPolicy.js";
+import {
+  isTrafficCurrentRequestSatisfiable,
+  isWeatherCurrentRequestSatisfiable,
+} from "../web/index.js";
 import { isPromptForArtifactSatisfiable } from "../delivery/index.js";
 import { isPedagogySoftOverviewSatisfiable } from "../pedagogical/index.js";
 import { isLexiconExplainLightRequest } from "../pedagogical/index.js";

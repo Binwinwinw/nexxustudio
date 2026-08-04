@@ -42,12 +42,10 @@ import {
 } from "../policies/familiarity/index.js";
 import {
   buildCurrentWebFactRecoveryMessage,
-  isCurrentWebFactRequest,
-} from "../policies/currentWebFactPolicy.js";
-import {
   buildWeatherCurrentRecoveryMessage,
+  isCurrentWebFactRequest,
   isWeatherCurrentRequest,
-} from "../policies/weatherCurrentRequestPolicy.js";
+} from "../policies/web/index.js";
 import {
   buildPedagogySoftOverviewRecoveryMessage,
   isPedagogySoftOverviewSatisfiable,

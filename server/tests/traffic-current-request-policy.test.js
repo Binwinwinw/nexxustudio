@@ -8,12 +8,13 @@ import {
   TRAFFIC_CANONICAL_NO_FRESHNESS_QUERY,
   TRAFFIC_CANONICAL_PARIS_QUERY,
   TRAFFIC_CANONICAL_PAST_NARRATIVE_QUERY,
+  WEATHER_CANONICAL_MIAMI_QUERY,
   buildTrafficCurrentRecoveryMessage,
   buildTrafficCurrentWebQuery,
   isTrafficCurrentRequest,
   parseTrafficCurrentTask,
   resolveTrafficCurrentShortCircuit,
-} from "../src/agent/policies/trafficCurrentRequestPolicy.js";
+} from "../src/agent/policies/web/index.js";
 import {
   isCurrentWebFactMechanismExplanation,
   requiresCurrentWebFactFreshness,
@@ -25,7 +26,6 @@ import {
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolvePipelineFallback } from "../src/agent/utils/genericGreetingGuards.js";
 import { resolveKnowledgeEnrichmentPolicy } from "../src/agent/policies/knowledgeEnrichmentPolicy.js";
-import { WEATHER_CANONICAL_MIAMI_QUERY } from "../src/agent/policies/weatherCurrentRequestPolicy.js";
 
 describe("trafficCurrentRequestPolicy — batterie #38a", () => {
   it("A1 + maintenant → trafic actuel exploitable", () => {

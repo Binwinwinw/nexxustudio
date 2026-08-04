@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { ensureExplicitWebSourceLinks } from "../src/agent/policies/webEvidenceFidelityValidator.js";
+import { ensureExplicitWebSourceLinks } from "../src/agent/policies/web/index.js";
 
 describe("ensureExplicitWebSourceLinks", () => {
   it("append **Sources** avec URLs manquantes pour « sur la toile trouve »", () => {

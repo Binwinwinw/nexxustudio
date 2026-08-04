@@ -2,7 +2,7 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import RobotsParser from 'robots-txt-parser';
 import ollama from '../llm/ollama.js';
-import { checkUrlPolicy, checkContentPolicy } from '../agent/policies/webSourcePolicy.js';
+import { checkUrlPolicy, checkContentPolicy } from '../agent/policies/web/index.js';
 import { sanitizeToolOutput } from './tool-output-sanitizer.js';
 import { validateEgressUrl } from '../security/ssrfProtection.js';
 import { classifyNetworkEgress } from '../hooks/networkEgressPolicy.js';

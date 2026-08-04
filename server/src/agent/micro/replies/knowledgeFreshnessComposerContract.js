@@ -6,7 +6,7 @@ import {
   extractWebVerificationLabel,
   hasSuccessfulWebGrounding,
   requiresBridgedFreshnessFallback,
-} from "../../policies/knowledgeFreshnessPolicy.js";
+} from "../../policies/web/index.js";
 import {
   isExplicitWebSearchRequest,
   wasWebSearchSkippedByContract,

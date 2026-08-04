@@ -2,7 +2,7 @@
  * Politique egress Design Extract — local-only vs hybrid-controlled.
  */
 import { isBlockedEgressUrl } from '../tool-output-sanitizer.js';
-import { checkUrlPolicy } from '../../agent/policies/webSourcePolicy.js';
+import { checkUrlPolicy } from '../../agent/policies/web/index.js';
 
 export const DESIGN_EXTRACT_TIMEOUT_MS = 12_000;
 export const DESIGN_EXTRACT_MAX_HTML_BYTES = 2 * 1024 * 1024;

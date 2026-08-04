@@ -3,11 +3,11 @@
  */
 import { resolveGeneralKnowledgeEnrichmentPolicy } from "./generalKnowledgeEnrichmentPolicy.js";
 import { resolveInformationSeekingEnrichmentPolicy } from "./informationSeekingOrchestrationPolicy.js";
-import { assessKnowledgeFreshnessRisk } from "../knowledgeFreshnessPolicy.js";
 import {
+  assessKnowledgeFreshnessRisk,
   isCurrentWebFactRequest,
   parseCurrentWebFactTask,
-} from "../currentWebFactPolicy.js";
+} from "../web/index.js";
 import { isAdminProcedureRequest } from "../../utils/adminProcedureIntentGuards.js";
 
 export const KNOWLEDGE_ENRICHMENT_RULE = "unified_knowledge_and_freshness_enrichment";

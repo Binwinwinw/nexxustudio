@@ -5,7 +5,7 @@ import {
   detectsWebEvidenceDenial,
   validateWebEvidenceFidelityReply,
   extractWebSourcesFromPacket,
-} from "../src/agent/policies/webEvidenceFidelityValidator.js";
+} from "../src/agent/policies/web/index.js";
 
 describe("webEvidenceFidelityValidator", () => {
   it("détecte un déni alors que des preuves web existent", () => {

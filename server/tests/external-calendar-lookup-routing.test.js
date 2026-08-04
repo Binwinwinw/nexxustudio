@@ -8,7 +8,7 @@ import {
   shouldBypassLocalDatetimeShortCircuit,
   buildExternalCalendarWebQuery,
 } from "../src/agent/utils/externalCalendarLookupIntentGuards.js";
-import { resolveExternalCalendarLookupShortCircuit } from "../src/agent/policies/externalCalendarLookupPolicy.js";
+import { resolveExternalCalendarLookupShortCircuit } from "../src/agent/policies/web/index.js";
 import { resolveSimpleDeterministicFromFrame } from "../src/agent/policies/conversationIntentFrame.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { shouldUseSemanticResolution } from "../src/agent/micro/classifiers/semanticIntentResolver.js";

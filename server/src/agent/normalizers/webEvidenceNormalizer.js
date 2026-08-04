@@ -9,7 +9,7 @@ import {
   checkContentPolicy,
   getSourceConfidence,
   MAX_SNIPPET_LENGTH,
-} from '../policies/webSourcePolicy.js';
+} from '../policies/web/index.js';
 
 /**
  * Normalise un résultat brut DuckDuckGo en source structurée.

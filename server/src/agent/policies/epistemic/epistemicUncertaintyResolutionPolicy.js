@@ -8,12 +8,14 @@
  */
 import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
 import { isSubstantiveWorkRequest } from "../../utils/genericGreetingGuards.js";
-import { assessKnowledgeFreshnessRisk } from "../knowledgeFreshnessPolicy.js";
+import {
+  assessKnowledgeFreshnessRisk,
+  isWebSearchThreadMaintenanceMessage,
+} from "../web/index.js";
 import {
   isExplicitWebSearchRequest,
   isWebSearchThreadActive,
 } from "../explicitWebSearchRequestPolicy.js";
-import { isWebSearchThreadMaintenanceMessage } from "../webSearchThreadContinuityPolicy.js";
 import {
   isSocialChatThreadActive,
   isSoftSocialChatFollowup,

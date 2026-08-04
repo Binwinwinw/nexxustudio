@@ -17,8 +17,9 @@ import {
 } from "../src/agent/policies/explicitWebSearchRequestPolicy.js";
 import {
   isWebSearchThreadMaintenanceMessage,
+  requiresBridgedFreshnessFallback,
   resolveWebSearchThreadMaintenanceShortCircuit,
-} from "../src/agent/policies/webSearchThreadContinuityPolicy.js";
+} from "../src/agent/policies/web/index.js";
 import { resolveEpistemicUncertaintyShortCircuit } from "../src/agent/policies/epistemic/index.js";
 import {
   resolveIntentContract,
@@ -27,9 +28,6 @@ import {
 import { isOpenProjectIdeation } from "../src/agent/config/modeResponseContracts.js";
 import { isPresentationOutlineRequest } from "../src/agent/utils/presentationOutlineIntentGuards.js";
 import { understandQuery } from "../src/agent/policies/conversationQueryUnderstanding.js";
-import {
-  requiresBridgedFreshnessFallback,
-} from "../src/agent/policies/knowledgeFreshnessPolicy.js";
 import {
   buildKnowledgeFreshnessSystemAddon,
 } from "../src/agent/micro/replies/knowledgeFreshnessComposerContract.js";

@@ -9,7 +9,7 @@ import {
   extractWebVerificationLabel,
   requiresBridgedFreshnessFallback,
   isStableCategoryKnowledge,
-} from "../src/agent/policies/knowledgeFreshnessPolicy.js";
+} from "../src/agent/policies/web/index.js";
 import { resolveKnowledgeEnrichmentPolicy } from "../src/agent/policies/knowledgeEnrichmentPolicy.js";
 import {
   requiresKnowledgeFreshnessComposerContract,

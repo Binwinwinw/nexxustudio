@@ -8,7 +8,7 @@ import {
 } from "../../utils/compareChooseIntentGuards.js";
 import { buildDirectArbitrationSystemAddon } from "./directArbitrationComposerContract.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../../config/modeResponseContracts.js";
-import { hasSuccessfulWebGrounding } from "../../policies/knowledgeFreshnessPolicy.js";
+import { hasSuccessfulWebGrounding } from "../../policies/web/index.js";
 import { buildKnowledgeFreshnessUserAddon } from "./knowledgeFreshnessComposerContract.js";
 import responseThinkingCleaner from "../../utils/responseThinkingCleaner.js";
 

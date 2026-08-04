@@ -8,7 +8,7 @@ import {
   isCompareChooseRequest,
   extractCompareDomain,
 } from "../../utils/compareChooseIntentGuards.js";
-import { resolveWebSearchThreadMaintenanceShortCircuit } from "../webSearchThreadContinuityPolicy.js";
+import { resolveWebSearchThreadMaintenanceShortCircuit } from "../web/index.js";
 
 export const EXPLICIT_WEB_SEARCH_REQUEST_RULE = "explicit_web_search_request_v1";
 

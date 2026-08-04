@@ -4,7 +4,7 @@
  */
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { TRUSTED_DOMAIN_PATTERNS } from "../agent/policies/webSourcePolicy.js";
+import { TRUSTED_DOMAIN_PATTERNS } from "../agent/policies/web/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_MCP_SERVERS_DIR = path.resolve(

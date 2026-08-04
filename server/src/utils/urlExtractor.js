@@ -6,7 +6,7 @@ import {
   RATE_LIMIT_MS,
   checkUrlPolicy,
   checkContentPolicy,
-} from "../agent/policies/webSourcePolicy.js";
+} from "../agent/policies/web/index.js";
 import { validateEgressUrl } from "../security/ssrfProtection.js";
 import { sanitizeToolOutput } from "../services/tool-output-sanitizer.js";
 
