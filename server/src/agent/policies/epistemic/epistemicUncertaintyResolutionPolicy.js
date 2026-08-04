@@ -19,6 +19,7 @@ import {
 import {
   isSocialChatThreadActive,
   isSoftSocialChatFollowup,
+  isWellbeingCheckinIntent,
   resolveCulturalReferenceHypothesis,
 } from "../social/index.js";
 
@@ -357,6 +358,7 @@ export function evaluateEpistemicUncertaintyResolution(query = "", options = {})
 export function resolveEpistemicUncertaintyShortCircuit(query = "", options = {}) {
   if (!query || !String(query).trim()) return null;
   if (isSubstantiveWorkRequest(query)) return null;
+  if (isWellbeingCheckinIntent(query)) return null;
 
   const evaluation = evaluateEpistemicUncertaintyResolution(query, options);
   const { action, reply, state, socialChatThread } = evaluation;

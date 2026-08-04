@@ -78,8 +78,17 @@ const SELF_ANALYSIS_PATTERNS = [
   /\b(tu es|es tu) en capacite de t\b/,
   /\b(tu es|es tu) en capacité de t\b/,
   /\btes (ameliorations?|améliorations?) (cote|coté|structure|reponse|réponse|conversation)\b/,
+];
+
+/** Identité assistant — social_deterministic, pas self_analysis méta. */
+const ASSISTANT_IDENTITY_PATTERNS = [
   /\bcomment t appelles\b/,
   /\bcomment tu t appelles\b/,
+  /\bquel est ton nom\b/,
+  /\bqui es tu\b/,
+  /\bqui tu es\b/,
+  /\bqui est nexxus\b/,
+  /\bqui est nexus\b/,
 ];
 
 const TEMPORAL_AWARENESS_PATTERNS = [
@@ -126,6 +135,17 @@ function matchesAny(text, patterns) {
   return patterns.some((p) => p.test(text));
 }
 
+/**
+ * Question d'identité pure (« comment t'appelles-tu ? », « qui es-tu ? »).
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function isAssistantIdentityQuestion(query = "") {
+  const text = normalizeText(query);
+  if (!text) return false;
+  return matchesAny(text, ASSISTANT_IDENTITY_PATTERNS);
+}
+
 function isMetaFieldBroad(text) {
   return (
     isUiNavigationRestructureFeedback(text) ||
@@ -153,6 +173,7 @@ function looksIncompleteQuery(text) {
  */
 export function classifyMetaConversationIntent(query = "") {
   if (isPhaticSocialCheckinIntent(query)) return null;
+  if (isAssistantIdentityQuestion(query)) return null;
 
   const text = normalizeText(query);
   const wc = wordCount(query);

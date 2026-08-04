@@ -63,6 +63,14 @@ class ResponseThinkingCleaner {
       /\n\s*\(\d+\)\s+(Analyzing|Thinking|Reasoning|Réfléchir|Penser|Analyser).*?(?=\n\s*\(|\n[A-Z]|\n$)/gis,
     ];
 
+    // Narration méta en français (« L'utilisateur me demande… », consignes recopiées)
+    this.metaNarrationPatterns = [
+      /\bL['']utilisateur\b[^.!?\n]*[.!?]+/gi,
+      /\bJe dois (?:répondre|réfléchir|tutoyer|rester)\b[^.!?\n]*[.!?]+/gi,
+      /\bselon (?:le mode|les consignes)\b[^.!?\n]*[.!?]+/gi,
+      /\b(?:définies?|indiquées?) dans les consignes\b[^.!?\n]*[.!?]+/gi,
+    ];
+
     // Marqueurs de consignes internes recopiées par le modèle (fuite de prompt)
     this.promptLeakPatterns = [
       /La réponse visible ne doit contenir aucune balise\.?/gi,
@@ -104,6 +112,11 @@ class ResponseThinkingCleaner {
       cleaned = cleaned.replace(pattern, "");
     }
 
+    // 4b. Narration méta / commentaire de rédaction exposé à l'utilisateur
+    for (const pattern of this.metaNarrationPatterns) {
+      cleaned = cleaned.replace(pattern, "");
+    }
+
     // 5. Suppression des fuites de consignes système
     for (const pattern of this.promptLeakPatterns) {
       cleaned = cleaned.replace(pattern, "");
@@ -142,6 +155,9 @@ class ResponseThinkingCleaner {
       /\[REASONING\]/gi,
       /La réponse visible ne doit contenir/gi,
       /balise de pensée/gi,
+      /\bL['']utilisateur\b/i,
+      /\bJe dois répondre brièvement\b/i,
+      /selon le mode SIMPLE_FAST/i,
     ];
 
     for (const pattern of suspiciousPatterns) {

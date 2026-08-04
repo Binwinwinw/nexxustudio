@@ -34,11 +34,27 @@ const GRATITUDE_SIMPLE_RE =
 const MOOD_CHECKIN_RE =
   /\b(?:ca roule|ça roule|quel mood|dans quel mood|comment tu te sens ce soir)\b/i;
 
+const WELLBEING_CHECKIN_RE =
+  /(?:comment\s+(?:(?:ça|ca)\s+)?(?:va|se\s+passe|roule)|comment\s+(?:tu\s+)?vas|comment\s+vas[- ]?tu|(?:^|\s)(?:ça|ca)\s+va|tu\s+vas\s+bien|(?:^|\s)tout\s+roule|(?:^|\s)ça\s+roule|(?:^|\s)ca\s+roule)/i;
+
+const WELLBEING_LOCATIVE_RE =
+  /(?:l[àa]\s+dedans|chez\s+(?:toi|vous)|de\s+ton\s+c[ôo]t[ée]|de\s+votre\s+c[ôo]t[ée]|ici\b)/i;
+
+/** « comment tu vas gérer ça » — pas un check-in wellbeing. */
+const WELLBEING_ACTION_BOUND_RE =
+  /\b(?:va|vas|passe|roule)\s+(?:bien\s+)?(?:g[ée]rer|gerer|faire|r[ée]gler|se\s+passer\s+pour|marcher|aider|r[ée]parer|corriger|voir|r[ée]soudre|fonctionner|impacter|casser)\b/i;
+
+const WELLBEING_EXPLANATORY_RE =
+  /\bcomment\s+(?:fonctionne|marche|cr[ée]er|creer|faire|utiliser|impl[ée]menter|configurer|d[ée]boguer|deboguer|installer|d[ée]ployer|deployer)\b/i;
+
+const WELLBEING_CONDITIONAL_RE =
+  /\bcomment\s+(?:ça|ca)\s+se\s+passe\s+si\b/i;
+
 const PAPOTER_CITADELLE_RE =
   /\b(?:on\s+)?papot(?:e|er|ons)(?:\s+un\s+peu)?\b.{0,50}\b(?:citadelle|nexxus)\b/i;
 
 const PHATIC_CHECKIN_RE =
-  /\b(?:(?:qu['\u2019]?\s*est[- ]ce que\s+)?(?:tu|vous)\s+)?fais(?:es|ez)?\s+quoi\s+de\s+(?:beau|bon|chouette|neuf)\b|\b(?:qu['\u2019]?\s*est[- ]ce que\s+)?(?:tu|vous)\s+fais(?:es|ez)?\s+de\s+(?:beau|bon|chouette|neuf)\b|\bquoi\s+de\s+(?:beau|bon|chouette|neuf)\b|\b(?:tu|vous)\s+bosses?\s+sur\s+quoi\b/i;
+  /\bqu['\u2019]?\s*est[- ]?ce\s+que\s+(?:tu|vous)\s+fais(?:es|ez)?\b|\b(?:(?:qu['\u2019]?\s*est[- ]?ce\s+que\s+)?(?:tu|vous)\s+)?fais(?:es|ez)?\s+quoi(?:\s+de\s+(?:beau|bon|chouette|neuf))?\b|\bquoi\s+de\s+(?:beau|bon|chouette|neuf)\b|\b(?:tu|vous)\s+bosses?\s+sur\s+quoi\b/i;
 
 const PHATIC_BARE_ACTIVITY_RE =
   /^(?:salut|bonjour|hello|coucou|hey|bonsoir)\b.{0,40}\b(?:qu['\u2019]?\s*est[- ]ce que\s+)?(?:tu|vous)\s+fais(?:es|ez)?(?:\s+de\s+(?:beau|bon|chouette|neuf))?\s*[?!.…]*$|^(?:qu['\u2019]?\s*est[- ]ce que\s+)?(?:tu|vous)\s+fais(?:es|ez)?(?:\s+de\s+(?:beau|bon|chouette|neuf))?\s*[?!.…]*$|^(?:tu|vous)\s+fais\s+quoi\s*[?!.…]*$/i;
@@ -79,6 +95,10 @@ const WHIMSICAL_PIVOT_RE =
 const DELIVERABLE_CREATE_RE =
   /\b(?:cree|créer|creer|generer|générer|agent|code|html|json|projet|application|script|module|api)\b/i;
 
+/** Salutation seule — tour autonome, pas un sujet de fil papoter. */
+const GREETING_ONLY_RE =
+  /^(?:salut|bonjour|hello|coucou|hey|bonsoir|yo|yop|yépa|yepa)(?:\s+(?:salut|bonjour|hello|coucou|hey|bonsoir|yo|yop))?\s*[?!.…]*$/i;
+
 /**
  * @param {string} query
  * @returns {boolean}
@@ -89,6 +109,37 @@ export function isPhaticSocialCheckinIntent(query = "") {
   if (suppressesKnownSocialPattern(query)) return false;
   if (PHATIC_TASK_OBJECT_RE.test(q)) return false;
   return PHATIC_CHECKIN_RE.test(q) || PHATIC_BARE_ACTIVITY_RE.test(q);
+}
+
+/**
+ * Check-in wellbeing pur (« comment ça va ? », « tu vas bien ? ») — indépendant du fil papoter.
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function isWellbeingCheckinIntent(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q) return false;
+  if (WELLBEING_ACTION_BOUND_RE.test(q)) return false;
+  if (WELLBEING_EXPLANATORY_RE.test(q)) return false;
+  if (WELLBEING_CONDITIONAL_RE.test(q)) return false;
+  if (isPhaticSocialCheckinIntent(query)) return true;
+  if (WELLBEING_CHECKIN_RE.test(q)) return true;
+  if (WELLBEING_LOCATIVE_RE.test(q) && /\b(?:se\s+passe|roule|va\b)\b/i.test(q)) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Salutation pure (« salut salut », « bonjour ») — indépendante du fil papoter.
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function isGreetingOnlyIntent(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || q.length > 48) return false;
+  if (suppressesKnownSocialPattern(query)) return false;
+  return GREETING_ONLY_RE.test(q);
 }
 
 /**

@@ -30,6 +30,8 @@ export function buildExploratoryConversationSystemAddon(query = "") {
     "- « Je vois la piste, mais pas encore la destination… »",
     "- Clarification objectif/format/livrable.",
     "- Refus repeated_fallback ou orchestrateur lourd.",
+    "- Exposer ta réflexion interne (« L'utilisateur… », « Je dois… », « selon les consignes… »).",
+    "- Parler de toi à la 3e personne comme un commentaire de rédaction.",
   ].join("\n");
 }
 

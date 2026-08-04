@@ -4,6 +4,8 @@ import assert from "node:assert/strict";
 import {
   isSocialChatThreadActive,
   isSoftSocialChatFollowup,
+  isWellbeingCheckinIntent,
+  isPhaticSocialCheckinIntent,
   resolveCulturalReferenceHypothesis,
   resolveSocialChatContinuityShortCircuit,
 } from "../src/agent/policies/social/index.js";
@@ -154,6 +156,68 @@ describe("social chat continuity — sujet court après chat_invite", () => {
     assert.match(hit?.reflectiveHint || "", /mod[eè]le de langage/i);
     assert.match(hit?.reflectiveHint || "", /INTERDIT/i);
     assert.ok(!hit?.reply);
+  });
+
+  it("check-in wellbeing après offre papoter → social_deterministic, pas exploratory", async () => {
+    const history = [
+      { role: "user", content: "salut salut" },
+      {
+        role: "assistant",
+        content:
+          "Salut ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
+      },
+    ];
+    const q = "comment ça va ?";
+    assert.equal(isWellbeingCheckinIntent(q), true);
+    assert.equal(isSoftSocialChatFollowup(q), false);
+    assert.equal(resolveSocialChatContinuityShortCircuit(q, { history }), null);
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.equal(hit?.path, "social_deterministic");
+    assert.notEqual(hit?.path, "exploratory_conversation_light");
+    assert.ok(hit?.reply);
+    assert.doesNotMatch(hit?.reply || "", /on discute de quoi/i);
+  });
+
+  it("re-salutation dans fil papoter → social_deterministic, pas exploratory", async () => {
+    const history = [
+      { role: "user", content: "salut salut" },
+      {
+        role: "assistant",
+        content:
+          "Salut ! Si tu veux on peut papoter ou je t'aide à cadrer un projet. Qu'est-ce que tu veux faire ?",
+      },
+      { role: "user", content: "comment ça va ?" },
+      { role: "assistant", content: "Oui bien sûr, on discute de quoi ?" },
+    ];
+    assert.equal(isSoftSocialChatFollowup("salut salut"), false);
+    const hit = await runConversationShortCircuit("salut salut", { history });
+    assert.equal(hit?.path, "social_deterministic");
+    assert.notEqual(hit?.path, "exploratory_conversation_light");
+  });
+
+  it("qu'est-ce que tu fais après check-in → phatic social, pas exploratory LLM", async () => {
+    const history = [
+      { role: "user", content: "salut salut" },
+      {
+        role: "assistant",
+        content:
+          "Salut ! Si tu veux on peut papoter ou je t'aide à cadrer un projet. Qu'est-ce que tu veux faire ?",
+      },
+      { role: "user", content: "comment ça va ?" },
+      {
+        role: "assistant",
+        content: "Ça va bien de mon côté. Tu veux avancer sur quoi aujourd'hui ?",
+      },
+    ];
+    const q = "ben rien de spé et toi qu'est-ce que tu fais ?";
+    assert.equal(isPhaticSocialCheckinIntent(q), true);
+    assert.equal(isSoftSocialChatFollowup(q), false);
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.equal(hit?.path, "social_deterministic");
+    assert.equal(hit?.socialPatternName, "social/phatic_checkin");
+    assert.notEqual(hit?.path, "exploratory_conversation_light");
+    assert.ok(hit?.reply);
+    assert.doesNotMatch(hit?.reply || "", /L'utilisateur me demande/i);
   });
 
   it("short-circuit → exploratory_conversation_light + rewrite", async () => {

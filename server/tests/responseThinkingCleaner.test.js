@@ -106,6 +106,15 @@ Plus de texte.
     assert(blocks.some((b) => b.content.includes("Action cachée")));
   });
 
+  it("supprime la narration méta exposée (« L'utilisateur me demande… »)", () => {
+    const input =
+      "L'utilisateur me demande ce que je fais concrètement. Je suis dispo — on peut papoter ou avancer sur un projet.";
+    const output = responseThinkingCleaner.clean(input);
+    assert.doesNotMatch(output, /L['']utilisateur/i);
+    assert.match(output, /Je suis dispo/i);
+    assert.strictEqual(responseThinkingCleaner.hasEscapedThinking(input), true);
+  });
+
   it("supprime les fuites de consignes système", () => {
     const input =
       ". La réponse visible ne doit contenir aucune balise.";

@@ -21,6 +21,11 @@ import {
   resolveLocalSimpleFactualAnswer,
 } from "../micro/replies/simpleFactualComposer.js";
 import { resolveLocalDeterministicFallback, resolvePipelineFallback } from "../utils/genericGreetingGuards.js";
+import responseThinkingCleaner from "../utils/responseThinkingCleaner.js";
+import {
+  composeMannerReply,
+  RESPONSE_MANNER_FAMILIES,
+} from "../policies/posture/index.js";
 import {
   resolveMathSimpleShortCircuit,
   resolveMathRootShortCircuit,
@@ -643,6 +648,22 @@ export async function invokeSimpleFastLlm({
     : null;
 
   let adaptedFastOut = delivery.text;
+  if (
+    shortCircuit?.socialChatContinuity ||
+    shortCircuit?.exploratoryConversation
+  ) {
+    adaptedFastOut = responseThinkingCleaner.clean(adaptedFastOut);
+    if (
+      !String(adaptedFastOut || "").trim() ||
+      responseThinkingCleaner.hasEscapedThinking(adaptedFastOut)
+    ) {
+      adaptedFastOut = composeMannerReply({
+        family: RESPONSE_MANNER_FAMILIES.SOCIAL_PHATIC_CONTINUITY,
+        history,
+        salt: query,
+      });
+    }
+  }
   if (
     translationPlan?.multiTarget &&
     !delivery.usedRecoveryFallback &&

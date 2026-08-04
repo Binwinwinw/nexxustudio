@@ -8,7 +8,13 @@ import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIn
 import { isGeneralKnowledgeRequest } from "../../utils/generalKnowledgeIntentGuards.js";
 import { isExplicitWebSearchRequest } from "../explicitWebSearchRequestPolicy.js";
 import { isConversationMemoryRecallRequest, isAttachedVisionRequest } from "../../utils/conversationGuards.js";
-import { isPersonalDiscomfortIntent } from "./socialPatternPolicy.js";
+import {
+  classifySocialPattern,
+  isGreetingOnlyIntent,
+  isPersonalDiscomfortIntent,
+  isPhaticSocialCheckinIntent,
+  isWellbeingCheckinIntent,
+} from "./socialPatternPolicy.js";
 import { isMetaConversationIntent } from "../../utils/metaConversationIntentGuards.js";
 
 export const SOCIAL_CHAT_CONTINUITY_RULE = "social_chat_continuity_g46_2";
@@ -167,6 +173,11 @@ export function isSocialChatThreadActive(history = []) {
 export function isSoftSocialChatFollowup(query = "") {
   const q = norm(query);
   if (!q || q.length < 2 || q.length > 180) return false;
+  // Tours sociaux autonomes — pas un sujet à injecter dans le fil papoter.
+  if (isGreetingOnlyIntent(query)) return false;
+  if (isWellbeingCheckinIntent(query)) return false;
+  if (isPhaticSocialCheckinIntent(query)) return false;
+  if (classifySocialPattern(query)) return false;
   if (isSubstantiveWorkRequest(query)) return false;
   if (HARD_TASK_BREAK_RE.test(q)) return false;
   if (isExplicitWebSearchRequest(query)) return false;
@@ -236,6 +247,8 @@ export function buildSocialChatContinuityAddon(topic = "ce sujet") {
     "- Refus « Je vois la piste, mais pas encore la destination… ».",
     "- Encyclopédie / Molière / recherche web non demandée.",
     "- Pivot projet / Forge / handoff technique non demandé.",
+    "- Exposer ta réflexion interne (« L'utilisateur… », « Je dois… », « selon les consignes… »).",
+    "- Parler de toi à la 3e personne comme un commentaire de rédaction.",
   ].join("\n");
 }
 
@@ -293,6 +306,14 @@ export function buildCulturalHypothesisReply(hypothesis = {}) {
 export function resolveSocialChatContinuityShortCircuit(query = "", options = {}) {
   const history = options.history || [];
   if (isAttachedVisionRequest(query, options.attachments || [])) return null;
+  if (
+    isGreetingOnlyIntent(query) ||
+    isWellbeingCheckinIntent(query) ||
+    isPhaticSocialCheckinIntent(query) ||
+    classifySocialPattern(query)
+  ) {
+    return null;
+  }
   if (!isSocialChatThreadActive(history) && !isAssistantChatOpenOffer(lastAssistantText(history))) {
     return null;
   }

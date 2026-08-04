@@ -66,6 +66,26 @@ describe("meta — intentShortCircuit", () => {
     assert.doesNotMatch(hit.reply, /citadel_indexer/i);
   });
 
+  it("identité pure → social_deterministic, pas self_analysis méta", async () => {
+    assert.equal(classifyMetaConversationIntent("comment t'appelles tu ?"), null);
+    const history = [
+      { role: "user", content: "comment ça va ??" },
+      {
+        role: "assistant",
+        content: "Ça va bien de mon côté. Tu veux avancer sur quoi aujourd'hui ?",
+      },
+    ];
+    const hit = await runConversationShortCircuit("comment t'appelles tu ?", {
+      history,
+    });
+    assert.equal(hit?.path, "social_deterministic");
+    assert.notEqual(hit?.path, "meta_conversation_deterministic");
+    assert.notEqual(hit?.metaSubKind, "self_analysis");
+    assert.ok(hit?.reply);
+    assert.match(hit.reply, /NEXXUS|Nexxus|Citadelle/i);
+    assert.doesNotMatch(hit.reply, /auto-analyse|améliorations récentes/i);
+  });
+
   it("route conscience temporelle avant multi_segment (pas salutation générique)", async () => {
     const query =
       "comment faire pour te faire maitriser le sens de l'heure pour en prendre conscience?";
