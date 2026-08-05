@@ -19,7 +19,7 @@ import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
 } from "../src/agent/policies/clarificationDecisionPolicy.js";
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 
 const INTERSTELLAR_QUERY =

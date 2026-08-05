@@ -2,7 +2,7 @@
  * Baseline terrain — couloir simple_factual_lookup + factualSanityGate.
  * Usage: node scripts/probe-simple-factual-terrain.mjs
  */
-import { isSimpleFactualQuestion, evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { isSimpleFactualQuestion, evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import {
   resolveLocalSimpleFactualAnswer,

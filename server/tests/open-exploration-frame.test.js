@@ -14,7 +14,7 @@ import {
 import {
   evaluateJustIntent,
   resolveIntentDomain,
-} from "../src/agent/policies/justIntentDetectionPolicy.js";
+} from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import {
   CLARIFICATION_DECISIONS,
   resolveClarificationGate,

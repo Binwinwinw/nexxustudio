@@ -27,7 +27,7 @@ import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
 } from "../src/agent/policies/clarificationDecisionPolicy.js";
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolveDocumentSynthesisShortCircuit } from "../src/agent/policies/document/index.js";
 import { INTENT_DOMAINS, INTENT_ACTIONS } from "../../shared/justIntentCatalog.js";

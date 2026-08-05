@@ -1,4 +1,4 @@
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 
 const queries = [
   "salut salut comment ça va j'ai besoin de ton aide pour la correction de mon index.php <?php echo 'hello'; ?>",

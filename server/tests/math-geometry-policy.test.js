@@ -22,9 +22,9 @@ import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
 } from "../src/agent/policies/clarificationDecisionPolicy.js";
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { analyzeConversationIntentFrame } from "../src/agent/policies/conversationIntentFrame.js";
+import { analyzeConversationIntentFrame } from "../src/agent/policies/intent/conversationIntentFrame.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseContracts.js";
 
 describe("mathGeometryPolicy — G21.1 extraction operation × shape", () => {

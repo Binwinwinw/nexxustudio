@@ -9,7 +9,7 @@ import { isHtmlProjectDeliverable } from "../src/agent/policies/delivery/index.j
 import {
   evaluateJustIntent,
   buildJustIntentAddon,
-} from "../src/agent/policies/justIntentDetectionPolicy.js";
+} from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import {
   INTENT_DOMAINS,
   INTENT_ACTIONS,

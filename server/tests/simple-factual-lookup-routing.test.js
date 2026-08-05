@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import {
   isSimpleFactualQuestion,
   evaluateJustIntent,
-} from "../src/agent/policies/justIntentDetectionPolicy.js";
+} from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { resolveLocalSimpleFactualAnswer } from "../src/agent/micro/replies/simpleFactualComposer.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { EXECUTION_STRATEGIES } from "../../shared/justIntentCatalog.js";

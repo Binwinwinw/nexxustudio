@@ -12,7 +12,7 @@ import {
   resolveIntentDomain,
   buildJustIntentAddon,
   shouldApplyJustIntentClarification,
-} from "../src/agent/policies/justIntentDetectionPolicy.js";
+} from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { resolveAiVerificationNotice } from "../src/agent/policies/epistemic/index.js";
 import { buildJustIntentTelemetryEvent } from "../src/agent/telemetry/justIntentTelemetry.js";
 

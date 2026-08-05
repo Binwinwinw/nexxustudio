@@ -1,4 +1,4 @@
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 
 const queries = [
   "ok, corrige ça",

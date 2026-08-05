@@ -12,7 +12,7 @@ import {
   getIntentFamilyCanonicalMatrixV1,
   validateIntentFamilyRegistryV1,
   resolveIntentFamilyFromRegistry,
-} from "../src/agent/policies/intentFamilyRegistry.js";
+} from "../src/agent/policies/intent/intentFamilyRegistry.js";
 import {
   TECHNICAL_LEARNING_BLUEPRINTS,
   normalizeTechnicalLearningTarget,
@@ -29,7 +29,7 @@ import {
 import {
   evaluateJustIntent,
   buildJustIntentAddon,
-} from "../src/agent/policies/justIntentDetectionPolicy.js";
+} from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { isHtmlProjectDeliverable } from "../src/agent/policies/delivery/index.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import {
@@ -42,7 +42,7 @@ import {
   INTENT_ACTIONS,
   DELIVERABLE_TYPES,
 } from "../../shared/justIntentCatalog.js";
-import { analyzeRequestIntentFrame } from "../src/agent/policies/requestIntentFrame.js";
+import { analyzeRequestIntentFrame } from "../src/agent/policies/intent/requestIntentFrame.js";
 import {
   decomposeRequest,
   allWorkUnitsSatisfiable,

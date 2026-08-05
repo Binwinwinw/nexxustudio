@@ -1,7 +1,7 @@
 /**
  * Shadow telemetry — RequestIntentFrame vs path servi (v1.1 observation).
  */
-import { analyzeRequestIntentFrame } from "../policies/requestIntentFrame.js";
+import { analyzeRequestIntentFrame } from "../policies/intent/requestIntentFrame.js";
 import { isInformationSeekingWithTarget } from "../utils/informationSeekingIntentGuards.js";
 
 export const REQUEST_INTENT_FRAME_TELEMETRY_EVENT = "request_intent_frame_shadow";

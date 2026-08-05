@@ -11,8 +11,8 @@ import {
 } from "../src/agent/utils/learningRequestIntentGuards.js";
 import { isCompareChooseRequest } from "../src/agent/utils/compareChooseIntentGuards.js";
 import { isInformationSeekingWithTarget } from "../src/agent/utils/informationSeekingIntentGuards.js";
-import { analyzeRequestIntentFrame } from "../src/agent/policies/requestIntentFrame.js";
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { analyzeRequestIntentFrame } from "../src/agent/policies/intent/requestIntentFrame.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { isTechnicalLearningPathRequest } from "../src/agent/utils/technicalLearningPathIntentGuards.js";
 
 describe("learningRequestIntentGuards", () => {

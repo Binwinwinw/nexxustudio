@@ -16,7 +16,7 @@ import {
 import {
   evaluateJustIntent,
   isSimpleFactualQuestion,
-} from "../src/agent/policies/justIntentDetectionPolicy.js";
+} from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolvePipelineFallback } from "../src/agent/utils/genericGreetingGuards.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseContracts.js";

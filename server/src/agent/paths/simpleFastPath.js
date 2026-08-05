@@ -6,7 +6,7 @@ import {
   RESPONSE_MODES,
 } from "../config/modeResponseContracts.js";
 import { shouldBlockGenericInsufficientRefusal } from "../policies/posture/index.js";
-import { isSimpleFactualQuestion } from "../policies/justIntentDetectionPolicy.js";
+import { isSimpleFactualQuestion } from "../policies/intent/justIntentDetectionPolicy.js";
 import { isPedagogicalOverviewRequest } from "../utils/pedagogicalOverviewIntentGuards.js";
 import { isBeginnerTopicOverviewRequest } from "../utils/beginnerTopicOverviewIntentGuards.js";
 import { isPedagogySoftOverviewRequest } from "../utils/pedagogySoftOverviewIntentGuards.js";

@@ -1,4 +1,4 @@
-import { analyzeRequestIntentFrame } from "../src/agent/policies/requestIntentFrame.js";
+import { analyzeRequestIntentFrame } from "../src/agent/policies/intent/requestIntentFrame.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 
 import { isTechnicalLearningPathRequest, isTechnicalLearningPathSignal } from "../src/agent/utils/technicalLearningPathIntentGuards.js";

@@ -1,6 +1,6 @@
 import { IntentStage } from "../src/agent/stages/IntentStage.js";
 import { runSemanticPreProcessing } from "../src/agent/stages/semanticPreProcessor.js";
-import { resolveIntentDomain, resolveIntentAction } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { resolveIntentDomain, resolveIntentAction } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import fs from "fs";
 
 const TEST_FAMILIES = [

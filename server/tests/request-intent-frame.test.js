@@ -7,7 +7,7 @@ import {
   resolveFamilyHint,
   projectFrameToJustIntentHints,
   REQUEST_INTENT_FRAME_VERSION,
-} from "../src/agent/policies/requestIntentFrame.js";
+} from "../src/agent/policies/intent/requestIntentFrame.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 
 describe("requestIntentFrame — axes métier v1.1", () => {

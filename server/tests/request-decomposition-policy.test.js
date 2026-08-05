@@ -15,7 +15,7 @@ import {
 } from "../src/agent/policies/requestDecompositionPolicy.js";
 import { buildRequestDecompositionTelemetryEvent } from "../src/agent/telemetry/requestDecompositionTelemetry.js";
 import { resolveClarificationGate } from "../src/agent/policies/clarificationDecisionPolicy.js";
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import {
   buildMultiUnitCompositeReply,
   canServeMultiUnitComposite,

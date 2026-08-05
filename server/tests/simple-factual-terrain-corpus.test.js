@@ -7,7 +7,7 @@ import {
   FACTUAL_SANITY_DECISIONS,
 } from "../src/agent/micro/replies/factualSanityGate.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { EXECUTION_STRATEGIES } from "../../shared/justIntentCatalog.js";
 
 function inferPipelineVerdict(hit, justIntent) {

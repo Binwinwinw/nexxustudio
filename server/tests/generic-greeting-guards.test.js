@@ -47,7 +47,7 @@ describe("genericGreetingGuards", () => {
 
   it("yop + comment ça va — small talk, pas question factuelle", async () => {
     const { isSimpleFactualQuestion } = await import(
-      "../src/agent/policies/justIntentDetectionPolicy.js"
+      "../src/agent/policies/intent/justIntentDetectionPolicy.js"
     );
     const { isCasualSocialCheckInQuery } = await import(
       "../src/agent/utils/genericGreetingGuards.js"

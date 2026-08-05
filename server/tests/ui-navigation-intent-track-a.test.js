@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { isUiNavigationRestructureFeedback } from "../src/agent/utils/uiNavigationFeedbackGuards.js";
 import { resolveReactAuditShortCircuitEmit } from "../src/agent/policies/reactAuditShortCircuit.js";
 import { INTENT_ACTIONS } from "../../shared/justIntentCatalog.js";

@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getValidator } from '../../validators/compileSchemas.js';
-import { analyzeRequestIntentFrame } from '../requestIntentFrame.js';
+import { analyzeRequestIntentFrame } from '../intent/requestIntentFrame.js';
 import { isContextReferenceRequest } from '../../utils/contextReferenceIntentGuards.js';
 import {
   isMetaAssistantBehaviorRequest,

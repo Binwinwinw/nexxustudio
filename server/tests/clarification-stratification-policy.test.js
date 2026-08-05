@@ -17,7 +17,7 @@ import {
   evaluateClarificationDecision,
   resolveClarificationGate,
 } from "../src/agent/policies/clarificationDecisionPolicy.js";
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { classifyConversationTurn } from "../src/agent/micro/classifiers/conversationTurnType.js";
 

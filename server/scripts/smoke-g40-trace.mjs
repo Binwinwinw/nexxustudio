@@ -3,7 +3,7 @@ import { classifySummaryContract } from "../src/agent/policies/summary/index.js"
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
 import { isCodeConceptExplainRequest } from "../src/agent/policies/code/codeConceptExplainPolicy.js";
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { evaluateClarificationDecision } from "../src/agent/policies/clarificationDecisionPolicy.js";
 import { isHtmlProjectDeliverable } from "../src/agent/policies/delivery/index.js";
 

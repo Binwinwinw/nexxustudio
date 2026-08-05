@@ -1,7 +1,7 @@
 // server/config/intent-detector.js
 import {
   evaluateJustIntent,
-} from "../src/agent/policies/justIntentDetectionPolicy.js";
+} from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 
 const CONFIDENCE_SCORE = Object.freeze({
   high: 0.85,

@@ -2,7 +2,7 @@
  * GUIDED_CREATION_SCOPING — réflexion orientée via LLM warm pour intents créatifs.
  * Les patterns déterministes restent des fallbacks de sécurité uniquement.
  */
-import { evaluateJustIntent } from "../justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../intent/justIntentDetectionPolicy.js";
 import {
   INTENT_DOMAINS,
   INTENT_ACTIONS,

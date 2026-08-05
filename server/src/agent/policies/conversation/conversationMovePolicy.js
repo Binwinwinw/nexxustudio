@@ -3,8 +3,8 @@
  * Spec : docs/agents/conversation-move-governance.md
  * ADR : ADR-20260707-Conversation-Move-Governance-v1
  */
-import { analyzeRequestIntentFrame } from "../requestIntentFrame.js";
-import { evaluateJustIntent } from "../justIntentDetectionPolicy.js";
+import { analyzeRequestIntentFrame } from "../intent/requestIntentFrame.js";
+import { evaluateJustIntent } from "../intent/justIntentDetectionPolicy.js";
 import {
   CLARIFICATION_DECISIONS,
   CLARIFICATION_SOURCES,

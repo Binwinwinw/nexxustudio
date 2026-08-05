@@ -3,7 +3,7 @@
  * Couche plausibilité post-classification, avant simple_factual_lookup + LLM.
  */
 import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { isSimpleFactualQuestion } from "../../policies/justIntentDetectionPolicy.js";
+import { isSimpleFactualQuestion } from "../../policies/intent/justIntentDetectionPolicy.js";
 import { resolveAnaphoraReferenceShortCircuit } from "../continuity/anaphoraReferenceResolver.js";
 
 export const FACTUAL_SANITY_DECISIONS = Object.freeze({

@@ -4,7 +4,7 @@
 import { normalizeText } from "./normalizationGuards.js";
 import responseThinkingCleaner from "./responseThinkingCleaner.js";
 import { requiresGenerousComposerResponse } from "../policies/practicalAdviceRoutingGuard.js";
-import { isSimpleFactualQuestion } from "../policies/justIntentDetectionPolicy.js";
+import { isSimpleFactualQuestion } from "../policies/intent/justIntentDetectionPolicy.js";
 import {
   getFamiliarityDeterministicReply,
   isFamiliarityIntent,
@@ -57,7 +57,7 @@ import {
 import { isSubjectReferenceAvailabilityRequest } from "../micro/continuity/sessionSubjectReferenceGuards.js";
 import { isGeneralKnowledgeRequest } from "./generalKnowledgeIntentGuards.js";
 import { isPedagogicalOverviewRequest } from "./pedagogicalOverviewIntentGuards.js";
-import { isConversationSocialOnlyQuery } from "../policies/conversationIntentFrame.js";
+import { isConversationSocialOnlyQuery } from "../policies/intent/conversationIntentFrame.js";
 import { isKnownSocialPattern } from "../policies/social/index.js";
 import { suppressesSocialForInformationSeeking } from "./informationSeekingIntentGuards.js";
 import {

@@ -1,13 +1,13 @@
 /**
  * Télémétrie JUST_INTENT_DETECTION_V1.
  */
-import { evaluateJustIntent } from "../policies/justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../policies/intent/justIntentDetectionPolicy.js";
 import {
   evaluateClarificationDecision,
   isAvoidableClarification,
   normalizeQueryForClarificationGate,
 } from "../policies/clarificationDecisionPolicy.js";
-import { JUST_INTENT_THRESHOLDS } from "../policies/justIntentThresholds.js";
+import { JUST_INTENT_THRESHOLDS } from "../policies/intent/justIntentThresholds.js";
 import { recordIntentTriageClarification } from "../classifiers/intentTriageFeedbackRecorder.js";
 
 export const JUST_INTENT_TELEMETRY_EVENT = "just_intent_detection";

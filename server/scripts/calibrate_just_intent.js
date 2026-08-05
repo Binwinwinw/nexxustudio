@@ -1,8 +1,8 @@
 /**
  * Calibration JUST_INTENT_DETECTION_V1 — corpus statique sans LLM.
  */
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
-import { JUST_INTENT_THRESHOLDS } from "../src/agent/policies/justIntentThresholds.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
+import { JUST_INTENT_THRESHOLDS } from "../src/agent/policies/intent/justIntentThresholds.js";
 import { buildJustIntentTelemetryEvent } from "../src/agent/telemetry/justIntentTelemetry.js";
 
 /** @type {Array<{ id: string, query: string, expectDomain: string, expectAction?: string, expectDeliverable?: string, expectStrategy: string, note?: string }>} */

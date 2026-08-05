@@ -17,7 +17,7 @@ import {
 import {
   evaluateJustIntent,
   isSimpleFactualQuestion,
-} from "../src/agent/policies/justIntentDetectionPolicy.js";
+} from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import {
   resolveConversationSubjectReference,
   SUBJECT_REFERENCE_RESOLUTION,

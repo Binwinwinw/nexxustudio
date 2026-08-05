@@ -23,7 +23,7 @@ import {
 } from "../src/agent/config/modeResponseContracts.js";
 import { resolvePipelineFallback } from "../src/agent/utils/genericGreetingGuards.js";
 import { buildInformationRecoveryMessage } from "../src/agent/utils/genericGreetingGuards.js";
-import { isSimpleFactualQuestion } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { isSimpleFactualQuestion } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { detectSimpleFactualDirectnessViolation } from "../src/agent/telemetry/conversationMoveShadowTelemetry.js";
 
 describe("simpleFactualComposer — classification", () => {

@@ -9,10 +9,10 @@ import {
   buildInformationSeekingWebQuery,
   isInformationSeekingRecoveryResponse,
 } from "../src/agent/utils/informationSeekingIntentGuards.js";
-import { isSimpleFactualQuestion } from "../src/agent/policies/justIntentDetectionPolicy.js";
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { isSimpleFactualQuestion } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { resolveClarificationGate } from "../src/agent/policies/clarificationDecisionPolicy.js";
-import { analyzeRequestIntentFrame } from "../src/agent/policies/requestIntentFrame.js";
+import { analyzeRequestIntentFrame } from "../src/agent/policies/intent/requestIntentFrame.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { EXECUTION_STRATEGIES } from "../../shared/justIntentCatalog.js";
 

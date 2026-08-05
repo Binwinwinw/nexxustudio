@@ -4,9 +4,9 @@ import assert from "node:assert/strict";
 import {
   analyzeConversationIntentFrame,
   isConversationSocialOnlyQuery,
-} from "../src/agent/policies/conversationIntentFrame.js";
+} from "../src/agent/policies/intent/conversationIntentFrame.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { isSimpleFactualQuestion } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { isSimpleFactualQuestion } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 
 describe("conversationIntentFrame — axes structurels", () => {
   const socialOnlyCases = [

@@ -5,10 +5,10 @@ import {
   resolveIntentComposition,
   applyPedagogicalCompositionAugment,
   formatIntentCompositionSummary,
-} from "../src/agent/policies/intentCompositionPolicy.js";
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+} from "../src/agent/policies/intent/intentCompositionPolicy.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { DROP_REASONS } from "../src/agent/policies/intentCompatibilityMatrix.js";
+import { DROP_REASONS } from "../src/agent/policies/intent/intentCompatibilityMatrix.js";
 
 describe("INTENT_COMPOSITION_V1 — P0", () => {
   it("greeting + explain + table + summarize → composition riche", () => {

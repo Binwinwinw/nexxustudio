@@ -10,7 +10,7 @@ import {
   buildPipelineConnectorContext,
   connectorPlanImpliesWeb,
 } from "./connectorPlanTelemetry.js";
-import { resolveIntentFamilyFromRegistry } from "../intentFamilyRegistry.js";
+import { resolveIntentFamilyFromRegistry } from "../intent/intentFamilyRegistry.js";
 
 export const CONNECTOR_PHASE_C_RULE = "connector_phase_c_web_authority_v1";
 

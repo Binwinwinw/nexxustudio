@@ -12,7 +12,7 @@ import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
 } from "../src/agent/policies/clarificationDecisionPolicy.js";
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { resolveGeneralKnowledgeShortCircuit } from "../src/agent/micro/replies/generalKnowledgeComposerContract.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { isPresentationOutlineRequest } from "../src/agent/utils/presentationOutlineIntentGuards.js";

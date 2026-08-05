@@ -16,7 +16,7 @@ import { isClearConstructiveDeliverable } from "../src/agent/policies/delivery/i
 import { isCodeGenerationRequest } from "../src/agent/policies/code/codeDeliveryPolicy.js";
 import { isTechnicalOverviewRequest } from "../src/agent/utils/technicalOverviewIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { INTENT_DOMAINS, INTENT_ACTIONS } from "../../shared/justIntentCatalog.js";
 import {
   buildGuidedCreationRouteTelemetry,

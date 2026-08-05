@@ -6,7 +6,7 @@ import { classifySocialPattern } from '../policies/social/index.js';
 import { isSubstantiveWorkRequest } from './genericGreetingGuards.js';
 import { isInformationSeekingWithTarget } from './informationSeekingIntentGuards.js';
 import { isMetaAssistantBehaviorRequest } from './metaAssistantBehaviorGuards.js';
-import { analyzeRequestIntentFrame } from '../policies/requestIntentFrame.js';
+import { analyzeRequestIntentFrame } from '../policies/intent/requestIntentFrame.js';
 
 const WARM_TONE_SEMI_SOCIAL_RE = [
   /\bok\s+et\s+(?:sinon|apr[eè]s|du\s+coup)\b/i,

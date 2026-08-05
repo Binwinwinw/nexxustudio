@@ -16,7 +16,7 @@ import {
   isWebChainBlocked,
   wantsWebResearch,
 } from "../src/agent/policies/connectors/index.js";
-import { resolveIntentFamilyFromRegistry } from "../src/agent/policies/intentFamilyRegistry.js";
+import { resolveIntentFamilyFromRegistry } from "../src/agent/policies/intent/intentFamilyRegistry.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolvePedagogicalOverviewShortCircuit } from "../src/agent/micro/replies/pedagogicalOverviewComposer.js";
 

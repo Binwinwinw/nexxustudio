@@ -7,7 +7,7 @@ import {
   getIntentFamilyCanonicalMatrixV1,
   resolveIntentFamilyFromRegistry,
   validateIntentFamilyRegistryV1,
-} from "../src/agent/policies/intentFamilyRegistry.js";
+} from "../src/agent/policies/intent/intentFamilyRegistry.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 
 describe("intentFamilyRegistry — cohérence v1", () => {

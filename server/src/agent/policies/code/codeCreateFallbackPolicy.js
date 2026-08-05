@@ -6,7 +6,7 @@ import {
   INTENT_DOMAINS,
   INTENT_ACTIONS,
 } from "../../../../../shared/justIntentCatalog.js";
-import { evaluateJustIntent } from "../justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../intent/justIntentDetectionPolicy.js";
 import { hasCodeContext } from "./codeIntentPolicy.js";
 
 export const CODE_CREATE_FALLBACK_RULE = "code_create_text_fallback";

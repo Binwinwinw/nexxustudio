@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
-import { evaluateJustIntent, shouldApplyJustIntentClarification } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { evaluateJustIntent, shouldApplyJustIntentClarification } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import {
   CLARIFICATION_DECISIONS,
   CLARIFICATION_GATE_PIPELINE_PATH,

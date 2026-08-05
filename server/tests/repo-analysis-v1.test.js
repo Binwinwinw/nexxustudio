@@ -20,7 +20,7 @@ import { resolveIntentContract } from "../src/agent/config/intentContractRegistr
 import { resolveDocumentSynthesisShortCircuit } from "../src/agent/policies/document/index.js";
 import { isResearchThenSummarizeRequest } from "../src/agent/policies/researchThenSummarizePolicy.js";
 import { isExistingSourceAnalysisRequest } from "../src/agent/utils/localFileUriIntentGuards.js";
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { INTENT_DOMAINS } from "../../shared/justIntentCatalog.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 

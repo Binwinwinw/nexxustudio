@@ -15,7 +15,7 @@ import {
   evaluateClarificationDecision,
   CLARIFICATION_DECISIONS,
 } from "../src/agent/policies/clarificationDecisionPolicy.js";
-import { resolveIntentComposition } from "../src/agent/policies/intentCompositionPolicy.js";
+import { resolveIntentComposition } from "../src/agent/policies/intent/intentCompositionPolicy.js";
 import {
   getModeSystemPrompt,
   getComposerSystemPrompt,

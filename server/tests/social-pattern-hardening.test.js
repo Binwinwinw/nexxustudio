@@ -18,9 +18,9 @@ import {
   evaluateJustIntent,
   isSimpleFactualQuestion,
   resolveIntentDomain,
-} from "../src/agent/policies/justIntentDetectionPolicy.js";
+} from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { shouldAllowClarifyThenBuild } from "../src/agent/utils/deliverableMandateGuards.js";
-import { isConversationSocialOnlyQuery } from "../src/agent/policies/conversationIntentFrame.js";
+import { isConversationSocialOnlyQuery } from "../src/agent/policies/intent/conversationIntentFrame.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { isGeneralKnowledgeRequest } from "../src/agent/utils/generalKnowledgeIntentGuards.js";
 import { classifyMetaConversationIntent } from "../src/agent/utils/metaConversationIntentGuards.js";

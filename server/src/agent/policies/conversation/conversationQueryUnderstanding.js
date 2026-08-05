@@ -8,7 +8,7 @@
  * 3. Quelle stratégie de réponse ?
  */
 import { normalizeForParse } from "../../micro/parsing/requestSegmentParser.js";
-import { analyzeRequestIntentFrame } from "../requestIntentFrame.js";
+import { analyzeRequestIntentFrame } from "../intent/requestIntentFrame.js";
 import { decomposeRequest } from "../requestDecompositionPolicy.js";
 import {
   detectDomainIntentInSegment,

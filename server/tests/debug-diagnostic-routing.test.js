@@ -14,7 +14,7 @@ import {
 import {
   evaluateJustIntent,
   resolveIntentAction,
-} from "../src/agent/policies/justIntentDetectionPolicy.js";
+} from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import {
   INTENT_ACTIONS,
   INTENT_DOMAINS,

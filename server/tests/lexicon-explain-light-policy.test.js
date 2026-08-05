@@ -47,7 +47,7 @@ import {
 } from "../src/agent/micro/continuity/conversationContinuityContext.js";
 import { isSubjectReferenceAvailabilityRequest } from "../src/agent/micro/continuity/sessionSubjectReferenceGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 
 const SOCIAL_HISTORY = [
   { role: "user", content: "salut nexxus ca roule ?" },
@@ -209,7 +209,7 @@ describe("lexicon_explain_light — guards", () => {
       "../src/agent/utils/technicalOverviewIntentGuards.js"
     );
     const { evaluateJustIntent } = await import(
-      "../src/agent/policies/justIntentDetectionPolicy.js"
+      "../src/agent/policies/intent/justIntentDetectionPolicy.js"
     );
     const q =
       "pourrais tu expliquer en détail le cycle de l'eau sur terre sous forme de tableau";
