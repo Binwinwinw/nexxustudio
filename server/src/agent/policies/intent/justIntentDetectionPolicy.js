@@ -25,7 +25,7 @@ import { isRepoAnalysisRequest } from "../../utils/repoAnalysisIntentGuards.js";
 import { isUiNavigationRestructureFeedback } from "../../utils/uiNavigationFeedbackGuards.js";
 import {
   resolveClarificationGate,
-} from "../clarificationDecisionPolicy.js";
+} from "../routing/clarificationDecisionPolicy.js";
 import {
   normalizeFamiliarityQuery,
   parseFamiliarityQuery,

@@ -2,7 +2,7 @@
  * Garde-fou fidélité — interdit de nier des preuves web présentes dans le paquet.
  */
 import responseThinkingCleaner from "../../utils/responseThinkingCleaner.js";
-import { isExplicitWebSearchRequest } from "../explicitWebSearchRequestPolicy.js";
+import { isExplicitWebSearchRequest } from "../routing/explicitWebSearchRequestPolicy.js";
 
 export const WEB_EVIDENCE_FIDELITY_RULE = "web_evidence_fidelity_v1";
 

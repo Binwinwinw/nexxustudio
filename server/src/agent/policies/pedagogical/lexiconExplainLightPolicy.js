@@ -12,7 +12,7 @@ import { isHowToRequestShell } from "../../utils/howToRequestIntentGuards.js";
 import {
   isInformationSeekingLightQuery,
   extractKnownGameEntity,
-} from "../informationSeekingLightPolicy.js";
+} from "../routing/informationSeekingLightPolicy.js";
 import { isMetaKnownPeerProductQuery } from "../meta/metaCapabilitiesPolicy.js";
 import {
   PEDAGOGICAL_TABLE_HEADERS,

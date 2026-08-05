@@ -20,7 +20,7 @@ import {
   classifyMetaCapabilitiesSubKind,
   isMetaCapabilitiesIntent,
 } from "../../policies/meta/index.js";
-import { isExplicitWebSearchRequest } from "../../policies/explicitWebSearchRequestPolicy.js";
+import { isExplicitWebSearchRequest } from "../../policies/routing/explicitWebSearchRequestPolicy.js";
 
 export const CONVERSATION_TURN_FAMILIES = Object.freeze({
   SOCIAL_CHECKIN: "social_checkin",

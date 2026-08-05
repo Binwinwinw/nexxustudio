@@ -1,10 +1,10 @@
 /* server/src/agent/utils/ideationIntentGuards.js */
 import { normalizeText } from "./normalizationGuards.js";
 import { isMetaModelStackOpinionQuery, isMetaPredictionLimitsQuery, isMetaPeerAssistantsQuery } from "../policies/meta/metaCapabilitiesPolicy.js";
-import { isInformationSeekingLightQuery } from "../policies/informationSeekingLightPolicy.js";
+import { isInformationSeekingLightQuery } from "../policies/routing/informationSeekingLightPolicy.js";
 import { isCasualExplanationFollowUp } from "../policies/social/index.js";
 import { isProgrammingPedagogyLightRequest } from "./programmingPedagogyLightIntentGuards.js";
-import { isExplicitWebSearchRequest } from "../policies/explicitWebSearchRequestPolicy.js";
+import { isExplicitWebSearchRequest } from "../policies/routing/explicitWebSearchRequestPolicy.js";
 
 export const IDEATION_MAX_WORDS = 25;
 

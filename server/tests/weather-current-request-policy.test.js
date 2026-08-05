@@ -18,12 +18,12 @@ import {
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
-} from "../src/agent/policies/clarificationDecisionPolicy.js";
+} from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolvePipelineFallback } from "../src/agent/utils/genericGreetingGuards.js";
 import { shouldEscalateSimpleFactualToFullPipeline } from "../src/agent/utils/informationSeekingIntentGuards.js";
-import { resolveKnowledgeEnrichmentPolicy } from "../src/agent/policies/knowledgeEnrichmentPolicy.js";
+import { resolveKnowledgeEnrichmentPolicy } from "../src/agent/policies/routing/knowledgeEnrichmentPolicy.js";
 
 describe("weatherCurrentRequestPolicy — détection", () => {
   it("Miami — requête météo actuelle exploitable", () => {

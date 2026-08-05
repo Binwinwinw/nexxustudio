@@ -18,7 +18,7 @@ import {
 } from "../src/agent/micro/replies/pedagogicalOverviewComposer.js";
 import { getPedagogicalTopicKnowledge } from "../src/agent/micro/replies/pedagogicalOverviewKnowledge.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { evaluateClarificationDecision, CLARIFICATION_DECISIONS } from "../src/agent/policies/clarificationDecisionPolicy.js";
+import { evaluateClarificationDecision, CLARIFICATION_DECISIONS } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { evaluateJustIntent, shouldApplyJustIntentClarification } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseContracts.js";
 import { PEDAGOGICAL_DELIVERY_MODES } from "../src/agent/policies/pedagogical/index.js";

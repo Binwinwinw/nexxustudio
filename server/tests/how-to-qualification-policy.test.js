@@ -23,7 +23,7 @@ import {
   decomposeRequest,
   allWorkUnitsSatisfiable,
   canServeMultiUnitPartialDecomposition,
-} from "../src/agent/policies/requestDecompositionPolicy.js";
+} from "../src/agent/policies/routing/requestDecompositionPolicy.js";
 import {
   buildMultiUnitCompositeReply,
   canServeMultiUnitComposite,

@@ -9,7 +9,7 @@ import {
   isAnalyticalTechnicalRequest,
 } from "./conversationGuards.js";
 import { isMetaModelStackOpinionQuery, isMetaPredictionLimitsQuery, isMetaPeerAssistantsQuery } from "../policies/meta/metaCapabilitiesPolicy.js";
-import { isInformationSeekingLightQuery } from "../policies/informationSeekingLightPolicy.js";
+import { isInformationSeekingLightQuery } from "../policies/routing/informationSeekingLightPolicy.js";
 import { isCasualExplanationFollowUp } from "../policies/social/index.js";
 
 const INTENT_TAXONOMY = {

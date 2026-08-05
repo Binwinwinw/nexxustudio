@@ -18,7 +18,7 @@ import {
 } from "../src/agent/analysis/repoAnalysisContract.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
 import { resolveDocumentSynthesisShortCircuit } from "../src/agent/policies/document/index.js";
-import { isResearchThenSummarizeRequest } from "../src/agent/policies/researchThenSummarizePolicy.js";
+import { isResearchThenSummarizeRequest } from "../src/agent/policies/routing/researchThenSummarizePolicy.js";
 import { isExistingSourceAnalysisRequest } from "../src/agent/utils/localFileUriIntentGuards.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { INTENT_DOMAINS } from "../../shared/justIntentCatalog.js";

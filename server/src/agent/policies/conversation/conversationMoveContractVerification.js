@@ -29,11 +29,11 @@ import {
 import {
   isInformationSeekingContractViolation,
   enforceInformationSeekingDirectness,
-} from "../informationSeekingQualificationPolicy.js";
+} from "../routing/informationSeekingQualificationPolicy.js";
 import {
   isMultiSegmentContractViolation,
   enforceMultiSegmentDirectness,
-} from "../multiSegmentQualificationPolicy.js";
+} from "../routing/multiSegmentQualificationPolicy.js";
 import { resolveMultiSegmentPlan } from "../../micro/parsing/multiSegmentResponsePlan.js";
 import {
   isCompareChooseRequest,

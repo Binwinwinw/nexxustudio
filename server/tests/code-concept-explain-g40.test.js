@@ -14,7 +14,7 @@ import { classifyCodeIntent } from "../src/agent/policies/code/codeIntentPolicy.
 import { triageUserIntent } from "../src/agent/classifiers/intentTriageClassifier.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
-import { evaluateClarificationDecision } from "../src/agent/policies/clarificationDecisionPolicy.js";
+import { evaluateClarificationDecision } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { isHtmlProjectDeliverable } from "../src/agent/policies/delivery/index.js";
 import { buildCodeConceptExplainFallbackReply } from "../src/agent/policies/code/codeConceptExplainExecutionPolicy.js";
 import { resolveSimpleFastAllowRefusal } from "../src/agent/paths/simpleFastPath.js";

@@ -1,7 +1,7 @@
 /**
  * Telemetry observable — politique d'orchestration information_seeking_with_target(X).
  */
-import { resolveInformationSeekingOrchestration } from "../policies/informationSeekingOrchestrationPolicy.js";
+import { resolveInformationSeekingOrchestration } from "../policies/routing/informationSeekingOrchestrationPolicy.js";
 
 export const INFO_SEEKING_ORCHESTRATION_EVENT = "info_seeking_orchestration";
 

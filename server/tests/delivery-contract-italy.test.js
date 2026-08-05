@@ -2,7 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
 import { isSimpleFactualQuestion, evaluateJustIntent, shouldApplyJustIntentClarification } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
-import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/practicalAdviceRoutingGuard.js";
+import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { parseFamiliarityQuery, isFamiliarityIntent } from "../src/agent/utils/familiarityIntentGuards.js";
 import { resolveLocalDeterministicFallback } from "../src/agent/utils/genericGreetingGuards.js";

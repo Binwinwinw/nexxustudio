@@ -33,11 +33,11 @@ import {
   applySimpleFastDeliveryPipeline,
 } from "../src/agent/paths/simpleFastPath.js";
 import { isGeneralKnowledgeRequest } from "../src/agent/utils/generalKnowledgeIntentGuards.js";
-import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/practicalAdviceRoutingGuard.js";
+import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
-} from "../src/agent/policies/clarificationDecisionPolicy.js";
+} from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { resolveSubjectReferenceResumeShortCircuit } from "../src/agent/policies/familiarity/index.js";
 import {
   isFullExplanationResumeRequest,

@@ -12,7 +12,7 @@ import {
   findSessionMatchForTarget,
 } from "../src/agent/utils/sessionContextReferenceResolver.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { resolveClarificationGate } from "../src/agent/policies/clarificationDecisionPolicy.js";
+import { resolveClarificationGate } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { buildContextReferenceTelemetryEvent } from "../src/agent/telemetry/contextReferenceTelemetry.js";
 

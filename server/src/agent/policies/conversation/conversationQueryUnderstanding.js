@@ -9,7 +9,7 @@
  */
 import { normalizeForParse } from "../../micro/parsing/requestSegmentParser.js";
 import { analyzeRequestIntentFrame } from "../intent/requestIntentFrame.js";
-import { decomposeRequest } from "../requestDecompositionPolicy.js";
+import { decomposeRequest } from "../routing/requestDecompositionPolicy.js";
 import {
   detectDomainIntentInSegment,
   hasRecognizedDomainIntent,
@@ -30,12 +30,12 @@ import {
 import {
   isExplicitWebSearchRequest,
   isFreshFactualCompareWithWebRequest,
-} from "../explicitWebSearchRequestPolicy.js";
+} from "../routing/explicitWebSearchRequestPolicy.js";
 import {
   deriveGuidedProductWebSearchQuery,
   resolveGuidedProductIntentContractId,
 } from "../guided/index.js";
-import { extractProductRecommendationSlots } from "../compareChooseCompositePolicy.js";
+import { extractProductRecommendationSlots } from "../routing/compareChooseCompositePolicy.js";
 import { assessKnowledgeFreshnessRisk } from "../web/index.js";
 import { resolveActionDecision } from "../orchestration/index.js";
 import { isLightCulturalRecognitionRequest } from "../pedagogical/index.js";
@@ -43,7 +43,7 @@ import {
   deriveResearchThenSummarizeWebQuery,
   isResearchThenSummarizeRequest,
   resolveResearchThenSummarizeIntentContractId,
-} from "../researchThenSummarizePolicy.js";
+} from "../routing/researchThenSummarizePolicy.js";
 import {
   isFormalLetterTemplateRequest,
   resolveFormalLetterTemplateIntentContractId,

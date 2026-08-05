@@ -9,7 +9,7 @@ import {
   REQUESTED_CAPABILITIES,
 } from "../src/agent/policies/connectors/index.js";
 import { resolveIntentFamilyFromRegistry } from "../src/agent/policies/intent/intentFamilyRegistry.js";
-import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/practicalAdviceRoutingGuard.js";
+import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
 
 const SCENARIOS = [
   {

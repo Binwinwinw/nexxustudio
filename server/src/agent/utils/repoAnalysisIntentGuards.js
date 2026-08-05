@@ -4,7 +4,7 @@
  */
 import { normalizeFamiliarityQuery } from "./familiarityIntentGuards.js";
 import { isExistingSourceAnalysisRequest } from "./localFileUriIntentGuards.js";
-import { isResearchThenSummarizeRequest } from "../policies/researchThenSummarizePolicy.js";
+import { isResearchThenSummarizeRequest } from "../policies/routing/researchThenSummarizePolicy.js";
 
 const ANALYSIS_VERB_RE =
   /\b(?:analys(?:e|er|e)|audite(?:r)?|review|revue|inspecte(?:r)?|examine(?:r)?|évalue|evalue|evaluer|critique(?:r)?)\b/i;

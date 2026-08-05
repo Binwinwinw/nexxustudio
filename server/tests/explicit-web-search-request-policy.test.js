@@ -14,7 +14,7 @@ import {
   isWebResearchContinuationQuery,
   extractWebSearchFollowUpTopic,
   buildWebSearchHelpClarifyReply,
-} from "../src/agent/policies/explicitWebSearchRequestPolicy.js";
+} from "../src/agent/policies/routing/explicitWebSearchRequestPolicy.js";
 import {
   isWebSearchThreadMaintenanceMessage,
   requiresBridgedFreshnessFallback,
@@ -31,7 +31,7 @@ import { understandQuery } from "../src/agent/policies/conversation/conversation
 import {
   buildKnowledgeFreshnessSystemAddon,
 } from "../src/agent/micro/replies/knowledgeFreshnessComposerContract.js";
-import { getMissingProductRecommendationSlots } from "../src/agent/policies/compareChooseCompositePolicy.js";
+import { getMissingProductRecommendationSlots } from "../src/agent/policies/routing/compareChooseCompositePolicy.js";
 import { extractCompareDomain } from "../src/agent/utils/compareChooseIntentGuards.js";
 import {
   requiresCompareChooseComposerContract,

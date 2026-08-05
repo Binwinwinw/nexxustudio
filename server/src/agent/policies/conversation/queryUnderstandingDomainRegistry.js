@@ -16,7 +16,7 @@ import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/externalCalen
 import { detectGovernanceExplainIntent } from "../meta/governanceExplainPolicy.js";
 import { detectDocumentAnalysisIntent } from "../document/index.js";
 import { detectDocumentSynthesisIntent } from "../document/index.js";
-import { detectCompareChooseIntent } from "../compareChooseCompositePolicy.js";
+import { detectCompareChooseIntent } from "../routing/compareChooseCompositePolicy.js";
 
 export const QUERY_DOMAINS = Object.freeze({
   MATH: "math",

@@ -9,7 +9,7 @@ import {
 } from "../src/agent/utils/technicalOverviewIntentGuards.js";
 import { resolveTechnicalOverviewShortCircuit } from "../src/agent/micro/replies/technicalOverviewComposer.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/practicalAdviceRoutingGuard.js";
+import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
 import { isBeginnerTopicOverviewRequest } from "../src/agent/utils/beginnerTopicOverviewIntentGuards.js";
 
 describe("technicalOverview — lot 7", () => {

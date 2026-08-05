@@ -18,7 +18,7 @@ import {
   resolveGuidedProductWebSearchLimits,
   applyProductRecoValidationToWebPacket,
 } from "../policies/guided/index.js";
-import { extractProductRecommendationSlots } from "../policies/compareChooseCompositePolicy.js";
+import { extractProductRecommendationSlots } from "../policies/routing/compareChooseCompositePolicy.js";
 import { sanitizeWebSearchPacket } from "../../services/tool-output-sanitizer.js";
 
 /**

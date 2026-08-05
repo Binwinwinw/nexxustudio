@@ -6,7 +6,7 @@ import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.j
 import { isSubstantiveWorkRequest } from "../../utils/genericGreetingGuards.js";
 import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIntentGuards.js";
 import { isGeneralKnowledgeRequest } from "../../utils/generalKnowledgeIntentGuards.js";
-import { isExplicitWebSearchRequest } from "../explicitWebSearchRequestPolicy.js";
+import { isExplicitWebSearchRequest } from "../routing/explicitWebSearchRequestPolicy.js";
 import { isConversationMemoryRecallRequest, isAttachedVisionRequest } from "../../utils/conversationGuards.js";
 import {
   classifySocialPattern,

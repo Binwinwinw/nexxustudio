@@ -11,7 +11,7 @@ import { isInformationSeekingWithTarget } from "./informationSeekingIntentGuards
 import { isMetaAssistantBehaviorRequest } from "./metaAssistantBehaviorGuards.js";
 import { isIdeationIntent } from "./ideationIntentGuards.js";
 import { isMetaModelStackOpinionQuery, isMetaPredictionLimitsQuery, isMetaPeerAssistantsQuery } from "../policies/meta/metaCapabilitiesPolicy.js";
-import { isInformationSeekingLightQuery } from "../policies/informationSeekingLightPolicy.js";
+import { isInformationSeekingLightQuery } from "../policies/routing/informationSeekingLightPolicy.js";
 import { isCasualExplanationFollowUp } from "../policies/social/index.js";
 import { isCompareChooseRequest } from "./compareChooseIntentGuards.js";
 

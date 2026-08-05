@@ -47,11 +47,11 @@ import {
   decomposeRequest,
   allWorkUnitsSatisfiable,
   shouldPreemptMultiSegment,
-} from "../src/agent/policies/requestDecompositionPolicy.js";
+} from "../src/agent/policies/routing/requestDecompositionPolicy.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
-} from "../src/agent/policies/clarificationDecisionPolicy.js";
+} from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import {
   isMathSimpleSatisfiable,
   MATH_SIMPLE_CANONICAL_FACTORIZE_QUERY,

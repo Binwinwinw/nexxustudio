@@ -12,13 +12,13 @@ import {
   isBlockingAmbiguityQuery,
   normalizeQueryForClarificationGate,
   buildClarificationMessage,
-} from "../clarificationDecisionPolicy.js";
+} from "../routing/clarificationDecisionPolicy.js";
 import {
   decomposeRequest,
   isMultiUnitRequest,
   allWorkUnitsSatisfiable,
   canServeMultiUnitPartialDecomposition,
-} from "../requestDecompositionPolicy.js";
+} from "../routing/requestDecompositionPolicy.js";
 import { buildMultiUnitCompositeReply } from "../../micro/replies/multiUnitReplyBuilder.js";
 import {
   classifyHowToScopeAndRisk,

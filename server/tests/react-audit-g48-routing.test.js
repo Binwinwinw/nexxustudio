@@ -11,9 +11,9 @@ import {
   classifyReactAuditContract,
   REACT_AUDIT_INTENTS,
   REACT_AUDIT_CLI_BASE_FLAGS,
-} from "../src/agent/policies/reactAuditContractRouter.js";
-import { resolveReactAuditShortCircuit } from "../src/agent/policies/reactAuditShortCircuit.js";
-import { resolveReactAuditShortCircuitEmit } from "../src/agent/policies/reactAuditShortCircuit.js";
+} from "../src/agent/policies/routing/reactAuditContractRouter.js";
+import { resolveReactAuditShortCircuit } from "../src/agent/policies/routing/reactAuditShortCircuit.js";
+import { resolveReactAuditShortCircuitEmit } from "../src/agent/policies/routing/reactAuditShortCircuit.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
 

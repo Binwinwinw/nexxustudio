@@ -9,13 +9,13 @@ import {
   getMissingProductRecommendationSlots,
   hasHardwareUpgradeRecommendationContext,
   isCompareChooseSegment,
-} from "../src/agent/policies/compareChooseCompositePolicy.js";
+} from "../src/agent/policies/routing/compareChooseCompositePolicy.js";
 import {
   understandQuery,
   buildRequestWorkup,
 } from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
 import { resolveGuidedProductIntentContractId } from "../src/agent/policies/guided/index.js";
-import { resolveClarificationGate } from "../src/agent/policies/clarificationDecisionPolicy.js";
+import { resolveClarificationGate } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { classifySelectiveDecisionIntent } from "../src/agent/utils/selectiveDecisionIntentGuards.js";
 import { isCompareChooseRequest } from "../src/agent/utils/compareChooseIntentGuards.js";

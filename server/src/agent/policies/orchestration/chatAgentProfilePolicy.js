@@ -17,7 +17,7 @@ import { deriveGuidedProductWebSearchQuery } from "../guided/index.js";
 import {
   deriveResearchThenSummarizeWebQuery,
   isResearchThenSummarizeRequest,
-} from "../researchThenSummarizePolicy.js";
+} from "../routing/researchThenSummarizePolicy.js";
 import { isFormalLetterTemplateRequest } from "../delivery/index.js";
 import { hasTextAttachments } from "../../utils/conversationGuards.js";
 

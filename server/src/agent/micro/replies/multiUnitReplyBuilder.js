@@ -8,7 +8,7 @@ import {
   HOW_TO_QUALIFICATIONS,
   extractHowToTopic,
 } from "../../policies/qualification/howToQualificationPolicy.js";
-import { canServeMultiUnitPartialDecomposition } from "../../policies/requestDecompositionPolicy.js";
+import { canServeMultiUnitPartialDecomposition } from "../../policies/routing/requestDecompositionPolicy.js";
 
 export const MULTI_UNIT_SURFACE_STYLES = Object.freeze({
   NATURAL_FUSION: "natural_fusion",
@@ -49,7 +49,7 @@ function formatCurrentDateFr() {
 }
 
 /**
- * @param {ReturnType<import("../../policies/requestDecompositionPolicy.js").decomposeRequest>} decomposition
+ * @param {ReturnType<import("../../policies/routing/requestDecompositionPolicy.js").decomposeRequest>} decomposition
  * @returns {typeof MULTI_UNIT_SURFACE_STYLES[keyof typeof MULTI_UNIT_SURFACE_STYLES]}
  */
 export function resolveMultiUnitSurfaceStyle(decomposition) {
@@ -64,7 +64,7 @@ export function resolveMultiUnitSurfaceStyle(decomposition) {
 }
 
 /**
- * @param {ReturnType<import("../../policies/requestDecompositionPolicy.js").decomposeRequest>["units"]} units
+ * @param {ReturnType<import("../../policies/routing/requestDecompositionPolicy.js").decomposeRequest>["units"]} units
  */
 function buildSocialLead(units = []) {
   const hasGreeting = units.some((u) => u.unitType === "social_greeting");
@@ -76,7 +76,7 @@ function buildSocialLead(units = []) {
 }
 
 /**
- * @param {ReturnType<import("../../policies/requestDecompositionPolicy.js").decomposeRequest>["units"]} units
+ * @param {ReturnType<import("../../policies/routing/requestDecompositionPolicy.js").decomposeRequest>["units"]} units
  */
 function buildDateTimePhrase(units = []) {
   const hasTime = units.some((u) => u.unitType === "time_request");
@@ -90,7 +90,7 @@ function buildDateTimePhrase(units = []) {
 }
 
 /**
- * @param {ReturnType<import("../../policies/requestDecompositionPolicy.js").decomposeRequest>} decomposition
+ * @param {ReturnType<import("../../policies/routing/requestDecompositionPolicy.js").decomposeRequest>} decomposition
  */
 function buildNaturalFusionReply(decomposition) {
   const units = decomposition.units;
@@ -107,7 +107,7 @@ function buildNaturalFusionReply(decomposition) {
 }
 
 /**
- * @param {ReturnType<import("../../policies/requestDecompositionPolicy.js").decomposeRequest>} decomposition
+ * @param {ReturnType<import("../../policies/routing/requestDecompositionPolicy.js").decomposeRequest>} decomposition
  */
 function buildSectionedReply(decomposition) {
   const units = decomposition.units;
@@ -139,7 +139,7 @@ function buildSectionedReply(decomposition) {
 }
 
 /**
- * @param {ReturnType<import("../../policies/requestDecompositionPolicy.js").decomposeRequest>} decomposition
+ * @param {ReturnType<import("../../policies/routing/requestDecompositionPolicy.js").decomposeRequest>} decomposition
  */
 export function canServeMultiUnitComposite(decomposition) {
   if (!decomposition?.units?.length) return false;
@@ -154,7 +154,7 @@ export function canServeMultiUnitComposite(decomposition) {
 export { canServeMultiUnitPartialDecomposition as canServeMultiUnitPartial };
 
 /**
- * @param {ReturnType<import("../../policies/requestDecompositionPolicy.js").decomposeRequest>} decomposition
+ * @param {ReturnType<import("../../policies/routing/requestDecompositionPolicy.js").decomposeRequest>} decomposition
  */
 export function buildMultiUnitPartialReply(decomposition) {
   if (!canServeMultiUnitPartialDecomposition(decomposition)) return null;
@@ -177,7 +177,7 @@ export function buildMultiUnitPartialReply(decomposition) {
 }
 
 /**
- * @param {ReturnType<import("../../policies/requestDecompositionPolicy.js").decomposeRequest>} decomposition
+ * @param {ReturnType<import("../../policies/routing/requestDecompositionPolicy.js").decomposeRequest>} decomposition
  * @returns {{ reply: string, surfaceStyle: string, partial?: boolean }|null}
  */
 export function buildMultiUnitCompositeReply(decomposition) {

@@ -10,7 +10,7 @@ import {
 import {
   isExplicitWebSearchRequest,
   wasWebSearchSkippedByContract,
-} from "../../policies/explicitWebSearchRequestPolicy.js";
+} from "../../policies/routing/explicitWebSearchRequestPolicy.js";
 
 export const KNOWLEDGE_FRESHNESS_COMPOSER_RULE =
   "temporal_disclosure_and_verified_refresh";

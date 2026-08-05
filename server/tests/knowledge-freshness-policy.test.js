@@ -10,7 +10,7 @@ import {
   requiresBridgedFreshnessFallback,
   isStableCategoryKnowledge,
 } from "../src/agent/policies/web/index.js";
-import { resolveKnowledgeEnrichmentPolicy } from "../src/agent/policies/knowledgeEnrichmentPolicy.js";
+import { resolveKnowledgeEnrichmentPolicy } from "../src/agent/policies/routing/knowledgeEnrichmentPolicy.js";
 import {
   requiresKnowledgeFreshnessComposerContract,
   buildKnowledgeFreshnessSystemAddon,

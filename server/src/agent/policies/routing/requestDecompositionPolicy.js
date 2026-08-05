@@ -2,7 +2,7 @@
  * Décomposition gouvernée des requêtes — avant routage métier.
  * Distingue single | multi_target (même cadre) | multi_unit (cadres hétérogènes).
  */
-import { analyzeConversationIntentFrame } from "../conversationIntentFrame.js";
+import { analyzeConversationIntentFrame } from "../intent/conversationIntentFrame.js";
 import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIntentGuards.js";
 import {
   isTranslationPipelineReady,

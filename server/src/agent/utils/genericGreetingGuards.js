@@ -3,7 +3,7 @@
  */
 import { normalizeText } from "./normalizationGuards.js";
 import responseThinkingCleaner from "./responseThinkingCleaner.js";
-import { requiresGenerousComposerResponse } from "../policies/practicalAdviceRoutingGuard.js";
+import { requiresGenerousComposerResponse } from "../policies/routing/practicalAdviceRoutingGuard.js";
 import { isSimpleFactualQuestion } from "../policies/intent/justIntentDetectionPolicy.js";
 import {
   getFamiliarityDeterministicReply,

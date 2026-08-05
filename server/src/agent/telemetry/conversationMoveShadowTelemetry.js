@@ -19,7 +19,7 @@ import {
   MOVE_CONTRACT_PROFILES,
 } from "../policies/conversation/conversationMoveContractVerification.js";
 import { resolveMultiSegmentPlan } from "../micro/parsing/multiSegmentResponsePlan.js";
-import { assessInformationSeekingSubjectAlignment } from "../policies/informationSeekingQualificationPolicy.js";
+import { assessInformationSeekingSubjectAlignment } from "../policies/routing/informationSeekingQualificationPolicy.js";
 
 export const CONVERSATION_MOVE_SHADOW_EVENT = "conversation_move_shadow";
 export const CONVERSATION_MOVE_SHADOW_MODE = "observe_only";

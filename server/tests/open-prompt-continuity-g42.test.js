@@ -9,7 +9,7 @@ import {
 import { isCompareChooseRequest } from "../src/agent/utils/compareChooseIntentGuards.js";
 import { classifySelectiveDecisionIntent } from "../src/agent/utils/selectiveDecisionIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { COMPARE_CHOOSE_SMARTPHONE_CANONICAL_QUERY } from "../src/agent/policies/compareChooseCompositePolicy.js";
+import { COMPARE_CHOOSE_SMARTPHONE_CANONICAL_QUERY } from "../src/agent/policies/routing/compareChooseCompositePolicy.js";
 
 const ATTACKER_AUTRES_QUERY =
   "non merci qu'est ce que tu pourrais proposer d'attaquer d'autres ?";

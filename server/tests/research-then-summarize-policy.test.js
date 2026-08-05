@@ -7,7 +7,7 @@ import {
   extractResearchThenSummarizeTarget,
   deriveResearchThenSummarizeWebQuery,
   resolveResearchThenSummarizeIntentContractId,
-} from "../src/agent/policies/researchThenSummarizePolicy.js";
+} from "../src/agent/policies/routing/researchThenSummarizePolicy.js";
 import {
   resolveIntentContract,
   shouldSkipWebSearchForIntent,

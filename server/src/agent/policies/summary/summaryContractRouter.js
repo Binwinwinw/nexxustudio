@@ -15,7 +15,7 @@ import {
   CULTURAL_WORK_MARKER_RE,
 } from "./culturalContentSummaryPolicy.js";
 import { isCodeConceptExplainRequest } from "../code/codeConceptExplainPolicy.js";
-import { isResearchThenSummarizeRequest } from "../researchThenSummarizePolicy.js";
+import { isResearchThenSummarizeRequest } from "../routing/researchThenSummarizePolicy.js";
 import { shouldSuppressSummaryContractForAttachment } from "../attachment/index.js";
 
 export const SUMMARY_CONTRACT_VERSION = 1;

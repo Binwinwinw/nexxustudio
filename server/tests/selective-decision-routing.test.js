@@ -11,7 +11,7 @@ import { isCulinaryPracticalAdviceQuery } from "../src/agent/utils/culinaryPract
 import {
   shouldBypassMultiSegmentShortCircuit,
   shouldDeferShortCircuitToFullPipeline,
-} from "../src/agent/policies/practicalAdviceRoutingGuard.js";
+} from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
 import { shouldBypassSimpleFast } from "../src/agent/config/intentContractRegistry.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { enforceModeContract, RESPONSE_MODES } from "../src/agent/config/modeResponseContracts.js";

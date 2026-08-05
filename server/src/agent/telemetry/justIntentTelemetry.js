@@ -6,7 +6,7 @@ import {
   evaluateClarificationDecision,
   isAvoidableClarification,
   normalizeQueryForClarificationGate,
-} from "../policies/clarificationDecisionPolicy.js";
+} from "../policies/routing/clarificationDecisionPolicy.js";
 import { JUST_INTENT_THRESHOLDS } from "../policies/intent/justIntentThresholds.js";
 import { recordIntentTriageClarification } from "../classifiers/intentTriageFeedbackRecorder.js";
 
@@ -58,7 +58,7 @@ export function buildJustIntentTelemetryEvent(query = "", outcome = {}) {
 /**
  * Télémétrie unifiée — émission clarification gate (lot 1).
  * @param {string} query
- * @param {ReturnType<import('../policies/clarificationDecisionPolicy.js').resolveClarificationGate>} gate
+ * @param {ReturnType<import('../policies/routing/clarificationDecisionPolicy.js').resolveClarificationGate>} gate
  * @param {{
  *   sessionId?: string|null,
  *   justIntent?: object,

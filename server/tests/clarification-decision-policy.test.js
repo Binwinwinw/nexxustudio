@@ -12,7 +12,7 @@ import {
   isBlockingAmbiguityQuery,
   normalizeQueryForClarificationGate,
   resolveClarificationGate,
-} from "../src/agent/policies/clarificationDecisionPolicy.js";
+} from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { TRIAGE_ROUTING_ACTION } from "../src/agent/classifiers/intentTriageClassifier.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { buildJustIntentTelemetryEvent } from "../src/agent/telemetry/justIntentTelemetry.js";

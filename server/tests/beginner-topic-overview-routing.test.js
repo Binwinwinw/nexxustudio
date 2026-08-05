@@ -11,7 +11,7 @@ import {
 } from "../src/agent/utils/pedagogicalOverviewIntentGuards.js";
 import { resolveBeginnerTopicOverviewShortCircuit } from "../src/agent/micro/replies/beginnerTopicOverviewComposer.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/practicalAdviceRoutingGuard.js";
+import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
 
 const CRYPTO_Q =
   "que doit apprendre un débutant qui veut se lancer dans la cryptomonnaie";

@@ -2,8 +2,8 @@
  * Composer — recherche externe puis synthèse (GitHub, repo, etc.).
  */
 import responseThinkingCleaner from "../../utils/responseThinkingCleaner.js";
-import { isResearchThenSummarizeRequest } from "../../policies/researchThenSummarizePolicy.js";
-import { extractResearchThenSummarizeTarget } from "../../policies/researchThenSummarizePolicy.js";
+import { isResearchThenSummarizeRequest } from "../../policies/routing/researchThenSummarizePolicy.js";
+import { extractResearchThenSummarizeTarget } from "../../policies/routing/researchThenSummarizePolicy.js";
 
 const DENIAL_RE =
   /\b(?:je n['']?ai pas trouv(?:é|e)|pas (?:de )?trace|aucun(?:e)? (?:projet|d[eé]p[oô]t|repo)|open[- ]source notable|rien trouv(?:é|e)|donn[eé]es insuffisantes)\b/i;

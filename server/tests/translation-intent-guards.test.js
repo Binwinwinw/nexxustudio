@@ -20,7 +20,7 @@ import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetec
 import { analyzeRequestIntentFrame } from "../src/agent/policies/intent/requestIntentFrame.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { buildTranslationOrchestrationEvent } from "../src/agent/telemetry/translationOrchestrationTelemetry.js";
-import { resolveClarificationGate } from "../src/agent/policies/clarificationDecisionPolicy.js";
+import { resolveClarificationGate } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 
 describe("translationIntentGuards", () => {
   it("traduction prête — texte + langue cible", () => {

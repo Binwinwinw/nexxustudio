@@ -12,9 +12,9 @@ import {
   shouldPreemptMultiSegment,
   inventoryRequestUnits,
   REQUEST_MODES,
-} from "../src/agent/policies/requestDecompositionPolicy.js";
+} from "../src/agent/policies/routing/requestDecompositionPolicy.js";
 import { buildRequestDecompositionTelemetryEvent } from "../src/agent/telemetry/requestDecompositionTelemetry.js";
-import { resolveClarificationGate } from "../src/agent/policies/clarificationDecisionPolicy.js";
+import { resolveClarificationGate } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import {
   buildMultiUnitCompositeReply,

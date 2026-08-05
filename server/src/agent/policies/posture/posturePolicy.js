@@ -4,7 +4,7 @@
  */
 import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
 import { isSubstantiveWorkRequest } from "../../utils/genericGreetingGuards.js";
-import { isExplicitWebSearchRequest } from "../explicitWebSearchRequestPolicy.js";
+import { isExplicitWebSearchRequest } from "../routing/explicitWebSearchRequestPolicy.js";
 import {
   POSTURES,
   POSTURE_SOURCES,

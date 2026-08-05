@@ -12,7 +12,7 @@ import { isExistingSourceAnalysisRequest } from "../../utils/localFileUriIntentG
 import { isRepoAnalysisRequest } from "../../utils/repoAnalysisIntentGuards.js";
 import { suppressesDocumentSynthesisForCulturalSummary } from "../summary/index.js";
 import { isCodeConceptExplainRequest } from "../code/codeConceptExplainPolicy.js";
-import { isResearchThenSummarizeRequest } from "../researchThenSummarizePolicy.js";
+import { isResearchThenSummarizeRequest } from "../routing/researchThenSummarizePolicy.js";
 import { isFormalLetterTemplateRequest } from "../delivery/index.js";
 import { shouldSuppressSummaryContractForAttachment } from "../attachment/index.js";
 

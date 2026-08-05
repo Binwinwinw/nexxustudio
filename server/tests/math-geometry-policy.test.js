@@ -21,7 +21,7 @@ import {
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
-} from "../src/agent/policies/clarificationDecisionPolicy.js";
+} from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { analyzeConversationIntentFrame } from "../src/agent/policies/intent/conversationIntentFrame.js";

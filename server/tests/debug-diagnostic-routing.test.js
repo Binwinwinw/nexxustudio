@@ -32,7 +32,7 @@ import { detectDebugDiagnosticDirectnessViolation } from "../src/agent/telemetry
 import { evaluateConversationMove } from "../src/agent/policies/conversation/conversationMovePolicy.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseContracts.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/practicalAdviceRoutingGuard.js";
+import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
 import { isTechnicalOverviewRequest } from "../src/agent/utils/technicalOverviewIntentGuards.js";
 import { isCodeReviewRequest } from "../src/agent/policies/code/codeReviewPolicy.js";
 

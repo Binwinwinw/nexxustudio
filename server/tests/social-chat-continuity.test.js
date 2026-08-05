@@ -13,7 +13,7 @@ import { runConversationShortCircuit } from "../src/agent/micro/classifiers/inte
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
-} from "../src/agent/policies/clarificationDecisionPolicy.js";
+} from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 
 const CHAT_HISTORY = [
   { role: "user", content: "yop yop" },

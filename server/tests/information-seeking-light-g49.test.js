@@ -6,7 +6,7 @@ import {
   classifyInformationSeekingLightSubKind,
   resolveInformationSeekingLightShortCircuit,
   extractKnownGameEntity,
-} from "../src/agent/policies/informationSeekingLightPolicy.js";
+} from "../src/agent/policies/routing/informationSeekingLightPolicy.js";
 import {
   isCasualExplanationFollowUp,
   extractCasualThreadTopic,

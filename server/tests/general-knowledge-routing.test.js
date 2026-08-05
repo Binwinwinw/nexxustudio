@@ -19,7 +19,7 @@ import {
   requiresGenerousComposerResponse,
   shouldBypassMultiSegmentShortCircuit,
   shouldDeferShortCircuitToFullPipeline,
-} from "../src/agent/policies/practicalAdviceRoutingGuard.js";
+} from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
 import { shouldBypassSimpleFast } from "../src/agent/config/intentContractRegistry.js";
 import { evaluateEpistemicRefusal } from "../src/agent/config/modeResponseContracts.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
@@ -27,7 +27,7 @@ import {
   resolveQueryEntityUnderstanding,
   shouldBypassForgeSubjectClarification,
 } from "../src/agent/utils/queryEntityUnderstanding.js";
-import { resolveGeneralKnowledgeEnrichmentPolicy } from "../src/agent/policies/generalKnowledgeEnrichmentPolicy.js";
+import { resolveGeneralKnowledgeEnrichmentPolicy } from "../src/agent/policies/routing/generalKnowledgeEnrichmentPolicy.js";
 import { buildFamiliarityReply } from "../src/agent/micro/replies/familiarityReplyBuilder.js";
 import { buildSubjectClarificationReply } from "../src/agent/micro/subject/subjectResponseBuilder.js";
 

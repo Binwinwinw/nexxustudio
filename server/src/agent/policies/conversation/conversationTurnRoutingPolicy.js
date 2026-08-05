@@ -25,7 +25,7 @@ import {
   isMetaCapabilitiesIntent,
   resolveMetaCapabilitiesShortCircuit,
 } from "../meta/metaCapabilitiesPolicy.js";
-import { isExplicitWebSearchRequest } from "../explicitWebSearchRequestPolicy.js";
+import { isExplicitWebSearchRequest } from "../routing/explicitWebSearchRequestPolicy.js";
 
 const SOCIAL_HEALTH_RE =
   /\b(?:comment (?:ca|ça) va|comment vas[- ]?tu|comment allez[- ]?vous|tu vas bien|ca va\b|ça va\b|comment tu te sens)\b/i;

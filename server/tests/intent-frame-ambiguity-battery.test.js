@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import { analyzeRequestIntentFrame } from "../src/agent/policies/intent/requestIntentFrame.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
-import { resolveClarificationGate } from "../src/agent/policies/clarificationDecisionPolicy.js";
+import { resolveClarificationGate } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { resolveSessionContextReference } from "../src/agent/utils/sessionContextReferenceResolver.js";
 
 /** @typedef {{ id: number|string, query: string, expect: Record<string, unknown>, status: 'stable'|'gap'|'frame_bug' }} BatteryCase */

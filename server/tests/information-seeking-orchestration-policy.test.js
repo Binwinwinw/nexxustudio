@@ -8,9 +8,9 @@ import {
   assessInformationSeekingLocalCoverage,
   INFORMATION_SEEKING_ACTIONS,
   INFORMATION_SEEKING_SHORT_CIRCUIT_STATUS,
-} from "../src/agent/policies/informationSeekingOrchestrationPolicy.js";
+} from "../src/agent/policies/routing/informationSeekingOrchestrationPolicy.js";
 import { buildInformationSeekingOrchestrationEvent } from "../src/agent/telemetry/informationSeekingOrchestrationTelemetry.js";
-import { resolveKnowledgeEnrichmentPolicy } from "../src/agent/policies/knowledgeEnrichmentPolicy.js";
+import { resolveKnowledgeEnrichmentPolicy } from "../src/agent/policies/routing/knowledgeEnrichmentPolicy.js";
 
 describe("informationSeekingOrchestrationPolicy", () => {
   it("jeu sans fiche locale → full_pipeline + web", () => {

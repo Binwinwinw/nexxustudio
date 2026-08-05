@@ -14,7 +14,7 @@ import {
 import {
   evaluateClarificationDecision,
   CLARIFICATION_DECISIONS,
-} from "../src/agent/policies/clarificationDecisionPolicy.js";
+} from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { resolveIntentComposition } from "../src/agent/policies/intent/intentCompositionPolicy.js";
 import {
   getModeSystemPrompt,

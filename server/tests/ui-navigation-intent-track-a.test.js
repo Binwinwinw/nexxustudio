@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { isUiNavigationRestructureFeedback } from "../src/agent/utils/uiNavigationFeedbackGuards.js";
-import { resolveReactAuditShortCircuitEmit } from "../src/agent/policies/reactAuditShortCircuit.js";
+import { resolveReactAuditShortCircuitEmit } from "../src/agent/policies/routing/reactAuditShortCircuit.js";
 import { INTENT_ACTIONS } from "../../shared/justIntentCatalog.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 

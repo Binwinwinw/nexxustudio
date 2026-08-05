@@ -15,7 +15,7 @@ import {
 import {
   isExplicitWebSearchRequest,
   isWebSearchThreadActive,
-} from "../explicitWebSearchRequestPolicy.js";
+} from "../routing/explicitWebSearchRequestPolicy.js";
 import {
   isSocialChatThreadActive,
   isSoftSocialChatFollowup,

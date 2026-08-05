@@ -59,7 +59,7 @@ import {
 } from "../micro/replies/repoAnalysisComposer.js";
 import { getRepoAnalysisSystemPrompt } from "../analysis/repoAnalysisContract.js";
 import { buildProductSourcesInsufficientReply } from "../policies/guided/index.js";
-import { wasWebSearchAttempted } from "../policies/explicitWebSearchRequestPolicy.js";
+import { wasWebSearchAttempted } from "../policies/routing/explicitWebSearchRequestPolicy.js";
 import { ensureExplicitWebSourceLinks } from "../policies/web/index.js";
 import {
   isCodeGenerationRequest,

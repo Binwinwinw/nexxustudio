@@ -21,7 +21,7 @@ import { hasDocumentSynthesisShell } from "../src/agent/policies/document/index.
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
-} from "../src/agent/policies/clarificationDecisionPolicy.js";
+} from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolvePipelineFallback } from "../src/agent/utils/genericGreetingGuards.js";
 

@@ -16,7 +16,7 @@ import {
 } from "../src/agent/micro/replies/technicalLearningPathComposer.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { isTechnicalOverviewRequest } from "../src/agent/utils/technicalOverviewIntentGuards.js";
-import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/practicalAdviceRoutingGuard.js";
+import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
 
 describe("technicalLearningPath — lot 12 / regression JVM", () => {
   const JVM_QUERY =

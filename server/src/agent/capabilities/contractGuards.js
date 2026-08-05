@@ -1,4 +1,4 @@
-import { requiresGenerousComposerResponse } from "../policies/practicalAdviceRoutingGuard.js";
+import { requiresGenerousComposerResponse } from "../policies/routing/practicalAdviceRoutingGuard.js";
 import {
   isArchitectureDesignIntent,
   isAttachedDocumentAnalysisRequest,

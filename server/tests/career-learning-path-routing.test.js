@@ -10,7 +10,7 @@ import {
 } from "../src/agent/utils/careerLearningPathIntentGuards.js";
 import { resolveCareerLearningPathShortCircuit } from "../src/agent/micro/replies/careerLearningPathComposer.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/practicalAdviceRoutingGuard.js";
+import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
 import { isBeginnerTopicOverviewRequest } from "../src/agent/utils/beginnerTopicOverviewIntentGuards.js";
 import { isTechnicalOverviewRequest } from "../src/agent/utils/technicalOverviewIntentGuards.js";
 import { isPedagogicalOverviewRequest } from "../src/agent/utils/pedagogicalOverviewIntentGuards.js";

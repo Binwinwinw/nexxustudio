@@ -4,7 +4,7 @@ import {
   isPedagogicalOrSupportContext,
   PONYTAIL_ALLOWED_CONTRACT_IDS,
 } from "../contractGuards.js";
-import { requiresGenerousComposerResponse } from "../../policies/practicalAdviceRoutingGuard.js";
+import { requiresGenerousComposerResponse } from "../../policies/routing/practicalAdviceRoutingGuard.js";
 import { PONYTAIL_INSTRUCTION_BLOCK } from "./instructions.js";
 
 export const id = CAPABILITY_IDS.PONYTAIL;

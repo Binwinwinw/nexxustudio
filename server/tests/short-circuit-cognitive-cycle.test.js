@@ -5,7 +5,7 @@ import {
   buildShortCircuitCognitiveContribution,
   annotateShortCircuitCognitiveCycle,
   mergeAgentCycleWithShortCircuit,
-} from "../src/agent/policies/shortCircuitCognitiveCyclePolicy.js";
+} from "../src/agent/policies/routing/shortCircuitCognitiveCyclePolicy.js";
 import { buildRequestWorkup } from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
 import { understandQuery } from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
 

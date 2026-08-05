@@ -11,7 +11,7 @@ import {
   shouldRunClarificationGate,
 } from "../src/agent/policies/conversation/conversationMovePolicy.js";
 import { isGeneralKnowledgeRequest } from "../src/agent/utils/generalKnowledgeIntentGuards.js";
-import { decomposeRequest } from "../src/agent/policies/requestDecompositionPolicy.js";
+import { decomposeRequest } from "../src/agent/policies/routing/requestDecompositionPolicy.js";
 import {
   computeConversationMoveDivergence,
   buildConversationMoveShadowEvent,

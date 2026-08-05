@@ -9,9 +9,9 @@ import {
 } from "../src/agent/utils/adminProcedureIntentGuards.js";
 import { resolveAdminProcedureShortCircuit } from "../src/agent/micro/replies/adminProcedureComposer.js";
 import { resolveAdminProcedureCoverage } from "../src/agent/policies/qualification/adminProcedureCoveragePolicy.js";
-import { resolveKnowledgeEnrichmentPolicy } from "../src/agent/policies/knowledgeEnrichmentPolicy.js";
+import { resolveKnowledgeEnrichmentPolicy } from "../src/agent/policies/routing/knowledgeEnrichmentPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/practicalAdviceRoutingGuard.js";
+import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
 import { isGeneralKnowledgeRequest } from "../src/agent/utils/generalKnowledgeIntentGuards.js";
 import { isTechnicalOverviewRequest } from "../src/agent/utils/technicalOverviewIntentGuards.js";
 import { isExploitableProcedureIntent } from "../src/agent/utils/procedureIntentGuards.js";

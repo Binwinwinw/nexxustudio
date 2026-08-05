@@ -9,11 +9,11 @@ import {
 import {
   hasExplicitWebProductRecoSignals,
   isFreshFactualCompareWithWebRequest,
-} from "../explicitWebSearchRequestPolicy.js";
+} from "../routing/explicitWebSearchRequestPolicy.js";
 import {
   getMissingProductRecommendationSlots,
   PRODUCT_RECOMMENDATION_REQUIRED_SLOTS,
-} from "../compareChooseCompositePolicy.js";
+} from "../routing/compareChooseCompositePolicy.js";
 
 export const GUIDED_PRODUCT_RECOMMENDATION_RULE =
   "guided_product_recommendation_g31_3";

@@ -24,7 +24,7 @@ import {
   validateDocumentSynthesisReply,
 } from "../src/agent/policies/document/index.js";
 import { understandQuery } from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
-import { resolveClarificationGate } from "../src/agent/policies/clarificationDecisionPolicy.js";
+import { resolveClarificationGate } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { resolveStrategyExecution } from "../src/agent/telemetry/strategyExecutionTelemetry.js";
 

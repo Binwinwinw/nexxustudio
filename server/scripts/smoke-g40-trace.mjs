@@ -4,7 +4,7 @@ import { runConversationShortCircuit } from "../src/agent/micro/classifiers/inte
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
 import { isCodeConceptExplainRequest } from "../src/agent/policies/code/codeConceptExplainPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
-import { evaluateClarificationDecision } from "../src/agent/policies/clarificationDecisionPolicy.js";
+import { evaluateClarificationDecision } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { isHtmlProjectDeliverable } from "../src/agent/policies/delivery/index.js";
 
 const QUERIES = [

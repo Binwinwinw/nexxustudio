@@ -1,7 +1,7 @@
 import responseThinkingCleaner from "../utils/responseThinkingCleaner.js";
 import { isStructuredListReply } from "../utils/streamTextChunks.js";
 import { isIdeationRequest, isConversationMemoryRecallRequest, isArchitectureDesignIntent } from "../utils/conversationGuards.js";
-import { isFreshFactualCompareWithWebRequest } from "../policies/explicitWebSearchRequestPolicy.js";
+import { isFreshFactualCompareWithWebRequest } from "../policies/routing/explicitWebSearchRequestPolicy.js";
 import { isFamiliarityIntent } from "../utils/familiarityIntentGuards.js";
 import { isFamiliarityFollowupIntent } from "../utils/familiarityFollowupGuards.js";
 import { isConversationContinuityFollowup } from "../micro/continuity/conversationContinuityContext.js";

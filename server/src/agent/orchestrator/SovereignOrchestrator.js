@@ -48,7 +48,7 @@ import {
   extractLocalFileReference,
 } from "../utils/localFileUriIntentGuards.js";
 import { resolveWorkspaceReadablePath } from "../policies/analysis/index.js";
-import { isExplicitWebSearchRequest } from "../policies/explicitWebSearchRequestPolicy.js";
+import { isExplicitWebSearchRequest } from "../policies/routing/explicitWebSearchRequestPolicy.js";
 import {
   runOrchestratorMakersCheckerValidation,
 } from "../verification/makersCheckerBridge.js";
@@ -63,13 +63,13 @@ import {
   resolveGuidedProductWebSearchLimits,
   deriveGuidedProductWebSearchQuery,
 } from "../policies/guided/index.js";
-import { deriveResearchThenSummarizeWebQuery } from "../policies/researchThenSummarizePolicy.js";
+import { deriveResearchThenSummarizeWebQuery } from "../policies/routing/researchThenSummarizePolicy.js";
 import { deriveRepoAnalysisWebQuery } from "../utils/repoAnalysisIntentGuards.js";
 import {
   applyProductRecoValidationToWebPacket,
   assessProductRecoWebSources,
 } from "../policies/guided/index.js";
-import { extractProductRecommendationSlots } from "../policies/compareChooseCompositePolicy.js";
+import { extractProductRecommendationSlots } from "../policies/routing/compareChooseCompositePolicy.js";
 
 // ── Matrice de réveil des experts ────────────────────────────────────────────
 // Chaque entrée définit le budget alloué par stage pour ce type de demande.

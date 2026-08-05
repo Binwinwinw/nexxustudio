@@ -9,7 +9,7 @@
  * - L4 échecs honnêtes (clarify, unqualified, pas de fausse confiance)
  */
 import { understandQuery, buildExecutionPlan } from "./conversationQueryUnderstanding.js";
-import { COMPARE_CHOOSE_SMARTPHONE_CANONICAL_QUERY } from "../compareChooseCompositePolicy.js";
+import { COMPARE_CHOOSE_SMARTPHONE_CANONICAL_QUERY } from "../routing/compareChooseCompositePolicy.js";
 import { resolveGuidedProductIntentContractId } from "../guided/index.js";
 import { resolveGuidedDocumentSynthesisIntentContractId } from "../guided/index.js";
 

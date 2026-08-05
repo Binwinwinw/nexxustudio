@@ -8,7 +8,7 @@ import {
   FAMILY_DELIVERY_MODES,
   resolveIntentFamilyFromRegistry,
 } from "../intent/intentFamilyRegistry.js";
-import { resolveKnowledgeEnrichmentPolicy } from "../knowledgeEnrichmentPolicy.js";
+import { resolveKnowledgeEnrichmentPolicy } from "../routing/knowledgeEnrichmentPolicy.js";
 
 export const CONNECTOR_REGISTRY_V1 = "connector_registry_v1";
 

@@ -7,7 +7,7 @@ import { classifySelectiveDecisionIntent } from "../../utils/selectiveDecisionIn
 import {
   wasWebSearchSkippedByContract,
   wasWebSearchAttempted,
-} from "../explicitWebSearchRequestPolicy.js";
+} from "../routing/explicitWebSearchRequestPolicy.js";
 import { isWebSearchThreadMaintenanceMessage } from "./webSearchThreadContinuityPolicy.js";
 
 export const KNOWLEDGE_FRESHNESS_RULE = "temporal_freshness_relative_to_today";

@@ -26,7 +26,7 @@ import {
 import { isCodeGenerationRequest } from "../policies/code/codeDeliveryPolicy.js";
 import { isCodeIntentRequest } from "../policies/code/codeIntentPolicy.js";
 import { isCodeReviewRequest } from "../policies/code/codeReviewPolicy.js";
-import { requiresGenerousComposerResponse } from "../policies/practicalAdviceRoutingGuard.js";
+import { requiresGenerousComposerResponse } from "../policies/routing/practicalAdviceRoutingGuard.js";
 import { isSocialAcceptanceOfOffer } from "../policies/social/index.js";
 import { isMetaCapabilitiesIntent } from "../policies/meta/metaCapabilitiesPolicy.js";
 import { isPresentationOutlineRequest } from "../utils/presentationOutlineIntentGuards.js";
@@ -40,9 +40,9 @@ import { isReactAuditRequest } from "../utils/reactAuditIntentGuards.js";
 import {
   isExplicitWebSearchRequest,
   isFreshFactualCompareWithWebRequest,
-} from "../policies/explicitWebSearchRequestPolicy.js";
+} from "../policies/routing/explicitWebSearchRequestPolicy.js";
 import { isCompareChooseRequest } from "../utils/compareChooseIntentGuards.js";
-import { isResearchThenSummarizeRequest } from "../policies/researchThenSummarizePolicy.js";
+import { isResearchThenSummarizeRequest } from "../policies/routing/researchThenSummarizePolicy.js";
 import { isRepoAnalysisRequest } from "../utils/repoAnalysisIntentGuards.js";
 import {
   extractCodeProjectLightSlots,

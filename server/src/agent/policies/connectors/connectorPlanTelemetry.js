@@ -1,7 +1,7 @@
 /**
  * Phase B — observation shadow du connectorRegistry (lecture seule, sans pilotage runtime).
  */
-import { resolveKnowledgeEnrichmentPolicy } from "../knowledgeEnrichmentPolicy.js";
+import { resolveKnowledgeEnrichmentPolicy } from "../routing/knowledgeEnrichmentPolicy.js";
 import {
   EXPERT_TASK_TYPES,
   REQUESTED_CAPABILITIES,

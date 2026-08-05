@@ -3,7 +3,7 @@
  * Usage : node scripts/live_freshness_validation.js
  */
 import agent from "../src/agent/agent.js";
-import { resolveKnowledgeEnrichmentPolicy } from "../src/agent/policies/knowledgeEnrichmentPolicy.js";
+import { resolveKnowledgeEnrichmentPolicy } from "../src/agent/policies/routing/knowledgeEnrichmentPolicy.js";
 
 const IPHONE_QUERY =
   "pourrais tu faire un comparatif entre les derniers modeles d iphone de chez apple et galaxy chez samsung";

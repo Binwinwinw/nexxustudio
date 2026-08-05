@@ -15,7 +15,7 @@ import {
 import {
   assessInformationSeekingSubjectAlignment,
   isInformationSeekingContractViolation,
-} from "../src/agent/policies/informationSeekingQualificationPolicy.js";
+} from "../src/agent/policies/routing/informationSeekingQualificationPolicy.js";
 
 const KING_QUERY = "quelles informations aurais tu du jeu kingofavalon";
 const JUNE_1980 = "pourrais tu trouver quel jour était le 19 juin 1980 ???";

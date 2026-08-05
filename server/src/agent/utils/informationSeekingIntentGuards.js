@@ -6,7 +6,7 @@ import { isCurrentWebFactRequest } from "../policies/web/index.js";
 import {
   extractResearchThenSummarizeTarget,
   isResearchThenSummarizeRequest,
-} from "../policies/researchThenSummarizePolicy.js";
+} from "../policies/routing/researchThenSummarizePolicy.js";
 import { isFormalLetterTemplateRequest } from "../policies/delivery/index.js";
 
 const INFORMATION_SEEKING_SHELL_RE =

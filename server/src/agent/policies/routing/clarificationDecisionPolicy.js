@@ -84,7 +84,7 @@ import {
   suppressesClarificationForDecomposedRequest,
 } from "./requestDecompositionPolicy.js";
 import { isBenignProceduralHowToRequest } from "../qualification/howToQualificationPolicy.js";
-import { isConversationSocialOnlyQuery } from "../conversationIntentFrame.js";
+import { isConversationSocialOnlyQuery } from "../intent/conversationIntentFrame.js";
 import { isOpenExplorationFrame } from "../conversation/openExplorationFramePolicy.js";
 import {
   isInlineProductBriefPaste,

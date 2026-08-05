@@ -8,7 +8,7 @@ import {
   hasExplicitWebProductRecoSignals,
   isExplicitWebSearchRequest,
   isWebSearchThreadActive,
-} from "../explicitWebSearchRequestPolicy.js";
+} from "../routing/explicitWebSearchRequestPolicy.js";
 
 const POLITE_INFORM_RE = /\bje me permets?\b|\bje me permettrais\b/i;
 

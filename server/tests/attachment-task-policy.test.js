@@ -12,7 +12,7 @@ import {
 } from "../src/agent/policies/attachment/index.js";
 import { classifySummaryContract } from "../src/agent/policies/summary/index.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/practicalAdviceRoutingGuard.js";
+import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
 import {
   buildAttachmentInterpretationSystemAddon,
   extractLinkedAssetRefs,

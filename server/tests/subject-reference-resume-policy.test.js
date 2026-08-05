@@ -13,7 +13,7 @@ import { isConversationMemoryRecallRequest } from "../src/agent/utils/conversati
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
-} from "../src/agent/policies/clarificationDecisionPolicy.js";
+} from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import {
   evaluateJustIntent,
   isSimpleFactualQuestion,

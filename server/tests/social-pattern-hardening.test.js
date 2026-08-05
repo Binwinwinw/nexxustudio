@@ -13,7 +13,7 @@ import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
   resolveClarificationGate,
-} from "../src/agent/policies/clarificationDecisionPolicy.js";
+} from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import {
   evaluateJustIntent,
   isSimpleFactualQuestion,

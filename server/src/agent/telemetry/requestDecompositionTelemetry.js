@@ -1,7 +1,7 @@
 /**
  * Telemetry — décomposition gouvernée des requêtes.
  */
-import { decomposeRequest } from "../policies/requestDecompositionPolicy.js";
+import { decomposeRequest } from "../policies/routing/requestDecompositionPolicy.js";
 
 export const REQUEST_DECOMPOSITION_EVENT = "request_decomposition";
 
