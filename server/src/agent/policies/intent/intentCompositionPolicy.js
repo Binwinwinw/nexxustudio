@@ -30,7 +30,7 @@ const SCHEMA_RE = /\b(?:schema|schéma|diagramme)\b/i;
 const SUMMARIZE_RE =
   /\b(?:resume|résume|resume[- ]?moi|résume[- ]?moi|en\s+3\s+lignes|en\s+trois\s+lignes|mini[- ]?resume|mini[- ]?résumé|synthese|synthèse)\b/i;
 const SOURCES_RE =
-  /\b(?:sources?|references?|références?|cite|citation|bibliographie|avec\s+sources)\b/i;
+  /\b(?:sources?|references?|r[eé]f[eé]rences?|cite|citations?|bibliographie|avec\s+sources)\b/i;
 const DETAILED_RE =
   /\b(?:en detail|en détail|detaille|détaillé|approfond)\b/i;
 const SHORT_RE =

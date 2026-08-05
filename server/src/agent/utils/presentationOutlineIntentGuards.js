@@ -14,6 +14,7 @@ import { isMetaModelStackOpinionQuery, isMetaPredictionLimitsQuery, isMetaPeerAs
 import { isInformationSeekingLightQuery } from "../policies/routing/informationSeekingLightPolicy.js";
 import { isCasualExplanationFollowUp } from "../policies/social/index.js";
 import { isCompareChooseRequest } from "./compareChooseIntentGuards.js";
+import { isWebCitationsStructuredReportCluster } from "../policies/routing/explicitWebSearchRequestPolicy.js";
 
 export const PRESENTATION_OUTLINE_ROUTING_RULE =
   "presentation_outline_local_generative";
@@ -92,6 +93,8 @@ export function isPresentationOutlineSignal(query = "") {
  */
 export function isPresentationOutlineRequest(query = "") {
   if (isCompareChooseRequest(query)) return false;
+  // web + citations + rapport ≠ plan slides (sauf slides/PPT déjà exclus du cluster)
+  if (isWebCitationsStructuredReportCluster(query)) return false;
   if (isMetaModelStackOpinionQuery(query)) return false;
   if (isMetaPredictionLimitsQuery(query)) return false;
   if (isMetaPeerAssistantsQuery(query)) return false;

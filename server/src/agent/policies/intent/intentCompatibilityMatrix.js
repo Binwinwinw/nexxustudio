@@ -17,6 +17,7 @@ const PRIMARY_SECONDARY_ALLOW = Object.freeze({
   correct: new Set(["explain", "summarize"]),
   summarize: new Set(["translate", "cite_sources"]),
   generate: new Set(["explain", "cite_sources"]),
+  structure: new Set(["cite_sources", "summarize"]),
   calculate: new Set(["explain"]),
   advise: new Set(["compare", "summarize"]),
   translate: new Set(["summarize"]),

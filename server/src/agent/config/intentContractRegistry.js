@@ -40,6 +40,7 @@ import { isReactAuditRequest } from "../utils/reactAuditIntentGuards.js";
 import {
   isExplicitWebSearchRequest,
   isFreshFactualCompareWithWebRequest,
+  isWebCitationsStructuredReportCluster,
 } from "../policies/routing/explicitWebSearchRequestPolicy.js";
 import { isCompareChooseRequest } from "../utils/compareChooseIntentGuards.js";
 import { isResearchThenSummarizeRequest } from "../policies/routing/researchThenSummarizePolicy.js";
@@ -69,8 +70,9 @@ const GUARDS = {
     return isResearchThenSummarizeRequest(query, { attachments: refs });
   },
   isExplicitSourceCompilationRequest: (query) => {
+    if (isWebCitationsStructuredReportCluster(query)) return true;
     const q = String(query || "").toLowerCase();
-    return /\b(sources?|articles?|liens?|urls?|documentation web|bibliographie|retourne.*web|cite.*web|trouve.*web)\b/.test(
+    return /\b(sources?|citations?|articles?|liens?|urls?|documentation web|bibliographie|retourne.*web|cite.*web|trouve.*web)\b/.test(
       q,
     );
   },
@@ -981,6 +983,17 @@ export function resolveIntentContract(query = "", packet = {}) {
     (a, b) => b.priority - a.priority,
   );
 
+  // Cluster web+citations+rapport : FACTUAL_RESEARCH avant PRESENTATION_OUTLINE
+  if (isWebCitationsStructuredReportCluster(query)) {
+    const factual = sorted.find((c) => c.id === "FACTUAL_RESEARCH");
+    if (factual) {
+      return {
+        contract: factual,
+        matchedBy: "web_citations_structured_report_cluster",
+      };
+    }
+  }
+
   const presentationContract = sorted.find((c) => c.id === "PRESENTATION_OUTLINE");
   if (presentationContract?.detection?.guard) {
     if (runGuard(presentationContract.detection.guard, query, packet)) {
@@ -1012,8 +1025,21 @@ export function resolveIntentContract(query = "", packet = {}) {
     );
     if (
       byIntent?.id === "PRESENTATION_OUTLINE" &&
-      (isCompareChooseRequest(query) || isFreshFactualCompareWithWebRequest(query))
+      (isCompareChooseRequest(query) ||
+        isFreshFactualCompareWithWebRequest(query) ||
+        isWebCitationsStructuredReportCluster(query))
     ) {
+      if (isWebCitationsStructuredReportCluster(query)) {
+        const factual = INTENT_CONTRACT_REGISTRY.find(
+          (c) => c.id === "FACTUAL_RESEARCH",
+        );
+        if (factual) {
+          return {
+            contract: factual,
+            matchedBy: "web_citations_report_blocks_presentation_outline",
+          };
+        }
+      }
       const guidedProduct = INTENT_CONTRACT_REGISTRY.find(
         (c) => c.id === "GUIDED_PRODUCT_RECOMMENDATION",
       );

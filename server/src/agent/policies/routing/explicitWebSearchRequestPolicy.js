@@ -12,8 +12,22 @@ import { resolveWebSearchThreadMaintenanceShortCircuit } from "../web/index.js";
 
 export const EXPLICIT_WEB_SEARCH_REQUEST_RULE = "explicit_web_search_request_v1";
 
+/** Cluster web + citations + rapport — prime sur marqueur lexical « présentation » (sauf slides/PPT explicites). */
+export const WEB_CITATIONS_STRUCTURED_REPORT_CLUSTER_RULE =
+  "web_citations_structured_report_cluster_v1";
+
 const EXPLICIT_WEB_SEARCH_RE =
   /\b(?:(?:faire|fais|fait|lance|utilise|veux\s+faire)\s+(?:une\s+)?recherche\s+sur\s+(?:la\s+)?(?:toile|web|internet)|recherche\s+sur\s+(?:la\s+)?(?:toile|web|internet)|(?:fais|fait|lance|utilise)\s+(?:une\s+)?recherche\s+(?:sur\s+)?(?:la\s+)?(?:toile|web|internet)|cherche(?:z|r)?\s+(?:sur\s+)?(?:la\s+)?(?:toile|web|internet)|(?:derni[eè]res?\s+)?informations?\s+sur\s+la\s+toile|va\s+sur\s+(?:le\s+)?(?:web|internet)|recherche\s+web|navigation\s+web|cherche\s+(?:pour\s+moi\s+)?sur\s+(?:le\s+)?(?:web|internet)|sur\s+(?:la\s+)?(?:toile|web|internet)\s+(?:trouve|trouver|cherche|chercher|trouve[- ]moi|cherche[- ]moi)|(?:trouve|trouver|cherche|chercher)(?:\s+\w+){0,12}\s+sur\s+(?:la\s+)?(?:toile|web|internet))\b/i;
+
+/** Slides / PPT explicites — « présentation » seul ne suffit pas. */
+const EXPLICIT_SLIDES_DELIVERABLE_RE =
+  /\b(?:powerpoint|power\s*point|pptx?|slides?|diaporama|pitch\s*deck)\b/i;
+
+const CITATIONS_OR_SOURCES_RE =
+  /\b(?:sources?|citations?|r[eé]f[eé]rences?|bibliographie|avec\s+sources)\b/i;
+
+const STRUCTURED_REPORT_RE =
+  /\b(?:rapport(?:\s+professionnel)?|compte[- ]rendu)\b/i;
 
 const WEB_HELP_SHELL_RE =
   /\b(?:tu\s+peux\s+m['']aider|peux[- ]?tu\s+m['']aider|aide[- ]?moi|s['']il\s+te\s+pla[iî]t|stp|svp|je\s+veux|j['']aimerais|on\s+peut)\b/i;
@@ -35,6 +49,31 @@ export function isExplicitWebSearchRequest(query = "") {
   const q = normalizeFamiliarityQuery(query);
   if (!q) return false;
   return EXPLICIT_WEB_SEARCH_RE.test(q);
+}
+
+/**
+ * Demande explicite de livrable slides / PowerPoint (pas le seul mot « présentation »).
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function hasExplicitSlidesDeliverableRequest(query = "") {
+  return EXPLICIT_SLIDES_DELIVERABLE_RE.test(String(query || ""));
+}
+
+/**
+ * Cluster opérationnel : recherche web + citations/sources + rapport.
+ * Doit primer sur un marqueur lexical « présentation » adjacent.
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function isWebCitationsStructuredReportCluster(query = "") {
+  const raw = String(query || "").trim();
+  if (!raw) return false;
+  if (!isExplicitWebSearchRequest(raw)) return false;
+  if (hasExplicitSlidesDeliverableRequest(raw)) return false;
+  if (!CITATIONS_OR_SOURCES_RE.test(raw)) return false;
+  if (!STRUCTURED_REPORT_RE.test(raw)) return false;
+  return true;
 }
 
 /**

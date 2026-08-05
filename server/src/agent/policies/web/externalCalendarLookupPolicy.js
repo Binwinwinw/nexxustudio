@@ -15,10 +15,13 @@ export const EXTERNAL_CALENDAR_LOOKUP_RULE = "external_calendar_lookup_v1";
  * @returns {boolean}
  */
 export function isExternalCalendarLookupRoute(query = "") {
+  // Pas de branche « outil web seul » : sinon toute « recherche web » vole
+  // FACTUAL_RESEARCH / web_search_help (path simple_factual_lookup lunaire).
+  // L'outil web explicite reste géré via shouldBypassLocalDatetimeShortCircuit
+  // quand le sujet est déjà calendaire (pleine lune, etc.).
   return (
     isExternalCalendarLookupRequest(query) ||
-    isExternalDateLookupRequest(query) ||
-    isExplicitWebToolInvocationRequest(query)
+    isExternalDateLookupRequest(query)
   );
 }
 

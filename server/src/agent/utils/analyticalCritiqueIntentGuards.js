@@ -3,6 +3,7 @@
  * PAS extraction documentaire (points clés).
  */
 import { normalizeText as normalizeTextBase } from "./normalizationGuards.js";
+import { isWebCitationsStructuredReportCluster } from "../policies/routing/explicitWebSearchRequestPolicy.js";
 
 const MIN_CRITIQUE_LENGTH = 180;
 
@@ -37,6 +38,9 @@ const ROUTING_META_TEST_MARKERS =
 export function isAnalyticalCritiqueIntent(query = "", attachments = []) {
   const raw = String(query || "").trim();
   if (raw.length < 40) return false;
+
+  // Pas de bascule silencieuse critique si cluster web+citations+rapport
+  if (isWebCitationsStructuredReportCluster(raw)) return false;
 
   const hasTextFiles =
     Array.isArray(attachments) &&

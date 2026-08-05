@@ -45,6 +45,7 @@ import {
 } from "../delivery/index.js";
 import { resolveAiVerificationNotice } from "../epistemic/index.js";
 import { JUST_INTENT_THRESHOLDS } from "./justIntentThresholds.js";
+import { isWebCitationsStructuredReportCluster } from "../routing/explicitWebSearchRequestPolicy.js";
 import {
   INTENT_DOMAINS,
   INTENT_ACTIONS,
@@ -358,6 +359,11 @@ export function resolveIntentDomain(query = "") {
     return INTENT_DOMAINS.ANALYSIS;
   }
 
+  // Cluster web + citations + rapport > marqueur lexical « présentation »
+  if (isWebCitationsStructuredReportCluster(query)) {
+    return INTENT_DOMAINS.DOCUMENT;
+  }
+
   if (suppressesBuildIntentForTechnicalLearning(query)) {
     return INTENT_DOMAINS.GENERAL;
   }
@@ -445,6 +451,11 @@ export function resolveDeliverableType(
   // Tableau pédagogique sciences → réponse structurée, pas livrable spreadsheet
   if (isPedagogicalStructuredExplainRequest(query)) {
     return DELIVERABLE_TYPES.PLAIN_ANSWER;
+  }
+
+  // Cluster web+citations+rapport → doc_report, pas ppt_slides via « présentation »
+  if (isWebCitationsStructuredReportCluster(query)) {
+    return DELIVERABLE_TYPES.DOC_REPORT;
   }
 
   if (domain === INTENT_DOMAINS.WEB_HTML && isHtmlProjectDeliverable(q)) {
@@ -627,6 +638,10 @@ export function evaluateJustIntent(query = "") {
 
   if (isInformationSeekingWithTarget(query)) {
     signals.push("preempt:information_seeking");
+  }
+
+  if (isWebCitationsStructuredReportCluster(query)) {
+    signals.push("preempt:web_citations_structured_report_cluster");
   }
 
   if (isTranslationShell(query)) {
