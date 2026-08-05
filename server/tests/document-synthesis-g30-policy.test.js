@@ -13,7 +13,7 @@ import {
   resolveQueryCompositeShortCircuit,
   shouldAppendDatetimeToDocumentWork,
   mergeDocumentAnalysisWithDatetimeSections,
-} from "../src/agent/policies/conversationQueryUnderstanding.js";
+} from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
 import { buildMissingSourceClarifyReply } from "../src/agent/policies/document/index.js";
 
 describe("documentSynthesisCompositePolicy — G30.1 détection", () => {

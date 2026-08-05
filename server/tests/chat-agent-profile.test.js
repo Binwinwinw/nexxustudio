@@ -9,8 +9,8 @@ import {
   shouldUseChatLightComposerPath,
   buildLightChatOrchestratorPacket,
 } from "../src/agent/policies/orchestration/index.js";
-import { buildRequestWorkup, understandQuery } from "../src/agent/policies/conversationQueryUnderstanding.js";
-import { applyWorkupRetrievalGate } from "../src/agent/policies/conversationQueryUnderstanding.js";
+import { buildRequestWorkup, understandQuery } from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
+import { applyWorkupRetrievalGate } from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
 
 const RTX_QUERY =
   "je veux changer ma rtx 4060, recherche sur la toile, 3 modèles qualité/prix";

@@ -27,7 +27,7 @@ import {
 } from "../src/agent/config/intentContractRegistry.js";
 import { isOpenProjectIdeation } from "../src/agent/config/modeResponseContracts.js";
 import { isPresentationOutlineRequest } from "../src/agent/utils/presentationOutlineIntentGuards.js";
-import { understandQuery } from "../src/agent/policies/conversationQueryUnderstanding.js";
+import { understandQuery } from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
 import {
   buildKnowledgeFreshnessSystemAddon,
 } from "../src/agent/micro/replies/knowledgeFreshnessComposerContract.js";

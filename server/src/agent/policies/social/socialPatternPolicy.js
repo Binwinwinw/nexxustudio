@@ -8,7 +8,7 @@ import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
 } from "../posture/index.js";
-import { isOpenExplorationFrame } from "../openExplorationFramePolicy.js";
+import { isOpenExplorationFrame } from "../conversation/openExplorationFramePolicy.js";
 
 export const SOCIAL_PATTERN_HARDENING_RULE = "social_pattern_hardening_g35";
 export const SOCIAL_PHATIC_CHECKIN_RULE = "social_phatic_checkin_g43";

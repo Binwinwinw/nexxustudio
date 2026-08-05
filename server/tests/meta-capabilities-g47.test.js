@@ -325,7 +325,7 @@ describe("G47 — meta capabilities", () => {
     assert.doesNotMatch(hit?.reply || "", /prix,\s*specs|recherche web/i);
 
     const { verifyMoveContract } = await import(
-      "../src/agent/policies/conversationMoveContractVerification.js"
+      "../src/agent/policies/conversation/conversationMoveContractVerification.js"
     );
     const enforced = verifyMoveContract(hit?.reply || "", q, {
       conversationMove: { family: "information_seeking" },

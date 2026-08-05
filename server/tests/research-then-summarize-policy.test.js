@@ -23,7 +23,7 @@ import { runConversationShortCircuit } from "../src/agent/micro/classifiers/inte
 import {
   understandQuery,
   buildRequestWorkup,
-} from "../src/agent/policies/conversationQueryUnderstanding.js";
+} from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
 
 describe("researchThenSummarizePolicy", () => {
   it("détecte caveman GitHub + va te renseigner + résumé", () => {

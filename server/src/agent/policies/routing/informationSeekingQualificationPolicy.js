@@ -5,7 +5,7 @@ import {
   extractConversationSubject,
   scoreSubjectSurfaceAlignment,
   ANCHOR_ALIGNMENT_TIER,
-} from "../conversationSubjectExtraction.js";
+} from "../conversation/conversationSubjectExtraction.js";
 import {
   isInformationSeekingRecoveryResponse,
   isInformationSeekingWithTarget,

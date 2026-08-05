@@ -6,7 +6,7 @@
  * - Outils activés par nécessité (web, code, fichier, raisonnement expert).
  * - Profil plateforme réservé aux scénarios métier lourds.
  */
-import { RESPONSE_STRATEGIES, QUERY_DOMAINS } from "../queryUnderstandingDomainRegistry.js";
+import { RESPONSE_STRATEGIES, QUERY_DOMAINS } from "../conversation/queryUnderstandingDomainRegistry.js";
 import {
   isCodeIntentRequest,
   classifyCodeIntent,

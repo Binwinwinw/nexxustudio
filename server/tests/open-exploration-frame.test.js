@@ -6,7 +6,7 @@ import {
   isOpenExplorationFrame,
   resolveOpenExplorationFrame,
   SURFACE_FRAME_OPEN_EXPLORATION,
-} from "../src/agent/policies/openExplorationFramePolicy.js";
+} from "../src/agent/policies/conversation/openExplorationFramePolicy.js";
 import {
   classifySocialPattern,
   isKnownSocialPattern,

@@ -10,7 +10,7 @@ import {
   buildExecutionPlan,
   resolveQueryCompositeShortCircuit,
   splitQuerySegments,
-} from "../src/agent/policies/conversationQueryUnderstanding.js";
+} from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
 import {
   MATH_COMPOSITE_CANONICAL_AREA_AND_PERIMETER_QUERY,
 } from "../src/agent/policies/math/index.js";

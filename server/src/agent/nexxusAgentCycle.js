@@ -15,7 +15,7 @@ import {
   buildCognitiveCycle,
   applyWorkupRetrievalGate,
   COGNITIVE_CYCLE_RULE,
-} from "./policies/conversationQueryUnderstanding.js";
+} from "./policies/conversation/conversationQueryUnderstanding.js";
 
 export const NEXXUS_AGENT_RULE = "nexxus_single_agent_cycle_v1";
 

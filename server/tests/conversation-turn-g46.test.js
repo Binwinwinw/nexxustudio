@@ -6,7 +6,7 @@ import {
   CONVERSATION_TURN_FAMILIES,
   shouldSuppressTurnFamilyPath,
 } from "../src/agent/micro/classifiers/conversationTurnClassifier.js";
-import { resolveConversationTurnFamilyShortCircuit } from "../src/agent/policies/conversationTurnRoutingPolicy.js";
+import { resolveConversationTurnFamilyShortCircuit } from "../src/agent/policies/conversation/conversationTurnRoutingPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 
 const SALUT_HISTORY = [

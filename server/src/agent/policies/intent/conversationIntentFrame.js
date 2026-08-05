@@ -18,7 +18,7 @@ import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/externalCalen
 import {
   extractTemporalTarget,
   TEMPORAL_TARGET_KIND,
-} from "../conversationSubjectExtraction.js";
+} from "../conversation/conversationSubjectExtraction.js";
 import {
   classifySocialPattern,
   isPhaticSocialCheckinIntent,

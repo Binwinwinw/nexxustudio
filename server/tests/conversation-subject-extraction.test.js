@@ -11,7 +11,7 @@ import {
   parseRelativeDayOffset,
   TEMPORAL_TARGET_KIND,
   ANCHOR_ALIGNMENT_TIER,
-} from "../src/agent/policies/conversationSubjectExtraction.js";
+} from "../src/agent/policies/conversation/conversationSubjectExtraction.js";
 import {
   assessInformationSeekingSubjectAlignment,
   isInformationSeekingContractViolation,

@@ -20,7 +20,7 @@ import { runConversationShortCircuit } from "../src/agent/micro/classifiers/inte
 import {
   buildRequestWorkup,
   understandQuery,
-} from "../src/agent/policies/conversationQueryUnderstanding.js";
+} from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
 import { resolveActionDecision } from "../src/agent/policies/orchestration/index.js";
 import {
   enforceModeContract,

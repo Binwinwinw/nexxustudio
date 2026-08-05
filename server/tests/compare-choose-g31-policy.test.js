@@ -13,7 +13,7 @@ import {
 import {
   understandQuery,
   buildRequestWorkup,
-} from "../src/agent/policies/conversationQueryUnderstanding.js";
+} from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
 import { resolveGuidedProductIntentContractId } from "../src/agent/policies/guided/index.js";
 import { resolveClarificationGate } from "../src/agent/policies/clarificationDecisionPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/justIntentDetectionPolicy.js";

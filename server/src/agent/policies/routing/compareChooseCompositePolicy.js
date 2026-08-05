@@ -11,7 +11,7 @@ import {
   hasExplicitWebProductRecoSignals,
   isHardwareProductCompareQuery,
 } from "./explicitWebSearchRequestPolicy.js";
-import { RESPONSE_STRATEGIES } from "../queryUnderstandingDomainRegistry.js";
+import { RESPONSE_STRATEGIES } from "../conversation/queryUnderstandingDomainRegistry.js";
 import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
 
 export const COMPARE_CHOOSE_COMPOSITE_RULE = "compare_choose_composite_g31_1";

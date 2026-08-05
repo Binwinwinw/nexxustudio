@@ -16,7 +16,7 @@ import {
 import {
   extractTemporalTarget,
   TEMPORAL_TARGET_KIND,
-} from "../../policies/conversationSubjectExtraction.js";
+} from "../../policies/conversation/conversationSubjectExtraction.js";
 
 /**
  * @param {string} query

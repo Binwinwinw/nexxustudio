@@ -10,7 +10,7 @@ import {
   isRelativeOrFutureDatetimeQuestion,
   parseRelativeDayOffset,
   TEMPORAL_TARGET_KIND,
-} from "../../policies/conversationSubjectExtraction.js";
+} from "../../policies/conversation/conversationSubjectExtraction.js";
 
 /** Fiches locales — couche contenu, pas formulation. Motifs terrain récurrents uniquement. */
 const LOCAL_SIMPLE_FACTUAL_FICHES = Object.freeze({

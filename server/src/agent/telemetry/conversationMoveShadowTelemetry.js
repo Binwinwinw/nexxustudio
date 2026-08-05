@@ -6,7 +6,7 @@ import {
   evaluateConversationMove,
   shouldRunClarificationGate,
   CONVERSATION_MOVE_CONTRACT,
-} from "../policies/conversationMovePolicy.js";
+} from "../policies/conversation/conversationMovePolicy.js";
 import { isInsufficientSignalRefusal } from "../config/modeResponseContracts.js";
 import {
   isHowToProceduralSocialDrift,
@@ -17,7 +17,7 @@ import { isSimpleFactualContractViolation } from "../micro/replies/simpleFactual
 import {
   detectMoveContractViolations,
   MOVE_CONTRACT_PROFILES,
-} from "../policies/conversationMoveContractVerification.js";
+} from "../policies/conversation/conversationMoveContractVerification.js";
 import { resolveMultiSegmentPlan } from "../micro/parsing/multiSegmentResponsePlan.js";
 import { assessInformationSeekingSubjectAlignment } from "../policies/informationSeekingQualificationPolicy.js";
 

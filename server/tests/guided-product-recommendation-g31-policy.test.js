@@ -21,7 +21,7 @@ import {
 import {
   deriveGuidedProductWebSearchQuery,
 } from "../src/agent/policies/guided/index.js";
-import { understandQuery, buildRequestWorkup, applyWorkupRetrievalGate } from "../src/agent/policies/conversationQueryUnderstanding.js";
+import { understandQuery, buildRequestWorkup, applyWorkupRetrievalGate } from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
 
 const GUIDED_SMARTPHONE_QUERY =
   "meilleur smartphone 2026 budget 500 euros pour photo";

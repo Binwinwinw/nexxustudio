@@ -13,7 +13,7 @@ import {
   isSocialChatThreadActive,
   isSoftSocialChatFollowup,
 } from "../social/index.js";
-import { isOpenExplorationFrame } from "../openExplorationFramePolicy.js";
+import { isOpenExplorationFrame } from "../conversation/openExplorationFramePolicy.js";
 
 export const DELIVERABLE_CONTRACT_ID = "DELIVERABLE_CONTRACT_V1";
 export const DELIVERABLE_POLICY_RULE = "deliverable_contract_policy_p0_1_observe";

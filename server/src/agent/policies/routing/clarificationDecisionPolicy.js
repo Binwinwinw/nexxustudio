@@ -37,7 +37,7 @@ import {
   isMathExplainSatisfiable,
   isMathFactorizationGeneralRequest,
 } from "../math/index.js";
-import { isQueryCompositeSatisfiable } from "../conversationQueryUnderstanding.js";
+import { isQueryCompositeSatisfiable } from "../conversation/conversationQueryUnderstanding.js";
 import {
   isDocumentSynthesisSatisfiable,
   buildMissingSourceClarifyReply,
@@ -85,7 +85,7 @@ import {
 } from "./requestDecompositionPolicy.js";
 import { isBenignProceduralHowToRequest } from "../qualification/howToQualificationPolicy.js";
 import { isConversationSocialOnlyQuery } from "../conversationIntentFrame.js";
-import { isOpenExplorationFrame } from "../openExplorationFramePolicy.js";
+import { isOpenExplorationFrame } from "../conversation/openExplorationFramePolicy.js";
 import {
   isInlineProductBriefPaste,
   isProjectScopingAssistRequest,

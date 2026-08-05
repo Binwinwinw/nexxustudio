@@ -14,7 +14,7 @@ import {
   buildDatetimeSectionsFromUnderstanding,
   mergeDocumentAnalysisWithDatetimeSections,
   splitQuerySegments,
-} from "../src/agent/policies/conversationQueryUnderstanding.js";
+} from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
 
 describe("documentAnalysisCompositePolicy — G29.2 segmentation", () => {
   it("splitNumberedTaskSegments — 2 tâches numérotées", () => {

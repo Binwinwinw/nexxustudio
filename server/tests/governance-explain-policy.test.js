@@ -12,7 +12,7 @@ import {
 import {
   understandQuery,
   resolveQueryCompositeShortCircuit,
-} from "../src/agent/policies/conversationQueryUnderstanding.js";
+} from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 
 describe("governanceExplainPolicy — G29.1 détection", () => {

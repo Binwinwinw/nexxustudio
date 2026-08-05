@@ -6,8 +6,8 @@ import {
   annotateShortCircuitCognitiveCycle,
   mergeAgentCycleWithShortCircuit,
 } from "../src/agent/policies/shortCircuitCognitiveCyclePolicy.js";
-import { buildRequestWorkup } from "../src/agent/policies/conversationQueryUnderstanding.js";
-import { understandQuery } from "../src/agent/policies/conversationQueryUnderstanding.js";
+import { buildRequestWorkup } from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
+import { understandQuery } from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
 
 describe("shortCircuitCognitiveCycle — lot 1 social/datetime/math/meta", () => {
   it("social_deterministic — écrit dans les 4 blocs", () => {

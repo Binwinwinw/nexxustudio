@@ -29,7 +29,7 @@ import {
   resolveMathPercentShortCircuit,
   resolveMathGeometryShortCircuit,
 } from "../policies/math/index.js";
-import { resolveQueryCompositeShortCircuit } from "../policies/conversationQueryUnderstanding.js";
+import { resolveQueryCompositeShortCircuit } from "../policies/conversation/conversationQueryUnderstanding.js";
 import {
   buildDocumentSynthesisRecoveryMessage,
   hasDocumentSynthesisShell,

@@ -8,7 +8,7 @@ import {
 import {
   EXPLORATORY_CANONICAL_MARTIAL_QUERY,
   resolveExploratoryConversationShortCircuit,
-} from "../src/agent/policies/exploratoryConversationPolicy.js";
+} from "../src/agent/policies/conversation/exploratoryConversationPolicy.js";
 import { isMetaAssistantBehaviorRequest } from "../src/agent/utils/metaAssistantBehaviorGuards.js";
 import { isExploratoryTopicIntent } from "../src/agent/utils/exploratoryConversationGuards.js";
 import { shouldAllowClarifyThenBuild } from "../src/agent/utils/deliverableMandateGuards.js";

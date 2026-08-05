@@ -2,7 +2,7 @@
  * Migration short-circuits → cycle cognitif factorisé.
  * Doctrine : aucun handler terminal sans contribution aux 4 blocs.
  */
-import { COGNITIVE_CYCLE_RULE } from "../conversationQueryUnderstanding.js";
+import { COGNITIVE_CYCLE_RULE } from "../conversation/conversationQueryUnderstanding.js";
 
 export const SHORT_CIRCUIT_COGNITIVE_CYCLE_RULE =
   "short_circuit_cognitive_cycle_v1";

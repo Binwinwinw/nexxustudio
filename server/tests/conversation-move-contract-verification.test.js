@@ -6,7 +6,7 @@ import {
   detectMoveContractViolations,
   resolveMoveContractProfile,
   MOVE_CONTRACT_PROFILES,
-} from "../src/agent/policies/conversationMoveContractVerification.js";
+} from "../src/agent/policies/conversation/conversationMoveContractVerification.js";
 import { tryResolveDeterministicSimpleFactual } from "../src/agent/micro/replies/simpleFactualComposer.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseContracts.js";
 import { detectSimpleFactualDirectnessViolation } from "../src/agent/telemetry/conversationMoveShadowTelemetry.js";

@@ -6,7 +6,7 @@ import {
   G30_TIERS,
   runG30CoverageCase,
   summarizeG30CoverageMatrix,
-} from "../src/agent/policies/queryUnderstandingCoverageMatrix.js";
+} from "../src/agent/policies/conversation/queryUnderstandingCoverageMatrix.js";
 
 const GREEN_CASES = G30_COVERAGE_CASES.filter((testCase) => testCase.status === "green");
 const GAP_CASES = G30_COVERAGE_CASES.filter((testCase) => testCase.status === "gap");
