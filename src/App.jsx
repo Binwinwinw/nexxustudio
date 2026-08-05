@@ -1,7 +1,5 @@
 /* src/App.jsx */
 import React, { useState, useCallback, useRef } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import {
   Rocket,
   StopCircle,
@@ -9,12 +7,10 @@ import {
   Cpu,
   Clipboard,
   Lightbulb,
-  Shield,
   AlertTriangle,
   Globe,
   Monitor,
   Trash2,
-  Activity,
   FolderSearch,
   Terminal as TerminalIcon,
 } from "lucide-react";
@@ -22,7 +18,6 @@ import GlassCard from "./components/GlassCard";
 import Timeline from "./components/Timeline";
 import Starfield from "./components/Starfield";
 import ChatBento from "./components/ChatBento";
-import ForgePulse from "./components/ForgePulse";
 import { CITADELLE_VIEWS } from "./context/citadelleViews.js";
 import { SidebarProvider, useSidebar } from "./context/SidebarContext";
 import { OperatorTraceProvider, useOperatorTrace } from "./context/OperatorTraceContext";
@@ -33,7 +28,6 @@ import CitadelleSidebar, {
 import MainViewRouter from "./components/layout/MainViewRouter";
 
 const Terminal = React.lazy(() => import("./components/Terminal"));
-import PerformanceMonitor from "./components/PerformanceMonitor";
 const AuditReport = React.lazy(() => import("./components/AuditReport"));
 import ProductionService from "./services/ProductionService";
 import { getReadinessUi } from "./services/readinessUi";
@@ -1505,10 +1499,9 @@ function AppShell() {
           </div>
 
           {isChatView && (
-          <div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12 transition-all duration-1000 ${isRunning ? "opacity-100 translate-y-0" : "opacity-60 hover:opacity-100 translate-y-2"}`}>
-            {/* 1. CONSOLE D'ORCHESTRATION */}
+          <div className={`mb-12 transition-all duration-1000 ${isRunning ? "opacity-100 translate-y-0" : "opacity-60 hover:opacity-100 translate-y-2"}`}>
             <GlassCard
-              className={`lg:col-span-1 flex flex-col min-h-[400px] transition-all duration-1000 ${isRunning ? "animate-pulse-thinking border-emerald-500/30" : ""}`}
+              className={`flex flex-col min-h-[400px] transition-all duration-1000 ${isRunning ? "animate-pulse-thinking border-emerald-500/30" : ""}`}
             >
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">
@@ -1535,121 +1528,6 @@ function AppShell() {
                   >
                     <Terminal logs={logs} hideHeader={true} />
                   </React.Suspense>
-                </div>
-                {output && (
-                  <div className="flex-1 text-slate-300 prose prose-invert max-w-none overflow-y-auto pr-2 custom-markdown text-[11px] leading-snug border-t border-white/5 pt-4">
-                    <div className="text-[8px] font-black text-blue-500 uppercase tracking-widest mb-2 opacity-50">
-                      Délibération Cognitive :
-                    </div>
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{output}</ReactMarkdown>
-                  </div>
-                )}
-              </div>
-            </GlassCard>
-
-            {/* 2. EFFICIENCE & MÉTRIQUES */}
-            <GlassCard className="flex flex-col min-h-[300px]">
-              <div className="flex items-center gap-2 mb-6">
-                <Activity size={16} className="text-emerald-400" />
-                <span className="text-[10px] font-bold tracking-widest uppercase text-slate-400">
-                  Efficience Opérationnelle
-                </span>
-              </div>
-              <div className="space-y-4">
-                <div className="p-3 bg-black/30 rounded-xl border border-white/5">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-[9px] text-slate-500 uppercase font-bold tracking-widest">
-                      VRAM Usage
-                    </span>
-                    <span
-                      className={`text-xs font-mono font-black ${(stats.vram?.percent || (typeof stats.vram === "number" ? stats.vram : 0)) > 80 ? "text-red-400" : "text-emerald-400"}`}
-                    >
-                      {stats.vram?.percent ||
-                        (typeof stats.vram === "number" ? stats.vram : 0)}
-                      %
-                    </span>
-                  </div>
-                  <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full transition-all duration-1000 ${(stats.vram?.percent || (typeof stats.vram === "number" ? stats.vram : 0)) > 80 ? "bg-red-500" : "bg-emerald-500"}`}
-                      style={{
-                        width: `${stats.vram?.percent || (typeof stats.vram === "number" ? stats.vram : 0)}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-black/30 rounded-xl border border-white/5">
-                    <span className="text-[8px] text-slate-500 uppercase font-black block mb-1 tracking-widest">
-                      Inférence
-                    </span>
-                    <span className="text-lg font-black text-white">
-                      {stats.tps || 0}{" "}
-                      <small className="text-[8px] opacity-40">T/s</small>
-                    </span>
-                  </div>
-                  <div className="p-3 bg-black/30 rounded-xl border border-white/5">
-                    <span className="text-[8px] text-slate-500 uppercase font-black block mb-1 tracking-widest">
-                      Indexation
-                    </span>
-                    <span className="text-lg font-black text-blue-400">
-                      842 <small className="text-[8px] opacity-40">Nodes</small>
-                    </span>
-                  </div>
-                </div>
-                <section className="h-40 bg-black/40 rounded-xl border border-white/5 overflow-hidden relative flex items-center justify-center">
-                  <div className="absolute inset-0 opacity-20">
-                    <Starfield active={isRunning} count={30} />
-                  </div>
-                  <div className="relative z-10 flex flex-col items-center gap-2">
-                    <ForgePulse currentPhase={currentPhase} />
-                    <span className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.3em] animate-pulse">
-                      {isRunning ? "Séquence en Cours" : "Système Nominal"}
-                    </span>
-                  </div>
-                </section>
-              </div>
-            </GlassCard>
-
-            {/* 3. TÉLÉMÉTRIE & SIGNAUX */}
-            <GlassCard className="flex flex-col min-h-[300px]">
-              <div className="flex items-center gap-2 mb-6">
-                <Shield size={16} className="text-blue-400" />
-                <span className="text-[10px] font-black tracking-widest uppercase text-slate-400">
-                  Gouvernance & Signaux
-                </span>
-              </div>
-              <div className="flex-1 flex flex-col gap-4">
-                <div className="flex-1 bg-black/30 rounded-xl border border-white/5 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
-                  <div className="absolute top-2 left-2 flex gap-1">
-                    <div className="w-1 h-1 bg-blue-500 rounded-full animate-pulse" />
-                    <div className="w-1 h-1 bg-blue-500 rounded-full animate-pulse delay-75" />
-                  </div>
-                  <AlertTriangle
-                    size={32}
-                    className="text-slate-800 mb-2 opacity-50"
-                  />
-                  <p className="text-[9px] text-slate-400 uppercase font-black tracking-[0.2em]">
-                    Signal Nominal
-                  </p>
-                  <span className="text-[7px] text-slate-600 mt-2 font-mono italic">
-                    Sentinel Monitor: 0 Alertes actives
-                  </span>
-                </div>
-                <div className="p-4 bg-blue-600/10 rounded-xl border border-blue-500/20 shadow-lg">
-                  <div className="flex justify-between items-center">
-                    <div className="flex flex-col">
-                      <span className="text-[8px] text-blue-400 uppercase font-black tracking-widest">
-                        Runtime State
-                      </span>
-                      <span className="text-[10px] text-white font-bold">
-                        SOVEREIGN_CORE_ACTIVE
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                    </div>
-                  </div>
                 </div>
               </div>
             </GlassCard>

@@ -296,7 +296,6 @@ export default function CitadelleSidebar({
       <div className="shrink-0 border-b border-white/10">
         <PerformanceMonitor
           stats={stats}
-          health={health}
           readyStatus={readyStatus}
           variant="sidebar"
         />
