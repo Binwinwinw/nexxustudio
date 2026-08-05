@@ -10,6 +10,7 @@ export const SHORT_CIRCUIT_COGNITIVE_CYCLE_RULE =
 const SOCIAL_PATH_PREFIXES = ["social", "phatic", "greeting"];
 const DATETIME_PATH_MARKERS = ["datetime", "time_lookup", "date_lookup"];
 const MATH_SIMPLE_PATHS = new Set([
+  "math_arithmetic_deterministic",
   "math_simple_deterministic",
   "math_composite_deterministic",
 ]);

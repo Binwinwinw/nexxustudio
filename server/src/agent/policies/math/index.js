@@ -1,5 +1,6 @@
 /** Façade domaine math — préférer cet import pour le code nouveau. */
 export * from "./mathSimplePolicy.js";
+export * from "./mathArithmeticPolicy.js";
 export * from "./mathRootPolicy.js";
 export * from "./mathGeometryPolicy.js";
 export * from "./mathExplainPolicy.js";

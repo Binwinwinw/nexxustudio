@@ -231,6 +231,7 @@ export const SUFFICIENCY_BYPASS_PATHS = new Set([
   "subject_type_clarify",
   "subject_type_resolved",
   "math_simple_deterministic",
+  "math_arithmetic_deterministic",
   "math_root_deterministic",
   "math_geometry_deterministic",
   "math_explain_deterministic",

@@ -29,6 +29,7 @@ import { isTechnicalLearningPathRequest } from "../../utils/technicalLearningPat
 import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIntentGuards.js";
 import { isTranslationRequestReady, isTranslationPipelineReady, isMultiTargetTranslationRequest } from "../../utils/translationIntentGuards.js";
 import {
+  isMathArithmeticSatisfiable,
   isMathSimpleSatisfiable,
   isMathRootSatisfiable,
   isMathGeometrySatisfiable,
@@ -583,6 +584,16 @@ export function evaluateClarificationDecision(
     return pack(
       CLARIFICATION_DECISIONS.CAN_ANSWER_NOW,
       "query_composite_answerable",
+      true,
+      signals,
+    );
+  }
+
+  if (isMathArithmeticSatisfiable(query)) {
+    signals.push("math_arithmetic");
+    return pack(
+      CLARIFICATION_DECISIONS.CAN_ANSWER_NOW,
+      "math_arithmetic_answerable",
       true,
       signals,
     );

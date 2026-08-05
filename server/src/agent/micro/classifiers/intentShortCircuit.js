@@ -135,6 +135,7 @@ import {
   buildMultiUnitCompositeReply,
 } from "../replies/multiUnitReplyBuilder.js";
 import {
+  resolveMathArithmeticShortCircuit,
   resolveMathSimpleShortCircuit,
   resolveMathRootShortCircuit,
   resolveMathGeometryShortCircuit,
@@ -1808,6 +1809,25 @@ export async function runConversationShortCircuit(query, options = {}) {
       enforce: { allowRefusal: false, sectionedComposite: true },
       queryUnderstanding: queryCompositeHit.understanding,
       executionPlan: queryCompositeHit.plan,
+    });
+  }
+
+  // Arithmétique fermée (+ − × ÷) avant factorisation / géométrie — stop court + contrat strict.
+  const mathArithmeticHit = resolveMathArithmeticShortCircuit(effectiveQuery);
+  if (mathArithmeticHit?.reply) {
+    return emit({
+      path: "math_arithmetic_deterministic",
+      mode: RESPONSE_MODES.INSTANT,
+      reply: mathArithmeticHit.reply,
+      step:
+        mathArithmeticHit.answerMode === "strict"
+          ? "🔢 Arithmétique fermée — réponse directe (déterministe)..."
+          : mathArithmeticHit.answerMode === "steps"
+            ? "🔢 Arithmétique — étapes demandées (déterministe)..."
+            : "🔢 Arithmétique — explication demandée (déterministe)...",
+      enforce: { allowRefusal: false },
+      mathArithmeticKind: mathArithmeticHit.kind,
+      mathArithmeticAnswerMode: mathArithmeticHit.answerMode,
     });
   }
 
