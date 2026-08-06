@@ -17,10 +17,16 @@ import {
 import {
   validateFactualResearchReply,
   detectFactualResearchSections,
+  stripUnanchoredFigures,
+  dedupeFactualResearchSections,
+  softCapFactualResearchLength,
+  countWords,
+  FACTUAL_RESEARCH_SOFT_MAX_WORDS,
 } from "../src/agent/policies/web/factualResearchReplyValidator.js";
 import {
   requiresFactualResearchComposerContract,
   buildFactualResearchSystemAddon,
+  FACTUAL_RESEARCH_CANONICAL_HEADINGS,
 } from "../src/agent/micro/replies/factualResearchComposerContract.js";
 import { buildKnowledgeFreshnessSystemAddon } from "../src/agent/micro/replies/knowledgeFreshnessComposerContract.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
@@ -122,9 +128,12 @@ describe("P2 FACTUAL_RESEARCH deliverable", () => {
       true,
     );
     const addon = buildFactualResearchSystemAddon(STREAMING_SERIES_A, packet);
-    assert.match(addon, /Résumé exécutif/);
+    assert.match(addon, /## Résumé/);
     assert.match(addon, /Analyse de marché/);
+    assert.match(addon, /## Opportunités/);
     assert.match(addon, /Sources/);
+    assert.match(addon, /1200–1800|1400/);
+    assert.ok(FACTUAL_RESEARCH_CANONICAL_HEADINGS.length === 5);
   });
 
   it("validator OK avec 3+ sources, sections et citations", () => {
@@ -229,4 +238,126 @@ Note [1].
       false,
     );
   });
+
+  it("P3 : chiffre sans citation retiré ; chiffre ancré conservé", () => {
+    const stripped = stripUnanchoredFigures(
+      "## Résumé\nLe marché croît de 40% par an.\n\n## Analyse de marché\nLa taille atteint 12 milliards [1].\n",
+    );
+    assert.ok(stripped.removed >= 1);
+    assert.doesNotMatch(stripped.text, /40%/);
+    assert.match(stripped.text, /12 milliards\s*\[1\]/);
+
+    const packet = packetWithSources(3);
+    const text = `
+## Résumé
+Croissance de 40% sans preuve.
+
+## Analyse de marché
+Part de 12% [1].
+
+## Analyse concurrentielle
+Acteurs [2].
+
+## Opportunités
+Pistes [3].
+
+## Sources
+[1] https://example.com/market-1-2026
+`;
+    const result = validateFactualResearchReply(text, packet, {
+      query: STREAMING_SERIES_A,
+    });
+    assert.ok(result.issues.includes("unanchored_figure"));
+    assert.doesNotMatch(result.sanitized, /40%/);
+    assert.match(result.sanitized, /12%\s*\[1\]/);
+  });
+
+  it("P3 : double ## Résumé → un seul bloc", () => {
+    const { text, deduped } = dedupeFactualResearchSections(`
+## Résumé
+Premier.
+
+## Résumé
+Doublon à supprimer.
+
+## Analyse de marché
+Ok.
+
+## Analyse concurrentielle
+Ok.
+
+## Opportunités
+Ok.
+
+## Sources
+[1] https://example.com/a
+`);
+    assert.equal(deduped, true);
+    assert.equal((text.match(/## Résumé/g) || []).length, 1);
+    assert.match(text, /Premier/);
+    assert.doesNotMatch(text, /Doublon/);
+  });
+
+  it("P3 : soft-cap > 2000 mots garde Sources", () => {
+    const filler = Array.from({ length: 2200 }, () => "mot").join(" ");
+    const long = `
+## Résumé
+${filler}
+
+## Analyse de marché
+${filler}
+
+## Analyse concurrentielle
+court [1].
+
+## Opportunités
+court [2].
+
+## Sources
+[1] https://example.com/market-1-2026
+[2] https://example.com/market-2-2026
+`;
+    assert.ok(countWords(long) > FACTUAL_RESEARCH_SOFT_MAX_WORDS);
+    const capped = softCapFactualResearchLength(long);
+    assert.equal(capped.truncated, true);
+    assert.ok(capped.wordCount <= FACTUAL_RESEARCH_SOFT_MAX_WORDS + 80);
+    assert.match(capped.text, /## Sources/);
+    assert.match(capped.text, /https:\/\/example\.com\/market-1-2026/);
+
+    const packet = packetWithSources(3);
+    const result = validateFactualResearchReply(long, packet, {
+      query: STREAMING_SERIES_A,
+    });
+    assert.ok(result.issues.includes("over_length"));
+    assert.match(result.sanitized, /## Sources/);
+  });
+
+  it("P3 : titres canoniques courts acceptés par le validator", () => {
+    const packet = packetWithSources(3);
+    const text = `
+## Résumé
+Synthèse [1].
+
+## Analyse de marché
+Marché [2].
+
+## Analyse concurrentielle
+Concurrence [3].
+
+## Opportunités
+Pistes [1].
+
+## Sources
+[1] https://example.com/market-1-2026
+[2] https://example.com/market-2-2026
+[3] https://example.com/market-3-2026
+`;
+    const sections = detectFactualResearchSections(text);
+    assert.deepEqual(sections.missing, []);
+    const result = validateFactualResearchReply(text, packet, {
+      query: STREAMING_SERIES_A,
+    });
+    assert.equal(result.valid, true, result.issues.join("|"));
+  });
 });
+

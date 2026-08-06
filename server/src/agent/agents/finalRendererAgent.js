@@ -180,17 +180,19 @@ export const finalRendererAgent = {
         systemPrompt += `\n\n${buildFactualResearchSystemAddon(packet.user_query || "", packet)}`;
       }
 
+      // P3 — FACTUAL_RESEARCH : budget plus court (cible ~1400 mots, pas 4000 tokens)
       const numPredict = composerOptions.openProposition
         ? 420
         : composerOptions.knownEntitySummary
           ? 240
+        : composerOptions.factualResearch
+          ? 2200
         : composerOptions.generalKnowledge ||
             composerOptions.directArbitration ||
             composerOptions.knowledgeFreshness ||
             composerOptions.compareChoose ||
             composerOptions.researchThenSummarize ||
             composerOptions.repoAnalysis ||
-            composerOptions.factualResearch ||
             composerOptions.codeDelivery
           ? 4000
           : composerOptions.forceShort
