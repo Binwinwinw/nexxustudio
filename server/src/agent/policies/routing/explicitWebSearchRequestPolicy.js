@@ -29,6 +29,10 @@ const CITATIONS_OR_SOURCES_RE =
 const STRUCTURED_REPORT_RE =
   /\b(?:rapport(?:\s+professionnel)?|compte[- ]rendu)\b/i;
 
+/** Recherche ancrée web même sans locution exacte « recherche web ». */
+const WEB_GROUNDED_RESEARCH_RE =
+  /\b(?:sources?\s+web|web\s+r[eé]centes?|recherche\s+(?:web|sur\s+(?:internet|le\s+web|la\s+toile))|(?:effectuer|fais|fait|faire|lance)\s+une\s+recherche)\b/i;
+
 const WEB_HELP_SHELL_RE =
   /\b(?:tu\s+peux\s+m['']aider|peux[- ]?tu\s+m['']aider|aide[- ]?moi|s['']il\s+te\s+pla[iî]t|stp|svp|je\s+veux|j['']aimerais|on\s+peut)\b/i;
 
@@ -61,6 +65,25 @@ export function hasExplicitSlidesDeliverableRequest(query = "") {
 }
 
 /**
+ * Signal web opérationnel pour le cluster (explicite OU sources web / recherche + web).
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function hasWebGroundedResearchSignal(query = "") {
+  const raw = String(query || "").trim();
+  if (!raw) return false;
+  if (isExplicitWebSearchRequest(raw)) return true;
+  if (WEB_GROUNDED_RESEARCH_RE.test(raw) && /\bweb\b/i.test(raw)) return true;
+  if (
+    /\b(?:effectuer|fais|fait|faire|lance)\s+une\s+recherche\b/i.test(raw) &&
+    /\bsources?\s+web\b/i.test(raw)
+  ) {
+    return true;
+  }
+  return false;
+}
+
+/**
  * Cluster opérationnel : recherche web + citations/sources + rapport.
  * Doit primer sur un marqueur lexical « présentation » adjacent.
  * @param {string} query
@@ -69,11 +92,77 @@ export function hasExplicitSlidesDeliverableRequest(query = "") {
 export function isWebCitationsStructuredReportCluster(query = "") {
   const raw = String(query || "").trim();
   if (!raw) return false;
-  if (!isExplicitWebSearchRequest(raw)) return false;
   if (hasExplicitSlidesDeliverableRequest(raw)) return false;
+  if (!hasWebGroundedResearchSignal(raw)) return false;
   if (!CITATIONS_OR_SOURCES_RE.test(raw)) return false;
   if (!STRUCTURED_REPORT_RE.test(raw)) return false;
   return true;
+}
+
+const YEAR_IN_QUERY_RE = /\b(20[2-3]\d)\b/;
+const MONTH_FR_RE =
+  /\b(janvier|f[eé]vrier|mars|avril|mai|juin|juillet|ao[uû]t|septembre|octobre|novembre|d[eé]cembre)\b/i;
+
+const DELIVERABLE_FLUFF_RE =
+  /\b(?:je\s+suis|responsable\s+marketing|startup|dossier\s+de\s+pr[eé]sentation|pourriez[- ]vous|veuillez|effectuer|utiliser|structurer|comprenant|bas[eé]e?\s+sur|livrable|rapport\s+professionnel|pages?\s+maximum|r[eé]sum[eé]|analyse\s+de\s+march[eé]|analyse\s+concurrentielle|pr[eé]sentation\s+des\s+opportunit[eé]s|opportunit[eé]s\s+de\s+croissance|tendances\s+cl[eé]s|positionnement\s+des\s+concurrents|[eé]tat\s+actuel\s+du\s+march[eé]|identifier|sources?\s+web\s+r[eé]centes?\s+avec\s+citations?)\b/gi;
+
+/**
+ * Query web courte pour FACTUAL_RESEARCH / cluster (évite VQD sur brief marketing).
+ * @param {string} query
+ * @returns {string}
+ */
+export function deriveFactualResearchWebQuery(query = "") {
+  const raw = String(query || "").trim();
+  if (!raw) return "";
+
+  const year = raw.match(YEAR_IN_QUERY_RE)?.[1] || String(new Date().getFullYear());
+  const month = raw.match(MONTH_FR_RE)?.[1] || null;
+  const parts = [];
+
+  if (/\bs[eé]rie\s*a\b|\bseries\s*a\b/i.test(raw)) parts.push("Series A");
+  if (/\blev[eé]e\s+de\s+fonds\b/i.test(raw)) parts.push("levée de fonds");
+  if (/\bstreaming\b/i.test(raw)) {
+    parts.push("marché streaming");
+    if (/\bind[eé]pendant/i.test(raw)) parts.push("films indépendants");
+  }
+  if (/\bLLM|IA\s+g[eé]n[eé]rative|intelligence\s+artificielle\b/i.test(raw)) {
+    parts.push("LLM IA générative");
+  }
+  if (/\btendance/i.test(raw) && !parts.includes("tendances")) parts.push("tendances");
+  if (/\bconcurren/i.test(raw)) parts.push("concurrence");
+  if (month) parts.push(month);
+  parts.push(year);
+
+  if (parts.length >= 3) {
+    return parts.join(" ").replace(/\s+/g, " ").trim().slice(0, 120);
+  }
+
+  let topic = extractWebSearchTopic(raw) || raw;
+  topic = topic
+    .replace(DELIVERABLE_FLUFF_RE, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!topic) topic = raw.replace(/\s+/g, " ").trim();
+  return topic.slice(0, 120);
+}
+
+/**
+ * Raccourcit une query web trop longue (retry VQD / fallback).
+ * @param {string} query
+ * @returns {string}
+ */
+export function shortenWebSearchQuery(query = "") {
+  const q = String(query || "").trim();
+  if (!q) return q;
+  if (q.length <= 80) return q;
+  const derived = deriveFactualResearchWebQuery(q);
+  if (derived && derived.length < q.length) return derived.slice(0, 80);
+  return q
+    .split(/\s+/)
+    .filter((w) => w.length > 2)
+    .slice(0, 8)
+    .join(" ")
+    .slice(0, 80);
 }
 
 /**
@@ -346,6 +435,24 @@ export function resolveExplicitWebSearchHelpShortCircuit(query = "", options = {
       extractWebSearchTopic(query) || extractWebSearchFollowUpTopic(query);
     if (followTopic) {
       return buildWebPipelineHit(followTopic, "web_help_thread_continuation", query);
+    }
+  }
+
+  // Cluster web+citations+rapport (ex. « sources web » + recherche, sans locution « recherche web »)
+  if (isWebCitationsStructuredReportCluster(query)) {
+    const clusterTopic =
+      deriveFactualResearchWebQuery(query) ||
+      extractWebSearchTopic(query) ||
+      String(query || "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 120);
+    if (clusterTopic) {
+      return buildWebPipelineHit(
+        clusterTopic,
+        "web_citations_structured_report_cluster",
+        query,
+      );
     }
   }
 

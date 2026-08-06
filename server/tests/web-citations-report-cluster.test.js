@@ -5,6 +5,8 @@ import {
   isWebCitationsStructuredReportCluster,
   hasExplicitSlidesDeliverableRequest,
   resolveExplicitWebSearchHelpShortCircuit,
+  deriveFactualResearchWebQuery,
+  shortenWebSearchQuery,
 } from "../src/agent/policies/routing/explicitWebSearchRequestPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { resolveIntentComposition } from "../src/agent/policies/intent/intentCompositionPolicy.js";
@@ -12,6 +14,8 @@ import { resolveIntentContract } from "../src/agent/config/intentContractRegistr
 import { isPresentationOutlineRequest } from "../src/agent/utils/presentationOutlineIntentGuards.js";
 import { isAnalyticalCritiqueIntent } from "../src/agent/utils/analyticalCritiqueIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
+import { classifySummaryContract } from "../src/agent/policies/summary/summaryContractRouter.js";
+import { extractPastedSourceText } from "../src/agent/policies/document/documentSynthesisPolicy.js";
 import {
   INTENT_DOMAINS,
   DELIVERABLE_TYPES,
@@ -28,6 +32,9 @@ const SLIDES_EXPLICIT =
 
 const SLIDES_PLAN =
   "fait un plan pour la création d'une présentation en slides de l'application Teams365 avec un sommaire des titres et un scénario pédagogique sur 24h soit 6 * 4h";
+
+/** Cas terrain : dossier présentation + sources web + rapport (sans locution « recherche web »). */
+const STREAMING_SERIES_A = `Je suis responsable marketing d'une startup de streaming indépendante et nous préparons un dossier de présentation pour une levée de fonds de série A. Pourriez-vous effectuer une recherche sur l'état actuel du marché du streaming de films indépendants et identifier les tendances clés, le positionnement des concurrents et les opportunités de croissance ? Veuillez utiliser des sources web récentes avec citations et structurer le tout sous forme de rapport professionnel de 5 pages maximum, comprenant un résumé, une analyse de marché, une analyse concurrentielle et une présentation des opportunités de croissance.`;
 
 describe("web+citations+rapport cluster — arbitrage rails", () => {
   it("détecte le cluster (sans slides explicites)", () => {
@@ -124,5 +131,66 @@ describe("web+citations+rapport cluster — arbitrage rails", () => {
     assert.equal(isPresentationOutlineRequest(SLIDES_PLAN), true);
     const { contract } = resolveIntentContract(SLIDES_PLAN, {});
     assert.equal(contract.id, "PRESENTATION_OUTLINE");
+  });
+
+  it("terrain streaming Series A → FACTUAL_RESEARCH, pas presentation ni critique", async () => {
+    assert.equal(isWebCitationsStructuredReportCluster(STREAMING_SERIES_A), true);
+    assert.equal(isAnalyticalCritiqueIntent(STREAMING_SERIES_A), false);
+    const ji = evaluateJustIntent(STREAMING_SERIES_A);
+    assert.equal(ji.domain, INTENT_DOMAINS.DOCUMENT);
+    assert.equal(ji.deliverable, DELIVERABLE_TYPES.DOC_REPORT);
+    const { contract } = resolveIntentContract(STREAMING_SERIES_A, {});
+    assert.equal(contract.id, "FACTUAL_RESEARCH");
+    const sc = await runConversationShortCircuit(STREAMING_SERIES_A, {
+      getDeterministicSocialResponse: () => null,
+    });
+    assert.equal(sc?.path, "information_seeking_full_pipeline");
+    assert.equal(sc?.forcedIntentContractId, "FACTUAL_RESEARCH");
+    assert.notEqual(sc?.path, "analytical_critique");
+  });
+
+  it("P0 Series A : wantsAnalysis ne tue pas SC ; pas de faux texte collé / TEXT_SUMMARY", async () => {
+    assert.equal(extractPastedSourceText(STREAMING_SERIES_A), null);
+    assert.equal(
+      classifySummaryContract(STREAMING_SERIES_A, { attachments: [] }),
+      null,
+    );
+    const sc = await runConversationShortCircuit(STREAMING_SERIES_A, {
+      getDeterministicSocialResponse: () => null,
+      wantsAnalysis: true,
+    });
+    assert.ok(sc, "SC ne doit pas être null sous wantsAnalysis");
+    assert.equal(sc.path, "information_seeking_full_pipeline");
+    assert.equal(sc.forcedIntentContractId, "FACTUAL_RESEARCH");
+    assert.equal(sc.preferWebResearch, true);
+  });
+
+  it("P1 Series A : query web dérivée courte (pas le brief marketing)", () => {
+    const derived = deriveFactualResearchWebQuery(STREAMING_SERIES_A);
+    assert.ok(derived.length <= 120, `trop long: ${derived.length}`);
+    assert.ok(derived.length < STREAMING_SERIES_A.length / 3);
+    assert.match(derived, /Series A/i);
+    assert.match(derived, /streaming/i);
+    assert.doesNotMatch(derived, /responsable marketing/i);
+    assert.doesNotMatch(derived, /Pourriez-vous/i);
+
+    const withMonth =
+      STREAMING_SERIES_A + " Focus sur les données de juillet 2026.";
+    const derivedMonth = deriveFactualResearchWebQuery(withMonth);
+    assert.match(derivedMonth, /juillet/i);
+    assert.match(derivedMonth, /2026/);
+
+    const hit = resolveExplicitWebSearchHelpShortCircuit(STREAMING_SERIES_A);
+    assert.ok(hit?.webQuery);
+    assert.ok(hit.webQuery.length <= 120);
+    assert.match(hit.webQuery, /Series A|streaming/i);
+  });
+
+  it("P1 shortenWebSearchQuery : brief long → ≤80 ; query courte inchangée", () => {
+    const shortQ = "levées Series A streaming 2026";
+    assert.equal(shortenWebSearchQuery(shortQ), shortQ);
+    const shortened = shortenWebSearchQuery(STREAMING_SERIES_A);
+    assert.ok(shortened.length <= 80);
+    assert.ok(shortened.length < STREAMING_SERIES_A.length);
   });
 });

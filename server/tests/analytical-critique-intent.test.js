@@ -46,6 +46,11 @@ describe("analyticalCritiqueIntentGuards", () => {
     assert.equal(isAnalyticalCritiqueIntent("analyse ce document " + "x".repeat(200), attachments), false);
   });
 
+  it("rejette brief marketing long (analyse de marché ≠ méta-critique)", () => {
+    const q = `Je suis responsable marketing d'une startup de streaming indépendante et nous préparons un dossier de présentation pour une levée de fonds de série A. Pourriez-vous effectuer une recherche sur l'état actuel du marché du streaming de films indépendants et identifier les tendances clés, le positionnement des concurrents et les opportunités de croissance ? Veuillez utiliser des sources web récentes avec citations et structurer le tout sous forme de rapport professionnel de 5 pages maximum, comprenant un résumé, une analyse de marché, une analyse concurrentielle et une présentation des opportunités de croissance.`;
+    assert.equal(isAnalyticalCritiqueIntent(q), false);
+  });
+
   it("hint interdit l'extraction extractive", () => {
     const hint = getAnalyticalCritiqueSystemHint();
     assert.match(hint, /INTERDIT.*Points clés extraits/i);

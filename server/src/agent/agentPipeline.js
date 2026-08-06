@@ -43,6 +43,7 @@ import {
   resolveResearchThenSummarizeIntentContractId,
   decomposeRequest,
   buildMultiUnitExecutionHint,
+  isWebCitationsStructuredReportCluster,
 } from "./policies/routing/index.js";
 import {
   observeConnectorPlanShadow,
@@ -2382,9 +2383,14 @@ class AgentPipeline {
         }
       }
 
+      // Cluster web+citations+rapport sans PJ → recherche web, pas Document Analysis
+      const clusterWebReportWithoutAttachment =
+        isWebCitationsStructuredReportCluster(query) && !hasAttachedDocs;
+
       const needsDocumentAnalysis =
         wantsAnalysis &&
         !isAnalyticalCritique &&
+        !clusterWebReportWithoutAttachment &&
         !shouldBypassDocumentAnalysisRoute(query, intentTriage, attachedFiles) &&
         (containsUrl || isLongText || hasAttachedDocs);
       const needsConsensus = (intent === 'ADR' || options.criticality === 'HIGH') && !needsDocumentAnalysis;

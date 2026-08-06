@@ -14,6 +14,7 @@ import {
   AGENT_USER_AGENT,
   checkUrlPolicy,
 } from '../agent/policies/web/index.js';
+import { shortenWebSearchQuery } from '../agent/policies/routing/explicitWebSearchRequestPolicy.js';
 import { createWebSearchHttpsAgent } from './webSearchTls.js';
 
 const webSearchHttpsAgent = createWebSearchHttpsAgent();
@@ -176,96 +177,119 @@ async function isAllowedByRobots(url) {
  * @param {string} [options.locale='fr-fr'] - Locale de recherche
  * @returns {Promise<{ results: Array, query: string, failure_mode: string|null }>}
  */
+async function filterSearchResults(rawResults, maxResults) {
+  const filtered = [];
+  for (const result of rawResults) {
+    const url = result.url || result.link || '';
+    const urlCheck = checkUrlPolicy(url);
+
+    if (urlCheck.blocked) {
+      console.log(`[WebSearchService] Résultat filtré (politique URL): ${url}`);
+      continue;
+    }
+
+    const robotsAllowed = await isAllowedByRobots(url);
+    if (!robotsAllowed) {
+      console.log(`[WebSearchService] Résultat filtré (robots.txt): ${url}`);
+      continue;
+    }
+
+    filtered.push(result);
+    if (filtered.length >= maxResults) break;
+  }
+  return filtered;
+}
+
+async function runPrimarySearch(query, { locale, timeoutMs, maxResults }) {
+  const searchPromise = search(query, {
+    safeSearch: 0,
+    locale,
+  });
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Timeout de recherche atteint')), timeoutMs)
+  );
+  const searchResponse = await Promise.race([searchPromise, timeoutPromise]);
+  const rawResults = searchResponse?.results || [];
+  console.log(`[WebSearchService] ${rawResults.length} résultats bruts reçus`);
+  const filtered = await filterSearchResults(rawResults, maxResults);
+  console.log(`[WebSearchService] ${filtered.length} résultats retenus après filtrage`);
+  return {
+    results: filtered,
+    query,
+    failure_mode: filtered.length === 0 ? 'no_results_after_filtering' : null,
+  };
+}
+
+function isVqdOrPrimarySearchFailure(err) {
+  const msg = String(err?.message || err || '');
+  return /vqd|timeout|econn|enotfound|fetch|network|429|403/i.test(msg);
+}
+
+/**
+ * Query de retry après échec primaire (ex. VQD sur brief long).
+ * @param {string} query
+ * @param {unknown} err
+ * @returns {string|null}
+ */
+export function resolveShortRetryQuery(query, err) {
+  if (!isVqdOrPrimarySearchFailure(err)) return null;
+  const shortened = shortenWebSearchQuery(query);
+  const original = String(query || '').trim();
+  if (!shortened || shortened === original || shortened.length >= original.length) {
+    return null;
+  }
+  return shortened;
+}
+
 export async function webSearch(query, options = {}) {
   const maxResults = options.maxResults || MAX_RESULTS;
   const locale = options.locale || 'fr-fr';
   const timeoutMs = options.timeoutMs || REQUEST_TIMEOUT_MS;
+  const activeQuery = String(query || '').trim();
 
-  console.log(`[WebSearchService] Recherche: "${query}" (max: ${maxResults}, locale: ${locale}, timeout: ${timeoutMs}ms)`);
+  console.log(`[WebSearchService] Recherche: "${activeQuery}" (max: ${maxResults}, locale: ${locale}, timeout: ${timeoutMs}ms)`);
 
   // Rate limit global sur DuckDuckGo
   await enforceRateLimit('duckduckgo.com');
 
   try {
-    // Timeout via Promise.race
-    const searchPromise = search(query, {
-      safeSearch: 0,
-      locale,
-    });
+    return await runPrimarySearch(activeQuery, { locale, timeoutMs, maxResults });
+  } catch (err) {
+    console.error(`[WebSearchService] Erreur de recherche principale: ${err.message}.`);
 
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Timeout de recherche atteint')), timeoutMs)
-    );
-
-    const searchResponse = await Promise.race([searchPromise, timeoutPromise]);
-    const rawResults = searchResponse?.results || [];
-
-    console.log(`[WebSearchService] ${rawResults.length} résultats bruts reçus`);
-
-    // Filtrage par politique URL
-    const filtered = [];
-    for (const result of rawResults) {
-      const url = result.url || result.link || '';
-      const urlCheck = checkUrlPolicy(url);
-
-      if (urlCheck.blocked) {
-        console.log(`[WebSearchService] Résultat filtré (politique URL): ${url}`);
-        continue;
+    // Retry une fois avec query raccourcie (ex. brief marketing → VQD fail)
+    const shortened = resolveShortRetryQuery(activeQuery, err);
+    if (shortened) {
+      try {
+        console.log(`[WebSearchService] Retry VQD/query courte: "${shortened}"`);
+        await enforceRateLimit('duckduckgo.com');
+        return await runPrimarySearch(shortened, { locale, timeoutMs, maxResults });
+      } catch (retryErr) {
+        console.error(
+          `[WebSearchService] Retry query courte échoué: ${retryErr.message}. Fallback HTML...`,
+        );
       }
-
-      const robotsAllowed = await isAllowedByRobots(url);
-      if (!robotsAllowed) {
-        console.log(`[WebSearchService] Résultat filtré (robots.txt): ${url}`);
-        continue;
-      }
-
-      filtered.push(result);
-      if (filtered.length >= maxResults) break;
+    } else {
+      console.error(`[WebSearchService] Lancement du fallback HTML...`);
     }
 
-    console.log(`[WebSearchService] ${filtered.length} résultats retenus après filtrage`);
-
-    return {
-      results: filtered,
-      query,
-      failure_mode: filtered.length === 0 ? 'no_results_after_filtering' : null,
-    };
-  } catch (err) {
-    console.error(`[WebSearchService] Erreur de recherche principale: ${err.message}. Lancement du fallback HTML...`);
+    const fallbackQuery = shortened || shortenWebSearchQuery(activeQuery) || activeQuery;
     try {
-      const fallbackResults = await fallbackWebSearch(query);
+      const fallbackResults = await fallbackWebSearch(fallbackQuery);
       console.log(`[WebSearchService] Fallback HTML a retourné ${fallbackResults.length} résultats`);
 
-      const filtered = [];
-      for (const result of fallbackResults) {
-        const url = result.url || '';
-        const urlCheck = checkUrlPolicy(url);
-
-        if (urlCheck.blocked) {
-          console.log(`[WebSearchService] Résultat filtré (politique URL): ${url}`);
-          continue;
-        }
-
-        const robotsAllowed = await isAllowedByRobots(url);
-        if (!robotsAllowed) {
-          console.log(`[WebSearchService] Résultat filtré (robots.txt): ${url}`);
-          continue;
-        }
-
-        filtered.push(result);
-        if (filtered.length >= maxResults) break;
-      }
+      const filtered = await filterSearchResults(fallbackResults, maxResults);
 
       return {
         results: filtered,
-        query,
+        query: fallbackQuery,
         failure_mode: filtered.length === 0 ? 'fallback_no_results' : null,
       };
     } catch (fallbackErr) {
       console.error(`[WebSearchService] Erreur critique dans le fallback HTML: ${fallbackErr.message}`);
       return {
         results: [],
-        query,
+        query: fallbackQuery,
         failure_mode: 'search_error',
       };
     }

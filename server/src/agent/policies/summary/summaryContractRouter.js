@@ -16,6 +16,7 @@ import {
 } from "./culturalContentSummaryPolicy.js";
 import { isCodeConceptExplainRequest } from "../code/codeConceptExplainPolicy.js";
 import { isResearchThenSummarizeRequest } from "../routing/researchThenSummarizePolicy.js";
+import { isWebCitationsStructuredReportCluster } from "../routing/explicitWebSearchRequestPolicy.js";
 import { shouldSuppressSummaryContractForAttachment } from "../attachment/index.js";
 
 export const SUMMARY_CONTRACT_VERSION = 1;
@@ -285,6 +286,11 @@ function buildSummaryContract(partial) {
 export function classifySummaryContract(query = "", ctx = {}) {
   const attachments = ctx.attachments || [];
   const hasAttachment = attachments.length > 0;
+
+  // Cluster web+citations+rapport sans PJ → FACTUAL_RESEARCH, pas TEXT_SUMMARY
+  if (isWebCitationsStructuredReportCluster(query) && !hasAttachment) {
+    return null;
+  }
 
   if (!hasSummaryShell(query)) return null;
   if (isCodeConceptExplainRequest(query)) return null;

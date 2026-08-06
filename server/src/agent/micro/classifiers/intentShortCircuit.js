@@ -46,6 +46,7 @@ import {
   shouldPreemptMultiSegment,
   resolveInformationSeekingLightShortCircuit,
   resolveExplicitWebSearchHelpShortCircuit,
+  isWebCitationsStructuredReportCluster,
 } from "../../policies/routing/index.js";
 import {
   resolveMultiSegmentPlan,
@@ -520,7 +521,10 @@ export async function runConversationShortCircuit(query, options = {}) {
     };
   }
 
-  if (wantsAnalysis) return null;
+  // Cluster web+citations+rapport : ne pas tuer le SC web (FACTUAL_RESEARCH)
+  if (wantsAnalysis && !isWebCitationsStructuredReportCluster(query)) {
+    return null;
+  }
 
   if (forgeProduction) return null;
 

@@ -13,6 +13,7 @@ import { isRepoAnalysisRequest } from "../../utils/repoAnalysisIntentGuards.js";
 import { suppressesDocumentSynthesisForCulturalSummary } from "../summary/index.js";
 import { isCodeConceptExplainRequest } from "../code/codeConceptExplainPolicy.js";
 import { isResearchThenSummarizeRequest } from "../routing/researchThenSummarizePolicy.js";
+import { isWebCitationsStructuredReportCluster } from "../routing/explicitWebSearchRequestPolicy.js";
 import { isFormalLetterTemplateRequest } from "../delivery/index.js";
 import { shouldSuppressSummaryContractForAttachment } from "../attachment/index.js";
 
@@ -154,6 +155,9 @@ export function isDocumentSynthesisExcluded(query = "", attachments = []) {
 export function extractPastedSourceText(query = "") {
   const raw = String(query || "").trim();
   if (!raw) return null;
+
+  // Brief web+citations+rapport ≠ texte source collé (évite TEXT_SUMMARY / Document Analysis)
+  if (isWebCitationsStructuredReportCluster(raw)) return null;
 
   // Apostrophe ASCII (j'ai, d'un) ≠ guillemets de citation — sinon faux « passage collé ».
   const quotePatterns = [

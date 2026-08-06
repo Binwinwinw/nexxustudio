@@ -48,7 +48,11 @@ import {
   extractLocalFileReference,
 } from "../utils/localFileUriIntentGuards.js";
 import { resolveWorkspaceReadablePath } from "../policies/analysis/index.js";
-import { isExplicitWebSearchRequest } from "../policies/routing/explicitWebSearchRequestPolicy.js";
+import {
+  deriveFactualResearchWebQuery,
+  isExplicitWebSearchRequest,
+  isWebCitationsStructuredReportCluster,
+} from "../policies/routing/explicitWebSearchRequestPolicy.js";
 import {
   runOrchestratorMakersCheckerValidation,
 } from "../verification/makersCheckerBridge.js";
@@ -609,6 +613,10 @@ export class SovereignOrchestrator {
           ) {
             packet.meta.product_reco_anchor_query = productRecoAnchorQuery;
           }
+          const factualNeedsDerivedQuery =
+            intentContract.id === "FACTUAL_RESEARCH" &&
+            (isWebCitationsStructuredReportCluster(query) ||
+              String(query || "").trim().length > 160);
           const effectiveWebSearchQuery =
             intentContract.id === "GUIDED_PRODUCT_RECOMMENDATION"
               ? optsWebSearchQuery && String(optsWebSearchQuery).trim()
@@ -618,6 +626,8 @@ export class SovereignOrchestrator {
                 ? deriveResearchThenSummarizeWebQuery(query)
               : intentContract.id === "REPO_ANALYSIS"
                 ? deriveRepoAnalysisWebQuery(query)
+              : factualNeedsDerivedQuery
+                ? deriveFactualResearchWebQuery(query)
               : optsWebSearchQuery && String(optsWebSearchQuery).trim()
                 ? String(optsWebSearchQuery).trim()
                 : query;

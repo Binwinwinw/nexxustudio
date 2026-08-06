@@ -7,8 +7,9 @@ import { isWebCitationsStructuredReportCluster } from "../policies/routing/expli
 
 const MIN_CRITIQUE_LENGTH = 180;
 
+// Pas de « une/le analyse » générique — FP sur « analyse de marché, une analyse concurrentielle ».
 const REQUEST_MARKERS =
-  /\b(analyse|analyser|évalue|evalue|valide|critique|démontre|demontre|que prouve|verifie|vérifie)\b.{0,50}\b(ce|cette|mon|ton|le|une) (texte|analyse|diagnostic|message|synthèse|raisonnement|argumentation)\b|\bton analyse\b|\bcette analyse\b|\banalyse (ce|cette|mon|le|une) (texte|analyse|message)\b|\bméta[- ]?analyse\b|\banalyser une analyse\b|\btu as raison\b|\bverdict\b.*\b(technique|terrain)\b/i;
+  /\b(analyse|analyser|évalue|evalue|valide|critique|démontre|demontre|que prouve|verifie|vérifie)\b.{0,50}\b(ce|cette|mon|ton)\s+(texte|analyse|diagnostic|message|synthèse|raisonnement|argumentation)\b|\bton analyse\b|\bcette analyse\b|\banalyse (ce|cette|mon)\s+(texte|analyse|message|diagnostic)\b|\banalyser une analyse\b|\bméta[- ]?analyse\b|\btu as raison\b|\bverdict\b.*\b(technique|terrain)\b/i;
 
 const ARGUMENTATION_MARKERS =
   /\b(runtime|dépôt|depot|patch|template|short[- ]?circuit|nodemon|capability_gaps|metasubkind|pipeline|forge|simple_fast|signal insuffisant|preuve|probable|prouvé|contradiction|décalage|decalage|ancien process|grep|tests passent)\b/i;
@@ -78,9 +79,10 @@ export function isAnalyticalCritiqueIntent(query = "", attachments = []) {
   const hasArgumentation = ARGUMENTATION_MARKERS.test(text);
   const longPaste = raw.length >= 400;
 
-  if (hasRequest && (hasArgumentation || longPaste)) return true;
+  // longPaste seul + « analyse de marché » ≠ méta-critique (exige marqueurs argumentatifs)
+  if (hasRequest && hasArgumentation) return true;
 
-  if (longPaste && hasArgumentation && /\b(analyse|diagnostic|verdict|synthèse)\b/.test(text)) {
+  if (longPaste && hasArgumentation && /\b(analyse|diagnostic|verdict|synth[eè]se)\b/.test(text)) {
     return true;
   }
 
