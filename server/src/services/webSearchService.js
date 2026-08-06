@@ -274,6 +274,7 @@ export async function webSearch(query, options = {}) {
     }
 
     const fallbackQuery = shortened || shortenWebSearchQuery(activeQuery) || activeQuery;
+    const triedShortRetry = Boolean(shortened);
     try {
       const fallbackResults = await fallbackWebSearch(fallbackQuery);
       console.log(`[WebSearchService] Fallback HTML a retourné ${fallbackResults.length} résultats`);
@@ -283,14 +284,19 @@ export async function webSearch(query, options = {}) {
       return {
         results: filtered,
         query: fallbackQuery,
-        failure_mode: filtered.length === 0 ? 'fallback_no_results' : null,
+        failure_mode:
+          filtered.length === 0
+            ? triedShortRetry
+              ? 'vqd_retry_exhausted'
+              : 'fallback_no_results'
+            : null,
       };
     } catch (fallbackErr) {
       console.error(`[WebSearchService] Erreur critique dans le fallback HTML: ${fallbackErr.message}`);
       return {
         results: [],
         query: fallbackQuery,
-        failure_mode: 'search_error',
+        failure_mode: triedShortRetry ? 'vqd_retry_exhausted' : 'search_error',
       };
     }
   }

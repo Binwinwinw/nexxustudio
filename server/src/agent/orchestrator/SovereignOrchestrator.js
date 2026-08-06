@@ -614,23 +614,28 @@ export class SovereignOrchestrator {
             packet.meta.product_reco_anchor_query = productRecoAnchorQuery;
           }
           const factualNeedsDerivedQuery =
-            intentContract.id === "FACTUAL_RESEARCH" &&
-            (isWebCitationsStructuredReportCluster(query) ||
-              String(query || "").trim().length > 160);
+            intentContract.id === "FACTUAL_RESEARCH" ||
+            isWebCitationsStructuredReportCluster(query);
+          const trimmedOptsWebQuery =
+            optsWebSearchQuery && String(optsWebSearchQuery).trim()
+              ? String(optsWebSearchQuery).trim()
+              : "";
+          // Prefer SC-derived short query; never keep a long marketing brief as DDG input.
+          const factualWebQuery =
+            trimmedOptsWebQuery && trimmedOptsWebQuery.length <= 160
+              ? trimmedOptsWebQuery
+              : deriveFactualResearchWebQuery(query) || trimmedOptsWebQuery || query;
           const effectiveWebSearchQuery =
             intentContract.id === "GUIDED_PRODUCT_RECOMMENDATION"
-              ? optsWebSearchQuery && String(optsWebSearchQuery).trim()
-                ? String(optsWebSearchQuery).trim()
-                : deriveGuidedProductWebSearchQuery(productRecoAnchorQuery)
+              ? trimmedOptsWebQuery ||
+                deriveGuidedProductWebSearchQuery(productRecoAnchorQuery)
               : intentContract.id === "RESEARCH_THEN_SUMMARIZE"
                 ? deriveResearchThenSummarizeWebQuery(query)
               : intentContract.id === "REPO_ANALYSIS"
                 ? deriveRepoAnalysisWebQuery(query)
               : factualNeedsDerivedQuery
-                ? deriveFactualResearchWebQuery(query)
-              : optsWebSearchQuery && String(optsWebSearchQuery).trim()
-                ? String(optsWebSearchQuery).trim()
-                : query;
+                ? factualWebQuery
+              : trimmedOptsWebQuery || query;
           if (isCurrentWebFactRequest(query)) {
             currentWebFactAttempted = true;
           }
