@@ -8,6 +8,10 @@ import {
   requiresBridgedFreshnessFallback,
 } from "../../policies/web/index.js";
 import {
+  isFactualResearchSourcedReportPath,
+  shouldRefuseFactualResearchWithoutSources,
+} from "../../policies/web/factualResearchDeliverablePolicy.js";
+import {
   isExplicitWebSearchRequest,
   wasWebSearchSkippedByContract,
 } from "../../policies/routing/explicitWebSearchRequestPolicy.js";
@@ -50,6 +54,17 @@ export function buildKnowledgeFreshnessSystemAddon(query = "", packet = {}) {
       "- INTERDIT : « Je n'ai pas pu vérifier » comme si une tentative avait échoué.",
       "- AUTORISÉ : repères généraux sur les gammes, avec mention claire que prix/modèles peuvent être dépassés.",
       "- INTERDIT : numéros de modèle précis, prix exacts, specs chiffrées non sourcées.",
+    );
+  } else if (
+    isFactualResearchSourcedReportPath(query, packet) &&
+    (bridged || shouldRefuseFactualResearchWithoutSources(query, packet) || !hasWeb)
+  ) {
+    // P2 — FACTUAL_RESEARCH / cluster : jamais de faux rapport « connaissances internes »
+    lines.push(
+      "- MODE REFUS FACTUAL_RESEARCH (0 source web) :",
+      "- INTERDIT : rapport de marché chiffré, disclaimer « je n'ai pas pu vérifier » déguisé en dossier.",
+      "- INTERDIT : inventer des données 2025-2026 ou une « comparaison qualitative » présentée comme rapport sourcé.",
+      "- Dire clairement qu'aucune source récente n'a été récupérée, puis proposer de reformuler la recherche.",
     );
   } else if (bridged) {
     lines.push(

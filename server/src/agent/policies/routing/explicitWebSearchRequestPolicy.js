@@ -166,6 +166,61 @@ export function shortenWebSearchQuery(query = "") {
 }
 
 /**
+ * Query web anglaise de retry (2e chance DDG après 0 résultat FR).
+ * @param {string} query
+ * @returns {string}
+ */
+export function deriveFactualResearchWebQueryEn(query = "") {
+  const raw = String(query || "").trim();
+  if (!raw) return "market research trends 2026";
+
+  const year = raw.match(YEAR_IN_QUERY_RE)?.[1] || String(new Date().getFullYear());
+  const month = raw.match(MONTH_FR_RE)?.[1] || null;
+  const parts = [];
+
+  if (/\bs[eé]rie\s*a\b|\bseries\s*a\b/i.test(raw)) parts.push("Series A");
+  if (/\blev[eé]e\s+de\s+fonds\b|\bfunding\b/i.test(raw)) parts.push("funding");
+  if (/\bstreaming\b/i.test(raw)) {
+    parts.push("independent film streaming market");
+  }
+  if (/\bLLM|IA\s+g[eé]n[eé]rative|intelligence\s+artificielle\b/i.test(raw)) {
+    parts.push("generative AI LLM market");
+  }
+  if (/\btendance|trends?\b/i.test(raw)) parts.push("trends");
+  if (/\bconcurren|competitor/i.test(raw)) parts.push("competitors");
+  if (month) {
+    const monthEn = {
+      janvier: "January",
+      fevrier: "February",
+      février: "February",
+      mars: "March",
+      avril: "April",
+      mai: "May",
+      juin: "June",
+      juillet: "July",
+      aout: "August",
+      août: "August",
+      septembre: "September",
+      octobre: "October",
+      novembre: "November",
+      decembre: "December",
+      décembre: "December",
+    };
+    const key = String(month).toLowerCase();
+    parts.push(monthEn[key] || month);
+  }
+  parts.push(year);
+
+  if (parts.length >= 2) {
+    return parts.join(" ").replace(/\s+/g, " ").trim().slice(0, 120);
+  }
+
+  // Fallback : dérivée FR nettoyée + market
+  const fr = deriveFactualResearchWebQuery(raw);
+  return `${fr} market`.replace(/\s+/g, " ").trim().slice(0, 120);
+}
+
+/**
  * Sujet de recherche après retrait des coquilles « recherche web / aide-moi ».
  * @param {string} query
  * @returns {string|null}

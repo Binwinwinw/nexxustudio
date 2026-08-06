@@ -50,9 +50,15 @@ import {
 import { resolveWorkspaceReadablePath } from "../policies/analysis/index.js";
 import {
   deriveFactualResearchWebQuery,
+  deriveFactualResearchWebQueryEn,
   isExplicitWebSearchRequest,
   isWebCitationsStructuredReportCluster,
 } from "../policies/routing/explicitWebSearchRequestPolicy.js";
+import {
+  buildFactualResearchNoSourcesReply,
+  isFactualResearchSourcedReportPath,
+  shouldRefuseFactualResearchWithoutSources,
+} from "../policies/web/factualResearchDeliverablePolicy.js";
 import {
   runOrchestratorMakersCheckerValidation,
 } from "../verification/makersCheckerBridge.js";
@@ -649,16 +655,19 @@ export class SovereignOrchestrator {
               );
             }
             const webLimits = resolveGuidedProductWebSearchLimits(intentContract);
-            const webPacket = await expertWebSearch.run(
-              { query: effectiveWebSearchQuery },
-              {
-                sessionId,
-                maxResults: webLimits.maxResults,
-                timeoutMs: webLimits.timeoutMs,
-              },
-            );
+            const runWebSearch = (searchQuery) =>
+              expertWebSearch.run(
+                { query: searchQuery },
+                {
+                  sessionId,
+                  maxResults: webLimits.maxResults,
+                  timeoutMs: webLimits.timeoutMs,
+                },
+              );
 
+            let webPacket = await runWebSearch(effectiveWebSearchQuery);
             let validatedPacket = webPacket;
+
             if (intentContract.id === "GUIDED_PRODUCT_RECOMMENDATION") {
               const slots =
                 packet.meta.product_reco_slots ||
@@ -688,6 +697,37 @@ export class SovereignOrchestrator {
                   `[SovereignOrchestrator] product_reco_validation dropped=${validated.audit.dropped} ` +
                     `reasons=${validated.audit.reasons.join("; ")}`,
                 );
+              }
+            }
+
+            const hasSources =
+              validatedPacket &&
+              validatedPacket.sources &&
+              validatedPacket.sources.length > 0;
+
+            // P2 — FACTUAL_RESEARCH / cluster : 2e chance query EN avant refus
+            if (
+              !hasSources &&
+              isFactualResearchSourcedReportPath(query, {
+                meta: { intent_contract_id: intentContract.id },
+              })
+            ) {
+              const enQuery = deriveFactualResearchWebQueryEn(query);
+              if (
+                enQuery &&
+                enQuery.toLowerCase() !==
+                  String(effectiveWebSearchQuery || "").toLowerCase()
+              ) {
+                console.log(
+                  `[SovereignOrchestrator] Web query EN retry: "${enQuery}"`,
+                );
+                if (onStep) {
+                  onStep(`🔁 Retry recherche web (query EN) : ${enQuery}`);
+                }
+                webPacket = await runWebSearch(enQuery);
+                validatedPacket = webPacket;
+                packet.meta.factual_research_en_retry = true;
+                packet.meta.factual_research_en_query = enQuery;
               }
             }
 
@@ -781,6 +821,24 @@ export class SovereignOrchestrator {
       }
       if (onContent) onContent(recovery);
       return recovery;
+    }
+
+    // P2 — FACTUAL_RESEARCH / cluster : 0 source après retries → refus déterministe
+    if (shouldRefuseFactualResearchWithoutSources(query, packet)) {
+      const refuse = buildFactualResearchNoSourcesReply(
+        query,
+        packet.meta.web_failure_mode || null,
+      );
+      packet.quick_answer = refuse;
+      packet.meta.factual_research_no_sources = true;
+      packet.budget = budget.summary();
+      if (onStep) {
+        onStep(
+          "⚠️ FACTUAL_RESEARCH — 0 source web : refus honnête (pas de faux rapport).",
+        );
+      }
+      if (onContent) onContent(refuse);
+      return refuse;
     }
 
     // ── 7. Stage : Prompt ────────────────────────────────────────────────────

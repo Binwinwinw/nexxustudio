@@ -170,7 +170,11 @@ import {
 import { recordSummaryContractTelemetry } from "./telemetry/summaryContractTelemetry.js";
 import { sanitizeToolOutput } from "../services/tool-output-sanitizer.js";
 import { validateProductRecommendationReply } from "./policies/guided/index.js";
-import { validateWebEvidenceFidelityReply } from "./policies/web/index.js";
+import {
+  validateWebEvidenceFidelityReply,
+  validateFactualResearchReply,
+  isFactualResearchSourcedReportPath,
+} from "./policies/web/index.js";
 import { resolveFamiliarityDomainOverviewBypassReply, resolveSubjectReferenceResumeBypassReply } from "./policies/familiarity/index.js";
 import {
   recordJustIntentTelemetry,
@@ -3035,6 +3039,25 @@ class AgentPipeline {
               valid: synthesisValidation.valid,
               issues: synthesisValidation.issues,
               groundedness: synthesisValidation.groundedness,
+            };
+          }
+        }
+      }
+
+      // P2 — validation post-compose FACTUAL_RESEARCH / cluster (sections + citations)
+      if (isFactualResearchSourcedReportPath(query, packet)) {
+        const factualValidation = validateFactualResearchReply(safeOutput, packet, {
+          query,
+        });
+        if (factualValidation.issues.length > 0) {
+          safeOutput = factualValidation.sanitized;
+          if (pipelineTelemetryCtx) {
+            pipelineTelemetryCtx.factualResearchValidation = {
+              valid: factualValidation.valid,
+              issues: factualValidation.issues,
+              sourceCount: factualValidation.sourceCount,
+              sections: factualValidation.sections,
+              recency: factualValidation.recency,
             };
           }
         }

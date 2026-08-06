@@ -7,3 +7,5 @@ export * from "./externalCalendarLookupPolicy.js";
 export * from "./trafficCurrentRequestPolicy.js";
 export * from "./weatherCurrentRequestPolicy.js";
 export * from "./webEvidenceFidelityValidator.js";
+export * from "./factualResearchDeliverablePolicy.js";
+export * from "./factualResearchReplyValidator.js";

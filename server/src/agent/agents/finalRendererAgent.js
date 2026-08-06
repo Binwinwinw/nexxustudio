@@ -57,6 +57,11 @@ import {
   buildRepoAnalysisComposerUserPrompt,
   isRepoAnalysisContractViolation,
 } from "../micro/replies/repoAnalysisComposer.js";
+import {
+  requiresFactualResearchComposerContract,
+  buildFactualResearchSystemAddon,
+  buildFactualResearchComposerUserPrompt,
+} from "../micro/replies/factualResearchComposerContract.js";
 import { getRepoAnalysisSystemPrompt } from "../analysis/repoAnalysisContract.js";
 import { buildProductSourcesInsufficientReply } from "../policies/guided/index.js";
 import { wasWebSearchAttempted } from "../policies/routing/explicitWebSearchRequestPolicy.js";
@@ -171,6 +176,9 @@ export const finalRendererAgent = {
 - L'objectif est déjà dans la requête — ne demande pas de reformulation ni d'objectif en une phrase.
 - INTERDIT : clarify-first quand le critère (qualité/prix, modèles) est déjà posé.`;
       }
+      if (composerOptions.factualResearch) {
+        systemPrompt += `\n\n${buildFactualResearchSystemAddon(packet.user_query || "", packet)}`;
+      }
 
       const numPredict = composerOptions.openProposition
         ? 420
@@ -182,6 +190,7 @@ export const finalRendererAgent = {
             composerOptions.compareChoose ||
             composerOptions.researchThenSummarize ||
             composerOptions.repoAnalysis ||
+            composerOptions.factualResearch ||
             composerOptions.codeDelivery
           ? 4000
           : composerOptions.forceShort
@@ -778,15 +787,19 @@ export const finalRendererAgent = {
       packet.user_query || "",
       packet,
     );
+    const factualResearch = requiresFactualResearchComposerContract(
+      packet.user_query || "",
+      packet,
+    );
     const codeDelivery =
       isCodeProjectLightRequest(packet.user_query || "") ||
       isCodeGenerationRequest(packet.user_query || "") ||
       isClearConstructiveDeliverable(packet.user_query || "");
 
     return {
-      forceShort: forceShort && !generalKnowledge && !knowledgeFreshness && !codeDelivery && !compareChoose && !researchThenSummarize && !repoAnalysis,
+      forceShort: forceShort && !generalKnowledge && !knowledgeFreshness && !codeDelivery && !compareChoose && !researchThenSummarize && !repoAnalysis && !factualResearch,
       isSocial,
-      useFactual: useFactualPrompt || generalKnowledge || researchThenSummarize || repoAnalysis,
+      useFactual: useFactualPrompt || generalKnowledge || researchThenSummarize || repoAnalysis || factualResearch,
       openProposition,
       directArbitration,
       generalKnowledge,
@@ -795,6 +808,7 @@ export const finalRendererAgent = {
       compareChoose,
       researchThenSummarize,
       repoAnalysis,
+      factualResearch,
       codeDelivery,
     };
   },
@@ -838,6 +852,7 @@ export const finalRendererAgent = {
       compareChoose = false,
       researchThenSummarize = false,
       repoAnalysis = false,
+      factualResearch = false,
       codeDelivery = false,
     } = {},
   ) {
@@ -857,6 +872,12 @@ export const finalRendererAgent = {
 
     if (researchThenSummarize) {
       return buildResearchThenSummarizeComposerUserPrompt(packet, {
+        freshnessUserAddon,
+      });
+    }
+
+    if (factualResearch) {
+      return buildFactualResearchComposerUserPrompt(packet, {
         freshnessUserAddon,
       });
     }

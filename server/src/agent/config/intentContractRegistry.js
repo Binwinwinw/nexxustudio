@@ -751,6 +751,7 @@ export const INTENT_CONTRACT_REGISTRY = [
       skipWebSearch: false,
       maxActiveExperts: 2,
       orchestratorMode: "EPISTEMIC",
+      webSearchMaxSources: 10,
     },
     detection: { guard: "isExplicitSourceCompilationRequest" },
     observability: { logTag: "factualResearch", recordFallbackIncident: true },
