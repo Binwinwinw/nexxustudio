@@ -4,6 +4,7 @@
  */
 import { normalizeText as normalizeTextBase } from "./normalizationGuards.js";
 import { isPhaticSocialCheckinIntent } from "../policies/social/index.js";
+import { isIdentityIntent } from "./identityIntentGuards.js";
 import {
   isNexxusCockpitUiDiscussion,
   isUiNavigationRestructureFeedback,
@@ -38,7 +39,7 @@ const CAPABILITY_OVERVIEW_PATTERNS = [
   /\b(qu est ce que tu sais|ce que tu sais)\s+faire\b/,
   /\b(que peux tu faire|tu peux faire quoi)\b/,
   /\b(presente tes|decris tes)\s+(fonctionnalit|capacit|services)\b/,
-  /\bton role\b/,
+  // ton role / spécialités → identityIntentGuards (social_deterministic), pas méta inventaire
   /\bton perimetre\b/,
   /\bwhat can you do\b/,
 ];
@@ -89,6 +90,11 @@ const ASSISTANT_IDENTITY_PATTERNS = [
   /\bqui tu es\b/,
   /\bqui est nexxus\b/,
   /\bqui est nexus\b/,
+  /\bquelles? sont tes specialites\b/,
+  /\btes specialites\b/,
+  /\bquel est ton role\b/,
+  /\bc est quoi ton role\b/,
+  /\bton role\b/,
 ];
 
 const TEMPORAL_AWARENESS_PATTERNS = [
@@ -173,7 +179,8 @@ function looksIncompleteQuery(text) {
  */
 export function classifyMetaConversationIntent(query = "") {
   if (isPhaticSocialCheckinIntent(query)) return null;
-  if (isAssistantIdentityQuestion(query)) return null;
+  // P0 identity_questions : nom / qui / spécialités / rôle → social, pas méta
+  if (isAssistantIdentityQuestion(query) || isIdentityIntent(query)) return null;
 
   const text = normalizeText(query);
   const wc = wordCount(query);

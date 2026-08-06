@@ -6,6 +6,7 @@
  */
 import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
 import { isCapabilityQuery } from "../../utils/intentGuards.js";
+import { isIdentityIntent } from "../../utils/identityIntentGuards.js";
 import MODEL_CONFIG, { getReasonerModel } from "../../../config/models.js";
 import { AGENT_ROLES } from "../core/index.js";
 import { NEXXUS_VIDEO_LIMITS } from "../../../services/nexxus-video/videoRouterContract.js";
@@ -222,7 +223,7 @@ const PREDICTION_PRONOSTIC_RE =
   /\b(?:pronostic|pronostique|pronostiquer|parie|parier|tu paries|parierais|predire|prédire|prediction|prédiction|anticip|deviner|qui va gagner|vainqueur|vaincra|champion)\b/i;
 
 const PREDICTION_ASK_RE =
-  /\b(?:ton pronostic|quel serait ton|quel est ton|donne moi ton|tu peux predire|tu peux prédire|tu paries sur|paries tu|quel score|score final)\b/i;
+  /\b(?:ton pronostic|quel serait ton (?:pronostic|pari|score|avis)|quel est ton (?:pronostic|pari|score|avis)|donne moi ton (?:pronostic|pari|score|avis)|tu peux predire|tu peux prédire|tu paries sur|paries tu|quel score|score final)\b/i;
 
 const SUBJECTIVE_OPINION_PREDICTION_RE =
   /\b(?:ton avis|que penses tu|qu en penses|tu crois)\b.{0,60}\b(?:gagne|vainqueur|finale|coupe|championnat|match|election)\b/i;
@@ -559,6 +560,8 @@ function isPredictionLimitsFollowUp(query = "", options = {}) {
 export function isMetaPredictionLimitsQuery(query = "", options = {}) {
   const q = norm(normalizeMetaCapabilitiesQuery(query));
   if (!q || q.length > 320) return false;
+  // P0 : « quel est ton rôle / spécialités » ≠ demande de pronostic
+  if (isIdentityIntent(query)) return false;
   if (isMetaModelStackOpinionQuery(query)) return false;
   if (ML_TECH_PREDICTION_RE.test(q)) return false;
 

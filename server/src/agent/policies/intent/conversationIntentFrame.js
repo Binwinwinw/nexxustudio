@@ -89,7 +89,7 @@ const TASK_ACTION_RE =
   /\b(cree|créer|creer|generer|générer|genere|fais|fait|produis|construis|developpe|développe|ecris|écris|corrige|corriger|debug|débug|analyse|analyser|compare|comparer|planifie|planifier)\b/i;
 
 const IDENTITY_RE =
-  /\b(comment\s+t['’]appelles[-\s]?tu|comment\s+tu\s+t['’]appelles|tu\s+t['’]appelles\s+comment|quel\s+est\s+ton\s+nom|qui\s+es[-\s]?tu|comment\s+t['’]appelles\s+tu|qui\s+est\s+nexxus|sais[- ]?tu\s+qui\s+es(t)?\s+nexxus|qui\s+tu\s+es)\b/i;
+  /\b(comment\s+t['’]appelles[-\s]?tu|comment\s+tu\s+t['’]appelles|tu\s+t['’]appelles\s+comment|quel\s+est\s+ton\s+nom|qui\s+es[-\s]?tu|comment\s+t['’]appelles\s+tu|qui\s+est\s+nexxus|sais[- ]?tu\s+qui\s+es(t)?\s+nexxus|qui\s+tu\s+es|quelles?\s+sont\s+tes\s+sp[eé]cialit[eé]s|tes\s+sp[eé]cialit[eé]s|en\s+quoi\s+(?:es[- ]?tu|tu\s+es)\s+sp[eé]cialis|quel\s+est\s+ton\s+r[oô]le|c['’]?\s*est\s+quoi\s+ton\s+r[oô]le|ton\s+r[oô]le)\b/i;
 
 const TIME_RE =
   /\b(quelle\s+heure|quel\s+heure|heure\s+est\s+il|heure\s+est-il|il\s+est\s+quelle\s+heure)\b/i;

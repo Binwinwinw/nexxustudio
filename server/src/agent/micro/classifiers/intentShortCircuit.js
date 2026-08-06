@@ -644,6 +644,16 @@ export async function runConversationShortCircuit(query, options = {}) {
     });
   }
 
+  // P0 identity_questions — avant G46 meta_capabilities (FP « quel est ton … »)
+  const identityBeforeG46 = buildSocialDeterministicShortCircuit(
+    effectiveQuery,
+    getDeterministicSocialResponse,
+    { history },
+  );
+  if (identityBeforeG46?.path === "social_deterministic") {
+    return emit(identityBeforeG46);
+  }
+
   const g46FamilyHit = resolveConversationTurnFamilyShortCircuit(query, {
     history,
     priorState: options.priorState,
@@ -794,6 +804,16 @@ export async function runConversationShortCircuit(query, options = {}) {
       socialComposite: true,
       compositeKind: socialCompositeEarly.compositeKind,
     });
+  }
+
+  // P0 identity_questions — avant méta capability_overview (ex. « ton rôle »)
+  const identityBeforeMeta = buildSocialDeterministicShortCircuit(
+    effectiveQuery,
+    getDeterministicSocialResponse,
+    { history },
+  );
+  if (identityBeforeMeta?.path === "social_deterministic") {
+    return emit(identityBeforeMeta);
   }
 
   const metaBeforeSocialChat = resolveMetaConversationRoute(effectiveQuery, {
