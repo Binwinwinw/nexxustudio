@@ -853,6 +853,7 @@ class AgentPipeline {
     const conversationMove = evaluateConversationMove(pipelineQuery, {
       history: orchestrationHistory,
       intentTriage,
+      attachedFiles,
     });
     if (pipelineTelemetryCtx) {
       pipelineTelemetryCtx.conversationMove = conversationMove;

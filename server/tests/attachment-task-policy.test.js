@@ -110,6 +110,15 @@ describe("attachmentTaskPolicy", () => {
     ), true);
   });
 
+  it("HTML + analyse erreur/sécurité → security_audit (pas code_fix)", () => {
+    const q =
+      "fait une analyse du code du fichier joint à la recherche d'erreur ou de problème de sécurité";
+    const files = [{ originalname: "exercices_teams_365_interactif.html" }];
+    const c = classifyAttachmentTask(q, files);
+    assert.equal(c.task, ATTACHMENT_TASKS.SECURITY_AUDIT);
+    assert.equal(shouldRouteAttachmentTaskToFullPipeline(q, files), true);
+  });
+
   it("index.html + analyse + contenu amélioré → suppress TEXT_SUMMARY", () => {
     const q = "Analyse le fichier joint et propose un contenu amélioré";
     const files = [{ originalname: "index.html" }];

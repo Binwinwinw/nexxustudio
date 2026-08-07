@@ -401,4 +401,21 @@ describe("conversationMovePolicy — G13 debug_diagnostic", () => {
     assert.equal(move.pipelinePath, "debug_diagnostic_clarify");
     assert.match(move.clarifyQuestion || "", /composant|symptôme/i);
   });
+
+  it("PJ HTML sécurité → pas debug_diagnostic_clarify (fichier = contexte)", async () => {
+    const q =
+      "fait une analyse du code du fichier joint à la recherche d'erreur ou de problème de sécurité";
+    const files = [{ originalname: "exercices_teams_365_interactif.html" }];
+    const move = evaluateConversationMove(q, { attachedFiles: files });
+    assert.notEqual(move.pipelinePath, "debug_diagnostic_clarify");
+    assert.ok(
+      move.signals?.includes("debug_diagnostic_suppressed_by_attachment") ||
+        move.pipelinePath !== "debug_diagnostic_clarify",
+    );
+
+    const hit = await runConversationShortCircuit(q, { attachments: files });
+    assert.equal(hit?.path, "attachment_task_full_pipeline");
+    assert.equal(hit?.attachmentTask, "security_audit");
+    assert.equal(hit?.deferToFullPipeline, true);
+  });
 });

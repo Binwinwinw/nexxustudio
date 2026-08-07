@@ -49,6 +49,7 @@ import {
 import { shouldAllowClarifyThenBuild } from "../../utils/deliverableMandateGuards.js";
 import { classifyWebProjectScopingRequest } from "../../utils/webProjectScopingGuards.js";
 import { classifyDebugDiagnosticMove } from "../../micro/replies/debugDiagnosticComposer.js";
+import { shouldRouteAttachmentTaskToFullPipeline } from "../attachment/attachmentTaskPolicy.js";
 import { EXECUTION_STRATEGIES } from "../../../../../shared/justIntentCatalog.js";
 import { normalizeForParse } from "../../micro/parsing/requestSegmentParser.js";
 
@@ -318,12 +319,16 @@ export function routeFromConversationMove(conversationMove = {}) {
  */
 export function evaluateConversationMove(
   query = "",
-  { history = [], intentTriage = null } = {},
+  { history = [], intentTriage = null, attachedFiles = [] } = {},
 ) {
   const normalizedQuery = normalizeQueryForClarificationGate(query);
   const frame = analyzeRequestIntentFrame(query);
   const decomposition = decomposeRequest(query, history);
   const justIntent = evaluateJustIntent(query);
+  const hasAttachmentFileTask = shouldRouteAttachmentTaskToFullPipeline(
+    query,
+    attachedFiles,
+  );
 
   const move = baseMove(false);
   move.sources = { frame, decomposition, clarificationDecision: null, justIntent };
@@ -452,8 +457,9 @@ export function evaluateConversationMove(
   }
 
   // Étape 5c — diagnostic incident technique (symptôme / erreur)
+  // PJ code/sécurité : ne pas clarifier « quel composant ? » — le fichier EST le contexte
   const debugDiag = classifyDebugDiagnosticMove(query);
-  if (debugDiag) {
+  if (debugDiag && !hasAttachmentFileTask) {
     move.signals.push("debug_diagnostic");
     move.topic =
       debugDiag.slots?.component ||
@@ -482,6 +488,9 @@ export function evaluateConversationMove(
       stopped: true,
       confidence: "high",
     });
+  }
+  if (debugDiag && hasAttachmentFileTask) {
+    move.signals.push("debug_diagnostic_suppressed_by_attachment");
   }
 
   // Étape 6 — fait externe implicite

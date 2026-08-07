@@ -29,8 +29,9 @@ const CODE_EXT_RE =
 const DOC_EXT_RE =
   /\.(md|txt|pdf|docx?|csv|json|xml|ya?ml|rtf)\b/i;
 
+// Pas de « erreur » seul — « recherche d'erreur / problème de sécurité » ≠ code_fix
 const FIX_VERB_RE =
-  /\b(corrige(?:r)?|fix(?:e|er)?|r[eé]pare(?:r)?|correctif|version corrig[eé]e|bug|erreur)\b/i;
+  /\b(corrige(?:r)?|fix(?:e|er)?|r[eé]pare(?:r)?|correctif|version corrig[eé]e|bug)\b/i;
 
 const REFACTOR_VERB_RE =
   /\b(refactor(?:ise|iser|ing)?|restructur(?:e|er)|clean\s+code|sans changer le comportement|am[eé]lior(?:e|er)\s+(?:le\s+)?code)\b/i;
@@ -139,6 +140,17 @@ export function classifyAttachmentTask(query = "", attachments = []) {
     fileKind === ATTACHMENT_FILE_KINDS.CODE ||
     fileKind === ATTACHMENT_FILE_KINDS.MIXED;
 
+  // Sécurité avant fix/refactor — « analyse … erreur … sécurité » ≠ code_fix
+  if (hasSecurityAuditSignal(q) && (isCodeish || ATTACHMENT_HINT_RE.test(q))) {
+    return {
+      task: ATTACHMENT_TASKS.SECURITY_AUDIT,
+      confidence: isCodeish ? "high" : "medium",
+      fileKind,
+      matched: true,
+      rule: ATTACHMENT_TASK_RULE,
+    };
+  }
+
   if (isCodeish && REFACTOR_VERB_RE.test(q)) {
     return {
       task: ATTACHMENT_TASKS.CODE_REFACTOR,
@@ -183,17 +195,6 @@ export function classifyAttachmentTask(query = "", attachments = []) {
     return {
       task: ATTACHMENT_TASKS.DOC_IMPROVE,
       confidence: fileKind === ATTACHMENT_FILE_KINDS.DOCUMENT ? "high" : "medium",
-      fileKind,
-      matched: true,
-      rule: ATTACHMENT_TASK_RULE,
-    };
-  }
-
-  // « audit sécurité » + .html/.php/.js → pas React Doctor, revue sécurité file-aware
-  if (hasSecurityAuditSignal(q) && (isCodeish || ATTACHMENT_HINT_RE.test(q))) {
-    return {
-      task: ATTACHMENT_TASKS.SECURITY_AUDIT,
-      confidence: isCodeish ? "high" : "medium",
       fileKind,
       matched: true,
       rule: ATTACHMENT_TASK_RULE,
