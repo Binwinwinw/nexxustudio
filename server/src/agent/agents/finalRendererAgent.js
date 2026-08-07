@@ -63,6 +63,11 @@ import {
   buildFactualResearchComposerUserPrompt,
 } from "../micro/replies/factualResearchComposerContract.js";
 import { buildFactualResearchDeterministicReport } from "../policies/web/factualResearchDeterministicBuilder.js";
+import {
+  buildHtmlAnalyzerFactsSystemAddon,
+  stripContradictedHtmlHeadClaims,
+} from "../policies/attachment/attachmentInterpretationPolicy.js";
+import { deduplicateNearDuplicateBlocks } from "../utils/qualityGuards.js";
 import { getRepoAnalysisSystemPrompt } from "../analysis/repoAnalysisContract.js";
 import { buildProductSourcesInsufficientReply } from "../policies/guided/index.js";
 import { wasWebSearchAttempted } from "../policies/routing/explicitWebSearchRequestPolicy.js";
@@ -162,7 +167,7 @@ export const finalRendererAgent = {
       return fallback;
     }
 
-    // P7 — FACTUAL : builder déterministe avant LLM (latence)
+    // P7/P7.1 — FACTUAL : builder déterministe avant LLM (latence + fallback)
     if (composerOptions.factualResearch) {
       const built = buildFactualResearchDeterministicReport(
         packet.user_query || "",
@@ -172,9 +177,14 @@ export const finalRendererAgent = {
         if (packet?.meta) {
           packet.meta.factual_research_builder_path = built.path;
           packet.meta.factual_research_skip_llm = true;
+          packet.meta.builder_triggered = Boolean(built.builder_triggered);
+          packet.meta.sources_topic_match = built.sources_topic_match ?? 0;
+          if (built.fallback) packet.meta.factual_research_builder_fallback = true;
         }
-        this._logComposerPath(observability, "factual_deterministic_builder", {
+        this._logComposerPath(observability, built.path, {
           sources: built.sourceCount,
+          sources_topic_match: built.sources_topic_match,
+          builder_triggered: built.builder_triggered,
         });
         if (onContent) onContent(built.text);
         await recordComposerTelemetry({
@@ -182,7 +192,7 @@ export const finalRendererAgent = {
           skillId: observability.intentContractId || null,
           latencyMs: Date.now() - composerStartedAt,
           responseLength: built.text.length,
-          path: "factual_deterministic_builder",
+          path: built.path,
         });
         return built.text;
       }
@@ -205,6 +215,14 @@ export const finalRendererAgent = {
       }
       if (composerOptions.factualResearch) {
         systemPrompt += `\n\n${buildFactualResearchSystemAddon(packet.user_query || "", packet)}`;
+      }
+      const htmlFacts =
+        packet?.meta?.html_analyzer_facts ||
+        composerOptions.htmlAnalyzerFacts ||
+        null;
+      if (htmlFacts) {
+        const factsAddon = buildHtmlAnalyzerFactsSystemAddon(htmlFacts);
+        if (factsAddon) systemPrompt += `\n\n${factsAddon}`;
       }
 
       // P3 — FACTUAL_RESEARCH : budget plus court (cible ~1400 mots, pas 4000 tokens)
@@ -622,25 +640,31 @@ export const finalRendererAgent = {
           onContent: activeOnContent,
         });
 
+        const finalized = this._applyHtmlAttachmentPostCompose(
+          packet,
+          guardedText,
+          composerOptions,
+        );
         this._logComposerPath(observability, "primary", {
-          chars: guardedText.length,
+          chars: finalized.length,
           makersChecker: makersGate.validation?.outcome || "skipped",
+          composer_deduped: Boolean(packet?.meta?.composer_deduped),
         });
         await recordComposerTelemetry({
           outcome: "success",
           skillId: observability.intentContractId || null,
           latencyMs: Date.now() - composerStartedAt,
-          responseLength: guardedText.length,
+          responseLength: finalized.length,
           path: "primary",
         });
         if (composerOptions.codeDelivery) {
-          recordHtmlProjectComposerOutcome(packet.user_query || "", guardedText, {
+          recordHtmlProjectComposerOutcome(packet.user_query || "", finalized, {
             composerPath: "composer_primary",
           });
         }
         return this._emitWithExplicitWebSourceLinks(
           packet,
-          guardedText,
+          finalized,
           activeOnContent,
         );
       }
@@ -868,6 +892,41 @@ export const finalRendererAgent = {
     } else {
       console.log(`${base}${suffix}`);
     }
+  },
+
+  /**
+   * Post-compose PJ HTML : strip contradictions + dedupe near-duplicate only.
+   * @param {object} packet
+   * @param {string} text
+   * @param {object} [composerOptions]
+   * @returns {string}
+   */
+  _applyHtmlAttachmentPostCompose(packet, text = "", composerOptions = {}) {
+    const facts =
+      packet?.meta?.html_analyzer_facts ||
+      composerOptions.htmlAnalyzerFacts ||
+      null;
+    const pjPath =
+      Boolean(facts) ||
+      Boolean(packet?.meta?.attachment_interpretation) ||
+      Boolean(composerOptions.attachmentInterpretation);
+    if (!pjPath || !text) return text;
+
+    let out = stripContradictedHtmlHeadClaims(text, facts);
+    const dedupe = deduplicateNearDuplicateBlocks(out, {
+      minSimilarity: 0.93,
+      minBlockLength: 80,
+    });
+    out = dedupe.text;
+    if (packet?.meta && dedupe.deduped) {
+      packet.meta.composer_deduped = true;
+      packet.meta.composer_dedupe_before = dedupe.beforeChars;
+      packet.meta.composer_dedupe_after = dedupe.afterChars;
+      console.log(
+        `[FinalResponseComposer] composer_deduped=true before=${dedupe.beforeChars} after=${dedupe.afterChars}`,
+      );
+    }
+    return out;
   },
 
   _buildComposerUserPrompt(

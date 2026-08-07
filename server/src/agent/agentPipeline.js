@@ -109,6 +109,8 @@ import {
   classifyAttachmentTask,
   formatAttachmentTaskSummary,
   buildAttachmentInterpretationSystemAddon,
+  resolveHtmlAnalyzerFactsFromAttachments,
+  buildHtmlAnalyzerFactsSystemAddon,
 } from "./policies/attachment/index.js";
 import {
   evaluateJustIntent,
@@ -800,7 +802,23 @@ class AgentPipeline {
       buildPosturePromptAddon(postureDecision),
       buildVoiceContinuityPromptAddon(voiceContinuity),
       attachedFiles.length > 0
-        ? buildAttachmentInterpretationSystemAddon({ attachments: attachedFiles })
+        ? (() => {
+            const htmlFacts =
+              resolveHtmlAnalyzerFactsFromAttachments(attachedFiles);
+            if (htmlFacts) {
+              // Stash for compose / packet (orchestrateur peut aussi réécrire)
+              options._htmlAnalyzerFacts = htmlFacts;
+            }
+            return [
+              buildAttachmentInterpretationSystemAddon({
+                attachments: attachedFiles,
+                htmlAnalyzerFacts: htmlFacts,
+              }),
+              buildHtmlAnalyzerFactsSystemAddon(htmlFacts),
+            ]
+              .filter(Boolean)
+              .join("\n\n");
+          })()
         : null,
     ];
     const interpreterLock = resolveInterpreterLock(structuredRequest);
@@ -2865,6 +2883,18 @@ class AgentPipeline {
       }
 
       ({ rawResponse, packet } = orchestrationResult);
+
+      // Ground-facts HTML PJ → meta packet pour compose (anti-hallucination title/viewport)
+      if (packet) {
+        packet.meta = packet.meta || {};
+        const htmlFacts =
+          options._htmlAnalyzerFacts ||
+          resolveHtmlAnalyzerFactsFromAttachments(attachedFiles);
+        if (htmlFacts) {
+          packet.meta.html_analyzer_facts = htmlFacts;
+          packet.meta.attachment_interpretation = true;
+        }
+      }
 
       if (pipelineTelemetryCtx && packet?.meta) {
         if (packet.meta.vision_failed) pipelineTelemetryCtx.vision_failed = true;

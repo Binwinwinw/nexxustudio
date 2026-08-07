@@ -96,7 +96,60 @@ export function deduplicateAnyLoop(text = "") {
   return result.join("\n\n");
 }
 
-export function deduplicateParagraphs(text = "") {
+/**
+ * Dedupe conservateur — near-duplicates seulement (préfixe commun ≠ doublon).
+ * @param {string} text
+ * @param {{ minSimilarity?: number, minBlockLength?: number }} [opts]
+ * @returns {{ text: string, deduped: boolean, beforeChars: number, afterChars: number }}
+ */
+export function deduplicateNearDuplicateBlocks(
+  text = "",
+  { minSimilarity = 0.93, minBlockLength = 80 } = {},
+) {
+  const beforeChars = String(text || "").length;
+  if (!text || text.length < 50) {
+    return { text, deduped: false, beforeChars, afterChars: beforeChars };
+  }
+  const blocks = text
+    .split("\n\n")
+    .map((p) => p.trim())
+    .filter((p) => p.length > 10);
+  if (blocks.length <= 1) {
+    return { text, deduped: false, beforeChars, afterChars: beforeChars };
+  }
+
+  const result = [];
+  for (const current of blocks) {
+    let isDuplicate = false;
+    if (current.length >= minBlockLength) {
+      for (const accepted of result) {
+        if (accepted.length < minBlockLength) continue;
+        if (calculateSimilarity(current, accepted) >= minSimilarity) {
+          isDuplicate = true;
+          break;
+        }
+      }
+    }
+    if (!isDuplicate) result.push(current);
+  }
+  const out = result.join("\n\n");
+  return {
+    text: out,
+    deduped: out.length < beforeChars && result.length < blocks.length,
+    beforeChars,
+    afterChars: out.length,
+  };
+}
+
+/**
+ * @param {string} text
+ * @param {{ nearDuplicateOnly?: boolean, minSimilarity?: number, minBlockLength?: number }} [opts]
+ * @returns {string}
+ */
+export function deduplicateParagraphs(text = "", opts = {}) {
+  if (opts?.nearDuplicateOnly) {
+    return deduplicateNearDuplicateBlocks(text, opts).text;
+  }
   return deduplicateAnyLoop(text);
 }
 

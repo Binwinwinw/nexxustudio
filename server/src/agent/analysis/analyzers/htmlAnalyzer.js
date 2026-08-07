@@ -5,6 +5,102 @@ import {
   SOURCE_FILE_ROLES,
 } from "../sourceFileAnalysisContract.js";
 
+function escapeRegExp(s = "") {
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Nom accessible probable : label[for], encapsulé, aria-label, aria-labelledby, soft tabulaire.
+ * @param {string} content
+ * @param {string} tag
+ * @param {number} matchIndex
+ * @returns {boolean}
+ */
+export function controlHasProbableAccessibleName(content, tag, matchIndex = 0) {
+  const t = String(tag || "");
+  if (/\baria-label\s*=/i.test(t)) return true;
+
+  const labelledBy = t.match(/\baria-labelledby\s*=\s*["']([^"']+)["']/i)?.[1];
+  if (labelledBy) {
+    const ids = labelledBy.split(/\s+/).filter(Boolean);
+    if (
+      ids.some((id) =>
+        new RegExp(`\\bid=["']${escapeRegExp(id)}["']`, "i").test(content),
+      )
+    ) {
+      return true;
+    }
+  }
+
+  const id = t.match(/\bid=["']([^"']+)["']/i)?.[1];
+  if (id) {
+    if (
+      new RegExp(`<label[^>]*\\bfor=["']${escapeRegExp(id)}["']`, "i").test(
+        content,
+      )
+    ) {
+      return true;
+    }
+  }
+
+  // Encapsulé dans <label>…</label>
+  const before = content.slice(0, Math.max(0, matchIndex));
+  const lastLabelOpen = before.toLowerCase().lastIndexOf("<label");
+  if (lastLabelOpen >= 0) {
+    const afterOpen = before.slice(lastLabelOpen);
+    if (!/<\/label>/i.test(afterOpen)) return true;
+  }
+
+  // Soft tabulaire : <th> dans la même ligne avant le contrôle
+  const lastTr = before.toLowerCase().lastIndexOf("<tr");
+  if (lastTr >= 0) {
+    const rowBefore = content.slice(lastTr, matchIndex);
+    if (/<th\b/i.test(rowBefore) && !/<\/tr>/i.test(rowBefore)) return true;
+  }
+
+  return false;
+}
+
+/**
+ * @param {string} content
+ * @returns {string[]}
+ */
+function collectControlsMissingAccessibleName(content) {
+  const missing = [];
+  const re = /<input\b[^>]*>/gi;
+  let m;
+  while ((m = re.exec(content)) !== null) {
+    const tag = m[0];
+    const type = (tag.match(/\btype=["']([^"']+)["']/i)?.[1] || "text").toLowerCase();
+    if (["hidden", "submit", "button", "image", "reset"].includes(type)) continue;
+    if (!controlHasProbableAccessibleName(content, tag, m.index)) {
+      missing.push(tag);
+    }
+  }
+  return missing;
+}
+
+/**
+ * @param {ReturnType<typeof analyzeHtmlSource>} report
+ * @returns {object}
+ */
+export function buildHtmlAnalyzerFactsPayload(report) {
+  const facts = report?.facts || {};
+  return {
+    hasTitle: Boolean(facts.hasTitle),
+    titleText: facts.titleText || null,
+    hasViewport: Boolean(facts.hasViewport),
+    hasCharset: Boolean(facts.hasCharset),
+    accessibleNameGaps: Number(facts.accessibleNameGaps) || 0,
+    strengths: (report?.strengths || []).slice(0, 4),
+    findings: (report?.findings || [])
+      .slice(0, 4)
+      .map((f) => ({ id: f.id, claim: f.claim, severity: f.severity })),
+    analyzer: report?.analyzer || "html",
+    path: report?.path || null,
+  };
+}
+
 /**
  * @param {string} content
  * @param {{ path: string, ext: string, bytes: number, lines: number }} meta
@@ -50,13 +146,7 @@ export function analyzeHtmlSource(content, meta) {
     ...content.matchAll(/<button\b[^>]*>[\s\S]*?<\/button>/gi),
   ].map((m) => m[0]);
 
-  const inputsWithoutLabel = searchInputs.filter((tag) => {
-    const id = tag.match(/\bid=["']([^"']+)["']/i)?.[1];
-    if (!id) return /placeholder=/i.test(tag);
-    const labelFor = new RegExp(`<label[^>]*\\bfor=["']${id}["']`, "i");
-    const aria = /\baria-label=/i.test(tag) || /\baria-labelledby=/i.test(tag);
-    return !labelFor.test(content) && !aria;
-  });
+  const controlsMissingAccessibleName = collectControlsMissingAccessibleName(content);
 
   const iconButtonsMissingName = iconButtons.filter((btn) => {
     const hasText = />[^<]*[A-Za-zÀ-ÿ]{2,}[^<]*</.test(btn.replace(/<i\b[^>]*>[\s\S]*?<\/i>/gi, ""));
@@ -148,8 +238,14 @@ export function analyzeHtmlSource(content, meta) {
   if (hasHeader && hasMain && hasFooter) {
     strengths.push("Landmarks \`header\` / \`main\` / \`footer\` présents.");
   }
-  if (hasViewport && hasCharset) {
-    strengths.push("Meta charset + viewport présents.");
+  if (hasCharset) {
+    strengths.push("Meta charset présent.");
+  }
+  if (hasViewport) {
+    strengths.push("Meta viewport présent.");
+  }
+  if (titleMatch) {
+    strengths.push(`Balise \`<title>\` présente (« ${titleMatch[1].trim().slice(0, 80)} »).`);
   }
   if (iconButtons.some((b) => /\btype=["']button["']/i.test(b) || /<button\b/i.test(b))) {
     strengths.push("Actions principales en vrais \`<button>\` (pas des \`div\` cliquables).");
@@ -186,6 +282,28 @@ export function analyzeHtmlSource(content, meta) {
     );
   }
 
+  // Findings — faits négatifs head
+  if (!titleMatch) {
+    pushFinding("Balise `<title>` manquante.", "high");
+  }
+  if (!hasViewport) {
+    pushFinding("Meta viewport manquante.", "high");
+  }
+  if (!hasCharset) {
+    pushFinding("Meta charset manquante.", "medium");
+  }
+
+  if (controlsMissingAccessibleName.length > 0) {
+    pushFinding(
+      `${controlsMissingAccessibleName.length} contrôle(s) de formulaire sans nom accessible probable (ni label[for], ni encapsulation <label>, ni aria-label / aria-labelledby, ni contexte tabulaire soft).`,
+      "high",
+      controlsMissingAccessibleName[0].slice(0, 100),
+    );
+    recommendations.push(
+      "Associer un nom accessible à chaque checkbox/radio/champ (label[for], encapsulation, aria-label ou aria-labelledby).",
+    );
+  }
+
   // Findings
   if (usesTailwind && usesBootstrap) {
     pushFinding(
@@ -198,17 +316,6 @@ export function analyzeHtmlSource(content, meta) {
     );
     recommendations.push(
       "Si Bootstrap n’est requis que pour la modale, évaluer une modale plus légère pour réduire la dette de dépendances.",
-    );
-  }
-
-  if (inputsWithoutLabel.length > 0) {
-    pushFinding(
-      "Le(s) champ(s) de saisie (ex. recherche) s’appuient sur un placeholder sans \`<label>\` / \`aria-label\` associé — insuffisant pour l’accessibilité.",
-      "high",
-      inputsWithoutLabel[0].slice(0, 100),
-    );
-    recommendations.push(
-      "Associer chaque champ à un \`<label>\` explicite (visible ou \`sr-only\`) ; le placeholder seul ne suffit pas.",
     );
   }
 
@@ -455,5 +562,12 @@ export function analyzeHtmlSource(content, meta) {
     recommendations: recommendations.slice(0, 6),
     confidence: findings.length >= 3 ? "high" : "medium",
     analyzer: "html",
+    facts: {
+      hasTitle: Boolean(titleMatch),
+      titleText: titleMatch ? titleMatch[1].trim() : null,
+      hasViewport,
+      hasCharset,
+      accessibleNameGaps: controlsMissingAccessibleName.length,
+    },
   };
 }

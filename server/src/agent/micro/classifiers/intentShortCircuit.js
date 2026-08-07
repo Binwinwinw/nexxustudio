@@ -98,6 +98,7 @@ import {
   classifyAttachmentTask,
   shouldRouteAttachmentTaskToFullPipeline,
   buildAttachmentInterpretationSystemAddon,
+  resolveHtmlAnalyzerFactsFromAttachments,
 } from "../../policies/attachment/index.js";
 import { isAttachedVisionRequest } from "../../utils/conversationGuards.js";
 import { resolvePedagogicalOverviewShortCircuit } from "../replies/pedagogicalOverviewComposer.js";
@@ -1017,21 +1018,26 @@ export async function runConversationShortCircuit(query, options = {}) {
       deferToFullPipeline: true,
       attachmentTask: attachmentTaskBeforeReact.task,
       attachmentFileKind: attachmentTaskBeforeReact.fileKind,
-      reflectiveHint: [
-        buildAttachmentInterpretationSystemAddon({
-          attachments: options.attachments || [],
-        }),
-        attachmentTaskBeforeReact.task === "security_audit"
-          ? [
-              "[CONTRAT AUDIT SÉCURITÉ PJ]",
-              "React Doctor (G48) est hors scope : CLI repo React uniquement, pas HTML/PHP/JS isolé.",
-              "Analyse le fichier joint (XSS, injection, secrets, auth, CSP, surfaces d'attaque).",
-              "Ancre chaque finding sur des extraits visibles ; dis « non visible dans ce fichier » pour le runtime non fourni.",
-            ].join("\n")
-          : null,
-      ]
-        .filter(Boolean)
-        .join("\n\n"),
+      reflectiveHint: (() => {
+        const atts = options.attachments || [];
+        const htmlFacts = resolveHtmlAnalyzerFactsFromAttachments(atts);
+        return [
+          buildAttachmentInterpretationSystemAddon({
+            attachments: atts,
+            htmlAnalyzerFacts: htmlFacts,
+          }),
+          attachmentTaskBeforeReact.task === "security_audit"
+            ? [
+                "[CONTRAT AUDIT SÉCURITÉ PJ]",
+                "React Doctor (G48) est hors scope : CLI repo React uniquement, pas HTML/PHP/JS isolé.",
+                "Analyse le fichier joint (XSS, injection, secrets, auth, CSP, surfaces d'attaque).",
+                "Ancre chaque finding sur des extraits visibles ; dis « non visible dans ce fichier » pour le runtime non fourni.",
+              ].join("\n")
+            : null,
+        ]
+          .filter(Boolean)
+          .join("\n\n");
+      })(),
       step: `📎 PJ ${attachmentTaskBeforeReact.task} · ${attachmentTaskBeforeReact.fileKind} — pipeline file-aware...`,
       enforce: { allowRefusal: false },
     });

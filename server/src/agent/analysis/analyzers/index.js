@@ -1,7 +1,11 @@
 /**
  * Dispatch SOURCE_FILE_ANALYSIS_V1 par extension / rôle.
  */
-import { analyzeHtmlSource } from "./htmlAnalyzer.js";
+import {
+  analyzeHtmlSource,
+  buildHtmlAnalyzerFactsPayload,
+  controlHasProbableAccessibleName,
+} from "./htmlAnalyzer.js";
 import { analyzeJsSource } from "./jsAnalyzer.js";
 import { analyzeJsxSource } from "./jsxAnalyzer.js";
 import { analyzeYamlSource } from "./yamlAnalyzer.js";
@@ -66,6 +70,8 @@ export function analyzeSourceFileContent(content, options = {}) {
 
 export {
   analyzeHtmlSource,
+  buildHtmlAnalyzerFactsPayload,
+  controlHasProbableAccessibleName,
   analyzeJsSource,
   analyzeJsxSource,
   analyzeYamlSource,
