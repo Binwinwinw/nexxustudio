@@ -8,6 +8,7 @@ import {
   isCompareChooseRequest,
   extractCompareDomain,
 } from "../../utils/compareChooseIntentGuards.js";
+import { isMetaDeliverableTypesIntent } from "../../utils/metaConversationIntentGuards.js";
 import { resolveWebSearchThreadMaintenanceShortCircuit } from "../web/index.js";
 
 export const EXPLICIT_WEB_SEARCH_REQUEST_RULE = "explicit_web_search_request_v1";
@@ -218,6 +219,56 @@ export function deriveFactualResearchWebQueryEn(query = "") {
   // Fallback : dérivée FR nettoyée + market
   const fr = deriveFactualResearchWebQuery(raw);
   return `${fr} market`.replace(/\s+/g, " ").trim().slice(0, 120);
+}
+
+/**
+ * Query orientée métriques (taille / parts / CAGR) — retry P4 si preuves sans chiffres.
+ * @param {string} query
+ * @param {{ lang?: "fr"|"en" }} [options]
+ * @returns {string}
+ */
+export function deriveFactualResearchMetricsWebQuery(
+  query = "",
+  { lang = "fr" } = {},
+) {
+  const raw = String(query || "").trim();
+  const year = raw.match(YEAR_IN_QUERY_RE)?.[1] || String(new Date().getFullYear());
+  const base =
+    lang === "en"
+      ? deriveFactualResearchWebQueryEn(raw)
+      : deriveFactualResearchWebQuery(raw);
+
+  const metrics =
+    lang === "en"
+      ? `market size share CAGR growth ${year}`
+      : `taille marché parts CAGR croissance ${year}`;
+
+  const topic = (base || "marché").replace(/\s+/g, " ").trim();
+  return `${topic} ${metrics}`.replace(/\s+/g, " ").trim().slice(0, 120);
+}
+
+/**
+ * P5 — query sites sectoriels durs (+ PDF) quand majorité blogs légers.
+ * @returns {string}
+ */
+export function deriveFactualResearchSectorSitesWebQuery() {
+  return "streaming SVOD France (site:arcom.fr OR site:cnc.fr OR site:nielsen.com) filetype:pdf";
+}
+
+/**
+ * P5 — query market size EN si 0 chiffre et 0 source sectorielle dure.
+ * @returns {string}
+ */
+export function deriveFactualResearchMarketSizeEnWebQuery() {
+  return "market size independent film streaming France 2025 2026 report";
+}
+
+/**
+ * P7 — retry open-access / PDF si majorité paywalls ou blogs légers.
+ * @returns {string}
+ */
+export function deriveFactualResearchOpenAccessWebQuery() {
+  return "streaming SVOD France (site:arcom.fr OR site:cnc.fr OR site:tv.fr OR site:bpifrance.fr) filetype:pdf open access";
 }
 
 /**
@@ -465,6 +516,9 @@ function buildWebPipelineHit(topic, kind = "web_help_with_topic", fullQuery = ""
  */
 export function resolveExplicitWebSearchHelpShortCircuit(query = "", options = {}) {
   const history = options.history || [];
+
+  // P1 — catalogue livrables / meta formats : jamais re-route web/FACTUAL
+  if (isMetaDeliverableTypesIntent(query)) return null;
 
   const threadMaintenance = resolveWebSearchThreadMaintenanceShortCircuit(query, {
     history,

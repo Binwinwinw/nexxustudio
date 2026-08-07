@@ -14,6 +14,11 @@ import {
   isMetaKnownPeerProductQuery,
   extractKnownPeerProduct,
 } from "../src/agent/policies/meta/metaCapabilitiesPolicy.js";
+import {
+  classifyMetaConversationIntent,
+  isMetaDeliverableTypesIntent,
+} from "../src/agent/utils/metaConversationIntentGuards.js";
+import { resolveMetaConversationRoute } from "../src/agent/micro/replies/metaConversationReplyBuilder.js";
 import { isDocumentAnalysisIntent } from "../src/agent/utils/conversationGuards.js";
 import { isConversationMemoryRecallRequest } from "../src/agent/utils/conversationGuards.js";
 import { resolveAssistantUtteranceClarifyShortCircuit } from "../src/agent/policies/qualification/assistantUtteranceClarifyPolicy.js";
@@ -333,5 +338,60 @@ describe("G47 — meta capabilities", () => {
     });
     assert.equal(enforced.compliant, true);
     assert.doesNotMatch(enforced.text, /prix,\s*specs ou actu/i);
+  });
+});
+
+describe("deliverable_types catalog (P5 meta/capabilities)", () => {
+  const QUERIES = [
+    "quel type de livrable pourrais tu fournir",
+    "que peux-tu fournir",
+    "formats de sortie possibles",
+    "livrables possibles",
+  ];
+
+  it("détecte deliverable_types sur patterns P5", () => {
+    for (const q of QUERIES) {
+      assert.equal(isMetaDeliverableTypesIntent(q), true, q);
+      assert.equal(classifyMetaConversationIntent(q)?.kind, "deliverable_types", q);
+    }
+  });
+
+  it("P6 : sans contexte → clarify (pas Série A inventé)", async () => {
+    const q = QUERIES[0];
+    const route = resolveMetaConversationRoute(q, { history: [] });
+    assert.equal(route?.tier, "deterministic");
+    assert.equal(route?.subKind, "deliverable_types");
+    assert.match(route?.reply || "", /rapport, code, design, présentation/i);
+    assert.doesNotMatch(route?.reply || "", /Série A|pitch deck/i);
+
+    const hit = await runConversationShortCircuit(q, { history: [] });
+    assert.equal(hit?.path, "meta_conversation_deterministic");
+    assert.equal(hit?.metaSubKind, "deliverable_types");
+    assert.ok((hit?.reply || "").length < 200);
+  });
+
+  it("P1/P6 : après rapport FACTUAL Série A → catalogue + avant web", async () => {
+    const history = [
+      {
+        role: "user",
+        content:
+          "recherche web marché streaming films indépendants série A avec citations et rapport professionnel",
+      },
+      {
+        role: "assistant",
+        content:
+          "## Résumé Exécutif\nLimites : aucune métrique chiffrée…\n\n## Sources\n[1] https://example.com",
+      },
+    ];
+    const hit = await runConversationShortCircuit(
+      "quel type de livrable pourrais tu fournir",
+      { history },
+    );
+    assert.equal(hit?.path, "meta_conversation_deterministic");
+    assert.equal(hit?.metaSubKind, "deliverable_types");
+    assert.equal(hit?.deferToLlm, undefined);
+    assert.notEqual(hit?.forcedIntentContractId, "FACTUAL_RESEARCH");
+    assert.match(hit?.step || "", /avant continuité web/i);
+    assert.match(hit?.reply || "", /Série A/i);
   });
 });

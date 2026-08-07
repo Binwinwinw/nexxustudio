@@ -4,12 +4,16 @@
  * Audit priorités P2 (G11–G19) — ordre critique :
  * 0. external_calendar + current_web_fact (~L507) — avant explicit web / G46 / épistémique
  * 0b. query_composite + web_project_scoping (~L520) — avant G46 idéation / meta_capabilities
+ * 0b2. deliverable_types (P1) — avant web help / continuité FACTUAL (après gros rapport)
  * 0c. social_composite (~L720) — avant meta_conversation (G41.1)
  * 1. multi_unit (~L750) — prime sur multi_segment via shouldPreemptMultiSegment
  * 2. historical date (~L906) — avant external_calendar tardif et datetime
  * 3. external_calendar tardif (~L930) — filet si pas intercepté en amont
  * 4. relative datetime (~L950) — avant datetime social
  * 5. multi_segment_composite (~L1304) — dernier recours LLM composite
+ *
+ * Ownership (revue P5) : SC meta ≠ composeur ; expertWebSearch = search+rank ;
+ * Sovereign = retries ; validator = titres/aveu ; pas de rebranche FACTUAL→runPipeline.
  */
 import { RESPONSE_MODES } from "../../config/modeResponseContracts.js";
 import { resolveConversationContinuityShortCircuit } from "../continuity/conversationContinuityContext.js";
@@ -609,6 +613,27 @@ export async function runConversationShortCircuit(query, options = {}) {
         enforce: { allowRefusal: false },
       });
     }
+  }
+
+  // P1 — catalogue livrables / formats de sortie : avant web help & continuité FACTUAL
+  // (sinon follow-up après gros rapport → exploratory / DIRECT_EXPLANATION / COMPOSER).
+  const deliverableTypesEarly = resolveMetaConversationRoute(effectiveQuery, {
+    history,
+  });
+  if (
+    deliverableTypesEarly?.subKind === "deliverable_types" &&
+    deliverableTypesEarly.tier === "deterministic" &&
+    deliverableTypesEarly.reply
+  ) {
+    return emit({
+      path: "meta_conversation_deterministic",
+      mode: RESPONSE_MODES.OPEN_PROPOSITION,
+      reply: deliverableTypesEarly.reply,
+      step:
+        "ℹ️ Méta — catalogue livrables (P1, avant continuité web / FACTUAL)...",
+      enforce: { allowRefusal: false },
+      metaSubKind: "deliverable_types",
+    });
   }
 
   // Avant G46 idéation : « recherche sur internet » ≠ pistes projet RAG.

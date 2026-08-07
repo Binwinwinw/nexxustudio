@@ -4,8 +4,21 @@ import assert from "node:assert/strict";
 import {
   deriveFactualResearchWebQuery,
   deriveFactualResearchWebQueryEn,
+  deriveFactualResearchMetricsWebQuery,
+  deriveFactualResearchSectorSitesWebQuery,
+  deriveFactualResearchMarketSizeEnWebQuery,
   isWebCitationsStructuredReportCluster,
 } from "../src/agent/policies/routing/explicitWebSearchRequestPolicy.js";
+import {
+  rankFactualResearchSources,
+  evidenceHasKeyFigures,
+  replyHasKeyFigures,
+  isSectorReportSource,
+  isLightEntertainmentSource,
+  sourcesAreMajorityLight,
+  sourcesHaveHardSector,
+  FACTUAL_RESEARCH_METRICS_ADMISSION,
+} from "../src/agent/policies/web/factualResearchSourceRankPolicy.js";
 import {
   buildFactualResearchNoSourcesReply,
   shouldRefuseFactualResearchWithoutSources,
@@ -21,6 +34,7 @@ import {
   dedupeFactualResearchSections,
   softCapFactualResearchLength,
   countWords,
+  hasExactCanonicalHeadings,
   FACTUAL_RESEARCH_SOFT_MAX_WORDS,
 } from "../src/agent/policies/web/factualResearchReplyValidator.js";
 import {
@@ -128,27 +142,35 @@ describe("P2 FACTUAL_RESEARCH deliverable", () => {
       true,
     );
     const addon = buildFactualResearchSystemAddon(STREAMING_SERIES_A, packet);
-    assert.match(addon, /## Résumé/);
-    assert.match(addon, /Analyse de marché/);
-    assert.match(addon, /## Opportunités/);
-    assert.match(addon, /Sources/);
+    assert.match(addon, /## Résumé Exécutif/);
+    assert.match(addon, /## Analyse de Marché/);
+    assert.match(addon, /## Analyse Concurrentielle/);
+    assert.match(addon, /## Opportunités de Croissance/);
+    assert.match(addon, /## Sources/);
     assert.match(addon, /1200–1800|1400/);
-    assert.ok(FACTUAL_RESEARCH_CANONICAL_HEADINGS.length === 5);
+    assert.match(addon, /aucune métrique chiffrée|métriques chiffrées/i);
+    assert.deepEqual(FACTUAL_RESEARCH_CANONICAL_HEADINGS, [
+      "## Résumé Exécutif",
+      "## Analyse de Marché",
+      "## Analyse Concurrentielle",
+      "## Opportunités de Croissance",
+      "## Sources",
+    ]);
   });
 
   it("validator OK avec 3+ sources, sections et citations", () => {
     const packet = packetWithSources(FACTUAL_RESEARCH_MIN_SOURCES);
     const text = `
-## Résumé exécutif
+## Résumé Exécutif
 Le marché croît [1].
 
-## Analyse de marché
+## Analyse de Marché
 Taille estimée évoquée par les sources [2].
 
-## Analyse concurrentielle
+## Analyse Concurrentielle
 Acteurs présents [3].
 
-## Opportunités de croissance
+## Opportunités de Croissance
 Trois pistes actionnables [1].
 
 ## Sources
@@ -194,16 +216,16 @@ Trois pistes actionnables [1].
   it("validator retire disclaimer bridged si evidence > 0", () => {
     const packet = packetWithSources(3);
     const text = `
-## Résumé exécutif
+## Résumé Exécutif
 Je n'ai pas pu vérifier les données ; voici une comparaison qualitative [1].
 
-## Analyse de marché
+## Analyse de Marché
 Note [2].
 
-## Analyse concurrentielle
+## Analyse Concurrentielle
 Note [3].
 
-## Opportunités de croissance
+## Opportunités de Croissance
 Note [1].
 
 ## Sources
@@ -241,7 +263,7 @@ Note [1].
 
   it("P3 : chiffre sans citation retiré ; chiffre ancré conservé", () => {
     const stripped = stripUnanchoredFigures(
-      "## Résumé\nLe marché croît de 40% par an.\n\n## Analyse de marché\nLa taille atteint 12 milliards [1].\n",
+      "## Résumé\nLe marché croît de 40% par an.\n\n## Analyse de Marché\nLa taille atteint 12 milliards [1].\n",
     );
     assert.ok(stripped.removed >= 1);
     assert.doesNotMatch(stripped.text, /40%/);
@@ -252,10 +274,10 @@ Note [1].
 ## Résumé
 Croissance de 40% sans preuve.
 
-## Analyse de marché
+## Analyse de Marché
 Part de 12% [1].
 
-## Analyse concurrentielle
+## Analyse Concurrentielle
 Acteurs [2].
 
 ## Opportunités
@@ -280,10 +302,10 @@ Premier.
 ## Résumé
 Doublon à supprimer.
 
-## Analyse de marché
+## Analyse de Marché
 Ok.
 
-## Analyse concurrentielle
+## Analyse Concurrentielle
 Ok.
 
 ## Opportunités
@@ -304,10 +326,10 @@ Ok.
 ## Résumé
 ${filler}
 
-## Analyse de marché
+## Analyse de Marché
 ${filler}
 
-## Analyse concurrentielle
+## Analyse Concurrentielle
 court [1].
 
 ## Opportunités
@@ -332,16 +354,16 @@ court [2].
     assert.match(result.sanitized, /## Sources/);
   });
 
-  it("P3 : titres canoniques courts acceptés par le validator", () => {
+  it("P5 : titres courts P3 remappés vers titres exacts", () => {
     const packet = packetWithSources(3);
     const text = `
 ## Résumé
 Synthèse [1].
 
-## Analyse de marché
+## Analyse de Marché
 Marché [2].
 
-## Analyse concurrentielle
+## Analyse Concurrentielle
 Concurrence [3].
 
 ## Opportunités
@@ -352,12 +374,203 @@ Pistes [1].
 [2] https://example.com/market-2-2026
 [3] https://example.com/market-3-2026
 `;
-    const sections = detectFactualResearchSections(text);
-    assert.deepEqual(sections.missing, []);
     const result = validateFactualResearchReply(text, packet, {
       query: STREAMING_SERIES_A,
     });
+    assert.ok(result.issues.includes("non_canonical_headings"));
+    assert.match(result.sanitized, /^## Résumé Exécutif$/m);
+    assert.match(result.sanitized, /^## Opportunités de Croissance$/m);
     assert.equal(result.valid, true, result.issues.join("|"));
+  });
+});
+
+describe("P4 FACTUAL_RESEARCH source rank + metrics", () => {
+  it("rank : Arcom > blog quelle série / GO VF", () => {
+    const { sources } = rankFactualResearchSources(
+      [
+        {
+          url: "https://quelleseriecesoir.fr/top-streaming",
+          title: "Quelle série ce soir en streaming",
+          snippet: "Nos coups de cœur VF",
+          confidence: 0.7,
+        },
+        {
+          url: "https://www.arcom.fr/observatoire-streaming-2026",
+          title: "Observatoire des usages streaming",
+          snippet: "Parts de marché SVOD en France",
+          confidence: 0.6,
+        },
+        {
+          url: "https://govf.example/film",
+          title: "GO VF film gratuit",
+          snippet: "voir en streaming",
+          confidence: 0.65,
+        },
+        {
+          url: "https://www.cnc.fr/cinema/etudes",
+          title: "CNC études marché",
+          snippet: "données sectorielles",
+          confidence: 0.55,
+        },
+        {
+          url: "https://lesechos.fr/tech/streaming",
+          title: "Streaming indépendant",
+          snippet: "analyse",
+          confidence: 0.6,
+        },
+      ],
+      { maxResults: 5 },
+    );
+    assert.ok(isSectorReportSource(sources[0]));
+    assert.match(sources[0].url, /arcom\.fr|cnc\.fr/);
+    assert.ok(sources.every((s) => !isLightEntertainmentSource(s)));
+  });
+
+  it("evidenceHasKeyFigures true/false", () => {
+    assert.equal(
+      evidenceHasKeyFigures([
+        { title: "Market", snippet: "CAGR de 12% et taille du marché 3 milliards" },
+      ]),
+      true,
+    );
+    assert.equal(
+      evidenceHasKeyFigures([
+        { title: "Blog série", snippet: "les tendances narratives du moment" },
+      ]),
+      false,
+    );
+    assert.equal(
+      replyHasKeyFigures("Le marché croît avec un CAGR de 8% [1]."),
+      true,
+    );
+    assert.equal(replyHasKeyFigures("Analyse qualitative sans métrique."), false);
+  });
+
+  it("derive metrics query courte FR", () => {
+    const q = deriveFactualResearchMetricsWebQuery(STREAMING_SERIES_A, {
+      lang: "fr",
+    });
+    assert.ok(q.length <= 120);
+    assert.match(q, /CAGR|parts|taille/i);
+  });
+
+  it("P5 : aveu métriques injecté si 0 chiffre et 0 hard sector", () => {
+    const packet = packetWithSources(3);
+    const text = `
+## Résumé Exécutif
+Synthèse qualitative [1].
+
+## Analyse de Marché
+Signaux qualitatifs seulement [2].
+
+## Analyse Concurrentielle
+Acteurs [3].
+
+## Opportunités de Croissance
+Pistes [1].
+
+## Sources
+[1] https://example.com/market-1-2026
+[2] https://example.com/market-2-2026
+[3] https://example.com/market-3-2026
+`;
+    const result = validateFactualResearchReply(text, packet, {
+      query: STREAMING_SERIES_A,
+    });
+    assert.ok(result.issues.includes("missing_key_figures"));
+    assert.ok(result.issues.includes("metrics_admission_injected"));
+    assert.match(result.sanitized, new RegExp(FACTUAL_RESEARCH_METRICS_ADMISSION));
+    assert.equal(result.valid, true, result.issues.join("|"));
+    assert.equal(hasExactCanonicalHeadings(result.sanitized), true);
+  });
+
+  it("validator missing_key_figures si preuves chiffrées mais reply sans", () => {
+    const packet = packetWithSources(3);
+    packet.meta.factual_research_evidence_has_figures = true;
+    packet.evidence[0].excerpt = "Parts de marché SVOD à 42% en 2026";
+    const text = `
+## Résumé Exécutif
+Synthèse [1].
+
+## Analyse de Marché
+Tendances [2].
+
+## Analyse Concurrentielle
+Acteurs [3].
+
+## Opportunités de Croissance
+Pistes [1].
+
+## Sources
+[1] https://example.com/market-1-2026
+[2] https://example.com/market-2-2026
+[3] https://example.com/market-3-2026
+`;
+    const result = validateFactualResearchReply(text, packet, {
+      query: STREAMING_SERIES_A,
+    });
+    assert.ok(result.issues.includes("missing_key_figures"));
+    assert.equal(result.valid, true);
+  });
+
+  it("composer exige chiffres si preuves en ont", () => {
+    const packet = packetWithSources(3);
+    packet.meta.factual_research_evidence_has_figures = true;
+    packet.evidence[0].excerpt = "market size 12 milliards CAGR 9%";
+    const addon = buildFactualResearchSystemAddon(STREAMING_SERIES_A, packet);
+    assert.match(addon, /2–3 chiffres clés/);
+    assert.doesNotMatch(addon, /aucune métrique chiffrée disponible/i);
+  });
+});
+
+describe("P5 FACTUAL_RESEARCH harden + sector retry helpers", () => {
+  it("majority light blogs détectée", () => {
+    const sources = [
+      { url: "https://culture-series.fr/a", title: "blog", snippet: "x" },
+      { url: "https://fuplayvideo.fr/", title: "fuplay", snippet: "y" },
+      { url: "https://capitainecomment.fr/z", title: "niche", snippet: "z" },
+      { url: "https://example.com/ok", title: "std", snippet: "ok" },
+    ];
+    assert.equal(sourcesAreMajorityLight(sources), true);
+    assert.equal(sourcesHaveHardSector(sources), false);
+  });
+
+  it("queries sector sites + market size EN", () => {
+    assert.match(deriveFactualResearchSectorSitesWebQuery(), /site:arcom\.fr/);
+    assert.match(deriveFactualResearchSectorSitesWebQuery(), /filetype:pdf/);
+    assert.match(
+      deriveFactualResearchMarketSizeEnWebQuery(),
+      /market size independent film streaming/i,
+    );
+  });
+
+  it("titres non canoniques → remap + valid", () => {
+    const packet = packetWithSources(3);
+    const text = `
+## Résumé Exécutive
+Synthèse [1].
+
+## Analyse du Marché
+Note [2].
+
+## Analyse Concurrentielle
+Note [3].
+
+## Opportunités de Croissance
+Note [1].
+
+## Sources
+[1] https://example.com/market-1-2026
+[2] https://example.com/market-2-2026
+[3] https://example.com/market-3-2026
+`;
+    const result = validateFactualResearchReply(text, packet, {
+      query: STREAMING_SERIES_A,
+    });
+    assert.ok(result.issues.includes("non_canonical_headings"));
+    assert.match(result.sanitized, /^## Résumé Exécutif$/m);
+    assert.match(result.sanitized, /^## Analyse de Marché$/m);
+    assert.equal(hasExactCanonicalHeadings(result.sanitized), true);
   });
 });
 

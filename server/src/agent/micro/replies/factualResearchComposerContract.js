@@ -1,5 +1,5 @@
 /**
- * P2/P3 — Template composer FACTUAL_RESEARCH / cluster web+citations+rapport.
+ * P2–P5 — Template composer FACTUAL_RESEARCH / cluster web+citations+rapport.
  */
 import {
   FACTUAL_RESEARCH_TARGET_SOURCES,
@@ -7,17 +7,16 @@ import {
   countFactualResearchSources,
 } from "../../policies/web/factualResearchDeliverablePolicy.js";
 import { hasSuccessfulWebGrounding } from "../../policies/web/knowledgeFreshnessPolicy.js";
+import {
+  evidenceHasKeyFigures,
+  FACTUAL_RESEARCH_METRICS_ADMISSION,
+} from "../../policies/web/factualResearchSourceRankPolicy.js";
+import { FACTUAL_RESEARCH_EXACT_HEADINGS } from "../../policies/web/factualResearchReplyValidator.js";
 
 export const FACTUAL_RESEARCH_COMPOSER_RULE = "factual_research_structured_report_v1";
 
-/** Titres canoniques P3 (une seule occurrence chacun). */
-export const FACTUAL_RESEARCH_CANONICAL_HEADINGS = [
-  "## Résumé",
-  "## Analyse de marché",
-  "## Analyse concurrentielle",
-  "## Opportunités",
-  "## Sources",
-];
+/** Titres canoniques P5 (exacts). */
+export const FACTUAL_RESEARCH_CANONICAL_HEADINGS = FACTUAL_RESEARCH_EXACT_HEADINGS;
 
 /**
  * @param {string} query
@@ -40,16 +39,39 @@ export function requiresFactualResearchComposerContract(query = "", packet = {})
 export function buildFactualResearchSystemAddon(query = "", packet = {}) {
   const n = countFactualResearchSources(packet);
   const today = new Date().toISOString().slice(0, 10);
+  const evidenceSources = (packet.evidence || []).map((e) => ({
+    url: e.source,
+    snippet: e.excerpt,
+    title: "",
+  }));
+  const fromExperts = (packet.expert_outputs || [])
+    .filter((o) => o?.stage === "web_research")
+    .map((o) => ({ snippet: o.content, title: "", url: "" }));
+  const hasFigures =
+    packet?.meta?.factual_research_evidence_has_figures === true ||
+    evidenceHasKeyFigures([...evidenceSources, ...fromExperts]);
+
+  const figureLines = hasFigures
+    ? [
+        "- Exige **2–3 chiffres clés** (taille de marché, croissance/CAGR, parts) **uniquement** s'ils figurent dans les preuves — chaque chiffre suivi de [n].",
+        "- INTERDIT d'inventer Mordor/Nielsen/Statista absents des preuves.",
+      ]
+    : [
+        "- Les sources récupérées **ne contiennent pas** de métriques chiffrées exploitables.",
+        `- Inclure EXACTEMENT cette phrase dans le Résumé Exécutif : « ${FACTUAL_RESEARCH_METRICS_ADMISSION} »`,
+        "- INTERDIT d'inventer des chiffres marché.",
+      ];
+
   return [
     "VARIANTE RAPPORT FACTUEL SOURCÉ (FACTUAL_RESEARCH) :",
     `- Date de référence : ${today}.`,
     `- Sources web disponibles dans le paquet : ${n} (cible rédactionnelle ≥ ${FACTUAL_RESEARCH_TARGET_SOURCES}).`,
-    "- Structure OBLIGATOIRE — titres markdown EXACTS, une seule fois chacun :",
+    "- Structure OBLIGATOIRE — titres markdown EXACTS (casse incluse), une seule fois chacun :",
     ...FACTUAL_RESEARCH_CANONICAL_HEADINGS.map((h) => `  ${h}`),
     "- Longueur : 1200–1800 mots (cible ~1400). Pas de remplissage, pas de préambule hors template.",
-    "- INTERDIT : titres dupliqués, sous-sections redondantes, « ~5 pages » de padding.",
-    "- Chaque donnée chiffrée DOIT être suivie immédiatement d'une citation [n] (ou URL) — sinon omets le chiffre.",
-    "- Section Sources : liste numérotée Titre — URL (et date si visible dans la preuve).",
+    "- INTERDIT : titres paraphrasés, titres dupliqués, sous-sections redondantes.",
+    ...figureLines,
+    "- Section Sources : liste numérotée Titre — URL (et date si visible dans la preuve). Préférer rapports sectoriels aux blogs divertissement.",
     "- INTERDIT : « je n'ai pas pu vérifier », « connaissances de base », rapport chiffré inventé.",
   ].join("\n");
 }
@@ -80,6 +102,15 @@ export function buildFactualResearchComposerUserPrompt(
     })
     .join("\n");
 
+  const evidenceSources = (packet.evidence || []).map((e) => ({
+    url: e.source,
+    snippet: e.excerpt,
+    title: "",
+  }));
+  const hasFigures =
+    packet?.meta?.factual_research_evidence_has_figures === true ||
+    evidenceHasKeyFigures(evidenceSources);
+
   const parts = [
     `Demande utilisateur :
 "${packet.user_query || ""}"`,
@@ -91,8 +122,11 @@ export function buildFactualResearchComposerUserPrompt(
     evidenceLines || "(aucune URL)",
     "",
     "CONSIGNE :",
-    "Rédige le rapport en 5 sections (titres canoniques exacts), ~1400 mots, ancré uniquement sur les preuves.",
-    "Cite [n] juste après chaque chiffre. Une seule occurrence de chaque titre. Pas de doublon.",
+    "Rédige le rapport avec les 5 titres canoniques P5 EXACTS, ~1400 mots, ancré uniquement sur les preuves.",
+    hasFigures
+      ? "Inclus 2–3 chiffres clés présents dans les preuves, chacun suivi de [n]."
+      : `Aucune métrique chiffrée : inclus la phrase « ${FACTUAL_RESEARCH_METRICS_ADMISSION} » dans le Résumé Exécutif.`,
+    "Une seule occurrence de chaque titre. Pas de doublon.",
   ];
 
   if (freshnessUserAddon) {

@@ -55,6 +55,42 @@ const HELP_SCOPE_PATTERNS = [
   /\b(?:ton|ta) aide\b.{0,80}\bprojet\b/,
 ];
 
+/**
+ * Catalogue de formats / artefacts — framing « quoi / quels types » (P6).
+ * Pas un mandat de production (bug / site / code / pitch) : voir HARD_TASK_OVERRIDE.
+ */
+const DELIVERABLE_TYPES_PATTERNS = [
+  /\btypes?\s+de\s+livrables?\b/,
+  /\bquels?\s+livrables?\b/,
+  /\bquel(?:le)?s?\s+types?\s+de\s+(?:livrable|sortie|artefact|document|rendu|support)s?\b/,
+  /\b(?:quels?|quel)\s+(?:genres?|formats?)\s+de\s+(?:livrable|sortie|artefact|document)s?\b/,
+  /\bformats?\s+de\s+sortie\b/,
+  /\bformats?\s+(?:possibles?|disponibles?)\b/,
+  /\bquels?\s+formats?\s+(?:peux[- ]?tu|tu\s+peux|possibles?|de\s+sortie|de\s+livrable)/,
+  /\bformats?\s+(?:peux[- ]?tu|tu\s+peux)\s+(?:produire|fournir|generer|livrer)/,
+  /\bque\s+peux[- ]?tu\s+(?:me\s+)?(?:fournir|produire|generer|livrer)\b/,
+  /\b(?:peux|pourrais)\s+tu\s+(?:me\s+)?(?:fournir|produire|generer|livrer)\b/,
+  /\b(?:tu\s+peux|tu\s+pourrais)\s+(?:me\s+)?(?:fournir|produire|generer|livrer)\b/,
+  /\b(?:tu\s+peux|peux[- ]?tu)\s+livrer\s+quoi\b/,
+  /\blivrer\s+quoi\b/,
+  /\bquels?\s+rendus?\b/,
+  /\bquelles?\s+sorties?\b/,
+  /\bsous\s+quelles?\s+formes?\b/,
+  /\bquels?\s+supports?\b/,
+  /\btypes?\s+de\s+documents?\b/,
+  /\blivrables?\s+(?:possibles?|disponibles?|envisageables?)\b/,
+  /\b(?:comme\s+)?docs?\b.{0,32}\b(?:fournir|produire|livrer|generer)\b/,
+  /\b(?:fournir|produire|livrer|generer).{0,32}\b(?:comme\s+)?docs?\b/,
+];
+
+/** Mandat métier concret — ne pas classer en deliverable_types (critère E). */
+const DELIVERABLE_TYPES_HARD_TASK_OVERRIDE_RE =
+  /\b(?:corrige|fix|debug|implemente|impl[eé]mente|patch(?:er)?|pull\s*request|\bpr\b)\b.{0,48}\b(?:bug|erreur|fail|crash)\b|\b(?:bug|erreur)\b.{0,48}\b(?:corrige|fix|debug|patch)\b|\b(?:cr[eé]e|cree|fais|fait|g[eé]n[eè]re|genere|code[- ]?moi|d[eé]veloppe)\b.{0,56}\b(?:site(?:\s+web)?|landing|page\s+html|composant|module|api|endpoint)\b|\b(?:cr[eé]e|cree|fais|fait|g[eé]n[eè]re|genere|pr[eé]pare|r[eé]dige)\b.{0,40}\b(?:pitch\s*deck|diaporama|powerpoint|slides?)\b|\b(?:pitch\s*deck|diaporama)\b.{0,40}\b(?:cr[eé]e|cree|fais|fait|g[eé]n[eè]re|pr[eé]pare)\b|\b(?:fournir|produire|livrer|generer)\b.{0,40}\b(?:bug|patch|fix|site\s+web|landing|code\s+source)\b/i;
+
+/** Formats média / fichiers vision — rail modalities G47, pas catalogue livrables. */
+const DELIVERABLE_TYPES_MEDIA_FORMAT_OVERRIDE_RE =
+  /\bformat\b.{0,80}\b(?:image|vid[eé]o|fichier|mime|extension|png|jpe?g|webp|mp4)\b|\b(?:image|vid[eé]o|fichier)\b.{0,80}\bformat\b/i;
+
 /** Jugement / confiance sur la qualité de conseil (pas un sujet papoter). */
 const ASSISTANT_TRUST_PATTERNS = [
   /\b(?:peut on|on peut) dire\b.{0,50}\b(?:tu es|t es|tes)\b.{0,40}\b(?:bon|bons|bonne|bonnes)\b.{0,25}\b(?:conseil|conseils|conseiller)\b/,
@@ -159,6 +195,7 @@ function isMetaFieldBroad(text) {
     matchesAny(text, CAPABILITY_LEARN_PATTERNS) ||
     matchesAny(text, CAPABILITY_GAPS_PATTERNS) ||
     matchesAny(text, HELP_SCOPE_PATTERNS) ||
+    matchesAny(text, DELIVERABLE_TYPES_PATTERNS) ||
     matchesAny(text, ASSISTANT_TRUST_PATTERNS) ||
     matchesAny(text, PROJECT_ABOUT_PATTERNS) ||
     matchesAny(text, SELF_ANALYSIS_PATTERNS) ||
@@ -251,6 +288,19 @@ export function classifyMetaConversationIntent(query = "") {
     return { kind: "help_scope", label: "assistant_help_scope", tier: "deterministic", wordCount: wc };
   }
 
+  if (
+    matchesAny(text, DELIVERABLE_TYPES_PATTERNS) &&
+    !DELIVERABLE_TYPES_HARD_TASK_OVERRIDE_RE.test(text) &&
+    !DELIVERABLE_TYPES_MEDIA_FORMAT_OVERRIDE_RE.test(text)
+  ) {
+    return {
+      kind: "deliverable_types",
+      label: "meta_deliverable_types",
+      tier: "deterministic",
+      wordCount: wc,
+    };
+  }
+
   if (matchesAny(text, PROJECT_ABOUT_PATTERNS)) {
     return { kind: "project_about", label: "project_about", tier: "deterministic", wordCount: wc };
   }
@@ -319,6 +369,49 @@ export function isMetaHelpScopeIntent(query = "") {
 export function isMetaProjectAboutIntent(query = "") {
   const hit = classifyMetaConversationIntent(query);
   return hit?.kind === "project_about";
+}
+
+export function isMetaDeliverableTypesIntent(query = "") {
+  const hit = classifyMetaConversationIntent(query);
+  return hit?.kind === "deliverable_types";
+}
+
+/**
+ * Contexte fiable FACTUAL + investisseur / Série A (fenêtre ~2–3 tours).
+ * Strict : pas de pitch/streaming seuls ; pas d’invention de contexte métier.
+ * @param {Array<{ role?: string, content?: string }>} [history]
+ * @returns {boolean}
+ */
+export function threadHasReliableInvestorFactualContext(history = []) {
+  const recent = (Array.isArray(history) ? history : []).slice(-6);
+  if (recent.length === 0) return false;
+
+  const blob = recent
+    .map((m) => String(m?.content || ""))
+    .join("\n")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  const hasInvestorSignal =
+    /\b(?:serie\s*a|levee\s+de\s+fonds|investisseurs?)\b/i.test(blob);
+
+  const hasFactualSignal =
+    /\b(?:##\s*resume\s+executif|##\s*analyse\s+de\s+marche|##\s*analyse\s+concurrentielle|##\s*sources\b|limites\s*:\s*aucune\s+metrique|rapport\s+professionnel|recherche\s+web|sources?\s+web\s+r[eé]centes?|avec\s+citations)\b/i.test(
+      blob,
+    ) ||
+    recent.some(
+      (m) =>
+        (m?.role === "assistant" || m?.role === "model") &&
+        /##\s*Sources\b/i.test(String(m?.content || "")),
+    );
+
+  return hasInvestorSignal && hasFactualSignal;
+}
+
+/** @deprecated alias P5 — préférer threadHasReliableInvestorFactualContext */
+export function threadSuggestsInvestorResearchDeliverables(history = []) {
+  return threadHasReliableInvestorFactualContext(history);
 }
 
 /**

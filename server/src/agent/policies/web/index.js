@@ -9,3 +9,5 @@ export * from "./weatherCurrentRequestPolicy.js";
 export * from "./webEvidenceFidelityValidator.js";
 export * from "./factualResearchDeliverablePolicy.js";
 export * from "./factualResearchReplyValidator.js";
+export * from "./factualResearchSourceRankPolicy.js";
+export * from "./factualResearchDeterministicBuilder.js";

@@ -46,6 +46,7 @@ import {
 import { resolveAiVerificationNotice } from "../epistemic/index.js";
 import { JUST_INTENT_THRESHOLDS } from "./justIntentThresholds.js";
 import { isWebCitationsStructuredReportCluster } from "../routing/explicitWebSearchRequestPolicy.js";
+import { isMetaDeliverableTypesIntent } from "../../utils/metaConversationIntentGuards.js";
 import {
   INTENT_DOMAINS,
   INTENT_ACTIONS,
@@ -323,6 +324,7 @@ const DOMAIN_DEFAULT_ACTION = Object.freeze({
   [INTENT_DOMAINS.ANALYSIS]: INTENT_ACTIONS.EVALUATE,
   [INTENT_DOMAINS.SECURITY_POLICY]: INTENT_ACTIONS.CREATE,
   [INTENT_DOMAINS.SOCIAL]: INTENT_ACTIONS.SOCIAL_CHECKIN,
+  [INTENT_DOMAINS.META]: INTENT_ACTIONS.DELIVERABLE_TYPES,
   [INTENT_DOMAINS.GENERAL]: INTENT_ACTIONS.EXPLAIN,
 });
 
@@ -336,6 +338,7 @@ const DOMAIN_DEFAULT_DELIVERABLE = Object.freeze({
   [INTENT_DOMAINS.ANALYSIS]: DELIVERABLE_TYPES.PLAIN_ANSWER,
   [INTENT_DOMAINS.SECURITY_POLICY]: DELIVERABLE_TYPES.POLICY_RULES,
   [INTENT_DOMAINS.SOCIAL]: DELIVERABLE_TYPES.PLAIN_ANSWER,
+  [INTENT_DOMAINS.META]: DELIVERABLE_TYPES.PLAIN_ANSWER,
   [INTENT_DOMAINS.GENERAL]: DELIVERABLE_TYPES.PLAIN_ANSWER,
 });
 
@@ -346,6 +349,11 @@ const DOMAIN_DEFAULT_DELIVERABLE = Object.freeze({
 export function resolveIntentDomain(query = "") {
   const q = normalizeFamiliarityQuery(query);
   if (!q) return INTENT_DOMAINS.GENERAL;
+
+  // P6 — label JUST meta/deliverable_types (observabilité ; routage = SC meta)
+  if (isMetaDeliverableTypesIntent(query)) {
+    return INTENT_DOMAINS.META;
+  }
 
   if (isCodeConceptExplainRequest(query)) {
     return INTENT_DOMAINS.CODE;
@@ -394,6 +402,10 @@ export function resolveIntentAction(
   domain = INTENT_DOMAINS.GENERAL,
 ) {
   const q = normalizeFamiliarityQuery(query);
+
+  if (domain === INTENT_DOMAINS.META) {
+    return INTENT_ACTIONS.DELIVERABLE_TYPES;
+  }
 
   if (isUiNavigationRestructureFeedback(query)) {
     return INTENT_ACTIONS.EVALUATE;
@@ -525,6 +537,11 @@ function pickClarificationQuestions(query, domain, deliverable) {
  */
 function resolveExecutionStrategy(query, domain, deliverable) {
   const q = normalizeFamiliarityQuery(query);
+
+  // Observabilité meta : ne pas forcer clarify JUST (le SC meta clarifie si besoin)
+  if (domain === INTENT_DOMAINS.META) {
+    return EXECUTION_STRATEGIES.BUILD_V1;
+  }
 
   if (isInformationSeekingWithTarget(q)) {
     return EXECUTION_STRATEGIES.BUILD_V1;

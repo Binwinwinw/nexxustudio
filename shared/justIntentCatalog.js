@@ -13,6 +13,8 @@ export const INTENT_DOMAINS = Object.freeze({
   ANALYSIS: "analysis",
   SECURITY_POLICY: "security_policy",
   SOCIAL: "social",
+  /** Observabilité uniquement — routage métier = SC meta, pas JUST. */
+  META: "meta",
   GENERAL: "general",
 });
 
@@ -43,6 +45,9 @@ export const INTENT_ACTIONS = Object.freeze({
   MIGRATE: "migrate",
   COMPLETE: "complete",
   SOCIAL_CHECKIN: "social_checkin",
+  /** Observabilité — catalogue / formats de livrables (P6). */
+  DELIVERABLE_TYPES: "deliverable_types",
+  CAPABILITIES: "capabilities",
 });
 
 export const DELIVERABLE_TYPES = Object.freeze({
@@ -85,6 +90,7 @@ export const DOMAIN_LABELS = Object.freeze({
   [INTENT_DOMAINS.ANALYSIS]: "Analyse / réflexion",
   [INTENT_DOMAINS.SECURITY_POLICY]: "Gouvernance / sécurité",
   [INTENT_DOMAINS.SOCIAL]: "Social / Conversation",
+  [INTENT_DOMAINS.META]: "Méta / Capacités",
   [INTENT_DOMAINS.GENERAL]: "Général",
 });
 
@@ -115,6 +121,8 @@ export const ACTION_LABELS = Object.freeze({
   [INTENT_ACTIONS.MIGRATE]: "Migrer",
   [INTENT_ACTIONS.COMPLETE]: "Compléter",
   [INTENT_ACTIONS.SOCIAL_CHECKIN]: "Social Check-in",
+  [INTENT_ACTIONS.DELIVERABLE_TYPES]: "Types de livrables",
+  [INTENT_ACTIONS.CAPABILITIES]: "Capacités",
 });
 
 export const DELIVERABLE_LABELS = Object.freeze({

@@ -13,7 +13,7 @@ import {
   computeOverallConfidence,
   buildRawSummary,
 } from "../normalizers/webEvidenceNormalizer.js";
-import { MAX_RESULTS } from "../policies/web/index.js";
+import { MAX_RESULTS, rankFactualResearchSources } from "../policies/web/index.js";
 import {
   resolveGuidedProductWebSearchLimits,
   applyProductRecoValidationToWebPacket,
@@ -67,7 +67,18 @@ export const expertWebSearch = {
         });
 
       // 2. Normalisation des résultats
-      const sources = normalizeWebResults(rawResults, maxResults);
+      let sources = normalizeWebResults(rawResults, maxResults);
+
+      // P4 — ranking sectoriel vs blogs légers (FACTUAL_RESEARCH)
+      if (context.factualResearchRank) {
+        const ranked = rankFactualResearchSources(sources, { maxResults });
+        sources = ranked.sources;
+        if (ranked.demotedDropped > 0 || ranked.boosted > 0) {
+          console.log(
+            `[ExpertWebSearch] factual_rank boosted=${ranked.boosted} demotedDropped=${ranked.demotedDropped}`,
+          );
+        }
+      }
 
       // 3. Calcul de confiance globale
       const confidence = computeOverallConfidence(sources);

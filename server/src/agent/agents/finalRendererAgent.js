@@ -62,6 +62,7 @@ import {
   buildFactualResearchSystemAddon,
   buildFactualResearchComposerUserPrompt,
 } from "../micro/replies/factualResearchComposerContract.js";
+import { buildFactualResearchDeterministicReport } from "../policies/web/factualResearchDeterministicBuilder.js";
 import { getRepoAnalysisSystemPrompt } from "../analysis/repoAnalysisContract.js";
 import { buildProductSourcesInsufficientReply } from "../policies/guided/index.js";
 import { wasWebSearchAttempted } from "../policies/routing/explicitWebSearchRequestPolicy.js";
@@ -159,6 +160,32 @@ export const finalRendererAgent = {
         path: "vision_infra_failure",
       });
       return fallback;
+    }
+
+    // P7 — FACTUAL : builder déterministe avant LLM (latence)
+    if (composerOptions.factualResearch) {
+      const built = buildFactualResearchDeterministicReport(
+        packet.user_query || "",
+        packet,
+      );
+      if (built.ok && built.text) {
+        if (packet?.meta) {
+          packet.meta.factual_research_builder_path = built.path;
+          packet.meta.factual_research_skip_llm = true;
+        }
+        this._logComposerPath(observability, "factual_deterministic_builder", {
+          sources: built.sourceCount,
+        });
+        if (onContent) onContent(built.text);
+        await recordComposerTelemetry({
+          outcome: "success",
+          skillId: observability.intentContractId || null,
+          latencyMs: Date.now() - composerStartedAt,
+          responseLength: built.text.length,
+          path: "factual_deterministic_builder",
+        });
+        return built.text;
+      }
     }
 
     this._logComposerPath(observability, "llm_start");

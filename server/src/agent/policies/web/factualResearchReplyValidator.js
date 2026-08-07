@@ -1,5 +1,5 @@
 /**
- * P2/P3 — Validation post-compose FACTUAL_RESEARCH (sections + citations + longueur + ancrage).
+ * P2–P5 — Validation post-compose FACTUAL_RESEARCH (titres exacts + chiffres + aveu).
  */
 import {
   FACTUAL_RESEARCH_MIN_SOURCES,
@@ -13,22 +13,51 @@ import {
   ensureExplicitWebSourceLinks,
   extractWebSourcesFromPacket,
 } from "./webEvidenceFidelityValidator.js";
+import {
+  evidenceHasKeyFigures,
+  replyHasKeyFigures,
+  sourcesHaveHardSector,
+  FACTUAL_RESEARCH_METRICS_ADMISSION,
+} from "./factualResearchSourceRankPolicy.js";
 
 export const FACTUAL_RESEARCH_SOFT_MAX_WORDS = 2000;
 
-/** Accept titres P3 courts + variantes P2. */
+/** Titres canoniques P5 — exacts (casse incluse). */
+export const FACTUAL_RESEARCH_EXACT_HEADINGS = [
+  "## Résumé Exécutif",
+  "## Analyse de Marché",
+  "## Analyse Concurrentielle",
+  "## Opportunités de Croissance",
+  "## Sources",
+];
+
+/** Match flou → id section (pour remap vers exact). */
 const SECTION_CHECKS = [
   {
     id: "resume",
-    re: /#{1,3}\s*r[eé]sum[eé](?:\s+ex[eé]cutif)?/i,
+    exact: "## Résumé Exécutif",
+    re: /#{1,3}\s*r[eé]sum[eé](?:\s+ex[eé]cuti[fv]e?)?/i,
   },
-  { id: "marche", re: /#{1,3}\s*analyse\s+de\s+march[eé]/i },
-  { id: "concurrence", re: /#{1,3}\s*analyse\s+concurrentielle/i },
+  {
+    id: "marche",
+    exact: "## Analyse de Marché",
+    re: /#{1,3}\s*(?:analyse\s+(?:du\s+|de\s+)?march[eé]|analyse\s+de\s+march[eé])/i,
+  },
+  {
+    id: "concurrence",
+    exact: "## Analyse Concurrentielle",
+    re: /#{1,3}\s*analyse\s+concurrentielle/i,
+  },
   {
     id: "opportunites",
+    exact: "## Opportunités de Croissance",
     re: /#{1,3}\s*opportunit[eé]s(?:\s+de\s+croissance)?/i,
   },
-  { id: "sources", re: /#{1,3}\s*sources\b|\*\*sources\*\*/i },
+  {
+    id: "sources",
+    exact: "## Sources",
+    re: /#{1,3}\s*sources\b|\*\*sources\*\*/i,
+  },
 ];
 
 const BRIDGED_DISCLAIMER_RE =
@@ -89,6 +118,122 @@ function sectionIdFromHeading(headingLine = "") {
     if (row.re.test(line)) return row.id;
   }
   return null;
+}
+
+/**
+ * @param {string} text
+ * @returns {boolean}
+ */
+export function hasExactCanonicalHeadings(text = "") {
+  const raw = String(text || "");
+  return FACTUAL_RESEARCH_EXACT_HEADINGS.every((h) =>
+    new RegExp(`^${h.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`, "m").test(raw),
+  );
+}
+
+/**
+ * Sépare un titre exact collé au corps : `## TitreTexte` → `## Titre\nTexte`.
+ * @param {string} text
+ * @returns {string}
+ */
+export function ensureCanonicalHeadingLineBreaks(text = "") {
+  let out = String(text || "");
+  for (const h of FACTUAL_RESEARCH_EXACT_HEADINGS) {
+    const escaped = h.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    out = out.replace(new RegExp(`(${escaped})(?=\\S)`, "g"), "$1\n");
+  }
+  return out.replace(/\n{3,}/g, "\n\n").trim();
+}
+
+/**
+ * Remap titres flous / P3-P4 vers titres P5 exacts.
+ * @param {string} text
+ * @returns {{ text: string, remapped: boolean }}
+ */
+export function canonicalizeFactualResearchHeadings(text = "") {
+  const raw = String(text || "").trim();
+  if (!raw) return { text: raw, remapped: false };
+
+  const lines = raw.split(/\n/);
+  let remapped = false;
+  const out = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (/^\*\*sources\*\*$/i.test(trimmed)) {
+      remapped = true;
+      out.push("## Sources");
+      continue;
+    }
+    if (!/^#{1,3}\s+/.test(trimmed)) {
+      out.push(line);
+      continue;
+    }
+
+    let matched = false;
+    for (const row of SECTION_CHECKS) {
+      if (!row.re.test(trimmed)) continue;
+      matched = true;
+      if (trimmed !== row.exact) remapped = true;
+      out.push(row.exact);
+      // Corps collé sur la même ligne que le heading flou
+      const afterHash = trimmed.replace(/^#{1,3}\s+/, "");
+      const exactBare = row.exact.replace(/^##\s+/, "");
+      const bareRe = new RegExp(
+        `^${exactBare.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`,
+        "i",
+      );
+      const fuzzyBare = afterHash.replace(bareRe, "").replace(
+        /^(r[eé]sum[eé](?:\s+ex[eé]cuti[fv]e?)?|analyse\s+(?:du\s+|de\s+)?march[eé]|analyse\s+concurrentielle|opportunit[eé]s(?:\s+de\s+croissance)?|sources)\s*/i,
+        "",
+      );
+      if (fuzzyBare.trim()) {
+        remapped = true;
+        out.push(fuzzyBare.trim());
+      }
+      break;
+    }
+    if (!matched) out.push(line);
+  }
+
+  const joined = ensureCanonicalHeadingLineBreaks(
+    out.join("\n").replace(/\n{3,}/g, "\n\n").trim(),
+  );
+  return { text: joined, remapped };
+}
+
+/**
+ * Injecte l'aveu métriques dans le Résumé Exécutif si absent.
+ * @param {string} text
+ * @returns {{ text: string, injected: boolean }}
+ */
+export function injectMetricsAdmissionParagraph(text = "") {
+  const raw = String(text || "").trim();
+  if (!raw) return { text: raw, injected: false };
+  if (raw.includes(FACTUAL_RESEARCH_METRICS_ADMISSION)) {
+    return { text: raw, injected: false };
+  }
+
+  const canon = canonicalizeFactualResearchHeadings(raw).text;
+  const marker = "## Résumé Exécutif";
+  const idx = canon.indexOf(marker);
+  if (idx < 0) {
+    return {
+      text: `${marker}\n${FACTUAL_RESEARCH_METRICS_ADMISSION}\n\n${canon}`.trim(),
+      injected: true,
+    };
+  }
+
+  const afterHeading = idx + marker.length;
+  const rest = canon.slice(afterHeading);
+  const nextHeading = rest.search(/\n##\s/);
+  const body = nextHeading >= 0 ? rest.slice(0, nextHeading) : rest;
+  const tail = nextHeading >= 0 ? rest.slice(nextHeading) : "";
+  const newBody = `${body.trim()}\n\n${FACTUAL_RESEARCH_METRICS_ADMISSION}\n`;
+  return {
+    text: `${canon.slice(0, afterHeading)}${newBody}${tail}`.replace(/\n{3,}/g, "\n\n").trim(),
+    injected: true,
+  };
 }
 
 /**
@@ -195,13 +340,26 @@ export function stripUnanchoredFigures(text = "") {
     kept.push(s);
   }
 
-  // Rejoindre en préservant un peu la structure (paragraphes)
-  let rebuilt = kept.join(" ").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n");
-  // Remettre les headings sur leur ligne si collés
-  rebuilt = rebuilt
-    .replace(/\s+(#{1,3}\s+)/g, "\n\n$1")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
+  // Rejoindre en préservant headings sur leur propre ligne
+  const chunks = [];
+  for (const sentence of kept) {
+    const s = String(sentence || "").trim();
+    if (!s) continue;
+    if (/^#{1,3}\s+/.test(s) || /^\*\*/.test(s)) {
+      chunks.push({ type: "h", s });
+    } else {
+      chunks.push({ type: "p", s });
+    }
+  }
+  let rebuilt = "";
+  for (const c of chunks) {
+    if (c.type === "h") {
+      rebuilt += `${rebuilt ? "\n\n" : ""}${c.s}`;
+    } else {
+      rebuilt += rebuilt && !rebuilt.endsWith("\n") ? ` ${c.s}` : c.s;
+    }
+  }
+  rebuilt = ensureCanonicalHeadingLineBreaks(rebuilt);
 
   const out = sourcesTail ? `${rebuilt}\n\n${sourcesTail.trim()}` : rebuilt;
   return { text: out, removed };
@@ -315,16 +473,29 @@ export function validateFactualResearchReply(
     issues.push("below_min_sources");
   }
 
+  if (!hasExactCanonicalHeadings(sanitized)) {
+    issues.push("non_canonical_headings");
+    const canon = canonicalizeFactualResearchHeadings(sanitized);
+    sanitized = canon.text;
+  }
+
   const dedup = dedupeFactualResearchSections(sanitized);
   if (dedup.deduped) {
     issues.push("duplicate_sections");
     sanitized = dedup.text;
   }
 
+  // Re-canon après dedup (headings peuvent être réécrits)
+  {
+    const canon = canonicalizeFactualResearchHeadings(sanitized);
+    if (canon.remapped) sanitized = canon.text;
+  }
+
   const unanchored = stripUnanchoredFigures(sanitized);
   if (unanchored.removed > 0) {
     issues.push("unanchored_figure");
     sanitized = unanchored.text;
+    sanitized = canonicalizeFactualResearchHeadings(sanitized).text;
   }
 
   const afterSections = detectFactualResearchSections(sanitized);
@@ -347,6 +518,7 @@ export function validateFactualResearchReply(
 
   if (issues.includes("missing_citations") || afterSections.missing.includes("sources")) {
     sanitized = ensureExplicitWebSourceLinks(sanitized, packet, { force: true });
+    sanitized = canonicalizeFactualResearchHeadings(sanitized).text;
   }
 
   if (
@@ -356,15 +528,77 @@ export function validateFactualResearchReply(
     issues.push("structure_collapsed");
     sanitized = buildWebEvidenceGroundedFallback(packet, q);
     sanitized = ensureExplicitWebSourceLinks(sanitized, packet, { force: true });
+    sanitized = canonicalizeFactualResearchHeadings(sanitized).text;
   }
 
   const lengthCap = softCapFactualResearchLength(sanitized);
   if (lengthCap.truncated) {
     issues.push("over_length");
     sanitized = lengthCap.text;
+    sanitized = canonicalizeFactualResearchHeadings(sanitized).text;
+  }
+
+  const evidenceSources = [
+    ...sources.map((s) => ({
+      url: s.url,
+      title: s.title,
+      snippet: s.snippet || s.excerpt,
+    })),
+    ...(packet.evidence || []).map((e) => ({
+      url: e.source,
+      snippet: e.excerpt,
+      title: "",
+    })),
+  ];
+  const evidenceHadFigures =
+    packet?.meta?.factual_research_evidence_has_figures === true ||
+    evidenceHasKeyFigures(evidenceSources);
+  const hardSector =
+    packet?.meta?.factual_research_hard_sector === true ||
+    sourcesHaveHardSector(evidenceSources);
+  const replyFigures = replyHasKeyFigures(sanitized);
+
+  if (evidenceHadFigures && !replyFigures) {
+    issues.push("missing_key_figures");
+  } else if (!evidenceHadFigures && !replyFigures && !hardSector) {
+    issues.push("missing_key_figures");
+    const admission = injectMetricsAdmissionParagraph(sanitized);
+    if (admission.injected) {
+      issues.push("metrics_admission_injected");
+      sanitized = admission.text;
+    }
+  } else if (
+    !evidenceHadFigures &&
+    !replyFigures &&
+    packet?.meta?.factual_research_needs_metrics_admission
+  ) {
+    const admission = injectMetricsAdmissionParagraph(sanitized);
+    if (admission.injected) {
+      issues.push("metrics_admission_injected");
+      sanitized = admission.text;
+    }
+  }
+
+  sanitized = ensureCanonicalHeadingLineBreaks(
+    canonicalizeFactualResearchHeadings(sanitized).text,
+  );
+
+  // P7 — soft structure (n'invalide pas seul)
+  if (!/\|\s*Acteur|\|[^\n]*\|[^\n]*\|/i.test(sanitized)) {
+    issues.push("missing_competitive_table");
+  }
+  if (!/(?:^|\n)\s*1\.\s+/.test(sanitized) || !/(?:^|\n)\s*2\.\s+/.test(sanitized)) {
+    issues.push("missing_opportunity_ranking");
   }
 
   const finalSections = detectFactualResearchSections(sanitized);
+  const exactHeadings = hasExactCanonicalHeadings(sanitized);
+  if (!exactHeadings) {
+    if (!issues.includes("non_canonical_headings")) {
+      issues.push("non_canonical_headings");
+    }
+  }
+
   const hasCitations = detectsFactualResearchCitations(sanitized);
   const stillBridged =
     BRIDGED_DISCLAIMER_RE.test(sanitized) && sourceCount > 0;
@@ -372,7 +606,8 @@ export function validateFactualResearchReply(
   const valid =
     sourceCount >= FACTUAL_RESEARCH_MIN_SOURCES &&
     hasCitations &&
-    finalSections.missing.length <= 1 &&
+    exactHeadings &&
+    finalSections.missing.length === 0 &&
     !stillBridged &&
     wordCount <= FACTUAL_RESEARCH_SOFT_MAX_WORDS + 50;
 

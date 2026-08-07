@@ -51,6 +51,10 @@ import { resolveWorkspaceReadablePath } from "../policies/analysis/index.js";
 import {
   deriveFactualResearchWebQuery,
   deriveFactualResearchWebQueryEn,
+  deriveFactualResearchMetricsWebQuery,
+  deriveFactualResearchSectorSitesWebQuery,
+  deriveFactualResearchMarketSizeEnWebQuery,
+  deriveFactualResearchOpenAccessWebQuery,
   isExplicitWebSearchRequest,
   isWebCitationsStructuredReportCluster,
 } from "../policies/routing/explicitWebSearchRequestPolicy.js";
@@ -59,6 +63,13 @@ import {
   isFactualResearchSourcedReportPath,
   shouldRefuseFactualResearchWithoutSources,
 } from "../policies/web/factualResearchDeliverablePolicy.js";
+import {
+  evidenceHasKeyFigures,
+  mergeAndRankFactualResearchSources,
+  sourcesAreMajorityLight,
+  sourcesAreMajorityPaywall,
+  sourcesHaveHardSector,
+} from "../policies/web/factualResearchSourceRankPolicy.js";
 import {
   runOrchestratorMakersCheckerValidation,
 } from "../verification/makersCheckerBridge.js";
@@ -655,6 +666,9 @@ export class SovereignOrchestrator {
               );
             }
             const webLimits = resolveGuidedProductWebSearchLimits(intentContract);
+            const factualPath = isFactualResearchSourcedReportPath(query, {
+              meta: { intent_contract_id: intentContract.id },
+            });
             const runWebSearch = (searchQuery) =>
               expertWebSearch.run(
                 { query: searchQuery },
@@ -662,6 +676,7 @@ export class SovereignOrchestrator {
                   sessionId,
                   maxResults: webLimits.maxResults,
                   timeoutMs: webLimits.timeoutMs,
+                  factualResearchRank: factualPath,
                 },
               );
 
@@ -700,18 +715,13 @@ export class SovereignOrchestrator {
               }
             }
 
-            const hasSources =
+            let hasSources =
               validatedPacket &&
               validatedPacket.sources &&
               validatedPacket.sources.length > 0;
 
             // P2 — FACTUAL_RESEARCH / cluster : 2e chance query EN avant refus
-            if (
-              !hasSources &&
-              isFactualResearchSourcedReportPath(query, {
-                meta: { intent_contract_id: intentContract.id },
-              })
-            ) {
+            if (!hasSources && factualPath) {
               const enQuery = deriveFactualResearchWebQueryEn(query);
               if (
                 enQuery &&
@@ -728,8 +738,139 @@ export class SovereignOrchestrator {
                 validatedPacket = webPacket;
                 packet.meta.factual_research_en_retry = true;
                 packet.meta.factual_research_en_query = enQuery;
+                hasSources =
+                  validatedPacket &&
+                  validatedPacket.sources &&
+                  validatedPacket.sources.length > 0;
               }
             }
+
+            const applyMergedSources = async (searchQuery, nextSources) => {
+              const merged = mergeAndRankFactualResearchSources(
+                validatedPacket.sources || [],
+                nextSources || [],
+                { maxResults: webLimits.maxResults },
+              );
+              if (merged.sources.length === 0) return;
+              const { buildRawSummary, computeOverallConfidence } =
+                await import("../normalizers/webEvidenceNormalizer.js");
+              validatedPacket = {
+                ...validatedPacket,
+                sources: merged.sources,
+                summary: buildRawSummary(searchQuery, merged.sources),
+                content: buildRawSummary(searchQuery, merged.sources),
+                confidence: computeOverallConfidence(merged.sources),
+              };
+              hasSources = true;
+            };
+
+            // P4 — preuves sans chiffres clés → retry query métriques (1 fois)
+            if (
+              factualPath &&
+              hasSources &&
+              !evidenceHasKeyFigures(validatedPacket.sources) &&
+              !packet.meta.factual_research_metrics_retry
+            ) {
+              const metricsQuery = deriveFactualResearchMetricsWebQuery(query, {
+                lang: "fr",
+              });
+              if (
+                metricsQuery &&
+                metricsQuery.toLowerCase() !==
+                  String(effectiveWebSearchQuery || "").toLowerCase()
+              ) {
+                console.log(
+                  `[SovereignOrchestrator] Web query metrics retry: "${metricsQuery}"`,
+                );
+                if (onStep) {
+                  onStep(`🔁 Retry recherche métriques : ${metricsQuery}`);
+                }
+                const metricsPacket = await runWebSearch(metricsQuery);
+                packet.meta.factual_research_metrics_retry = true;
+                packet.meta.factual_research_metrics_query = metricsQuery;
+                await applyMergedSources(
+                  metricsQuery,
+                  metricsPacket?.sources || [],
+                );
+              }
+            }
+
+            // P5 — majorité blogs légers → retry sites sectoriels (+ PDF)
+            if (
+              factualPath &&
+              hasSources &&
+              sourcesAreMajorityLight(validatedPacket.sources) &&
+              !packet.meta.factual_research_sector_sites_retry
+            ) {
+              const sectorQuery = deriveFactualResearchSectorSitesWebQuery();
+              console.log(
+                `[SovereignOrchestrator] Web query sector sites retry: "${sectorQuery}"`,
+              );
+              if (onStep) {
+                onStep(`🔁 Retry sources sectorielles : ${sectorQuery}`);
+              }
+              const sectorPacket = await runWebSearch(sectorQuery);
+              packet.meta.factual_research_sector_sites_retry = true;
+              packet.meta.factual_research_sector_sites_query = sectorQuery;
+              await applyMergedSources(
+                sectorQuery,
+                sectorPacket?.sources || [],
+              );
+            }
+
+            // P7 — majorité paywalls → retry open-access / PDF
+            if (
+              factualPath &&
+              hasSources &&
+              sourcesAreMajorityPaywall(validatedPacket.sources) &&
+              !packet.meta.factual_research_open_access_retry
+            ) {
+              const openQuery = deriveFactualResearchOpenAccessWebQuery();
+              console.log(
+                `[SovereignOrchestrator] Web query open-access retry: "${openQuery}"`,
+              );
+              if (onStep) {
+                onStep(`🔁 Retry sources open-access : ${openQuery}`);
+              }
+              const openPacket = await runWebSearch(openQuery);
+              packet.meta.factual_research_open_access_retry = true;
+              packet.meta.factual_research_open_access_query = openQuery;
+              await applyMergedSources(openQuery, openPacket?.sources || []);
+            }
+
+            // P5 — 0 chiffre + 0 hard sector → retry market size EN
+            if (
+              factualPath &&
+              hasSources &&
+              !evidenceHasKeyFigures(validatedPacket.sources) &&
+              !sourcesHaveHardSector(validatedPacket.sources) &&
+              !packet.meta.factual_research_market_size_retry
+            ) {
+              const marketQuery = deriveFactualResearchMarketSizeEnWebQuery();
+              console.log(
+                `[SovereignOrchestrator] Web query market size EN retry: "${marketQuery}"`,
+              );
+              if (onStep) {
+                onStep(`🔁 Retry market size EN : ${marketQuery}`);
+              }
+              const marketPacket = await runWebSearch(marketQuery);
+              packet.meta.factual_research_market_size_retry = true;
+              packet.meta.factual_research_market_size_query = marketQuery;
+              await applyMergedSources(
+                marketQuery,
+                marketPacket?.sources || [],
+              );
+            }
+
+            packet.meta.factual_research_evidence_has_figures = evidenceHasKeyFigures(
+              validatedPacket?.sources || [],
+            );
+            packet.meta.factual_research_hard_sector = sourcesHaveHardSector(
+              validatedPacket?.sources || [],
+            );
+            packet.meta.factual_research_needs_metrics_admission =
+              !packet.meta.factual_research_evidence_has_figures &&
+              !packet.meta.factual_research_hard_sector;
 
             if (
               validatedPacket &&
@@ -769,6 +910,7 @@ export class SovereignOrchestrator {
                 packet.evidence.push({
                   source: s.url,
                   excerpt: s.snippet,
+                  title: s.title || "",
                   relevance: s.confidence,
                 });
               }

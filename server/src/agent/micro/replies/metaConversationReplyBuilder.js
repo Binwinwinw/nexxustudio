@@ -4,6 +4,7 @@
 import {
   classifyMetaConversationIntent,
   extractRecentThreadTopicHint,
+  threadHasReliableInvestorFactualContext,
 } from "../../utils/metaConversationIntentGuards.js";
 import { buildTemporalAwarenessReply } from "../../memory/sessionWorkMemory.js";
 import {
@@ -18,6 +19,22 @@ const CAPABILITY_LEARN_REPLY = `Sur mes fonctionnalités actuelles, voici l'esse
 const CAPABILITY_GAPS_REPLY = `Tu demandes surtout ce qui n'est pas encore là — pas un simple inventaire. Aujourd'hui en P0 : chat gouverné, Document Analysis, micro-routage (familiarité, méta, architecture). En P1 ou en cours : Knowledge Hub navigable, promotion connaissance, batch multi-doc, RAG auto. Je ne promets pas une capacité tant qu'elle n'est pas branchée en runtime : indique la fonction visée et je te dis honnêtement où on en est.`;
 
 const HELP_SCOPE_REPLY = `Je peux t'aider sur quatre axes : conversation et cadrage, analyse documentaire locale, exploration technique (code, architecture, Vault), et orchestration vers la Forge quand un livrable code est visé. Quel est ton prochain pas ?`;
+
+/** Catalogue Série A — uniquement si contexte FACTUAL+investisseur fiable (P6). */
+const DELIVERABLE_TYPES_SERIES_A_REPLY = `Je peux te fournir plusieurs types de livrables à partir de cette recherche :
+
+- rapport professionnel 3-5 pages avec citations ;
+- synthèse exécutive 1 page ;
+- plan de pitch deck Série A slide par slide ;
+- benchmark concurrentiel en tableau ;
+- note d'opportunités de croissance ;
+- FAQ investisseurs (marché, différenciation, go-to-market).
+
+Pour ton dossier Série A, les 3 plus utiles seraient : rapport 5 pages, executive summary 1 page, trame de pitch deck.`;
+
+/** Clarification — aucun contexte métier inventé (P6). */
+export const DELIVERABLE_TYPES_CLARIFY_REPLY =
+  "Tu veux parler de quel type de livrable : rapport, code, design, présentation ou autre ?";
 
 const ASSISTANT_TRUST_CORE =
   "Je suis NEXXUS, assistant de La Citadelle : j'orchestre le fil et route vers le bon rail (cadrage, documents, technique local-first). Mon texte vient d'un modèle de langage, pas d'une expérience vécue. Je vise des conseils utiles et ancrés, sans être infaillible ; ta question n'exige pas un objectif projet — on peut papoter ou passer à un cas concret.";
@@ -84,6 +101,10 @@ function buildDeterministicMetaReply(kind, query, options = {}) {
       return /\b(?:saas|bout en bout|projet)\b/i.test(String(query || ""))
         ? END_TO_END_PROJECT_REPLY
         : HELP_SCOPE_REPLY;
+    case "deliverable_types":
+      return threadHasReliableInvestorFactualContext(options.history || [])
+        ? DELIVERABLE_TYPES_SERIES_A_REPLY
+        : DELIVERABLE_TYPES_CLARIFY_REPLY;
     case "self_analysis":
       return SELF_ANALYSIS_REPLY;
     case "temporal_awareness":
