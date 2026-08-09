@@ -782,6 +782,16 @@ const STRUCTURED_FORMAT_SCHEMA_RE =
 const STRUCTURED_EXPLAIN_SHELL_RE =
   /\b(?:explique|expliquer|explication|detaille|detailler|en detail|en détail|representation|représentation|presente|présente|montre|fait une|fais une|sous forme de)\b/i;
 
+/** « tableau de bord » / dashboard → livrable UI, pas tableau pédagogique sciences. */
+const PEDAGOGICAL_TABLE_FALSE_POSITIVE_RE =
+  /\b(?:tableau(?:x)?\s+de\s+bord|dashboards?)\b/i;
+
+/** Construction tableur / Excel → hors rail lexicon sciences. */
+const SPREADSHEET_CONSTRUCT_RE =
+  /\b(?:excel|xlsx|spreadsheet|classeurs?|google\s*sheets?|microsoft\s+365)\b/i;
+const SPREADSHEET_CREATE_INTENT_RE =
+  /\b(?:cr[eé]e|creer|cr[eé]er|construis|construire|d[eé]veloppe|d[eé]velopper|je\s+veux|aide[- ]moi|fais[- ]moi|faire)\b/i;
+
 /**
  * Explication sciences + format de sortie (tableau / schéma) — même sans historique.
  * Dimension `outputFormat` : empêche technical_overview / tableur DATA.
@@ -791,7 +801,16 @@ const STRUCTURED_EXPLAIN_SHELL_RE =
 export function isPedagogicalStructuredExplainRequest(query = "") {
   const q = normalizeFamiliarityQuery(query);
   if (!q || q.length < 18) return false;
-  const wantsTable = STRUCTURED_FORMAT_TABLE_RE.test(q);
+
+  // Excel / tableau de bord + intention de création → pas d'éducation structurée sciences.
+  if (PEDAGOGICAL_TABLE_FALSE_POSITIVE_RE.test(q)) return false;
+  if (SPREADSHEET_CONSTRUCT_RE.test(q) && SPREADSHEET_CREATE_INTENT_RE.test(q)) {
+    return false;
+  }
+
+  const wantsTable =
+    STRUCTURED_FORMAT_TABLE_RE.test(q) &&
+    !PEDAGOGICAL_TABLE_FALSE_POSITIVE_RE.test(q);
   const wantsSchema = STRUCTURED_FORMAT_SCHEMA_RE.test(q);
   if (!wantsTable && !wantsSchema) return false;
 

@@ -204,6 +204,21 @@ describe("lexicon_explain_light — guards", () => {
     assert.notEqual(hit?.reply, shortSchema);
   });
 
+  it("Excel tableau de bord + liste 1-/2- → PAS rail pédagogique sciences", async () => {
+    const q =
+      'aide moi à propos de ce projet : sur excel, je veux créer "un tableau de bord" qui va afficher des calendriers (jours - semaines - années) permettant : 1 - de noter des rendez-vous dans un calendrier avec code couleurs (vert - bleu - rouge) accessible en cliquant sur le bouton "Rendez-vous" 2 - de noter des congés dans un calendrier avec un autre système coloré accessible en cliquant sur le bouton congés (datedebut-datefin)';
+    assert.equal(isPedagogicalStructuredExplainRequest(q), false);
+    const hit = await runConversationShortCircuit(q);
+    assert.ok(
+      !String(hit?.path || "").startsWith("lexicon_science_format_table"),
+      `ne doit pas router lexicon sciences: ${hit?.path}`,
+    );
+    assert.doesNotMatch(
+      String(hit?.reply || ""),
+      /Dis-moi ce que tu veux creuser/i,
+    );
+  });
+
   it("solo — expliquer … tableau → structured edu, pas technical_overview", async () => {
     const { isTechnicalOverviewRequest } = await import(
       "../src/agent/utils/technicalOverviewIntentGuards.js"
