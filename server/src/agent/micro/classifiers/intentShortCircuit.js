@@ -238,6 +238,7 @@ import { isSubjectReferenceAvailabilityRequest } from "../../micro/continuity/se
 import {
   resolveCurrentWebFactShortCircuit,
   resolveExternalCalendarLookupShortCircuit,
+  resolveWebCapabilityTruthShortCircuit,
 } from "../../policies/web/index.js";
 import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/externalCalendarLookupIntentGuards.js";
 import { isUiNavigationRestructureFeedback } from "../../utils/uiNavigationFeedbackGuards.js";
@@ -671,6 +672,41 @@ export async function runConversationShortCircuit(query, options = {}) {
       step: webHelpEarly.step || "🔍 Recherche web — pipeline...",
       enforce: { allowRefusal: false },
       explicitWebSearchHelp: true,
+    });
+  }
+
+  // Challenge « tu devrais pouvoir naviguer » — avant meta_feedback / G46.
+  const webCapabilityTruth = resolveWebCapabilityTruthShortCircuit(query, {
+    history,
+  });
+  if (webCapabilityTruth?.preferWebResearch && webCapabilityTruth.deferToFullPipeline) {
+    return emit({
+      path: webCapabilityTruth.path,
+      mode: RESPONSE_MODES.DOCUMENT,
+      reply: null,
+      deferToLlm: true,
+      deferToFullPipeline: true,
+      preferWebResearch: true,
+      simpleFactual: true,
+      currentWebFact: Boolean(webCapabilityTruth.currentWebFact),
+      weatherCurrent: Boolean(webCapabilityTruth.weatherCurrent),
+      currentWebFactWebQuery: webCapabilityTruth.currentWebFactWebQuery,
+      weatherWebQuery: webCapabilityTruth.weatherWebQuery,
+      weatherLocationSource: webCapabilityTruth.weatherLocationSource || null,
+      webCapabilityTruth: true,
+      step: webCapabilityTruth.step,
+      enforce: { allowRefusal: false },
+    });
+  }
+  if (webCapabilityTruth?.reply) {
+    return emit({
+      path: webCapabilityTruth.path,
+      mode: RESPONSE_MODES.SIMPLE_FAST,
+      reply: webCapabilityTruth.reply,
+      preferWebResearch: Boolean(webCapabilityTruth.preferWebResearch),
+      webCapabilityTruth: true,
+      step: webCapabilityTruth.step,
+      enforce: { allowRefusal: false },
     });
   }
 

@@ -14,7 +14,9 @@ export const CONVERSATION_TURN_TYPES = {
 const META_FEEDBACK_MARKERS = [
   /\battention\b/i,
   /\bil\s+(parle|parlait|traite|traitait|ne\s+ma[iî]trise)\b/i,
-  /\btu\s+(parles|parlais|ne\s+ma[iî]trise|devrais)\b/i,
+  /\btu\s+(parles|parlais|ne\s+ma[iî]trise)\b/i,
+  // « tu devrais » seul = trop large (capacité web / naviguer). Garder feedback comportement.
+  /\btu\s+devrais\b.{0,80}\b(?:r[eé]pondre|dire|parler|traiter|ma[iî]triser)\b/i,
   /\b(l['']?assistant|l\s+agent)\b/i,
   /\b(la\s+|ta\s+|votre\s+|cette\s+)?r[eé]ponse\s+(était|est|parle|parlait|dérive|derive|incorrecte|hors\s+sujet|un\s+[eé]chec)\b/i,
   /\b(?:ta|votre|cette)\s+r[eé]ponse\b.{0,40}\b(?:[eé]chec|incorrecte?|pas\s+correcte?|mauvaise)\b/i,

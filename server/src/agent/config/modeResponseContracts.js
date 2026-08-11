@@ -21,6 +21,7 @@ import {
 } from "../micro/replies/knowledgeFreshnessComposerContract.js";
 import { getDocumentWebComparePromptAddon } from "../policies/document/index.js";
 import { sanitizeUnverifiedToolExecutionClaims } from "../utils/toolExecutionClaimGuard.js";
+import { sanitizeFalseWebCapabilityDenial } from "../policies/web/webCapabilityTruthPolicy.js";
 import { evaluateRefusalSufficiency } from "../micro/parsing/refusalSufficiencyEvaluator.js";
 import { isExploitableProcedureIntent } from "../utils/procedureIntentGuards.js";
 import { sanitizeUnverifiedSkillExecutionClaims } from "../utils/skillExecutionClaimGuard.js";
@@ -723,6 +724,7 @@ export function enforceModeContract(mode, rawText, options = {}) {
 
   cleaned = sanitizeUnverifiedSkillExecutionClaims(cleaned);
   cleaned = sanitizeUnverifiedToolExecutionClaims(cleaned);
+  cleaned = sanitizeFalseWebCapabilityDenial(cleaned);
 
   // R1 / allowRefusal=false : jamais laisser passer le refus « piste »
   if (blockPisteRefusal && isInsufficientSignalRefusal(cleaned)) {
