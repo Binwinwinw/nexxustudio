@@ -208,8 +208,10 @@ function tryEmitExternalCalendarLookupShortCircuit(effectiveQuery, emit) {
   });
 }
 
-function tryEmitCurrentWebFactShortCircuit(effectiveQuery, emit) {
-  const currentWebFactHit = resolveCurrentWebFactShortCircuit(effectiveQuery);
+function tryEmitCurrentWebFactShortCircuit(effectiveQuery, emit, history = []) {
+  const currentWebFactHit = resolveCurrentWebFactShortCircuit(effectiveQuery, {
+    history,
+  });
   if (!currentWebFactHit) return null;
   return emit({
     path: currentWebFactHit.path,
@@ -227,6 +229,7 @@ function tryEmitCurrentWebFactShortCircuit(effectiveQuery, emit) {
     weatherWebQuery:
       currentWebFactHit.weatherWebQuery || currentWebFactHit.currentWebFactWebQuery,
     trafficWebQuery: currentWebFactHit.trafficWebQuery,
+    weatherLocationSource: currentWebFactHit.task?.locationSource || null,
     step: currentWebFactHit.step,
     enforce: { allowRefusal: false },
   });
@@ -572,6 +575,7 @@ export async function runConversationShortCircuit(query, options = {}) {
   const currentWebFactEarly = tryEmitCurrentWebFactShortCircuit(
     effectiveQuery,
     emit,
+    history,
   );
   if (currentWebFactEarly) return currentWebFactEarly;
 
@@ -2224,7 +2228,9 @@ export async function runConversationShortCircuit(query, options = {}) {
     });
   }
 
-  const currentWebFactHit = resolveCurrentWebFactShortCircuit(effectiveQuery);
+  const currentWebFactHit = resolveCurrentWebFactShortCircuit(effectiveQuery, {
+    history,
+  });
   if (currentWebFactHit) {
     return emit({
       path: currentWebFactHit.path,
@@ -2242,6 +2248,7 @@ export async function runConversationShortCircuit(query, options = {}) {
       weatherWebQuery:
         currentWebFactHit.weatherWebQuery || currentWebFactHit.currentWebFactWebQuery,
       trafficWebQuery: currentWebFactHit.trafficWebQuery,
+      weatherLocationSource: currentWebFactHit.task?.locationSource || null,
       step: currentWebFactHit.step,
       enforce: { allowRefusal: false },
     });

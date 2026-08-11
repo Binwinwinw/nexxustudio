@@ -1,12 +1,16 @@
 /**
  * Plan de réponse multi-segments : préambule signal + suite sur but primaire.
  */
-import { resolveQueryGoals } from "./goalRoleResolver.js";
 import {
   buildParseState,
   evaluateAutoReplySufficiency,
   SUFFICIENCY_TIER,
 } from "./responseSufficiencyEvaluator.js";
+import {
+  frameSuppressesTimeLookup,
+  isWeatherFamilyIntent,
+  parseCompositeQueryFrame,
+} from "./compositeQueryFrameParser.js";
 
 function formatCurrentDateFr() {
   return new Intl.DateTimeFormat("fr-FR", {
@@ -40,6 +44,15 @@ export function buildSignalPreamble(segmentType, segmentText = "") {
     return buildIdentitySignal();
   }
 
+  // temporal_modifier = contrainte, jamais préambule horloge.
+  if (segmentType === "temporal_modifier") {
+    return null;
+  }
+
+  if (isWeatherFamilyIntent(segmentType)) {
+    return null;
+  }
+
   const wantsTime = /\b(heure|time)\b/.test(t);
   const wantsDate =
     segmentType === "time_lookup" && (/\b(date|jour)\b/.test(t) || !wantsTime);
@@ -71,6 +84,8 @@ export function buildResidualFollowUpOpening(primaryGoal, primaryText = "") {
       return "Pour te recommander quelque chose de pertinent, j'ai besoin de cadrer l'usage et le budget — on peut affiner à partir de là.";
     case "how_to":
       return "Voici comment je peux t'accompagner sur la suite, étape par étape.";
+    case "weather_current":
+      return "Je m'appuie sur la recherche météo pour le lieu demandé.";
     default:
       return "Je poursuis sur le cœur de ta demande.";
   }
@@ -81,16 +96,47 @@ export function buildResidualFollowUpOpening(primaryGoal, primaryText = "") {
  */
 export function resolveMultiSegmentPlan(rawQuery = "") {
   const parseState = buildParseState(rawQuery);
-  const { primarySegment, supportSegments, isMultiIntent, primaryGoal } =
+  const frame = parseCompositeQueryFrame(rawQuery);
+  const suppressTime = frameSuppressesTimeLookup(frame);
+
+  let { primarySegment, supportSegments, isMultiIntent, primaryGoal } =
     parseState;
+
+  // Contrat : weather + temporal => weather wins, pas de time_lookup primary.
+  if (suppressTime && isWeatherFamilyIntent(frame.primaryIntent)) {
+    primaryGoal = frame.primaryIntent;
+    primarySegment = {
+      type: frame.primaryIntent,
+      text: parseState.parsed?.normalized || rawQuery,
+      role: "primary_goal",
+    };
+    supportSegments = (supportSegments || []).filter(
+      (s) => s.type !== "time_lookup",
+    );
+    if (
+      frame.secondarySignals.some((s) => s.type === "temporal_modifier") &&
+      !supportSegments.some((s) => s.type === "temporal_modifier")
+    ) {
+      supportSegments = [
+        ...supportSegments,
+        {
+          type: "temporal_modifier",
+          text: parseState.parsed?.normalized || rawQuery,
+          role: "support_context",
+        },
+      ];
+    }
+    isMultiIntent = supportSegments.length > 0;
+  }
 
   const identitySegment =
     supportSegments.find((s) => s.type === "identity_lookup") ||
     (primaryGoal === "identity_lookup" ? primarySegment : null);
 
-  const timeSegment =
-    supportSegments.find((s) => s.type === "time_lookup") ||
-    (primaryGoal === "time_lookup" ? primarySegment : null);
+  const timeSegment = suppressTime
+    ? null
+    : supportSegments.find((s) => s.type === "time_lookup") ||
+      (primaryGoal === "time_lookup" ? primarySegment : null);
 
   const signalReplies = [
     identitySegment
@@ -101,7 +147,12 @@ export function resolveMultiSegmentPlan(rawQuery = "") {
       : null,
   ].filter(Boolean);
 
-  const preamble = signalReplies.length ? signalReplies.join(" ") : null;
+  const preamble =
+    isWeatherFamilyIntent(primaryGoal) || suppressTime
+      ? null
+      : signalReplies.length
+        ? signalReplies.join(" ")
+        : null;
 
   const detectedSignal = identitySegment
     ? "identity_lookup"
@@ -112,7 +163,13 @@ export function resolveMultiSegmentPlan(rawQuery = "") {
   const sufficiency = evaluateAutoReplySufficiency({
     query: rawQuery,
     detectedSignal,
-    parseState,
+    parseState: {
+      ...parseState,
+      primaryGoal,
+      primarySegment,
+      supportSegments,
+      isMultiIntent,
+    },
     candidateReply: preamble,
   });
 
@@ -124,7 +181,9 @@ export function resolveMultiSegmentPlan(rawQuery = "") {
   const hasResidualPrimaryGoal =
     isMultiIntent &&
     primaryGoal &&
-    !["time_lookup", "identity_lookup"].includes(primaryGoal);
+    !["time_lookup", "identity_lookup", "temporal_modifier"].includes(
+      primaryGoal,
+    );
 
   const shouldDeferToPipeline =
     !sufficiency.sufficient &&
@@ -137,12 +196,18 @@ export function resolveMultiSegmentPlan(rawQuery = "") {
 
   return {
     ...parseState,
+    primaryGoal,
+    primarySegment,
+    supportSegments,
+    isMultiIntent,
     preamble,
     followUpOpening,
     signalOnly,
     hasResidualPrimaryGoal,
     shouldDeferToPipeline,
     sufficiency,
+    frame,
+    precedence: frame.routing,
     responsePlan: signalOnly
       ? ["answer_signal_only"]
       : preamble

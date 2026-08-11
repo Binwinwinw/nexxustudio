@@ -3,10 +3,11 @@
  */
 import { parseRequestSegments } from "./requestSegmentParser.js";
 
-const SUPPORT_TYPES = new Set(["time_lookup", "identity_lookup"]);
+const SUPPORT_TYPES = new Set(["time_lookup", "identity_lookup", "temporal_modifier"]);
 const PRIMARY_TYPES = new Set([
   "purchase_advice",
   "recommendation",
+  "weather_current",
   "identity_lookup",
   "how_to",
   "general",

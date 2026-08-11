@@ -1,9 +1,18 @@
 /**
  * weather_current_request — donnée météo actuelle (intent + slots + exclusions).
- * Patron transverse : web prioritaire, pas de déclenchement lexical sur narration/collé.
+ * Adapte le frame composite (primaryIntent + slots typés + precedence).
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
 import { hasDocumentSynthesisShell } from "../document/index.js";
+import {
+  extractLocalitySlot,
+  extractLocalitySlotFromHistory,
+  hasWeatherMetricSignal,
+  hasWeatherRequestShell,
+  isWeatherIntentActive,
+  normalizeCompositeQuery,
+  parseCompositeQueryFrame,
+  WEATHER_INTENTS,
+} from "../../micro/parsing/compositeQueryFrameParser.js";
 
 export const WEATHER_CURRENT_REQUEST_RULE = "weather_current_request_v1";
 
@@ -28,28 +37,17 @@ Quelle sale météo à la campagne on a eu, bien heureusement nous sommes rentr�
 export const WEATHER_CANONICAL_DOCUMENT_COMMENT_QUERY =
   "Dans ce texte, il parle de météo : peux-tu le commenter ?";
 
-const WEATHER_METRIC_RE =
-  /\b(?:temperature|températures?|temps|meteo|météo|degres|degrés|°c|°f|pluie|vent|ressenti|humidite|humidité|previsions|prévisions)\b/i;
-
-const WEATHER_REQUEST_SHELL_RE =
-  /\b(?:quelle est|quel est|quelle|combien|quel temps|quelle temperature|quelle température|tu as (?:la )?meteo|tu as (?:la )?météo|as[- ]tu (?:la )?meteo|as[- ]tu (?:la )?météo|donne[- ]?moi (?:la )?meteo|donne[- ]?moi (?:la )?météo|peux[- ]?tu (?:me )?donner (?:la )?meteo|peux[- ]?tu (?:me )?donner (?:la )?météo)\b/i;
-
 const NARRATIVE_WEATHER_RE =
   /\b(?:quelle sale|quel temps qu|on a eu|nous avons eu|nous sommes|j'ai eu|j ai eu|il a fait|elle a fait|quel temps il faisait|c'était|cetait|heureusement|malheureusement|dommage que|bien heureusement)\b/i;
 
 const DOCUMENT_TASK_RE =
   /\b(?:resume|resumer|synthese|commente|commenter|analyse ce passage|ce passage|ce texte|dans ce texte|dans le texte|le passage suivant|texte suivant|passage suivant|peux[- ]?tu le commenter|peux tu le commenter)\b/i;
 
-const LOCATION_EXTRACTION_PATTERNS = [
-  /\b(?:temperature|température|meteo|météo|temps|pluie|vent|ressenti)\s+(?:a|à|pour|de)\s+(?:la |le |les |l')?([a-z0-9][a-z0-9\s'-]{1,50}?)(?:\s*\?|\s*$|,)/,
-  /\b(?:a|à|pour|de)\s+(?:la |le |les |l')?([a-z0-9][a-z0-9\s'-]{1,50}?)(?:\s*\?|\s*$|,)/,
-];
-
 /**
  * @param {string} raw
  */
 function normalizeWeatherQuery(raw = "") {
-  return normalizeFamiliarityQuery(raw);
+  return normalizeCompositeQuery(raw);
 }
 
 /**
@@ -75,11 +73,10 @@ export function isQuotedOrPastedWeatherContext(query = "") {
  */
 export function isNarrativeOrExpressiveWeatherUtterance(query = "") {
   const q = normalizeWeatherQuery(query);
-  if (!WEATHER_METRIC_RE.test(q)) return false;
+  if (!hasWeatherMetricSignal(q)) return false;
   if (NARRATIVE_WEATHER_RE.test(q)) return true;
-  const hasRequestShell =
-    String(query || "").includes("?") || WEATHER_REQUEST_SHELL_RE.test(q);
-  if (!hasRequestShell && WEATHER_METRIC_RE.test(q)) return true;
+  const hasRequestShell = hasWeatherRequestShell(query);
+  if (!hasRequestShell && hasWeatherMetricSignal(q)) return true;
   return false;
 }
 
@@ -88,26 +85,18 @@ export function isNarrativeOrExpressiveWeatherUtterance(query = "") {
  * @returns {boolean}
  */
 export function isWeatherInfoRequest(query = "") {
-  const q = normalizeWeatherQuery(query);
-  if (!WEATHER_METRIC_RE.test(q)) return false;
-  const hasRequestShell =
-    String(query || "").includes("?") ||
-    WEATHER_REQUEST_SHELL_RE.test(q) ||
-    /\b(?:tu as|as tu|donne moi|peux tu)\b/.test(q);
-  return hasRequestShell;
+  if (!hasWeatherMetricSignal(query)) return false;
+  return hasWeatherRequestShell(query);
 }
 
 /**
- * @param {string} tail
+ * @param {string} content
  */
-function cleanWeatherLocation(tail = "") {
-  return String(tail || "")
-    .replace(
-      /\s+(?:actuellement|maintenant|aujourd hui|aujourd'hui|stp|svp)\b.*/i,
-      "",
-    )
-    .replace(/\?+$/g, "")
-    .trim();
+function isEligibleWeatherPrior(content = "") {
+  if (!content.trim()) return false;
+  if (isQuotedOrPastedWeatherContext(content)) return false;
+  if (isNarrativeOrExpressiveWeatherUtterance(content)) return false;
+  return isWeatherInfoRequest(content);
 }
 
 /**
@@ -115,86 +104,111 @@ function cleanWeatherLocation(tail = "") {
  * @returns {string|null}
  */
 export function extractWeatherLocation(query = "") {
-  const q = normalizeWeatherQuery(query);
-  if (!q) return null;
+  const slot = extractLocalitySlot(query);
+  return slot?.normalized || null;
+}
 
-  for (const pattern of LOCATION_EXTRACTION_PATTERNS) {
-    const match = q.match(pattern);
-    if (!match?.[1]) continue;
-    const raw = cleanWeatherLocation(match[1]);
-    if (raw.length >= 2 && !/^(ce|cet|cette|la|le|les|un|une)\b/.test(raw)) {
-      return raw;
-    }
-  }
-
-  return null;
+/**
+ * @param {Array<{ role?: string, content?: string }>} [history]
+ * @param {number} [window]
+ * @returns {string|null}
+ */
+export function extractLastWeatherLocationFromHistory(history = [], window = 8) {
+  const slot = extractLocalitySlotFromHistory(
+    history,
+    window,
+    isEligibleWeatherPrior,
+  );
+  return slot?.normalized || null;
 }
 
 /**
  * @param {string} query
+ * @param {{ history?: Array<{ role?: string, content?: string }> }} [options]
+ */
+export function parseWeatherQueryFrame(query = "", options = {}) {
+  if (!query || !String(query).trim()) return null;
+  if (isQuotedOrPastedWeatherContext(query)) return null;
+  if (isNarrativeOrExpressiveWeatherUtterance(query)) return null;
+
+  const frame = parseCompositeQueryFrame(query, {
+    history: options.history,
+    isEligibleWeatherPrior,
+  });
+
+  if (frame.domain !== "weather") return null;
+  if (!isWeatherIntentActive(frame.primaryIntent)) return null;
+  return frame;
+}
+
+/**
+ * @param {string} query
+ * @param {{ history?: Array<{ role?: string, content?: string }> }} [options]
  * @returns {{
  *   kind: string,
  *   location: string,
  *   locationLabel: string,
  *   metric: string,
+ *   locationSource: 'explicit'|'carryover',
+ *   locality: object,
+ *   secondarySignals: object[],
+ *   temporal: string|null,
+ *   frame: object,
  * }|null}
  */
-export function parseWeatherCurrentTask(query = "") {
-  if (!isWeatherInfoRequest(query)) return null;
-  const location = extractWeatherLocation(query);
-  if (!location) return null;
+export function parseWeatherCurrentTask(query = "", options = {}) {
+  const frame = parseWeatherQueryFrame(query, options);
+  if (!frame) return null;
+  if (frame.primaryIntent !== WEATHER_INTENTS.CURRENT) return null;
 
-  const q = normalizeWeatherQuery(query);
-  let metric = "météo";
-  if (/\btemperature|température|degres|degrés|°c|°f\b/.test(q)) {
-    metric = "température";
-  } else if (/\bpluie\b/.test(q)) {
-    metric = "pluie";
-  } else if (/\bvent\b/.test(q)) {
-    metric = "vent";
-  } else if (/\bressenti\b/.test(q)) {
-    metric = "ressenti";
-  } else if (/\bprevisions|prévisions\b/.test(q)) {
-    metric = "prévisions";
-  }
+  const locality = frame.slots?.locality;
+  if (!locality?.normalized) return null;
+
+  const temporal =
+    frame.secondarySignals.find((s) => s.type === "temporal_modifier")?.value ||
+    null;
 
   const locationLabel =
-    location.charAt(0).toUpperCase() + location.slice(1);
+    locality.normalized.charAt(0).toUpperCase() + locality.normalized.slice(1);
 
   return {
-    kind: "weather_current",
-    location,
+    kind: WEATHER_INTENTS.CURRENT,
+    location: locality.normalized,
     locationLabel,
-    metric,
+    metric: frame.slots.metric || "météo",
+    locationSource: locality.source,
+    locality,
+    secondarySignals: frame.secondarySignals,
+    temporal,
+    frame,
   };
 }
 
 /**
- * Demande exploitable d'information météo actuelle (pas narration ni document).
  * @param {string} query
+ * @param {{ history?: Array<{ role?: string, content?: string }> }} [options]
  * @returns {boolean}
  */
-export function isWeatherCurrentRequest(query = "") {
-  if (!query || !String(query).trim()) return false;
-  if (isQuotedOrPastedWeatherContext(query)) return false;
-  if (isNarrativeOrExpressiveWeatherUtterance(query)) return false;
-  return Boolean(parseWeatherCurrentTask(query));
+export function isWeatherCurrentRequest(query = "", options = {}) {
+  return Boolean(parseWeatherCurrentTask(query, options));
 }
 
 /**
  * @param {string} query
+ * @param {{ history?: Array<{ role?: string, content?: string }> }} [options]
  * @returns {boolean}
  */
-export function isWeatherCurrentRequestSatisfiable(query = "") {
-  return isWeatherCurrentRequest(query);
+export function isWeatherCurrentRequestSatisfiable(query = "", options = {}) {
+  return isWeatherCurrentRequest(query, options);
 }
 
 /**
  * @param {string} query
+ * @param {{ history?: Array<{ role?: string, content?: string }> }} [options]
  * @returns {string|null}
  */
-export function buildWeatherCurrentWebQuery(query = "") {
-  const task = parseWeatherCurrentTask(query);
+export function buildWeatherCurrentWebQuery(query = "", options = {}) {
+  const task = parseWeatherCurrentTask(query, options);
   if (!task?.location) return null;
   return `météo actuelle ${task.locationLabel} ${task.metric} maintenant`;
 }
@@ -202,13 +216,15 @@ export function buildWeatherCurrentWebQuery(query = "") {
 /**
  * @param {string} query
  * @param {string} [reason]
+ * @param {{ history?: Array<{ role?: string, content?: string }> }} [options]
  * @returns {string}
  */
 export function buildWeatherCurrentRecoveryMessage(
   query = "",
   reason = "empty_output",
+  options = {},
 ) {
-  const task = parseWeatherCurrentTask(query);
+  const task = parseWeatherCurrentTask(query, options);
   const label = task?.locationLabel || "cet endroit";
   return (
     `Je n'ai pas réussi à récupérer la météo actuelle pour ${label} ` +
@@ -218,6 +234,7 @@ export function buildWeatherCurrentRecoveryMessage(
 
 /**
  * @param {string} query
+ * @param {{ history?: Array<{ role?: string, content?: string }> }} [options]
  * @returns {{
  *   path: string,
  *   kind: string,
@@ -225,10 +242,10 @@ export function buildWeatherCurrentRecoveryMessage(
  *   task: object,
  * }|null}
  */
-export function resolveWeatherCurrentShortCircuit(query = "") {
-  if (!isWeatherCurrentRequest(query)) return null;
-  const task = parseWeatherCurrentTask(query);
-  const weatherWebQuery = buildWeatherCurrentWebQuery(query);
+export function resolveWeatherCurrentShortCircuit(query = "", options = {}) {
+  if (!isWeatherCurrentRequest(query, options)) return null;
+  const task = parseWeatherCurrentTask(query, options);
+  const weatherWebQuery = buildWeatherCurrentWebQuery(query, options);
   if (!task || !weatherWebQuery) return null;
 
   return {

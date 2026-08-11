@@ -22,30 +22,35 @@ export const CURRENT_WEB_FACT_POLICY = "current_web_fact_policy_v1";
 
 /**
  * @param {string} query
+ * @param {{ history?: Array<{ role?: string, content?: string }> }} [options]
  * @returns {boolean}
  */
-export function isCurrentWebFactRequest(query = "") {
-  return isWeatherCurrentRequest(query) || isTrafficCurrentRequest(query);
+export function isCurrentWebFactRequest(query = "", options = {}) {
+  return (
+    isWeatherCurrentRequest(query, options) || isTrafficCurrentRequest(query)
+  );
 }
 
 /**
  * @param {string} query
+ * @param {{ history?: Array<{ role?: string, content?: string }> }} [options]
  * @returns {boolean}
  */
-export function isCurrentWebFactSatisfiable(query = "") {
-  return isCurrentWebFactRequest(query);
+export function isCurrentWebFactSatisfiable(query = "", options = {}) {
+  return isCurrentWebFactRequest(query, options);
 }
 
 /**
  * @param {string} query
+ * @param {{ history?: Array<{ role?: string, content?: string }> }} [options]
  * @returns {string|null}
  */
-export function buildCurrentWebFactWebQuery(query = "") {
+export function buildCurrentWebFactWebQuery(query = "", options = {}) {
   if (isTrafficCurrentRequest(query)) {
     return buildTrafficCurrentWebQuery(query);
   }
-  if (isWeatherCurrentRequest(query)) {
-    return buildWeatherCurrentWebQuery(query);
+  if (isWeatherCurrentRequest(query, options)) {
+    return buildWeatherCurrentWebQuery(query, options);
   }
   return null;
 }
@@ -53,17 +58,19 @@ export function buildCurrentWebFactWebQuery(query = "") {
 /**
  * @param {string} query
  * @param {string} [reason]
+ * @param {{ history?: Array<{ role?: string, content?: string }> }} [options]
  * @returns {string}
  */
 export function buildCurrentWebFactRecoveryMessage(
   query = "",
   reason = "empty_output",
+  options = {},
 ) {
   if (isTrafficCurrentRequest(query)) {
     return buildTrafficCurrentRecoveryMessage(query, reason);
   }
-  if (isWeatherCurrentRequest(query)) {
-    return buildWeatherCurrentRecoveryMessage(query, reason);
+  if (isWeatherCurrentRequest(query, options)) {
+    return buildWeatherCurrentRecoveryMessage(query, reason, options);
   }
   return (
     "Je n'ai pas réussi à récupérer cette information actuelle. " +
@@ -73,9 +80,10 @@ export function buildCurrentWebFactRecoveryMessage(
 
 /**
  * @param {string} query
+ * @param {{ history?: Array<{ role?: string, content?: string }> }} [options]
  * @returns {object|null}
  */
-export function resolveCurrentWebFactShortCircuit(query = "") {
+export function resolveCurrentWebFactShortCircuit(query = "", options = {}) {
   const trafficHit = resolveTrafficCurrentShortCircuit(query);
   if (trafficHit) {
     return {
@@ -89,7 +97,7 @@ export function resolveCurrentWebFactShortCircuit(query = "") {
     };
   }
 
-  const weatherHit = resolveWeatherCurrentShortCircuit(query);
+  const weatherHit = resolveWeatherCurrentShortCircuit(query, options);
   if (weatherHit) {
     const webQuery = weatherHit.weatherWebQuery;
     return {
@@ -101,7 +109,10 @@ export function resolveCurrentWebFactShortCircuit(query = "") {
       simpleFactual: true,
       deferToLlm: true,
       deferToFullPipeline: true,
-      step: "🌤️ Météo actuelle — recherche web prioritaire...",
+      step:
+        weatherHit.task?.locationSource === "carryover"
+          ? "🌤️ Météo actuelle — lieu repris du fil (recherche web)..."
+          : "🌤️ Météo actuelle — recherche web prioritaire...",
     };
   }
 
@@ -110,9 +121,10 @@ export function resolveCurrentWebFactShortCircuit(query = "") {
 
 /**
  * @param {string} query
+ * @param {{ history?: Array<{ role?: string, content?: string }> }} [options]
  * @returns {{ factType: string|null, subject: string|null, webQuery: string|null }}
  */
-export function parseCurrentWebFactTask(query = "") {
+export function parseCurrentWebFactTask(query = "", options = {}) {
   if (isTrafficCurrentRequest(query)) {
     const task = parseTrafficCurrentTask(query);
     return {
@@ -121,12 +133,12 @@ export function parseCurrentWebFactTask(query = "") {
       webQuery: buildTrafficCurrentWebQuery(query),
     };
   }
-  if (isWeatherCurrentRequest(query)) {
-    const task = parseWeatherCurrentTask(query);
+  if (isWeatherCurrentRequest(query, options)) {
+    const task = parseWeatherCurrentTask(query, options);
     return {
       factType: CURRENT_WEB_FACT_TYPES.WEATHER,
       subject: task?.locationLabel || task?.location || null,
-      webQuery: buildWeatherCurrentWebQuery(query),
+      webQuery: buildWeatherCurrentWebQuery(query, options),
     };
   }
   return { factType: null, subject: null, webQuery: null };

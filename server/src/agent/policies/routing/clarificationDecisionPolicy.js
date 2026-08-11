@@ -454,7 +454,7 @@ export function evaluateClarificationDecision(
     );
   }
 
-  if (isWeatherCurrentRequestSatisfiable(query)) {
+  if (isWeatherCurrentRequestSatisfiable(query, { history })) {
     signals.push("weather_current_request");
     return pack(
       CLARIFICATION_DECISIONS.CAN_ANSWER_NOW,

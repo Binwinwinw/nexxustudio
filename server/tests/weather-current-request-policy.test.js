@@ -9,6 +9,7 @@ import {
   WEATHER_CANONICAL_PASTED_NARRATIVE_QUERY,
   buildWeatherCurrentRecoveryMessage,
   buildWeatherCurrentWebQuery,
+  extractLastWeatherLocationFromHistory,
   isNarrativeOrExpressiveWeatherUtterance,
   isQuotedOrPastedWeatherContext,
   isWeatherCurrentRequest,
@@ -21,8 +22,8 @@ import {
 } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { resolvePipelineFallback } from "../src/agent/utils/genericGreetingGuards.js";
-import { shouldEscalateSimpleFactualToFullPipeline } from "../src/agent/utils/informationSeekingIntentGuards.js";
+import { resolvePipelineFallback } from "../src/agent/utils/conversation/genericGreetingGuards.js";
+import { shouldEscalateSimpleFactualToFullPipeline } from "../src/agent/utils/intent-guards/informationSeekingIntentGuards.js";
 import { resolveKnowledgeEnrichmentPolicy } from "../src/agent/policies/routing/knowledgeEnrichmentPolicy.js";
 
 describe("weatherCurrentRequestPolicy — détection", () => {
@@ -39,6 +40,63 @@ describe("weatherCurrentRequestPolicy — détection", () => {
       buildWeatherCurrentWebQuery(WEATHER_CANONICAL_FDF_QUERY) || "",
       /Fort-de-France|fort de france/i,
     );
+  });
+
+  it("suivi sans lieu — hérite Martinique du tour précédent", async () => {
+    const prior =
+      "quel temps fait il en martinique à l'heure actuelle?";
+    const follow =
+      "quelle est la température, est ce qu'il fait jour ou il fait nuit ?";
+    const history = [
+      { role: "user", content: prior },
+      {
+        role: "assistant",
+        content: "Météo actuelle en Martinique : environ 26°C.",
+      },
+    ];
+
+    assert.equal(isWeatherCurrentRequest(follow), false);
+    assert.equal(extractLastWeatherLocationFromHistory(history), "martinique");
+    assert.equal(isWeatherCurrentRequest(follow, { history }), true);
+
+    const task = parseWeatherCurrentTask(follow, { history });
+    assert.equal(task?.location, "martinique");
+    assert.equal(task?.locationSource, "carryover");
+    assert.match(task?.metric || "", /température|jour/i);
+
+    const hit = await runConversationShortCircuit(follow, { history });
+    assert.equal(hit?.weatherCurrent, true);
+    assert.equal(hit?.path, "simple_factual_lookup");
+    assert.equal(hit?.weatherLocationSource, "carryover");
+    assert.match(String(hit?.weatherWebQuery || ""), /martinique/i);
+  });
+
+  it("Martinique — quel temps … à l'heure actuelle → lieu martinique (pas horloge)", async () => {
+    const q =
+      "quel temps fait il en martinique à l'heure actuelle?";
+    assert.equal(isWeatherCurrentRequest(q), true);
+    const task = parseWeatherCurrentTask(q);
+    assert.equal(task?.location, "martinique");
+    assert.doesNotMatch(task?.location || "", /heure/i);
+    assert.match(buildWeatherCurrentWebQuery(q) || "", /martinique/i);
+    assert.doesNotMatch(
+      buildWeatherCurrentWebQuery(q) || "",
+      /heure actuelle/i,
+    );
+
+    const { resolveMultiSegmentPlan } = await import(
+      "../src/agent/micro/parsing/multiSegmentResponsePlan.js"
+    );
+    const plan = resolveMultiSegmentPlan(q);
+    assert.notEqual(plan.primaryGoal, "time_lookup");
+    assert.equal(plan.signalOnly, false);
+    assert.equal(plan.preamble, null);
+
+    const hit = await runConversationShortCircuit(q);
+    assert.equal(hit?.weatherCurrent, true);
+    assert.equal(hit?.path, "simple_factual_lookup");
+    assert.match(String(hit?.weatherWebQuery || ""), /martinique/i);
+    assert.doesNotMatch(String(hit?.reply || ""), /^Il est \d/i);
   });
 
   it("narration expressive — pas de trigger", () => {
