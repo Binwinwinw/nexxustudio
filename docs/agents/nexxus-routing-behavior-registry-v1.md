@@ -16,6 +16,7 @@ Registre opérationnel du routage et des comportements — aligné sur le code r
 - [conversation-move-governance.md](conversation-move-governance.md)
 - [intent-families-doctrine.md](intent-families-doctrine.md)
 - [family-catalog-and-constraints.md](family-catalog-and-constraints.md)
+- [attachment-read-mandate-v1.md](attachment-read-mandate-v1.md) — mandat lecture PJ (`ATTACHMENT_READ_MANDATE_V1`)
 
 ---
 

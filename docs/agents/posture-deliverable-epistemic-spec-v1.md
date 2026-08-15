@@ -217,7 +217,7 @@ si surface ∈ { open_prompt, chat_invite, soft_social, exploration_open }
 - **Surface** : frame `open_exploration` (§2.3.2) → bridge `social/open_prompt` + G35 `can_answer_now`.
 - **P0 observe** : `deliverableContractPolicy.js` émet `promisedValue` + télémétrie console (`[PIPELINE] deliverable …`) **sans enforcement** — short-circuit inchangé.
 - **P1 guided_choice** : après panel, sélection `1–5` / mot d’option → `guidedChoicePolicy` / path `guided_choice_deterministic` (`runtimeAligned=true`). Aide au choix seulement — pas de mandat livrable inventé.
-- **P1 AttachmentTask** : PJ → `classifyAttachmentTask` (`doc_improve` | `doc_summarize` | `code_fix` | `code_refactor` | `code_review` | `doc_analyze`) avant livrable. Code task → bypass Document Analysis ; soft `fileContextGuard` si livrable concret ancré.
+- **P1 AttachmentTask** : PJ → `classifyAttachmentTask` / `resolveAttachmentFraming` (`request_nature` → `work_verb` → `file_type`) avant livrable. Code task → bypass Document Analysis. Mandat lecture : `ATTACHMENT_READ_MANDATE_V1` — voir [attachment-read-mandate-v1.md](attachment-read-mandate-v1.md).
 - **P1.1 Guard precedence** : `buildAttachmentResponseState` — si réponse concrète + source PJ → `overrideLocked` / `append_only` (note suffixe possible), **jamais** remplacement par refus « fichiers non fournis ».
 - **P1+** : enforcement optionnel (bloquer gate si `gateSuppressed`) quand la télémétrie est stable.
 
