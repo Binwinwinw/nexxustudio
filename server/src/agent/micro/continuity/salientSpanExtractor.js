@@ -2,7 +2,7 @@
  * Extraction générique d'entités saillantes citées par l'assistant (tour n−1).
  * Pas de lexique métier : heuristiques structurelles (gras, introducteurs, énumérations).
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 
 const INTRODUCER_PATTERN =
   /\b(?:par exemple|comme|notamment|je te conseille|tu peux essayer|tu peux regarder|une option serait|voici|pense a|pense à)\s+(?:la |le |l'|les |un |une |des )?/gi;

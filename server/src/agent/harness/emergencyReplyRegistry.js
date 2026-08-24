@@ -1,6 +1,6 @@
 /* server/src/agent/harness/emergencyReplyRegistry.js */
-import { normalizeText } from "../utils/normalizationGuards.js";
-import { isAnalyticalTechnicalRequest, isTechnicalStatusReport } from "../utils/conversationGuards.js";
+import { normalizeText } from "../utils/parsing-normalization/normalizationGuards.js";
+import { isAnalyticalTechnicalRequest, isTechnicalStatusReport } from "../utils/conversation/conversationGuards.js";
 
 class EmergencyReplyRegistry {
   constructor() {

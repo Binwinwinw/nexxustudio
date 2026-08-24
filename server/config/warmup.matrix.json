@@ -1,11 +1,11 @@
 {
   "version": "1.0.0",
-  "description": "Matrice warm-up multi-modèle La Citadelle — Tier 1 chat/embed/reasoner, Tier 3 experts lazy",
+  "description": "Matrice warm-up La Citadelle — T1 qwen3.5:2b boot, T2 granite4.1:8b deferred, T3 experts lazy",
   "doctrine": {
     "max_concurrent_experts": 2,
     "max_vram_gb": 20,
     "tier1_only_at_boot": true,
-    "tier2_deferred": false
+    "tier2_deferred": true
   },
   "tiers": {
     "tier1": {
@@ -13,18 +13,18 @@
       "timeout": 120000,
       "models": [
         {
-          "id": "ornith:9b",
+          "id": "qwen3.5:2b",
           "role": "chat",
           "mode": "single",
           "best_effort": true,
           "profiles": {
             "reactive": { "mode": "single" },
             "balanced": { "mode": "single" },
-            "fast": { "id": "qwen3.5:9b", "mode": "single" }
+            "fast": { "mode": "single" }
           },
-          "vram_gb": 7.8,
+          "vram_gb": 2.7,
           "priority": 1,
-          "context_gb_per_8k": 0.5
+          "context_gb_per_8k": 0.4
         },
         {
           "id": "nomic-embed-text:latest",
@@ -37,11 +37,21 @@
       ]
     },
     "tier2": {
-      "label": "Tier 2 désactivé — reasoner = Tier 1 (ornith:9b)",
+      "label": "Tier 2 différé — granite4.1:8b (reasoner on demand)",
       "timeout": 180000,
       "lazy": true,
-      "defer_at_boot": false,
-      "models": []
+      "defer_at_boot": true,
+      "models": [
+        {
+          "id": "granite4.1:8b",
+          "role": "reasoner",
+          "mode": "single",
+          "best_effort": true,
+          "vram_gb": 5.3,
+          "priority": 2,
+          "context_gb_per_8k": 0.8
+        }
+      ]
     },
     "tier3": {
       "label": "EXPERTS — Lazy-loaded (max 1–2 actifs)",
@@ -113,8 +123,8 @@
     },
     "fallback": {
       "enabled": true,
-      "default_reasoner": "ornith:9b",
-      "default_chat": "ornith:9b",
+      "default_reasoner": "granite4.1:8b",
+      "default_chat": "qwen3.5:2b",
       "default_coder": "qwen2.5-coder:7b",
       "default_coder_alternative": null,
       "default_chat_alternative_multimodal": "qwen3.5:9b",

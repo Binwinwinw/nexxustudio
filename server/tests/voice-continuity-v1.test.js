@@ -7,6 +7,7 @@ import {
   buildVoiceContinuityPromptAddon,
   hasGrandiloquentVoiceMarkers,
   shouldBlockGenericInsufficientRefusal,
+  isCausalWhyExplainRequest,
   shouldSuppressPrematureClarify,
   shouldDeferSocialRouting,
   applyVoiceContinuityVisibleText,
@@ -27,6 +28,7 @@ import {
 import { POSTURES } from "../src/agent/policies/posture/index.js";
 import { buildPostureDeliveryAddon } from "../src/agent/policies/posture/index.js";
 import { resolveSimpleFastAllowRefusal } from "../src/agent/paths/simpleFastPath.js";
+import { enforceSimpleFactualDirectness } from "../src/agent/micro/replies/simpleFactualComposer.js";
 
 describe("VOICE_CONTINUITY_V1", () => {
   it("sujet/format ancré → bloque refus générique + addon l’interdit", () => {
@@ -80,6 +82,27 @@ describe("VOICE_CONTINUITY_V1", () => {
       { query: q, allowRefusal: true },
     );
     assert.equal(stripped, "");
+  });
+
+  it("R1 — pour quelle raison + sujet nommé bloque refus piste (COMPOSER)", () => {
+    const q = "pour quelle raison la lune est aussi loin de la terre ??";
+    assert.equal(shouldBlockGenericInsufficientRefusal(q), true);
+    assert.equal(resolveSimpleFastAllowRefusal({ query: q }), false);
+    const stripped = enforceModeContract(
+      RESPONSE_MODES.COMPOSER,
+      INSUFFICIENT_SIGNAL_REFUSAL,
+      { query: q, allowRefusal: true },
+    );
+    assert.equal(stripped, "");
+    const fallback = enforceSimpleFactualDirectness(INSUFFICIENT_SIGNAL_REFUSAL, q);
+    assert.match(fallback, /Lune|marées|3,8/i);
+    assert.doesNotMatch(fallback, /piste|destination/i);
+    assert.equal(
+      isCausalWhyExplainRequest(
+        "j'aimerais savoir pour quelle raison la lune est aussi loin de la terre ??",
+      ),
+      true,
+    );
   });
 
   it("R1 — flou non ancré peut encore émettre le refus", () => {

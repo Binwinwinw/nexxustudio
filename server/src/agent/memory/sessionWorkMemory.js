@@ -53,6 +53,7 @@ export function createEmptySessionWorkMemory(sessionId = "default-session") {
     openErrors: [],
     corrections: [],
     sessionMode: null,
+    activeGoal: null,
     stalenessScore: 0,
     updatedAt: now,
   };
@@ -219,6 +220,7 @@ export function commitSessionWorkTurn({
   openErrors = [],
   corrections = [],
   sessionMode = undefined,
+  activeGoal = undefined,
 } = {}) {
   const key = normalizeSessionId(sessionId);
   const state = loadSessionWorkMemory(key);
@@ -265,6 +267,9 @@ export function commitSessionWorkTurn({
 
   if (sessionMode !== undefined) {
     next.sessionMode = sessionMode;
+  }
+  if (activeGoal !== undefined) {
+    next.activeGoal = activeGoal;
   }
 
   return saveSessionWorkMemory(next);

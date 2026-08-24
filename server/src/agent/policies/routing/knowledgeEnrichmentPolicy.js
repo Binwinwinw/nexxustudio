@@ -8,7 +8,7 @@ import {
   isCurrentWebFactRequest,
   parseCurrentWebFactTask,
 } from "../web/index.js";
-import { isAdminProcedureRequest } from "../../utils/adminProcedureIntentGuards.js";
+import { isAdminProcedureRequest } from "../../utils/intent-guards/adminProcedureIntentGuards.js";
 
 export const KNOWLEDGE_ENRICHMENT_RULE = "unified_knowledge_and_freshness_enrichment";
 

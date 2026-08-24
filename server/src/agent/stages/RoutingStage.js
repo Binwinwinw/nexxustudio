@@ -1,13 +1,15 @@
 /* server/src/agent/stages/RoutingStage.js */
 import expertRouter from "../router/expertRouter.js";
-import { AGENT_ROLES, MODEL_NATURE, getModelNature } from "../policies/core/index.js";
+import { AGENT_ROLES, shouldUseDeferredReasoner } from "../policies/core/index.js";
+import { filterUnauthorizedWebExpertMatches } from "../policies/routing/webSearchExpertAuthorization.js";
 import turnTelemetry from "../telemetry/turnTelemetry.js";
 import { OTEL_ATTRIBUTES } from '../telemetry/otelSemanticMap.js';
 
 export class RoutingStage {
-  static async run(query, { onStep, projectState, isSocial, forcedExpertKey, reasoningBudget, isDiscussion, excludeExpertKeys = [] }) {
+  static async run(query, { onStep, projectState, isSocial, forcedExpertKey, reasoningBudget, isDiscussion, excludeExpertKeys = [], packet = {}, preferWebResearch = false }) {
     const phase = projectState?.current_phase || "DISCOVERY";
     const score = projectState?.metrics?.score || 0;
+    const webAuthOpts = { forcedExpertKey, preferWebResearch };
     const excluded = new Set(
       (Array.isArray(excludeExpertKeys) ? excludeExpertKeys : [])
         .map((k) => String(k || "").trim())
@@ -15,7 +17,7 @@ export class RoutingStage {
     );
 
     let expertMatches = [];
-    let bestModel = AGENT_ROLES.ORCHESTRATOR;
+    let bestModel = AGENT_ROLES.CHAT;
 
     if (!isSocial && !forcedExpertKey) {
       if (onStep) onStep("📑 Hub [Planner]: Breaking down the task...");
@@ -24,6 +26,12 @@ export class RoutingStage {
       identifiedExperts = identifiedExperts.filter(
         (e) => !excluded.has(e.expert.key),
       );
+      identifiedExperts = filterUnauthorizedWebExpertMatches(
+        identifiedExperts,
+        query,
+        packet,
+        webAuthOpts,
+      );
 
       // Filtrage par phase (simplifié ici pour la modularité)
       // Note: On pourrait déléguer ce filtrage à expertRouter lui-même
@@ -31,6 +39,12 @@ export class RoutingStage {
       const { experts, explanation } = await expertRouter.cognitiveIdentify(query, identifiedExperts, onStep);
       expertMatches = (experts || []).filter(
         (m) => m?.expert?.key && !excluded.has(m.expert.key),
+      );
+      expertMatches = filterUnauthorizedWebExpertMatches(
+        expertMatches,
+        query,
+        packet,
+        webAuthOpts,
       );
       
       if (explanation) turnTelemetry.setMetric('routing_explanation', explanation);
@@ -49,10 +63,16 @@ export class RoutingStage {
       }
     }
 
-    // Sélection du modèle
+    expertMatches = filterUnauthorizedWebExpertMatches(
+      expertMatches,
+      query,
+      packet,
+      webAuthOpts,
+    );
+
     const topExpert = expertMatches[0]?.expert;
-    if (reasoningBudget >= 3) {
-      bestModel = AGENT_ROLES.FORGE_REASONER;
+    if (shouldUseDeferredReasoner(reasoningBudget)) {
+      bestModel = AGENT_ROLES.CHAT_REASONER;
     } else if (reasoningBudget === 1 || isSocial) {
       bestModel = AGENT_ROLES.CHAT;
     } else {

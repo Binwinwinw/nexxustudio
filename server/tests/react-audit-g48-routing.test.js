@@ -6,7 +6,7 @@ import {
   shouldDeferReactAuditToSnippetCodeReview,
   isReactAuditExcluded,
   extractReactAuditRootPath,
-} from "../src/agent/utils/reactAuditIntentGuards.js";
+} from "../src/agent/utils/intent-guards/reactAuditIntentGuards.js";
 import {
   classifyReactAuditContract,
   REACT_AUDIT_INTENTS,

@@ -1,6 +1,6 @@
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolveOpenPromptContinuityShortCircuit } from "../src/agent/policies/meta/openPromptContinuityPolicy.js";
-import { isCompareChooseRequest } from "../src/agent/utils/compareChooseIntentGuards.js";
+import { isCompareChooseRequest } from "../src/agent/utils/intent-guards/compareChooseIntentGuards.js";
 
 const Q =
   "non merci qu'est ce que tu pourrais proposer d'attaquer d'autres ?";

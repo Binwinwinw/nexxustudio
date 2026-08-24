@@ -1,5 +1,5 @@
 /* server/src/agent/stages/IntentStage.js */
-import intentClassifier from "../utils/intentClassifier.js";
+import intentClassifier from "../utils/intent-guards/intentClassifier.js";
 import turnTelemetry from "../telemetry/turnTelemetry.js";
 import { OTEL_ATTRIBUTES, SPAN_NAMES } from "../telemetry/otelSemanticMap.js";
 

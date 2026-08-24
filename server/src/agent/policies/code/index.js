@@ -2,6 +2,7 @@
 export * from "./codeIntentPolicy.js";
 export * from "./codeDeliveryPolicy.js";
 export * from "./codeDeliverySentinels.js";
+export * from "./codeDeliveryRuntimeGuard.js";
 export * from "./codeReviewPolicy.js";
 export * from "./codeReviewSentinels.js";
 export * from "./codeReviewRuntimeGuard.js";

@@ -18,7 +18,7 @@ import {
   isSimpleFactualQuestion,
 } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { resolvePipelineFallback } from "../src/agent/utils/genericGreetingGuards.js";
+import { resolvePipelineFallback } from "../src/agent/utils/conversation/genericGreetingGuards.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseContracts.js";
 
 describe("familiarityDomainOverviewPolicy — batterie #34", () => {

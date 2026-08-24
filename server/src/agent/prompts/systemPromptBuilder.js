@@ -7,7 +7,7 @@ import CONTEXT_POLICY from "../policies/prompt/contextPolicy.js";
 import QUALITY_GATE from "../contracts/qualityGate.js";
 import fs from 'fs';
 import path from 'path';
-import { SKILLS_DIR } from '../utils/skillLoader.js';
+import { SKILLS_DIR } from '../utils/runtime/skillLoader.js';
 import { buildCodeDeliveryAddon, buildCodeIntentAddon } from '../policies/code/index.js';
 import { buildJustIntentAddon } from '../policies/intent/index.js';
 import { buildStructuredRequestPromptAddon } from '../interpreter/RequestInterpreter.js';

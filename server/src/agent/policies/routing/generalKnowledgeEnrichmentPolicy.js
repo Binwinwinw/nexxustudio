@@ -2,8 +2,8 @@
  * Politique d'enrichissement culture générale — recherche web optionnelle
  * quand la fiche locale est absente mais le sujet est clair.
  */
-import { isGeneralKnowledgeRequest } from "../../utils/generalKnowledgeIntentGuards.js";
-import { resolveQueryEntityUnderstanding } from "../../utils/queryEntityUnderstanding.js";
+import { isGeneralKnowledgeRequest } from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
+import { resolveQueryEntityUnderstanding } from "../../utils/parsing-normalization/queryEntityUnderstanding.js";
 import { resolveLocalGeneralKnowledgeDetail } from "../../micro/replies/generalKnowledgeComposerContract.js";
 
 export const GENERAL_KNOWLEDGE_ENRICHMENT_RULE =

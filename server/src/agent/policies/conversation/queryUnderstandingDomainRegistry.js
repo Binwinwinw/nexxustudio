@@ -4,15 +4,15 @@
  */
 import { normalizeForParse } from "../../micro/parsing/requestSegmentParser.js";
 import { detectMathIntentInSegment } from "../math/mathCompositeQueryPolicy.js";
-import { isTranslationShell } from "../../utils/translationIntentGuards.js";
-import { isTechnicalLearningPathRequest } from "../../utils/technicalLearningPathIntentGuards.js";
+import { isTranslationShell } from "../../utils/intent-guards/translationIntentGuards.js";
+import { isTechnicalLearningPathRequest } from "../../utils/intent-guards/technicalLearningPathIntentGuards.js";
 import { resolveTechnicalLearningPathShortCircuit } from "../../micro/replies/technicalLearningPathComposer.js";
-import { classifyWebProjectScopingRequest } from "../../utils/webProjectScopingGuards.js";
-import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIntentGuards.js";
-import { isDebugDiagnosticRequest } from "../../utils/debugDiagnosticIntentGuards.js";
-import { isGeneralKnowledgeRequest } from "../../utils/generalKnowledgeIntentGuards.js";
-import { isPedagogicalOverviewRequest } from "../../utils/pedagogicalOverviewIntentGuards.js";
-import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/externalCalendarLookupIntentGuards.js";
+import { classifyWebProjectScopingRequest } from "../../utils/intent-guards/webProjectScopingGuards.js";
+import { isInformationSeekingWithTarget } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
+import { isDebugDiagnosticRequest } from "../../utils/intent-guards/debugDiagnosticIntentGuards.js";
+import { isGeneralKnowledgeRequest } from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
+import { isPedagogicalOverviewRequest } from "../../utils/intent-guards/pedagogicalOverviewIntentGuards.js";
+import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/intent-guards/externalCalendarLookupIntentGuards.js";
 import { detectGovernanceExplainIntent } from "../meta/governanceExplainPolicy.js";
 import { detectDocumentAnalysisIntent } from "../document/index.js";
 import { detectDocumentSynthesisIntent } from "../document/index.js";
@@ -49,7 +49,7 @@ const SOCIAL_GREETING_RE =
   /(?:^|\s)(?:salut|bonjour|hello|coucou|hey|bonsoir|yo|yop)\b/i;
 
 const SOCIAL_CHECKIN_RE =
-  /(?:comment\s+(?:(?:ça|ca)\s+)?(?:va|se\s+passe|roule)|comment\s+(?:tu\s+)?vas|comment\s+vas[- ]?tu|(?:^|\s)(?:ça|ca)\s+va|tu\s+vas\s+bien)/i;
+  /(?:comment\s+(?:(?:ça|ca)\s+)?(?:va|se\s+passe|roule)|comment\s+(?:tu\s+)?vas|comment\s+vas[- ]?tu|comment\s+allez[- ]?vous|comment\s+vous\s+allez|(?:^|\s)(?:ça|ca)\s+va|tu\s+vas\s+bien|vous\s+allez\s+bien)/i;
 
 const TIME_REQUEST_RE =
   /\b(?:quelle\s+heure|heure\s+actuelle|heure\s+du\s+jour|heure\s+est\s+il|heure\s+est-il|il\s+est\s+quelle\s+heure)\b/i;

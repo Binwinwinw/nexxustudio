@@ -7,15 +7,15 @@ import {
   parseCareerLearningPath,
   extractTargetRole,
   extractCareerDomain,
-} from "../src/agent/utils/careerLearningPathIntentGuards.js";
+} from "../src/agent/utils/intent-guards/careerLearningPathIntentGuards.js";
 import { resolveCareerLearningPathShortCircuit } from "../src/agent/micro/replies/careerLearningPathComposer.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
-import { isBeginnerTopicOverviewRequest } from "../src/agent/utils/beginnerTopicOverviewIntentGuards.js";
-import { isTechnicalOverviewRequest } from "../src/agent/utils/technicalOverviewIntentGuards.js";
-import { isPedagogicalOverviewRequest } from "../src/agent/utils/pedagogicalOverviewIntentGuards.js";
-import { isAdminProcedureRequest } from "../src/agent/utils/adminProcedureIntentGuards.js";
-import { isCompareChooseRequest } from "../src/agent/utils/compareChooseIntentGuards.js";
+import { isBeginnerTopicOverviewRequest } from "../src/agent/utils/intent-guards/beginnerTopicOverviewIntentGuards.js";
+import { isTechnicalOverviewRequest } from "../src/agent/utils/intent-guards/technicalOverviewIntentGuards.js";
+import { isPedagogicalOverviewRequest } from "../src/agent/utils/intent-guards/pedagogicalOverviewIntentGuards.js";
+import { isAdminProcedureRequest } from "../src/agent/utils/intent-guards/adminProcedureIntentGuards.js";
+import { isCompareChooseRequest } from "../src/agent/utils/intent-guards/compareChooseIntentGuards.js";
 
 describe("careerLearningPath — lot 11", () => {
   it("comment devenir développeur web → career_learning_path", async () => {

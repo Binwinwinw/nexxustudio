@@ -16,8 +16,8 @@ import {
   isTranslationShell,
   requiresTranslationClarification,
   usesPreviousOutputAsTranslationSource,
-} from "../utils/translationIntentGuards.js";
-import { buildTranslationRequestPlan } from "../utils/translationRequestPlan.js";
+} from "../utils/intent-guards/translationIntentGuards.js";
+import { buildTranslationRequestPlan } from "../utils/parsing-normalization/translationRequestPlan.js";
 
 export const TRANSLATION_ORCHESTRATION_EVENT = "translation_orchestration";
 

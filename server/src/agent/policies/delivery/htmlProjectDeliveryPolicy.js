@@ -2,8 +2,8 @@
  * HTML_PROJECT_DELIVERY_V1 — toute demande de livrable HTML = projet web à construire ou cadrer.
  * Sous-profils facultatifs ; clarification progressive (2–5 questions max) seulement si décisionnel.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { suppressesBuildIntentForTechnicalLearning } from "../../utils/technicalLearningPathIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { suppressesBuildIntentForTechnicalLearning } from "../../utils/intent-guards/technicalLearningPathIntentGuards.js";
 import { detectCodeDeliveryLanguage } from "../code/codeDeliveryPolicy.js";
 import { isCodeConceptExplainRequest } from "../code/codeConceptExplainPolicy.js";
 import {
@@ -15,7 +15,7 @@ import {
 } from "./htmlWorkshopDeliveryContract.js";
 import { buildGenericHtmlProjectProductionDelivery } from "../../templates/htmlGenericProjectTemplate.js";
 import { HTML_PROJECT_THRESHOLDS } from "./htmlProjectDeliveryThresholds.js";
-import { isExistingSourceAnalysisRequest } from "../../utils/localFileUriIntentGuards.js";
+import { isExistingSourceAnalysisRequest } from "../../utils/intent-guards/localFileUriIntentGuards.js";
 
 export { HTML_PROJECT_THRESHOLDS } from "./htmlProjectDeliveryThresholds.js";
 

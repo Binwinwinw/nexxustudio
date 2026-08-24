@@ -41,7 +41,7 @@ export const routerAgent = {
     }
 
     try {
-      const model = AGENT_ROLES.CHAT || "ornith:9b";
+      const model = AGENT_ROLES.CHAT;
       const client = getClientForModel(model);
       const validate = getValidator("routingDecision.schema.json");
       const outputSchema = validate?.schema;

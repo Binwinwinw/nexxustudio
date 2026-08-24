@@ -50,6 +50,16 @@ describe("conversationMoveContractVerification — profils", () => {
     );
   });
 
+  it("named_create_start + family information_seeking → pas de contrat info_seeking", () => {
+    assert.equal(
+      resolveMoveContractProfile(
+        { family: "information_seeking" },
+        "named_create_start",
+      ),
+      null,
+    );
+  });
+
   it("meta_capabilities path + family information_seeking → pas de contrat info_seeking", () => {
     assert.equal(
       resolveMoveContractProfile(

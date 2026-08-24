@@ -5,12 +5,12 @@ import {
   extractPedagogicalSubject,
   isPedagogicalOverviewRequest,
   parsePedagogicalOverview,
-} from "../src/agent/utils/pedagogicalOverviewIntentGuards.js";
+} from "../src/agent/utils/intent-guards/pedagogicalOverviewIntentGuards.js";
 import {
   extractPedagogicalLevel,
   extractPedagogicalDepth,
   resolvePedagogicalRenderLevel,
-} from "../src/agent/utils/pedagogicalOverviewParser.js";
+} from "../src/agent/utils/parsing-normalization/pedagogicalOverviewParser.js";
 import {
   resolvePedagogicalOverviewReply,
   resolvePedagogicalOverviewShortCircuit,

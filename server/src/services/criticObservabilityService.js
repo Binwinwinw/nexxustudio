@@ -66,7 +66,7 @@ export const criticObservabilityService = {
 
       // Model metadata
       const criticModel = AGENT_ROLES.PLANNER;
-      const composerModel = "ornith:9b"; // synthesis model
+      const composerModel = AGENT_ROLES.CHAT;
       const routingProfile = "verified_pipeline";
 
       const approvedAnswer = report?.approved_answer

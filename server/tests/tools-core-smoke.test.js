@@ -13,7 +13,7 @@ import projectBuilder from "../src/tools/projectBuilder.js";
 import projectScanner from "../src/tools/projectScanner.js";
 import projectMemoryPromoter from "../src/tools/projectMemoryPromoter.js";
 import vaultManager from "../src/tools/vaultManager.js";
-import toolExecutor from "../src/agent/utils/toolExecutor.js";
+import toolExecutor from "../src/agent/utils/runtime/toolExecutor.js";
 import securityHooks from "../src/hooks/securityHooks.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

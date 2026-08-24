@@ -18,13 +18,13 @@ import {
 import {
   isCurrentWebFactMechanismExplanation,
   requiresCurrentWebFactFreshness,
-} from "../src/agent/utils/currentWebFactIntentGuards.js";
+} from "../src/agent/utils/intent-guards/currentWebFactIntentGuards.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
 } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { resolvePipelineFallback } from "../src/agent/utils/genericGreetingGuards.js";
+import { resolvePipelineFallback } from "../src/agent/utils/conversation/genericGreetingGuards.js";
 import { resolveKnowledgeEnrichmentPolicy } from "../src/agent/policies/routing/knowledgeEnrichmentPolicy.js";
 
 describe("trafficCurrentRequestPolicy — batterie #38a", () => {

@@ -7,7 +7,7 @@ import {
   isIdentityRoleIntent,
   IDENTITY_SPECIALTIES_REPLY,
   IDENTITY_ROLE_REPLY,
-} from "../src/agent/utils/identityIntentGuards.js";
+} from "../src/agent/utils/intent-guards/identityIntentGuards.js";
 
 describe("agent deterministic social — identité", () => {
   it('répond sans LLM à "salut qui es tu ?"', () => {

@@ -16,6 +16,10 @@ import {
   applyWorkupRetrievalGate,
   COGNITIVE_CYCLE_RULE,
 } from "./policies/conversation/conversationQueryUnderstanding.js";
+import {
+  buildTurnComprehension,
+  createTurnLoopState,
+} from "./policies/conversation/turnComprehension.js";
 
 export const NEXXUS_AGENT_RULE = "nexxus_single_agent_cycle_v1";
 
@@ -50,8 +54,14 @@ export function runAgentUnderstandingPhase(query = "", history = [], options = {
     intentContractId: options.intentContractId || null,
     attachments: options.attachments,
     forgeProduction: options.forgeProduction === true,
+    history,
   });
-  return { understanding, cognitiveCycle };
+  const turnComprehension = buildTurnComprehension(query, history, {
+    understanding,
+    attachments: options.attachments,
+  });
+  const turnLoop = createTurnLoopState(turnComprehension);
+  return { understanding, cognitiveCycle, turnComprehension, turnLoop };
 }
 
 /**

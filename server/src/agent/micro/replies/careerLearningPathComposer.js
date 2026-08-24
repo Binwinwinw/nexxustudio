@@ -4,7 +4,7 @@
 import {
   isCareerLearningPathRequest,
   parseCareerLearningPath,
-} from "../../utils/careerLearningPathIntentGuards.js";
+} from "../../utils/intent-guards/careerLearningPathIntentGuards.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../../config/modeResponseContracts.js";
 
 export const CAREER_LEARNING_PATH_COMPOSER_RULE =
@@ -33,7 +33,7 @@ const SCOPE_LABELS = {
 };
 
 /**
- * @param {import("../../utils/careerLearningPathIntentGuards.js").CareerLearningPathSlots} slots
+ * @param {import("../../utils/intent-guards/careerLearningPathIntentGuards.js").CareerLearningPathSlots} slots
  * @returns {string}
  */
 export function buildCareerLearningPathSystemAddonFromSlots(slots) {
@@ -83,7 +83,7 @@ export function buildCareerLearningPathSystemAddon(query = "") {
 
 /**
  * @param {string} query
- * @returns {{ path: string, deferToLlm: boolean, reflectiveHint: string, careerLearningPath: boolean, slots?: import("../../utils/careerLearningPathIntentGuards.js").CareerLearningPathSlots }|null}
+ * @returns {{ path: string, deferToLlm: boolean, reflectiveHint: string, careerLearningPath: boolean, slots?: import("../../utils/intent-guards/careerLearningPathIntentGuards.js").CareerLearningPathSlots }|null}
  */
 export function resolveCareerLearningPathShortCircuit(query = "") {
   if (!isCareerLearningPathRequest(query)) return null;

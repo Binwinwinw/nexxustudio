@@ -47,6 +47,17 @@ describe("archiveExtractor", () => {
     assert.equal(result.fileCount, 1);
   });
 
+  it("refuse une archive imbriquée", () => {
+    const zipped = buildStoredZip({
+      "docs/readme.md": "# Projet\nOK",
+      "inner.zip": "nested",
+    });
+    assert.throws(
+      () => extractArchiveToText(zipped, "projet.zip"),
+      /FILE_CAP_NESTED_ARCHIVE|imbriquée/,
+    );
+  });
+
   it("rejette les symlinks TAR", () => {
     const linkTarget = "../../../etc/passwd";
     const header = Buffer.alloc(512, 0);

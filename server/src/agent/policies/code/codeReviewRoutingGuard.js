@@ -46,10 +46,17 @@ export function shouldBypassDocumentAnalysisRoute(
   attachments = [],
 ) {
   if (isMetaCapabilitiesIntent(query)) return true;
-  if (shouldBlockDocumentAnalysisRoute(intentTriage)) return true;
-  if (isCodeIntentRequest(query, { attachments })) return true;
 
   const attachmentTask = classifyAttachmentTask(query, attachments);
+  if (
+    attachmentTask.task === "doc_analyze" &&
+    attachmentTask.outputContract === "FILE_ANALYSIS_V1"
+  ) {
+    return false;
+  }
+
+  if (shouldBlockDocumentAnalysisRoute(intentTriage)) return true;
+  if (isCodeIntentRequest(query, { attachments })) return true;
   if (isCodeAttachmentTask(attachmentTask.task)) return true;
 
   if (isDominantCodeTriageIntent(intentTriage) && hasCodeAttachmentSignal(attachments, query)) {

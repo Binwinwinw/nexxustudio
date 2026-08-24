@@ -7,7 +7,7 @@ import {
 } from "./autoReplySufficiencyRule.js";
 import { resolveQueryGoals } from "./goalRoleResolver.js";
 import { GOAL_LINKER_PATTERN, parseRequestSegments } from "./requestSegmentParser.js";
-import { isUiNavigationRestructureFeedback } from "../../utils/uiNavigationFeedbackGuards.js";
+import { isUiNavigationRestructureFeedback } from "../../utils/conversation/uiNavigationFeedbackGuards.js";
 
 export const SUFFICIENCY_TIER = {
   INSTANT_OK: "instant_ok",
@@ -164,17 +164,23 @@ export const SUFFICIENCY_BYPASS_PATHS = new Set([
   "launcher_guide_clarify",
   "meta_feedback_deterministic",
   "meta_assistant_behavior_deterministic",
+  "meta_conversation_feedback",
+  "active_goal_continue",
   "comprehension_grounding_deterministic",
   "react_audit_deterministic",
   "react_audit_diff",
   "react_audit_score",
   "assistant_utterance_clarify_deterministic",
   "exploratory_conversation_light",
+  "conversational_light",
   "existing_source_analysis_clarify_access",
   "existing_source_analysis_deterministic",
   "existing_source_analysis_not_found",
+  "file_analysis_awaiting_source",
+  "CLARIFY",
   "repo_analysis_deterministic",
   "repo_analysis_not_found",
+  "repo_analysis_target_unconfirmed",
   "repo_analysis_llm",
   "web_search_help_clarify",
   "lexicon_explain_light",
@@ -190,6 +196,7 @@ export const SUFFICIENCY_BYPASS_PATHS = new Set([
   "lexicon_science_format_llm",
   "lexicon_science_takeaway_deterministic",
   "ideation_deterministic",
+  "named_create_start",
   "open_prompt_continuity",
   "social_composite_deterministic",
   "code_concept_glossary_direct",
@@ -269,7 +276,7 @@ export function inferDetectedSignalFromPath(path, query = "") {
     if (/(citadelle|nexxus).*(agent|forge)/i.test(query)) return "architecture_fact";
     return "social";
   }
-  if (path === "meta_assistant_behavior_deterministic") return "meta";
+  if (path === "meta_assistant_behavior_deterministic" || path === "meta_conversation_feedback") return "meta";
   if (path === "comprehension_grounding_deterministic") return "meta";
   if (path === "react_audit_deterministic" || path === "react_audit_diff" || path === "react_audit_score" || path === "react_audit_clarify") {
     return "code_review";

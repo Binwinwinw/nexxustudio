@@ -1,20 +1,26 @@
 /**
  * Décomposition gouvernée des requêtes — avant routage métier.
  * Distingue single | multi_target (même cadre) | multi_unit (cadres hétérogènes).
+ * Social multi-signal v1 : inventaire greeting / checkin / chat_invite / work_ready + composition.
  */
 import { analyzeConversationIntentFrame } from "../intent/conversationIntentFrame.js";
-import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIntentGuards.js";
+import { isInformationSeekingWithTarget } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import {
   isTranslationPipelineReady,
   isTranslationShell,
-} from "../../utils/translationIntentGuards.js";
-import { buildTranslationRequestPlan } from "../../utils/translationRequestPlan.js";
+} from "../../utils/intent-guards/translationIntentGuards.js";
+import { buildTranslationRequestPlan } from "../../utils/parsing-normalization/translationRequestPlan.js";
 import { normalizeForParse } from "../../micro/parsing/requestSegmentParser.js";
 import {
   enrichHowToUnit,
   HOW_TO_QUALIFICATIONS,
 } from "../qualification/howToQualificationPolicy.js";
-import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/externalCalendarLookupIntentGuards.js";
+import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/intent-guards/externalCalendarLookupIntentGuards.js";
+import {
+  hasSocialChatInviteSignal,
+  hasSocialWorkReadySignal,
+  isWellbeingCheckinIntent,
+} from "../social/socialPatternPolicy.js";
 
 export const REQUEST_DECOMPOSITION_RULE = "request_decomposition_v1";
 
@@ -30,6 +36,14 @@ export const EXECUTION_MODES = Object.freeze({
   MULTI_UNIT: "multi_unit",
 });
 
+/** Situations sociales composées (après inventaire multi-signal). */
+export const SOCIAL_SITUATIONS = Object.freeze({
+  GREETING: "social_greeting",
+  CHECKIN: "social_checkin",
+  CHAT_INVITE: "social_chat_invite",
+  WORK_READY: "social_work_ready",
+});
+
 const MULTI_UNIT_SPLIT_RE =
   /\s*(?:;\s+|\s+puis\s+|\s+ensuite\s+|\s+et puis\s+|\s+apres ca\s+|\s+après ça\s+|\s*,\s+(?=(?:corrige|donne|calcule|traduis|explique|conseil|recommande|infos)\b))/i;
 
@@ -38,9 +52,6 @@ const SOCIAL_GREETING_CLAUSE_RE =
 
 const SOCIAL_GREETING_SIGNAL_RE =
   /(?:^|\s)(?:salut|bonjour|hello|coucou|hey|bonsoir|yo|yop)\b/i;
-
-const SOCIAL_CHECKIN_SIGNAL_RE =
-  /(?:comment\s+(?:(?:ça|ca)\s+)?(?:va|se\s+passe|roule)|comment\s+(?:tu\s+)?vas|comment\s+vas[- ]?tu|(?:^|\s)(?:ça|ca)\s+va|tu\s+vas\s+bien)/i;
 
 const SOCIAL_CHECKIN_ACTION_BOUND_RE =
   /\b(?:va|vas|passe|roule)\s+(?:bien\s+)?(?:g[ée]rer|gerer|faire|r[ée]gler|se\s+passer\s+pour|marcher|aider|r[ée]soudre|fonctionner)\b/i;
@@ -69,13 +80,29 @@ const INVENTORY_SIGNALS = Object.freeze([
   {
     unitType: "social_checkin",
     test: (normalized) =>
-      SOCIAL_CHECKIN_SIGNAL_RE.test(normalized) &&
+      isWellbeingCheckinIntent(normalized) &&
       !SOCIAL_CHECKIN_ACTION_BOUND_RE.test(normalized) &&
       !EXPLANATORY_COMMENT_SIGNAL_RE.test(normalized),
     absorbable: true,
     satisfiable: true,
     familyHint: "social_deterministic",
     priority: 0,
+  },
+  {
+    unitType: "social_chat_invite",
+    test: (normalized) => hasSocialChatInviteSignal(normalized),
+    absorbable: true,
+    satisfiable: true,
+    familyHint: "social_deterministic",
+    priority: 1,
+  },
+  {
+    unitType: "social_work_ready",
+    test: (normalized) => hasSocialWorkReadySignal(normalized),
+    absorbable: true,
+    satisfiable: true,
+    familyHint: "social_deterministic",
+    priority: 1,
   },
   {
     unitType: "time_request",
@@ -183,6 +210,20 @@ function mergeInventoryAndClauseUnits(inventoryUnits = [], clauseUnits = []) {
 function buildUnitFromClause(clause = "", index = 0) {
   const payload = String(clause || "").trim();
   const normalized = normalizeForParse(payload);
+
+  if (hasSocialChatInviteSignal(payload)) {
+    return {
+      id: `unit_social_chat_invite_${index}`,
+      unitType: "social_chat_invite",
+      taskKind: "social",
+      familyHint: "social_deterministic",
+      payload,
+      priority: 1,
+      absorbable: true,
+      satisfiable: true,
+      dependsOn: [],
+    };
+  }
 
   if (SOCIAL_GREETING_CLAUSE_RE.test(normalized)) {
     return {
@@ -315,6 +356,85 @@ function pickPrimaryWorkUnit(units = []) {
 }
 
 /**
+ * Composition sociale multi-signal v1.
+ * greeting + checkin + work_ready → work_ready (greeting/checkin absorbés dans le ton).
+ * greeting + chat_invite → chat_invite (greeting absorbé dans le ton).
+ * @param {RequestUnit[]} units
+ * @returns {{
+ *   situation: string,
+ *   primaryUnitType: string,
+ *   absorbedUnitTypes: string[],
+ *   preemptedByWork: boolean,
+ * }|null}
+ */
+export function composeSocialSituation(units = []) {
+  const list = Array.isArray(units) ? units : [];
+  const types = new Set(list.map((u) => u.unitType));
+  const hasGreeting = types.has(SOCIAL_SITUATIONS.GREETING);
+  const hasCheckin = types.has(SOCIAL_SITUATIONS.CHECKIN);
+  const hasInvite = types.has(SOCIAL_SITUATIONS.CHAT_INVITE);
+  const hasWorkReady = types.has(SOCIAL_SITUATIONS.WORK_READY);
+  const hasWork = list.some((u) => !u.absorbable);
+
+  if (!hasGreeting && !hasCheckin && !hasInvite && !hasWorkReady) return null;
+
+  if (hasWork) {
+    return {
+      situation: null,
+      primaryUnitType: null,
+      absorbedUnitTypes: [
+        ...(hasGreeting ? [SOCIAL_SITUATIONS.GREETING] : []),
+        ...(hasCheckin ? [SOCIAL_SITUATIONS.CHECKIN] : []),
+        ...(hasInvite ? [SOCIAL_SITUATIONS.CHAT_INVITE] : []),
+        ...(hasWorkReady ? [SOCIAL_SITUATIONS.WORK_READY] : []),
+      ],
+      preemptedByWork: true,
+    };
+  }
+
+  if (hasWorkReady) {
+    return {
+      situation: SOCIAL_SITUATIONS.WORK_READY,
+      primaryUnitType: SOCIAL_SITUATIONS.WORK_READY,
+      absorbedUnitTypes: [
+        ...(hasGreeting ? [SOCIAL_SITUATIONS.GREETING] : []),
+        ...(hasCheckin ? [SOCIAL_SITUATIONS.CHECKIN] : []),
+        ...(hasInvite ? [SOCIAL_SITUATIONS.CHAT_INVITE] : []),
+      ],
+      preemptedByWork: false,
+    };
+  }
+
+  if (hasInvite) {
+    return {
+      situation: SOCIAL_SITUATIONS.CHAT_INVITE,
+      primaryUnitType: SOCIAL_SITUATIONS.CHAT_INVITE,
+      absorbedUnitTypes: [
+        ...(hasGreeting ? [SOCIAL_SITUATIONS.GREETING] : []),
+        ...(hasCheckin ? [SOCIAL_SITUATIONS.CHECKIN] : []),
+      ],
+      preemptedByWork: false,
+    };
+  }
+
+  if (hasCheckin) {
+    return {
+      situation: SOCIAL_SITUATIONS.CHECKIN,
+      primaryUnitType: SOCIAL_SITUATIONS.CHECKIN,
+      absorbedUnitTypes: hasGreeting ? [SOCIAL_SITUATIONS.GREETING] : [],
+      preemptedByWork: false,
+    };
+  }
+
+  return {
+    situation: SOCIAL_SITUATIONS.GREETING,
+    primaryUnitType: SOCIAL_SITUATIONS.GREETING,
+    absorbedUnitTypes: [],
+    preemptedByWork: false,
+  };
+}
+
+/**
  * @param {ReturnType<typeof buildTranslationRequestPlan>} plan
  * @returns {RequestUnit[]}
  */
@@ -384,7 +504,14 @@ export function decomposeRequest(query = "", history = []) {
     executionMode = EXECUTION_MODES.MULTI_UNIT;
   }
 
+  const socialSituation = composeSocialSituation(units);
+  const workUnitsOnly = units.filter((u) => !u.absorbable);
   const primaryUnit = pickPrimaryWorkUnit(units);
+  const socialPrimary =
+    socialSituation?.primaryUnitType &&
+    units.find((u) => u.unitType === socialSituation.primaryUnitType);
+  const resolvedPrimary =
+    workUnitsOnly.length > 0 ? primaryUnit : socialPrimary || primaryUnit;
 
   return {
     rule: REQUEST_DECOMPOSITION_RULE,
@@ -393,12 +520,13 @@ export function decomposeRequest(query = "", history = []) {
     unitCount: units.length,
     unitTypes: units.map((u) => u.unitType),
     containsSocialPreamble: units.some((u) => u.unitType === "social_greeting"),
+    socialSituation,
     hasCrossUnitDependencies: detectCrossUnitDependencies(units),
     units,
-    primaryUnitId: primaryUnit?.id || null,
+    primaryUnitId: resolvedPrimary?.id || null,
     primaryRoutingQuery:
       requestMode === REQUEST_MODES.MULTI_UNIT
-        ? primaryUnit?.payload || query
+        ? resolvedPrimary?.payload || query
         : query,
     translationPlan: translationPlan.ready ? translationPlan : null,
   };

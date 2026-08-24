@@ -2,9 +2,25 @@
 
 > Copier ce fichier ou remplir inline dans le chat. Une fiche = un lot autonome.
 
+Si le lot touche la compréhension d’input, routing, JUST, `entities`, clarify ou SC :  
+lire [`docs/governance/citadelle-input-invariants.md`](governance/citadelle-input-invariants.md) **avant** d’écrire du code.  
+La fiche doit porter les cinq champs du canon : objectif, périmètre, preuve, invariants, risques.
+
 ## Objectif
 
 <!-- Une phrase : quel rouge / quelle feature, quel comportement attendu -->
+
+## Périmètre
+
+<!-- Fichiers touchés. Hors périmètre explicite. -->
+
+## Invariants
+
+<!-- Ceux du canon + ceux du lot. Pointer, ne pas recopier le canon. -->
+
+## Risques
+
+<!-- Régression, rouge gelé, duplication de couche. -->
 
 ## Plan
 

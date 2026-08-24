@@ -6,13 +6,13 @@ import {
   isCompareChooseRequest,
   parseCompareChoose,
   extractCompareDomain,
-} from "../../utils/compareChooseIntentGuards.js";
+} from "../../utils/intent-guards/compareChooseIntentGuards.js";
 import {
   hasExplicitWebProductRecoSignals,
   isHardwareProductCompareQuery,
 } from "./explicitWebSearchRequestPolicy.js";
 import { RESPONSE_STRATEGIES } from "../conversation/queryUnderstandingDomainRegistry.js";
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 
 export const COMPARE_CHOOSE_COMPOSITE_RULE = "compare_choose_composite_g31_1";
 

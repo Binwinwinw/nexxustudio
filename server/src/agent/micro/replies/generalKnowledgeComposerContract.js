@@ -4,8 +4,10 @@
 import {
   extractGeneralKnowledgeSubject,
   isGeneralKnowledgeRequest,
-} from "../../utils/generalKnowledgeIntentGuards.js";
-import { isRecipeKnowledgeRequest } from "../../utils/recipeKnowledgeIntentGuards.js";
+} from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
+import { isRecipeKnowledgeRequest } from "../../utils/intent-guards/recipeKnowledgeIntentGuards.js";
+import { isHowToRequestShell } from "../../utils/intent-guards/howToRequestIntentGuards.js";
+import { hasCompoundKnowledgeAsk } from "../../utils/parsing-normalization/queryEntityUnderstanding.js";
 import {
   isCulturalContentSummaryRequest,
   extractCulturalSummarySubject,
@@ -13,6 +15,90 @@ import {
 
 export const GENERAL_KNOWLEDGE_COMPOSER_RULE =
   "general_knowledge_generous_human_response";
+
+export const GK_VOLUME_TIER_LIGHT = "light";
+export const GK_VOLUME_TIER_STANDARD = "standard";
+export const GK_VOLUME_TIER_DEEP = "deep";
+
+/** Aligné workUnitCountAndPlanPolicy — pas un nouveau pipeline. */
+const DETAILED_RE =
+  /\b(?:en detail|en détail|detaille|détaillé|approfond|avec des details|avec des détails)\b/i;
+const CEST_QUOI_RE =
+  /\b(?:c'est quoi|c est quoi|qu'est ce que|qu est ce que|qu'est-ce que|definition|définition)\b/i;
+const YES_NO_RE =
+  /\b(?:oui ou non|juste oui|dis[- ]?moi oui|réponds oui|oui\/non)\b/i;
+const STEP_BY_STEP_RE =
+  /\b(?:étape par étape|etape par etape|pas a pas|pas à pas|étapes? pour|etapes? pour)\b/i;
+const INSTALL_PROCEDURE_RE =
+  /\b(?:installe|installer|installation|dual[- ]?boot)\b/i;
+/** Lecture seule du lexique P5 — pas un driver de shape. */
+const STRUCTURED_REPORT_RE =
+  /\b(?:r[eé]sum[eé]\s+ex[eé]cuti[fv]e?|analyse\s+(?:de\s+|du\s+)?march[eé]|analyse\s+concurrentielle|opportunit[eé]s\s+de\s+croissance|tableau\s+strat[eé]gique|rapport(?:\s+(?:long|professionnel|structur[eé]|d[eé]taill[eé]))?|compte[- ]rendu)\b/i;
+
+/**
+ * Palier de charge réelle — consignes + budget, pas un pipeline.
+ * @param {string} query
+ * @param {{
+ *   hasWebEvidence?: boolean,
+ *   codeDelivery?: boolean,
+ *   repoAnalysis?: boolean,
+ *   factualResearch?: boolean,
+ *   structuredContent?: boolean,
+ *   multiUnit?: boolean,
+ * }} [ctx]
+ * @returns {"light"|"standard"|"deep"}
+ */
+export function resolveGeneralKnowledgeVolumeTier(query = "", ctx = {}) {
+  const q = String(query || "").trim();
+  if (!q) return GK_VOLUME_TIER_STANDARD;
+
+  if (
+    ctx.codeDelivery ||
+    ctx.repoAnalysis ||
+    ctx.structuredContent ||
+    ctx.multiUnit
+  ) {
+    return GK_VOLUME_TIER_DEEP;
+  }
+  if (isRecipeKnowledgeRequest(q) || isHowToRequestShell(q)) {
+    return GK_VOLUME_TIER_DEEP;
+  }
+  if (DETAILED_RE.test(q) || STEP_BY_STEP_RE.test(q) || INSTALL_PROCEDURE_RE.test(q)) {
+    return GK_VOLUME_TIER_DEEP;
+  }
+  if (STRUCTURED_REPORT_RE.test(q)) {
+    return GK_VOLUME_TIER_DEEP;
+  }
+  if (resolveLocalGeneralKnowledgeDetail(q)) {
+    return GK_VOLUME_TIER_DEEP;
+  }
+  if (ctx.factualResearch) {
+    return GK_VOLUME_TIER_STANDARD;
+  }
+
+  const yesNo = YES_NO_RE.test(q);
+  const cestQuoi = CEST_QUOI_RE.test(q);
+  const compound = hasCompoundKnowledgeAsk(q);
+  const hasWeb = Boolean(ctx.hasWebEvidence);
+
+  if (yesNo) return GK_VOLUME_TIER_LIGHT;
+  if (compound) return GK_VOLUME_TIER_STANDARD;
+  if (cestQuoi) return hasWeb ? GK_VOLUME_TIER_STANDARD : GK_VOLUME_TIER_LIGHT;
+  if (isGeneralKnowledgeRequest(q)) {
+    return hasWeb ? GK_VOLUME_TIER_STANDARD : GK_VOLUME_TIER_LIGHT;
+  }
+  return hasWeb ? GK_VOLUME_TIER_STANDARD : GK_VOLUME_TIER_LIGHT;
+}
+
+/**
+ * @param {"light"|"standard"|"deep"} tier
+ * @returns {number}
+ */
+export function resolveGeneralKnowledgeNumPredict(tier = GK_VOLUME_TIER_STANDARD) {
+  if (tier === GK_VOLUME_TIER_DEEP) return 4000;
+  if (tier === GK_VOLUME_TIER_STANDARD) return 900;
+  return 700;
+}
 
 const BOEUF_BOURGUIGNON_DETAIL = `Oui, je connais bien le **bœuf bourguignon**.
 
@@ -55,9 +141,47 @@ export function resolveLocalGeneralKnowledgeDetail(query = "") {
 /** @deprecated alias */
 export const resolveLocalRecipeKnowledgeDetail = resolveLocalGeneralKnowledgeDetail;
 
-export function buildGeneralKnowledgeSystemAddon(query = "") {
+export function buildGeneralKnowledgeSystemAddon(query = "", ctx = {}) {
   const subject = extractGeneralKnowledgeSubject(query) || "le sujet demandé";
   const isRecipe = isRecipeKnowledgeRequest(query);
+  const tier =
+    ctx.volumeTier || resolveGeneralKnowledgeVolumeTier(query, ctx);
+  const hasWeb = Boolean(ctx.hasWebEvidence);
+
+  if (tier === GK_VOLUME_TIER_LIGHT) {
+    return [
+      "VARIANTE CULTURE GÉNÉRALE (réponse courte et naturelle) :",
+      `- Sujet visé : **${subject}**.`,
+      "FORMAT :",
+      "- 2 à 5 phrases suffisent. Dis ce que c'est, sans plan ni rubriques.",
+      "- Si la question est oui/non : tranche d'abord, puis 1 ou 2 phrases d'appui.",
+      hasWeb
+        ? "- Sources : une ligne en fin si le contexte en fournit — pas de dump de résultats."
+        : "- Pas de rubriques « C'est quoi / D'où ça vient / Pourquoi c'est connu ».",
+      "INTERDIT :",
+      "- Liste de mots-clés ou menu d'options sans contenu.",
+      "- Clarify-first quand le sujet est déjà nommé.",
+      "- Six sections, plan de rapport, ou ton robotique.",
+    ].join("\n");
+  }
+
+  if (tier === GK_VOLUME_TIER_STANDARD) {
+    return [
+      "VARIANTE CULTURE GÉNÉRALE (brief structuré, pas questionnaire) :",
+      `- Sujet visé : **${subject}**.`,
+      "FORMAT :",
+      "- 1 à 2 paragraphes : ce que c'est, d'où ça vient, pourquoi c'est connu.",
+      "- Un court bloc de points utiles si ça aide (composition, usage).",
+      hasWeb
+        ? "- Sources en appui ou en fin — pas de dump SERP ni de liste de fiches web."
+        : "- Rester sur le sujet demandé.",
+      "INTERDIT :",
+      "- Liste de mots-clés ou menu d'options sans contenu.",
+      "- Clarify-first quand le sujet est déjà nommé.",
+      "- Remplacer le sujet demandé par un autre sans le dire.",
+      "- Promettre une recherche web non exécutée.",
+    ].join("\n");
+  }
 
   const formatLines = isRecipe
     ? [
@@ -115,7 +239,8 @@ export function buildCulturalContentSummarySystemAddon(query = "") {
     "- « Colle le passage » — l'utilisateur demande ta connaissance, pas une pièce jointe.",
     "- Clarify-first quand l'œuvre est déjà nommée.",
     "- Réponse au-delà de 5 phrases ou tronquée à 2 phrases sans contenu.",
-    "- Inventer plutôt que dire « Je n'ai pas de synopsis fiable en local ».",
+    "- Inventer un synopsis. Si des sources web sont fournies, résume-les (3 à 5 phrases) — INTERDIT de dire « pas de synopsis fiable en local ».",
+    "- Sans sources web et sans certitude factuelle : ne pas inventer.",
   ].join("\n");
 }
 
@@ -138,13 +263,25 @@ ${local}`;
       ? `Contexte expert :\n${expertSynthesis || quickAnswer}\n\n`
       : "";
 
+  const tier = resolveGeneralKnowledgeVolumeTier(query, ctx);
+  const consigne =
+    tier === GK_VOLUME_TIER_LIGHT
+      ? `- Réponds pour **${subject}** uniquement.
+- Quelques phrases naturelles suffisent.
+- Pas de menu d'options, pas de plan en sections.`
+      : tier === GK_VOLUME_TIER_STANDARD
+        ? `- Réponds pour **${subject}** uniquement.
+- Brief : explication + points utiles. Sources en fin si le contexte en fournit.
+- Pas de menu d'options, pas de clarify-first.`
+        : `- Réponds pour **${subject}** uniquement.
+- Réponse humaine complète : oui je connais + explication + détails utiles.
+- Pas de menu d'options, pas de clarify-first.`;
+
   return `${contextBlock}Demande utilisateur :
 "${String(query || "").trim()}"
 
 CONSIGNE CULTURE GÉNÉRALE :
-- Réponds pour **${subject}** uniquement.
-- Réponse humaine complète : oui je connais + explication + détails utiles.
-- Pas de menu d'options, pas de clarify-first.`;
+${consigne}`;
 }
 
 /** @deprecated alias */
@@ -183,7 +320,9 @@ export const resolveRecipeKnowledgeShortCircuit = resolveGeneralKnowledgeShortCi
 export function isGeneralKnowledgeContractViolation(query = "", text = "") {
   if (!isGeneralKnowledgeRequest(query)) return false;
   const body = String(text || "").trim();
-  if (!body || body.length < 80) return true;
+  const tier = resolveGeneralKnowledgeVolumeTier(query);
+  if (!body) return true;
+  if (tier !== GK_VOLUME_TIER_LIGHT && body.length < 80) return true;
   if (/je n['']?ai pas assez d'elements fiables/i.test(body)) return true;
 
   const subject = extractGeneralKnowledgeSubject(query);

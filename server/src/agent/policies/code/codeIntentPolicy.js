@@ -11,6 +11,7 @@ import {
   CODE_INTENT_LABELS,
 } from "../../../../../shared/codeIntentCatalog.js";
 import { isCodeConceptExplainRequest } from "./codeConceptExplainPolicy.js";
+import { isFileAnalysisWorkRequest } from "../attachment/fileAnalysisContract.js";
 
 export {
   CODE_INTENT_KINDS,
@@ -105,11 +106,35 @@ export function hasExecutableSnippet(query = "") {
  * @param {string} query
  * @param {{ attachments?: unknown[] }} [options]
  */
+function isHtmlOnlyAttachments(attachments = []) {
+  const names = (Array.isArray(attachments) ? attachments : [])
+    .map((f) => String(f?.originalname || f?.name || ""))
+    .filter(Boolean);
+  return names.length > 0 && names.every((n) => /\.html?$/i.test(n));
+}
+
+/** HTML + analyser/expliquer sans nature code → document, pas revue. */
+function isHtmlDocumentWorkRequest(query = "", attachments = []) {
+  if (!isHtmlOnlyAttachments(attachments)) return false;
+  const q = String(query || "");
+  if (/\b(?:le\s+code|html\s*\/\s*css|xss|balise|dom)\b/i.test(q)) return false;
+  if (
+    /\b(?:corrige(?:r)?|fix(?:e|er)?|r[eé]pare(?:r)?|refactor|audit(?:er)?|revue|review|debug|s[eé]curit)\b/i.test(
+      q,
+    )
+  ) {
+    return false;
+  }
+  return /\b(?:analys(?:e|er)|expliqu(?:e|er))\b/i.test(q);
+}
+
 export function classifyCodeIntent(query = "", options = {}) {
   const q = String(query || "").trim();
   if (!q) return null;
 
   const attachments = options.attachments || [];
+  if (attachments.length && isFileAnalysisWorkRequest(q)) return null;
+  if (isHtmlDocumentWorkRequest(q, attachments)) return null;
   const codeAttachment = hasCodeAttachmentFiles(attachments);
   const shortAttachmentCode =
     codeAttachment &&

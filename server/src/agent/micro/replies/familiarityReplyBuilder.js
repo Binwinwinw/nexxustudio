@@ -9,10 +9,10 @@ import {
   resolveKnownOrUnknownSubject,
   buildFamiliarityBodyForSubject,
   getFamiliarityDeterministicReply,
-} from "../../utils/familiarityIntentGuards.js";
+} from "../../utils/intent-guards/familiarityIntentGuards.js";
 import {
   hasStaticLexiconEntry,
-} from "../../utils/familiarityIntentGuards.js";
+} from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { observeLexiconLearning } from "../lexicon/lexiconLearningOrchestrator.js";
 import { buildSubjectInterpretedState } from "../subject/subjectInterpretedState.js";
 import {
@@ -23,9 +23,9 @@ import { buildSubjectClarificationReply } from "../subject/subjectResponseBuilde
 import { DETERMINISTIC_ROUTES } from "../subject/subjectRoutingHints.js";
 import { SUBJECT_CONFIDENCE } from "../subject/subjectConfidence.js";
 import { shouldAffirmResolution } from "../subject/subjectConfidence.js";
-import { isGeneralKnowledgeRequest } from "../../utils/generalKnowledgeIntentGuards.js";
-import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIntentGuards.js";
-import { isTranslationRequest } from "../../utils/translationIntentGuards.js";
+import { isGeneralKnowledgeRequest } from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
+import { isInformationSeekingWithTarget } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
+import { isTranslationRequest } from "../../utils/intent-guards/translationIntentGuards.js";
 import {
   resolveSubjectTyping,
   buildSubjectTypeClarifyReply,

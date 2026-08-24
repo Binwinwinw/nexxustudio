@@ -1,10 +1,10 @@
-import { normalizeText } from "../utils/normalizationGuards.js";
+import { normalizeText } from "../utils/parsing-normalization/normalizationGuards.js";
 import {
   hasUnsolicitedCode,
   isDegenerateMetaResponse,
   isHallucinatedPackage,
-} from "../utils/safetyGuards.js";
-import { isOffTopicSocialReply } from "../utils/conversationGuards.js";
+} from "../utils/quality-safety/safetyGuards.js";
+import { isOffTopicSocialReply } from "../utils/conversation/conversationGuards.js";
 import {
   isEnglish,
   looksLooping,
@@ -18,7 +18,7 @@ import {
   isPrematurePedagogy,
   isIntentMisdirection,
   isProgressiveDrift,
-} from "../utils/qualityGuards.js";
+} from "../utils/quality-safety/qualityGuards.js";
 import emergencyReplyRegistry from "./emergencyReplyRegistry.js";
 
 class ControlHarness {

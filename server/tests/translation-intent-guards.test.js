@@ -15,7 +15,7 @@ import {
   requiresTranslationClarification,
   buildTranslationClarifyReply,
   suppressesSocialForTranslation,
-} from "../src/agent/utils/translationIntentGuards.js";
+} from "../src/agent/utils/intent-guards/translationIntentGuards.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { analyzeRequestIntentFrame } from "../src/agent/policies/intent/requestIntentFrame.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";

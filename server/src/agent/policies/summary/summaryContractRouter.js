@@ -502,7 +502,8 @@ export function classifySummaryContract(query = "", ctx = {}) {
         pipelinePath: "cultural_content_summary",
         mode: "SIMPLE_FAST",
         forbidDocumentRequest: true,
-        forbidWebSearch: true,
+        forbidWebSearch: false,
+        webOnLocalMiss: true,
       },
     });
   }
@@ -541,7 +542,8 @@ export function classifySummaryContract(query = "", ctx = {}) {
         pipelinePath: "cultural_content_summary",
         mode: "SIMPLE_FAST",
         forbidDocumentRequest: true,
-        forbidWebSearch: true,
+        forbidWebSearch: false,
+        webOnLocalMiss: true,
       },
     });
   }

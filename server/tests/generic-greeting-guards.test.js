@@ -8,7 +8,7 @@ import {
   GENERIC_READY_GREETING,
   isGenericReadyGreeting,
   recoverVisibleFromFullResponse,
-} from "../src/agent/utils/genericGreetingGuards.js";
+} from "../src/agent/utils/conversation/genericGreetingGuards.js";
 
 describe("genericGreetingGuards", () => {
   it("détecte une demande de génération de code substantielle", () => {
@@ -50,7 +50,7 @@ describe("genericGreetingGuards", () => {
       "../src/agent/policies/intent/justIntentDetectionPolicy.js"
     );
     const { isCasualSocialCheckInQuery } = await import(
-      "../src/agent/utils/genericGreetingGuards.js"
+      "../src/agent/utils/conversation/genericGreetingGuards.js"
     );
     const q = "yop yop comment ça va là dedans ???";
     assert.equal(isCasualSocialCheckInQuery(q), true);
@@ -72,6 +72,9 @@ describe("genericGreetingGuards", () => {
     const query = "Quelle est la capitale du pays inventé Zorgonia ?";
     const out = resolvePipelineFallback({ query, reason: "no_visible_tokens" });
     assert.notEqual(out, GENERIC_READY_GREETING);
-    assert.match(out, /pas pu finaliser|réponse pour cette question/i);
+    assert.match(
+      out,
+      /pas pu finaliser|réponse pour cette question|donnée factuelle directe/i,
+    );
   });
 });

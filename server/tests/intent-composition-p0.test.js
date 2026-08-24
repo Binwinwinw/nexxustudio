@@ -96,6 +96,17 @@ describe("INTENT_COMPOSITION_V1 — P0", () => {
     assert.match(hit?.reply || "", /En 3 lignes|En résumé/i);
   });
 
+  it("créer un Excel / tableau de bord → generate, pas explain+table", () => {
+    const q =
+      "jev eux créer un fichier excel avec un tableau de bord de gestion de rendez vous avec un calendrier affichant le jour et le nom de la personne";
+    const c = resolveIntentComposition(q, {
+      justIntent: evaluateJustIntent(q),
+    });
+    assert.equal(c.primary_action, "generate");
+    assert.equal(c.output_constraints.format, null);
+    assert.notEqual(c.just_relation, "too_flat");
+  });
+
   it("applyPedagogicalCompositionAugment — sources si demandé", () => {
     const composition = resolveIntentComposition(
       "explique le cycle de l'eau sous forme de tableau avec sources",

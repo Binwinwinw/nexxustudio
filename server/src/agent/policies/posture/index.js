@@ -7,3 +7,4 @@ export * from "./responseStylePolicy.js";
 export * from "./responseMannerPolicy.js";
 export { default } from "./stylePolicy.js";
 export * from "./structuredGenerativeTemplatePolicy.js";
+export * from "./outputLanguagePolicy.js";

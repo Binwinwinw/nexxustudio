@@ -10,7 +10,7 @@ import {
   CONVERSATION_TURN_FAMILIES,
 } from "../src/agent/micro/classifiers/conversationTurnClassifier.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { isConversationMemoryRecallRequest } from "../src/agent/utils/conversationGuards.js";
+import { isConversationMemoryRecallRequest } from "../src/agent/utils/conversation/conversationGuards.js";
 
 const FORBIDDEN_HEAVY = new Set([
   "COMPOSER",
@@ -482,6 +482,7 @@ await probe(
   { history: CRITIQUE_HISTORY },
   {
     allowedPaths: [
+      "meta_conversation_feedback",
       "meta_assistant_behavior_deterministic",
       "meta_feedback_deterministic",
     ],
@@ -497,6 +498,7 @@ await probe(
   { history: CRITIQUE_HISTORY },
   {
     allowedPaths: [
+      "meta_conversation_feedback",
       "meta_assistant_behavior_deterministic",
       "meta_feedback_deterministic",
       "comprehension_grounding_deterministic",
@@ -513,6 +515,7 @@ await probe(
   { history: CRITIQUE_HISTORY },
   {
     allowedPaths: [
+      "meta_conversation_feedback",
       "meta_assistant_behavior_deterministic",
       "meta_feedback_deterministic",
     ],

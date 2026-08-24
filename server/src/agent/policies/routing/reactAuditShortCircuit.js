@@ -6,8 +6,8 @@ import {
   REACT_AUDIT_INTENTS,
   REACT_AUDIT_PIPELINE_PATHS,
 } from "./reactAuditContractRouter.js";
-import { isReactAuditRequest } from "../../utils/reactAuditIntentGuards.js";
-import { isUiNavigationRestructureFeedback } from "../../utils/uiNavigationFeedbackGuards.js";
+import { isReactAuditRequest } from "../../utils/intent-guards/reactAuditIntentGuards.js";
+import { isUiNavigationRestructureFeedback } from "../../utils/conversation/uiNavigationFeedbackGuards.js";
 import { RESPONSE_MODES } from "../../config/modeResponseContracts.js";
 
 /**

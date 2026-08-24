@@ -5,11 +5,11 @@
 import {
   isPedagogicalOverviewRequest,
   extractPedagogicalSubject,
-} from "../../utils/pedagogicalOverviewIntentGuards.js";
+} from "../../utils/intent-guards/pedagogicalOverviewIntentGuards.js";
 import {
   parsePedagogicalOverview,
   resolvePedagogicalRenderLevel,
-} from "../../utils/pedagogicalOverviewParser.js";
+} from "../../utils/parsing-normalization/pedagogicalOverviewParser.js";
 import {
   getPedagogicalTopicKnowledge,
 } from "./pedagogicalOverviewKnowledge.js";
@@ -27,7 +27,7 @@ const FOOTER_DISCLAIMER =
   "C'est un aperçu de socle cycle 3 — pas le programme officiel BO complet. Si tu veux le référentiel officiel ou des exercices ciblés, dis-le.";
 
 /**
- * @param {import("../../utils/pedagogicalOverviewParser.js").PedagogicalOverviewSlots} slots
+ * @param {import("../../utils/parsing-normalization/pedagogicalOverviewParser.js").PedagogicalOverviewSlots} slots
  * @param {import("./pedagogicalOverviewKnowledge.js").PedagogicalLevelModule} module
  * @returns {string}
  */
@@ -53,7 +53,7 @@ export function renderPedagogicalOverview(slots, module) {
 }
 
 /**
- * @param {import("../../utils/pedagogicalOverviewParser.js").PedagogicalOverviewSlots} slots
+ * @param {import("../../utils/parsing-normalization/pedagogicalOverviewParser.js").PedagogicalOverviewSlots} slots
  * @returns {string|null}
  */
 export function renderPedagogicalOverviewFromSlots(slots) {
@@ -85,7 +85,7 @@ export function resolvePedagogicalOverviewReply(query = "") {
 }
 
 /**
- * @param {import("../../utils/pedagogicalOverviewParser.js").PedagogicalOverviewSlots} slots
+ * @param {import("../../utils/parsing-normalization/pedagogicalOverviewParser.js").PedagogicalOverviewSlots} slots
  * @returns {string}
  */
 export function buildPedagogicalOverviewSystemAddonFromSlots(slots) {
@@ -144,7 +144,7 @@ export function buildPedagogicalOverviewSystemAddon(query = "") {
 
 /**
  * @param {string} query
- * @returns {{ path: string, reply?: string, deferToLlm?: boolean, deferToFullPipeline?: boolean, reflectiveHint?: string, slots?: import("../../utils/pedagogicalOverviewParser.js").PedagogicalOverviewSlots, coverage?: ReturnType<typeof resolvePedagogicalCoverage> }|null}
+ * @returns {{ path: string, reply?: string, deferToLlm?: boolean, deferToFullPipeline?: boolean, reflectiveHint?: string, slots?: import("../../utils/parsing-normalization/pedagogicalOverviewParser.js").PedagogicalOverviewSlots, coverage?: ReturnType<typeof resolvePedagogicalCoverage> }|null}
  */
 export function resolvePedagogicalOverviewShortCircuit(query = "") {
   if (!isPedagogicalOverviewRequest(query)) return null;

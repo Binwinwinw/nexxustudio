@@ -4,7 +4,7 @@
 import {
   isPresentationOutlineRequest,
   parsePresentationOutline,
-} from "../../utils/presentationOutlineIntentGuards.js";
+} from "../../utils/intent-guards/presentationOutlineIntentGuards.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../../config/modeResponseContracts.js";
 
 export const PRESENTATION_OUTLINE_COMPOSER_RULE =

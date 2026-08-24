@@ -34,6 +34,11 @@ import {
   buildMetaReflectiveHint,
 } from "../replies/metaConversationReplyBuilder.js";
 import {
+  isCapabilityOverviewRequest,
+  isMetaConversationIntent,
+  isMetaHelpScopeIntent,
+} from "../../utils/intent-guards/metaConversationIntentGuards.js";
+import {
   interpretRequest,
   resolveEffectiveQuery,
   INTERPRETER_ACTIONS,
@@ -48,6 +53,7 @@ import {
   decomposeRequest,
   isMultiUnitRequest,
   shouldPreemptMultiSegment,
+  SOCIAL_SITUATIONS,
   resolveInformationSeekingLightShortCircuit,
   resolveExplicitWebSearchHelpShortCircuit,
   isWebCitationsStructuredReportCluster,
@@ -66,15 +72,33 @@ import {
   buildForgeHandoffAckReply,
 } from "../subject/forgeProjectScoping.js";
 import { evaluateProcedureSubjectNatureGate } from "../subject/subjectNatureResolver.js";
-import { isExploitableProcedureIntent } from "../../utils/procedureIntentGuards.js";
+import { isExploitableProcedureIntent } from "../../utils/intent-guards/procedureIntentGuards.js";
 import { isProcedureFormWithResolvableSubject } from "../subject/subjectIntelligenceLayer.js";
-import { isArchitectureDesignIntent } from "../../utils/architectureDesignIntentGuards.js";
-import { classifyWebProjectScopingRequest } from "../../utils/webProjectScopingGuards.js";
+import {
+  isArchitectureDesignIntent,
+  resolveArchitectureDepthControl,
+} from "../../utils/intent-guards/architectureDesignIntentGuards.js";
+import { resolveProjectIdeaCritiqueShortCircuit } from "../../utils/intent-guards/ideationIntentGuards.js";
+import { classifyWebProjectScopingRequest } from "../../utils/intent-guards/webProjectScopingGuards.js";
 import {
   resolveSocialCompositeShortCircuit,
   isKnownSocialPattern,
   resolveSocialPatternShortCircuit,
   resolveSocialChatContinuityShortCircuit,
+  buildSocialPatternReply,
+  isAssistantFamilyCheckin,
+  isUserFamilyCheckin,
+  LOCAL_SOCIAL_RAIL_FLAGS,
+  hasSocialPlayInviteSignal,
+  hasJokePerformSignal,
+  hasJokeMetaSignal,
+  isSocialCheckinConsistencyCritique,
+  buildSocialCheckinReply,
+  clampSocialCheckinReply,
+  isIdleConfirmedSocialCheckin,
+  isSocialToneRepairIntent,
+  isPhaticSocialCheckinIntent,
+  isMetaWhoDrivesIntent,
 } from "../../policies/social/index.js";
 import {
   resolveCodeConceptExplainShortCircuit,
@@ -84,9 +108,10 @@ import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
   shouldDeferSocialRouting,
+  isCausalWhyExplainRequest,
 } from "../../policies/posture/index.js";
 import { recordSocialPatternTelemetry } from "../../telemetry/socialPatternTelemetry.js";
-import { isConversationMemoryRecallRequest } from "../../utils/conversationGuards.js";
+import { isConversationMemoryRecallRequest } from "../../utils/conversation/conversationGuards.js";
 import { resolveGeneralKnowledgeShortCircuit } from "../replies/generalKnowledgeComposerContract.js";
 import {
   resolveSummaryContractShortCircuit,
@@ -99,8 +124,9 @@ import {
   shouldRouteAttachmentTaskToFullPipeline,
   buildAttachmentInterpretationSystemAddon,
   resolveHtmlAnalyzerFactsFromAttachments,
+  tryFileAnalysisAwaitingSource,
 } from "../../policies/attachment/index.js";
-import { isAttachedVisionRequest } from "../../utils/conversationGuards.js";
+import { isAttachedVisionRequest } from "../../utils/conversation/conversationGuards.js";
 import { resolvePedagogicalOverviewShortCircuit } from "../replies/pedagogicalOverviewComposer.js";
 import { resolveBeginnerTopicOverviewShortCircuit } from "../replies/beginnerTopicOverviewComposer.js";
 import { resolveCareerLearningPathShortCircuit } from "../replies/careerLearningPathComposer.js";
@@ -111,7 +137,7 @@ import { resolveDebugDiagnosticShortCircuit } from "../replies/debugDiagnosticCo
 import { resolveCompareChooseShortCircuit } from "../replies/compareChooseComposer.js";
 import { resolveAdminProcedureShortCircuit } from "../replies/adminProcedureComposer.js";
 import { resolveSelfModificationRoute } from "../replies/selfModificationReplyBuilder.js";
-import { isAcknowledgmentRequest } from "../../utils/acknowledgmentIntentGuards.js";
+import { isAcknowledgmentRequest } from "../../utils/intent-guards/acknowledgmentIntentGuards.js";
 import {
   isSimpleFactualQuestion,
   resolveSimpleDeterministicFromFrame,
@@ -123,7 +149,7 @@ import {
   shouldRunFactualSanityGate,
 } from "../replies/factualSanityGate.js";
 import { recordFactualSanityTelemetry } from "../../telemetry/factualSanityTelemetry.js";
-import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIntentGuards.js";
+import { isInformationSeekingWithTarget } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import {
   resolveSubjectTypingFromQuery,
   buildSubjectTypeClarifyReply,
@@ -135,8 +161,8 @@ import {
   buildTranslationClarifyReply,
   isTranslationPipelineReady,
   requiresTranslationClarification,
-} from "../../utils/translationIntentGuards.js";
-import { buildTranslationRequestPlan } from "../../utils/translationRequestPlan.js";
+} from "../../utils/intent-guards/translationIntentGuards.js";
+import { buildTranslationRequestPlan } from "../../utils/parsing-normalization/translationRequestPlan.js";
 import {
   buildMultiUnitCompositeReply,
 } from "../replies/multiUnitReplyBuilder.js";
@@ -152,7 +178,14 @@ import {
   resolveQueryCompositeShortCircuit,
   resolveConversationTurnFamilyShortCircuit,
   resolveExploratoryConversationShortCircuit,
+  resolveShortGeneralAnswerShortCircuit,
+  resolveNamedCreateStartShortCircuit,
+  resolveActiveGoalContinuationShortCircuit,
 } from "../../policies/conversation/index.js";
+import {
+  lookupRoutingCase,
+  formatRoutingCaseLog,
+} from "../../policies/routing/routingCaseDictionary.js";
 import { resolveDocumentSynthesisShortCircuit } from "../../policies/document/index.js";
 import {
   resolveFamiliarityDomainOverviewShortCircuit,
@@ -172,6 +205,7 @@ import {
   resolveExistingSourceAnalysisShortCircuit,
   resolveRepoAnalysisShortCircuit,
 } from "../../policies/analysis/index.js";
+import { isRepoAnalysisRequest } from "../../utils/intent-guards/repoAnalysisIntentGuards.js";
 import {
   classifyConversationTurnFamily,
   shouldSuppressTurnFamilyPath,
@@ -180,6 +214,10 @@ import {
 import { recordConversationTurnTelemetry } from "../../telemetry/conversationTurnTelemetry.js";
 import { resolveCasualExplanationLightShortCircuit } from "../../policies/social/index.js";
 import { resolveEpistemicUncertaintyShortCircuit } from "../../policies/epistemic/index.js";
+import {
+  resolveFramingCorrectionShortCircuit,
+  resolveExploratorySubjectAngleShortCircuit,
+} from "../../policies/conversation/conversationFramingPolicy.js";
 
 function withPedagogicalComposition(query, reply) {
   if (!reply) return reply;
@@ -213,21 +251,28 @@ function tryEmitCurrentWebFactShortCircuit(effectiveQuery, emit, history = []) {
     history,
   });
   if (!currentWebFactHit) return null;
+  const outOfScope =
+    Boolean(currentWebFactHit.reply) &&
+    currentWebFactHit.deferToFullPipeline === false;
   return emit({
     path: currentWebFactHit.path,
     mode: RESPONSE_MODES.DOCUMENT,
-    reply: null,
-    deferToLlm: true,
-    deferToFullPipeline: true,
-    preferWebResearch: true,
+    reply: outOfScope ? currentWebFactHit.reply : null,
+    deferToLlm: outOfScope ? false : true,
+    deferToFullPipeline: outOfScope ? false : true,
+    preferWebResearch: outOfScope ? false : true,
     simpleFactual: true,
     currentWebFact: true,
     currentWebFactType: currentWebFactHit.factType,
     weatherCurrent: Boolean(currentWebFactHit.weatherCurrent),
     trafficCurrent: Boolean(currentWebFactHit.trafficCurrent),
-    currentWebFactWebQuery: currentWebFactHit.currentWebFactWebQuery,
-    weatherWebQuery:
-      currentWebFactHit.weatherWebQuery || currentWebFactHit.currentWebFactWebQuery,
+    currentWebFactWebQuery: outOfScope
+      ? null
+      : currentWebFactHit.currentWebFactWebQuery,
+    weatherWebQuery: outOfScope
+      ? null
+      : currentWebFactHit.weatherWebQuery ||
+        currentWebFactHit.currentWebFactWebQuery,
     trafficWebQuery: currentWebFactHit.trafficWebQuery,
     weatherLocationSource: currentWebFactHit.task?.locationSource || null,
     step: currentWebFactHit.step,
@@ -240,8 +285,12 @@ import {
   resolveExternalCalendarLookupShortCircuit,
   resolveWebCapabilityTruthShortCircuit,
 } from "../../policies/web/index.js";
-import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/externalCalendarLookupIntentGuards.js";
-import { isUiNavigationRestructureFeedback } from "../../utils/uiNavigationFeedbackGuards.js";
+import {
+  canFinalizeSocial,
+  gateSocialFinalize,
+} from "../../policies/conversation/turnComprehension.js";
+import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/intent-guards/externalCalendarLookupIntentGuards.js";
+import { isUiNavigationRestructureFeedback } from "../../utils/conversation/uiNavigationFeedbackGuards.js";
 import {
   isHistoricalDateQuestion,
   isRelativeOrFutureDatetimeQuestion,
@@ -254,11 +303,76 @@ function resolveSimpleDeterministicIntent(query) {
   return resolveSimpleDeterministicFromFrame(query);
 }
 
-const DEFAULT_SOCIAL_HEALTH_REPLY =
-  "Ça va bien de mon côté. Tu veux avancer sur quoi aujourd'hui ?";
+const DEFAULT_SOCIAL_HEALTH_REPLY = buildSocialCheckinReply("comment ca va");
 
 const DEFAULT_SOCIAL_GREETING_REPLY =
   "Salut ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?";
+
+function fulfillRoutingCase(lookup, query, options = {}) {
+  const id = lookup?.winning_rule;
+  if (!id || id === "active_goal_elliptic_followup") return null;
+  if (id === "social_wellbeing_checkin") {
+    return {
+      path: "social_deterministic",
+      mode: RESPONSE_MODES.INSTANT,
+      reply: clampSocialCheckinReply(
+        buildSocialCheckinReply(query) || DEFAULT_SOCIAL_HEALTH_REPLY,
+        query,
+      ),
+      step: "⚡ État/Santé — réponse déterministe...",
+      socialCheckinPriority: true,
+    };
+  }
+  if (id === "greeting_only") {
+    return {
+      path: "social_deterministic",
+      mode: RESPONSE_MODES.INSTANT,
+      reply:
+        options.getDeterministicSocialResponse?.(query) ||
+        DEFAULT_SOCIAL_GREETING_REPLY,
+      step: "⚡ Réponse sociale déterministe...",
+    };
+  }
+  if (id === "gratitude_ack") {
+    return {
+      path: "social_deterministic",
+      mode: RESPONSE_MODES.INSTANT,
+      reply: buildSocialPatternReply("social/gratitude", query),
+      step: "⚡ Pattern social G35 — social/gratitude...",
+      socialPatternName: "social/gratitude",
+    };
+  }
+  if (id === "open_exploration_prompt") {
+    return {
+      path: "social_deterministic",
+      mode: RESPONSE_MODES.INSTANT,
+      reply: buildSocialPatternReply("social/open_prompt", query),
+      step: "⚡ Pattern social G35 — social/open_prompt...",
+      socialPatternName: "social/open_prompt",
+    };
+  }
+  if (id === "meta_feedback") {
+    const hit = resolveMetaFeedbackShortCircuit(query, options);
+    if (!hit?.reply) return null;
+    return {
+      path: hit.path,
+      mode: RESPONSE_MODES.SIMPLE_FAST,
+      reply: hit.reply,
+      step: "🧭 Méta-feedback — correction de routage...",
+    };
+  }
+  if (id === "explicit_named_create") {
+    const hit = resolveNamedCreateStartShortCircuit(query);
+    if (!hit?.reply) return null;
+    return {
+      path: hit.path,
+      mode: RESPONSE_MODES.INSTANT,
+      reply: hit.reply,
+      step: "🪪 Création nommée — démarrage opérationnel...",
+    };
+  }
+  return null;
+}
 
 const DEFAULT_SOCIAL_RETRACTION_REPLY =
   "Pas de souci. Dis-moi quand tu veux reprendre — ou on repart de zéro si tu préfères.";
@@ -292,10 +406,17 @@ function buildSocialDeterministicShortCircuit(
     return null;
   }
 
+  const tc = options.turnComprehension || null;
+  const blockSocialTone = Boolean(tc && !canFinalizeSocial(tc));
+  const blockGenericGreeting = Boolean(
+    tc?.dominance?.engagePresent || tc?.dominance?.blocksGenericGreeting,
+  );
+
   const socialCompositeHit = resolveSocialCompositeShortCircuit(effectiveQuery, {
     history: options.history || [],
   });
   if (socialCompositeHit?.reply) {
+    if (blockSocialTone) return null;
     return {
       path: socialCompositeHit.path,
       mode: RESPONSE_MODES.INSTANT,
@@ -307,8 +428,83 @@ function buildSocialDeterministicShortCircuit(
     };
   }
 
+  // Social multi-signal v1 — composition avant menu d'accueil / greeting simple.
+  const decomposition =
+    options.requestDecomposition ||
+    decomposeRequest(effectiveQuery, options.history || []);
+  const socialSituation = decomposition?.socialSituation || null;
+  if (
+    socialSituation?.situation === SOCIAL_SITUATIONS.CHAT_INVITE &&
+    !socialSituation.preemptedByWork &&
+    !blockSocialTone
+  ) {
+    const absorbedGreeting = (socialSituation.absorbedUnitTypes || []).includes(
+      SOCIAL_SITUATIONS.GREETING,
+    );
+    const playInvite = hasSocialPlayInviteSignal(effectiveQuery);
+    const patternName = playInvite ? "social/play_invite" : "social/chat_invite";
+    return {
+      path: "social_deterministic",
+      mode: RESPONSE_MODES.INSTANT,
+      reply: buildSocialPatternReply(patternName, effectiveQuery),
+      step: absorbedGreeting
+        ? playInvite
+          ? "⚡ Social multi-signal — play_invite (greeting absorbé)..."
+          : "⚡ Social multi-signal — chat_invite (greeting absorbé)..."
+        : playInvite
+          ? "⚡ Social multi-signal — play_invite..."
+          : "⚡ Social multi-signal — chat_invite...",
+      enforce: { allowRefusal: false },
+      socialPatternMatched: true,
+      socialPatternName: patternName,
+      socialSituation,
+    };
+  }
+
+  if (
+    socialSituation?.situation === SOCIAL_SITUATIONS.WORK_READY &&
+    !socialSituation.preemptedByWork &&
+    !blockSocialTone
+  ) {
+    const absorbedGreeting = (socialSituation.absorbedUnitTypes || []).includes(
+      SOCIAL_SITUATIONS.GREETING,
+    );
+    return {
+      path: "social_deterministic",
+      mode: RESPONSE_MODES.INSTANT,
+      reply: buildSocialPatternReply("social/work_ready", effectiveQuery),
+      step: absorbedGreeting
+        ? "⚡ Social multi-signal — work_ready (greeting absorbé)..."
+        : "⚡ Social multi-signal — work_ready...",
+      enforce: { allowRefusal: false },
+      socialPatternMatched: true,
+      socialPatternName: "social/work_ready",
+      socialSituation,
+    };
+  }
+
   const simpleIntent = resolveSimpleDeterministicIntent(effectiveQuery);
   if (!simpleIntent) return null;
+
+  // Work / engage (jeu, blague) : bloquer greeting générique ; laisser horloge/date.
+  const idleCheckin = isIdleConfirmedSocialCheckin(effectiveQuery, {
+    history: options.history || [],
+    priorState: options.priorState,
+    justIntent: options.justIntent,
+    turnComprehension: options.turnComprehension,
+  });
+  if (
+    (blockSocialTone || blockGenericGreeting) &&
+    !idleCheckin &&
+    (simpleIntent.isGreeting ||
+      simpleIntent.asksStateOfHealth ||
+      simpleIntent.isSocialRetraction ||
+      (simpleIntent.asksIdentity &&
+        !simpleIntent.asksTime &&
+        !simpleIntent.asksDate))
+  ) {
+    return null;
+  }
 
   const identityReply =
     getDeterministicSocialResponse?.(effectiveQuery) ||
@@ -433,12 +629,14 @@ function buildSocialDeterministicShortCircuit(
   }
 
   if (simpleIntent.asksStateOfHealth) {
+    // Check-in : panel fixe court — ignore getDeterministicSocialResponse (trop variable).
     return {
       path: "social_deterministic",
       mode: RESPONSE_MODES.INSTANT,
-      reply:
-        getDeterministicSocialResponse?.(effectiveQuery) ||
-        DEFAULT_SOCIAL_HEALTH_REPLY,
+      reply: clampSocialCheckinReply(
+        buildSocialCheckinReply(effectiveQuery) || DEFAULT_SOCIAL_HEALTH_REPLY,
+        effectiveQuery,
+      ),
       step: "⚡ État/Santé — réponse déterministe...",
       enforce: { allowRefusal: false },
     };
@@ -530,8 +728,26 @@ export async function runConversationShortCircuit(query, options = {}) {
     };
   }
 
+  const awaitingFileSource = tryFileAnalysisAwaitingSource(query, {
+    attachments: options.attachments || [],
+    forgeProduction,
+  });
+  if (awaitingFileSource) {
+    return {
+      path: awaitingFileSource.pipelinePath,
+      route: awaitingFileSource.route,
+      mode: RESPONSE_MODES.INSTANT,
+      reply: awaitingFileSource.reply,
+      step: "📎 Analyse de fichier — en attente de la pièce...",
+      enforce: { allowRefusal: false },
+    };
+  }
+
   // Cluster web+citations+rapport : ne pas tuer le SC web (FACTUAL_RESEARCH)
-  if (wantsAnalysis && !isWebCitationsStructuredReportCluster(query)) {
+  if (
+    wantsAnalysis &&
+    !isWebCitationsStructuredReportCluster(query)
+  ) {
     return null;
   }
 
@@ -550,7 +766,7 @@ export async function runConversationShortCircuit(query, options = {}) {
     history,
     enabled: options.requestInterpreter !== false,
   });
-  const effectiveQuery = resolveEffectiveQuery(query, interpretation);
+  const effectiveQuery = resolveEffectiveQuery(query, interpretation, { history });
 
   const turnClassification = classifyConversationTurnFamily(query, {
     history,
@@ -580,10 +796,12 @@ export async function runConversationShortCircuit(query, options = {}) {
   );
   if (currentWebFactEarly) return currentWebFactEarly;
 
-  const queryCompositeEarly = resolveQueryCompositeShortCircuit(
-    effectiveQuery,
-    history,
-  );
+  // Multi-unit inventorié (smoothie, etc.) prime sur query_composite générique.
+  const decompositionForPreempt =
+    options.requestDecomposition || decomposeRequest(query, history);
+  const queryCompositeEarly = shouldPreemptMultiSegment(decompositionForPreempt)
+    ? null
+    : resolveQueryCompositeShortCircuit(effectiveQuery, history);
   if (queryCompositeEarly?.reply) {
     return emit({
       path: queryCompositeEarly.path,
@@ -596,6 +814,54 @@ export async function runConversationShortCircuit(query, options = {}) {
       enforce: { allowRefusal: false, sectionedComposite: true },
       queryUnderstanding: queryCompositeEarly.understanding,
       executionPlan: queryCompositeEarly.plan,
+    });
+  }
+
+  const goalContinueHit = resolveActiveGoalContinuationShortCircuit(effectiveQuery, {
+    history,
+    priorState: options.priorState,
+  });
+  if (goalContinueHit?.reply) {
+    return emit({
+      path: goalContinueHit.path,
+      mode: RESPONSE_MODES.SIMPLE_FAST,
+      reply: goalContinueHit.reply,
+      step: "📦 Tâche active — suite elliptique...",
+      enforce: { allowRefusal: false },
+      activeGoal: goalContinueHit.activeGoal,
+    });
+  }
+
+  const routingDecomp =
+    options.requestDecomposition || decompositionForPreempt;
+  const routingHasWork =
+    isMultiUnitRequest(routingDecomp) ||
+    shouldPreemptMultiSegment(routingDecomp) ||
+    (routingDecomp?.units || []).some((u) => !u.absorbable);
+  const routingLookup = lookupRoutingCase(effectiveQuery, {
+    history,
+    priorState: options.priorState,
+    justIntent: options.justIntent,
+    hasNonSocialWork: routingHasWork,
+    attachments: options.attachments || [],
+  });
+  if (routingLookup.winning_rule) {
+    console.log(formatRoutingCaseLog(routingLookup));
+  }
+  const routingHit = fulfillRoutingCase(routingLookup, effectiveQuery, {
+    history,
+    getDeterministicSocialResponse,
+  });
+  if (routingHit?.reply) {
+    return emit({
+      ...routingHit,
+      enforce: { allowRefusal: false },
+      routing_case_id: routingLookup.routing_case_id,
+      matched_rules: routingLookup.matched_rules,
+      winning_rule: routingLookup.winning_rule,
+      forbidden_routes: routingLookup.forbidden_routes,
+      piste_blocked_by_dictionary: routingLookup.piste_blocked_by_dictionary,
+      final_path: routingHit.path,
     });
   }
 
@@ -710,14 +976,94 @@ export async function runConversationShortCircuit(query, options = {}) {
     });
   }
 
+  const socialTcOpts = {
+    history,
+    requestDecomposition: options.requestDecomposition,
+    turnComprehension: options.turnComprehension,
+    turnLoop: options.turnLoop,
+  };
+
   // P0 identity_questions — avant G46 meta_capabilities (FP « quel est ton … »)
   const identityBeforeG46 = buildSocialDeterministicShortCircuit(
     effectiveQuery,
     getDeterministicSocialResponse,
-    { history },
+    socialTcOpts,
   );
   if (identityBeforeG46?.path === "social_deterministic") {
-    return emit(identityBeforeG46);
+    if (options.turnComprehension && options.turnLoop) {
+      const gated = gateSocialFinalize(options.turnComprehension, options.turnLoop, {
+        action: "finalize_social",
+        rail: "social_deterministic",
+        source:
+          identityBeforeG46.socialPatternName ||
+          identityBeforeG46.step ||
+          "identityBeforeG46",
+      });
+      if (!gated.allow) {
+        // Verify/Repair — ne pas finaliser ; laisser la chaîne SC continuer
+      } else {
+        return emit(identityBeforeG46);
+      }
+    } else {
+      return emit(identityBeforeG46);
+    }
+  }
+
+  // Réparation de ton / critique check-in : avant G46 meta_critique (sinon essai UX long).
+  if (
+    isSocialToneRepairIntent(effectiveQuery) ||
+    isSocialCheckinConsistencyCritique(effectiveQuery)
+  ) {
+    const toneHit = resolveSocialPatternShortCircuit(effectiveQuery, {
+      history,
+      turnComprehension: options.turnComprehension,
+    });
+    if (toneHit?.reply) {
+      recordSocialPatternTelemetry({
+        query: effectiveQuery,
+        patternName: toneHit.patternName,
+        blockedPaths: toneHit.blockedPaths,
+        phase: "short_circuit",
+        pipelinePath: toneHit.path,
+      });
+      return emit({
+        path: toneHit.path,
+        mode: RESPONSE_MODES.INSTANT,
+        reply: toneHit.reply,
+        step: `⚡ Pattern social G35 — ${toneHit.patternName} (avant G46)...`,
+        enforce: { allowRefusal: false },
+        socialPatternMatched: true,
+        socialPatternName: toneHit.patternName,
+      });
+    }
+  }
+
+  if (isAssistantFamilyCheckin(effectiveQuery) || isUserFamilyCheckin(effectiveQuery)) {
+    const familyHit = resolveSocialPatternShortCircuit(effectiveQuery, {
+      history,
+      priorState: options.priorState,
+      turnComprehension: options.turnComprehension,
+    });
+    if (familyHit?.reply) {
+      recordSocialPatternTelemetry({
+        query: effectiveQuery,
+        patternName: familyHit.patternName,
+        blockedPaths: familyHit.blockedPaths,
+        phase: "short_circuit",
+        pipelinePath: familyHit.path,
+      });
+      return emit({
+        path: familyHit.path,
+        mode: RESPONSE_MODES.INSTANT,
+        reply: familyHit.reply,
+        step: `⚡ Pattern social — ${familyHit.patternName}...`,
+        enforce: { allowRefusal: false },
+        socialPatternMatched: true,
+        socialPatternName: familyHit.patternName,
+        socialCheckinFollowup: true,
+        ...LOCAL_SOCIAL_RAIL_FLAGS,
+      });
+    }
   }
 
   const g46FamilyHit = resolveConversationTurnFamilyShortCircuit(query, {
@@ -784,29 +1130,75 @@ export async function runConversationShortCircuit(query, options = {}) {
     turnClassification.family === CONVERSATION_TURN_FAMILIES.IDEATION &&
     turnClassification.confidence >= 0.55;
   const skipSocialForWork = shouldDeferSocialRouting(effectiveQuery);
+  // Jeu / blague / méta / critique check-in : ne pas laisser shouldDeferSocialRouting tuer le rail.
+  const forcedEngageSocial =
+    hasSocialPlayInviteSignal(effectiveQuery) ||
+    hasJokePerformSignal(effectiveQuery) ||
+    hasJokeMetaSignal(effectiveQuery) ||
+    isPhaticSocialCheckinIntent(effectiveQuery) ||
+    isMetaWhoDrivesIntent(effectiveQuery) ||
+    isSocialCheckinConsistencyCritique(effectiveQuery) ||
+    isSocialToneRepairIntent(effectiveQuery);
 
   const socialPatternHit =
-    skipSocialForIdeation || skipSocialForWork
+    !forcedEngageSocial && (skipSocialForIdeation || skipSocialForWork)
       ? null
-      : resolveSocialPatternShortCircuit(effectiveQuery, { history });
+      : resolveSocialPatternShortCircuit(effectiveQuery, {
+          history,
+          priorState: options.priorState,
+          turnComprehension: options.turnComprehension,
+          onSocialGateDenied: (meta) => {
+            if (options.turnComprehension && options.turnLoop) {
+              gateSocialFinalize(options.turnComprehension, options.turnLoop, meta);
+            }
+          },
+        });
   if (socialPatternHit?.reply) {
-    recordSocialPatternTelemetry({
-      query: effectiveQuery,
-      patternName: socialPatternHit.patternName,
-      blockedPaths: socialPatternHit.blockedPaths,
-      phase: "short_circuit",
-      pipelinePath: socialPatternHit.path,
-    });
-    return emit({
-      path: socialPatternHit.path,
-      mode: RESPONSE_MODES.INSTANT,
-      reply: socialPatternHit.reply,
-      step: `⚡ Pattern social G35 — ${socialPatternHit.patternName}...`,
-      // Réponses sociales déterministes : ne pas appliquer le plafond 6 lignes INSTANT.
-      enforce: { allowRefusal: false, sectionedComposite: true },
-      socialPatternMatched: true,
-      socialPatternName: socialPatternHit.patternName,
-    });
+    if (options.turnComprehension && options.turnLoop) {
+      const gated = gateSocialFinalize(options.turnComprehension, options.turnLoop, {
+        action: "finalize_social",
+        rail: "social_deterministic",
+        source: `socialPattern:${socialPatternHit.patternName}`,
+      });
+      if (!gated.allow) {
+        // suppress — continue SC
+      } else {
+        recordSocialPatternTelemetry({
+          query: effectiveQuery,
+          patternName: socialPatternHit.patternName,
+          blockedPaths: socialPatternHit.blockedPaths,
+          phase: "short_circuit",
+          pipelinePath: socialPatternHit.path,
+        });
+        return emit({
+          path: socialPatternHit.path,
+          mode: RESPONSE_MODES.INSTANT,
+          reply: socialPatternHit.reply,
+          step: `⚡ Pattern social G35 — ${socialPatternHit.patternName}...`,
+          enforce: { allowRefusal: false },
+          socialPatternMatched: true,
+          socialPatternName: socialPatternHit.patternName,
+        });
+      }
+    } else {
+      recordSocialPatternTelemetry({
+        query: effectiveQuery,
+        patternName: socialPatternHit.patternName,
+        blockedPaths: socialPatternHit.blockedPaths,
+        phase: "short_circuit",
+        pipelinePath: socialPatternHit.path,
+      });
+      return emit({
+        path: socialPatternHit.path,
+        mode: RESPONSE_MODES.INSTANT,
+        reply: socialPatternHit.reply,
+        step: `⚡ Pattern social G35 — ${socialPatternHit.patternName}...`,
+        // Réponses sociales déterministes : ne pas appliquer le plafond 6 lignes INSTANT.
+        enforce: { allowRefusal: false, sectionedComposite: true },
+        socialPatternMatched: true,
+        socialPatternName: socialPatternHit.patternName,
+      });
+    }
   }
 
   // Après panel open_prompt : « 4 » / mot d’option → guided_choice (pas COMPOSER inventé)
@@ -823,6 +1215,40 @@ export async function runConversationShortCircuit(query, options = {}) {
       guidedChoice: true,
       choiceId: guidedChoiceHit.choiceId,
       choiceKey: guidedChoiceHit.choiceKey,
+    });
+  }
+
+  // Hors porte de suffisance : un exemple/lieu ne doit pas renvoyer le cadrage
+  // vers multi_segment_composite (web) avant sujet stable.
+  const framingCorrectionHit =
+    resolveFramingCorrectionShortCircuit(effectiveQuery) ||
+    resolveFramingCorrectionShortCircuit(query);
+  if (framingCorrectionHit?.reply) {
+    return annotateShortCircuitCognitiveCycle({
+      path: framingCorrectionHit.path,
+      mode: RESPONSE_MODES.SIMPLE_FAST,
+      reply: framingCorrectionHit.reply,
+      step: framingCorrectionHit.step,
+      enforce: { allowRefusal: false },
+      framingCorrection: true,
+      blockWebUntilFramingStable: true,
+      preferWebResearch: false,
+    });
+  }
+
+  const subjectAngleHit =
+    resolveExploratorySubjectAngleShortCircuit(effectiveQuery) ||
+    resolveExploratorySubjectAngleShortCircuit(query);
+  if (subjectAngleHit?.reply) {
+    return annotateShortCircuitCognitiveCycle({
+      path: subjectAngleHit.path,
+      mode: RESPONSE_MODES.SIMPLE_FAST,
+      reply: subjectAngleHit.reply,
+      step: subjectAngleHit.step,
+      enforce: { allowRefusal: false },
+      blockWebUntilFramingStable: true,
+      preferWebResearch: false,
+      framingRoles: subjectAngleHit.framingRoles,
     });
   }
 
@@ -876,10 +1302,22 @@ export async function runConversationShortCircuit(query, options = {}) {
   const identityBeforeMeta = buildSocialDeterministicShortCircuit(
     effectiveQuery,
     getDeterministicSocialResponse,
-    { history },
+    socialTcOpts,
   );
   if (identityBeforeMeta?.path === "social_deterministic") {
-    return emit(identityBeforeMeta);
+    if (options.turnComprehension && options.turnLoop) {
+      const gated = gateSocialFinalize(options.turnComprehension, options.turnLoop, {
+        action: "finalize_social",
+        rail: "social_deterministic",
+        source:
+          identityBeforeMeta.socialPatternName ||
+          identityBeforeMeta.step ||
+          "identityBeforeMeta",
+      });
+      if (gated.allow) return emit(identityBeforeMeta);
+    } else {
+      return emit(identityBeforeMeta);
+    }
   }
 
   const metaBeforeSocialChat = resolveMetaConversationRoute(effectiveQuery, {
@@ -912,6 +1350,13 @@ export async function runConversationShortCircuit(query, options = {}) {
       step: `ℹ️ Méta-conversation — ${metaBeforeSocialChat.subKind} (fil papoter ouvert)...`,
       enforce: { allowRefusal: false },
       metaSubKind: metaBeforeSocialChat.subKind,
+      skipPlanner: true,
+      skipSovereign: true,
+      skipWeb: true,
+      skipComposer: true,
+      preferWebResearch: false,
+      deferToFullPipeline: false,
+      deferToLlm: false,
     });
   }
 
@@ -949,6 +1394,29 @@ export async function runConversationShortCircuit(query, options = {}) {
     });
   }
 
+  const shortGeneralHit = resolveShortGeneralAnswerShortCircuit(effectiveQuery, {
+    attachments: options.attachments || [],
+    languagePolicy: options.languagePolicy || null,
+  });
+  if (shortGeneralHit?.reply) {
+    return emit({
+      path: shortGeneralHit.path,
+      route: shortGeneralHit.route,
+      mode: RESPONSE_MODES.INSTANT,
+      reply: shortGeneralHit.reply,
+      step: "💬 Avis court — réponse directe (sans planner)...",
+      enforce: { allowRefusal: false },
+      forcedIntentContractId: shortGeneralHit.forcedIntentContractId,
+      skipPlanner: true,
+      skipSovereign: true,
+      skipWeb: true,
+      skipComposer: true,
+      preferWebResearch: false,
+      deferToFullPipeline: false,
+      deferToLlm: false,
+    });
+  }
+
   // Après chat_invite / offre papoter : sujet court → exploration conversationnelle
   const socialChatHit = resolveSocialChatContinuityShortCircuit(effectiveQuery, {
     history,
@@ -959,10 +1427,18 @@ export async function runConversationShortCircuit(query, options = {}) {
       path: socialChatHit.path,
       mode: RESPONSE_MODES.INSTANT,
       reply: socialChatHit.reply,
-      step: "💬 Continuité chat — réponse sociale...",
+      step: socialChatHit.socialCheckinFollowup
+        ? "💬 Fil social — check-in kin (rail local)..."
+        : socialChatHit.socialOpenThreadHold
+          ? "💬 Fil social ouvert — mini-reprise (reste en chat)..."
+          : "💬 Continuité chat — réponse sociale...",
       enforce: { allowRefusal: false },
       socialChatContinuity: true,
+      socialCheckinFollowup: Boolean(socialChatHit.socialCheckinFollowup),
+      socialPatternName: socialChatHit.socialPatternName,
+      socialOpenThreadHold: Boolean(socialChatHit.socialOpenThreadHold),
       culturalHypothesis: Boolean(socialChatHit.culturalHypothesis),
+      ...LOCAL_SOCIAL_RAIL_FLAGS,
     });
   }
   if (socialChatHit?.deferToLlm) {
@@ -1116,7 +1592,10 @@ export async function runConversationShortCircuit(query, options = {}) {
   const maybeWebTarget =
     extractSummaryUrl(effectiveQuery) ||
     (hasSummaryShell(effectiveQuery) && hasWebPageSummaryIntent(effectiveQuery));
-  if (maybeWebTarget) {
+  // URL GitHub + « analyse le dépôt » = REPO_ANALYSIS, pas WEB_SUMMARY.
+  if (maybeWebTarget && !isRepoAnalysisRequest(effectiveQuery, {
+    attachments: options.attachments || [],
+  })) {
     const summaryEarly = resolveSummaryContractShortCircuit(
       effectiveQuery,
       history,
@@ -1214,6 +1693,17 @@ export async function runConversationShortCircuit(query, options = {}) {
       guidedCreationScoping: true,
       reflectiveHint: guidedCreationHit.reflectiveHint,
       step: guidedCreationHit.step,
+      enforce: { allowRefusal: false },
+    });
+  }
+
+  const namedCreateHit = resolveNamedCreateStartShortCircuit(effectiveQuery);
+  if (namedCreateHit?.reply) {
+    return emit({
+      path: namedCreateHit.path,
+      mode: RESPONSE_MODES.SIMPLE_FAST,
+      reply: namedCreateHit.reply,
+      step: "📦 Livrable nommé — aide concrète (sans idéation ouverte)...",
       enforce: { allowRefusal: false },
     });
   }
@@ -1477,7 +1967,12 @@ export async function runConversationShortCircuit(query, options = {}) {
   }
 
   const familiarityReply =
-    isInformationSeekingWithTarget(effectiveQuery)
+    isInformationSeekingWithTarget(effectiveQuery) ||
+    hasJokePerformSignal(effectiveQuery) ||
+    hasJokeMetaSignal(effectiveQuery) ||
+    hasSocialPlayInviteSignal(effectiveQuery) ||
+    isPhaticSocialCheckinIntent(effectiveQuery) ||
+    isMetaWhoDrivesIntent(effectiveQuery)
       ? null
       : buildFamiliarityReply(effectiveQuery, {
           sessionId: options.sessionId,
@@ -1561,15 +2056,40 @@ export async function runConversationShortCircuit(query, options = {}) {
     });
   }
 
+  const projectCritiqueHit = resolveProjectIdeaCritiqueShortCircuit(effectiveQuery);
+  if (projectCritiqueHit?.deferToLlm) {
+    return emit({
+      path: projectCritiqueHit.path,
+      mode: RESPONSE_MODES.OPEN_PROPOSITION,
+      reply: null,
+      deferToLlm: true,
+      projectIdeaCritique: true,
+      reflectiveHint: projectCritiqueHit.reflectiveHint,
+      step: projectCritiqueHit.step,
+      enforce: { allowRefusal: false },
+    });
+  }
+
   if (isArchitectureDesignIntent(query)) {
     const architectureReply = buildArchitectureDesignReply(effectiveQuery);
     if (architectureReply) {
+      const depth = resolveArchitectureDepthControl(effectiveQuery);
       return emit({
         path: "architecture_design_deterministic",
         mode: RESPONSE_MODES.OPEN_PROPOSITION,
         reply: architectureReply,
-        step: "🏗️ Architecture / design — 3 approches comparées...",
+        responseMode: depth.responseMode,
+        analysisMode: depth.analysisMode,
+        depthTrigger: depth.depthTrigger,
+        step:
+          depth.analysisMode === "deferred"
+            ? "🏗️ Architecture — cadrage rapide..."
+            : "🏗️ Architecture / design — 3 approches comparées...",
         enforce: { allowRefusal: false },
+        skipPlanner: true,
+        skipSovereign: true,
+        skipWeb: true,
+        skipComposer: true,
       });
     }
   }
@@ -1727,7 +2247,9 @@ export async function runConversationShortCircuit(query, options = {}) {
   }
 
   const requestDecomposition =
-    options.requestDecomposition || decomposeRequest(query, history);
+    options.requestDecomposition ||
+    decompositionForPreempt ||
+    decomposeRequest(query, history);
   if (isMultiUnitRequest(requestDecomposition)) {
     const compositeReply = buildMultiUnitCompositeReply(requestDecomposition);
     if (compositeReply?.reply) {
@@ -1870,7 +2392,7 @@ export async function runConversationShortCircuit(query, options = {}) {
       reply: null,
       deferToLlm: true,
       deferToFullPipeline: true,
-      step: "📚 Culture générale — réponse humaine généreuse...",
+      step: "📚 Culture générale — réponse adaptée à la charge...",
       enforce: { allowRefusal: false },
       generalKnowledge: true,
     });
@@ -2104,10 +2626,23 @@ export async function runConversationShortCircuit(query, options = {}) {
   const socialHit = buildSocialDeterministicShortCircuit(
     effectiveQuery,
     getDeterministicSocialResponse,
-    { history },
+    socialTcOpts,
   );
   if (socialHit) {
-    return emit(socialHit);
+    if (
+      socialHit.path === "social_deterministic" &&
+      options.turnComprehension &&
+      options.turnLoop
+    ) {
+      const gated = gateSocialFinalize(options.turnComprehension, options.turnLoop, {
+        action: "finalize_social",
+        rail: "social_deterministic",
+        source: "socialHitLate",
+      });
+      if (gated.allow) return emit(socialHit);
+    } else {
+      return emit(socialHit);
+    }
   }
 
   const groundingHit = resolveComprehensionGroundingShortCircuit(query, {
@@ -2185,7 +2720,10 @@ export async function runConversationShortCircuit(query, options = {}) {
 
   const exploratoryHit = resolveExploratoryConversationShortCircuit(
     effectiveQuery,
-    { attachments: options.attachments || [] },
+    {
+      attachments: options.attachments || [],
+      turnComprehension: options.turnComprehension,
+    },
   );
   if (exploratoryHit?.deferToLlm) {
     return emit({
@@ -2234,6 +2772,21 @@ export async function runConversationShortCircuit(query, options = {}) {
         factualSanity: sanity,
       });
     }
+  }
+
+  if (
+    isCausalWhyExplainRequest(effectiveQuery) &&
+    !shouldSuppressTurnFamilyPath(turnClassification, "simple_factual_lookup")
+  ) {
+    return emit({
+      path: "simple_factual_lookup",
+      mode: RESPONSE_MODES.SIMPLE_FAST,
+      reply: null,
+      deferToLlm: true,
+      step: "🔎 Question factuelle simple — recherche ou réponse directe...",
+      enforce: { allowRefusal: false },
+      simpleFactual: true,
+    });
   }
 
   if (isInformationSeekingWithTarget(effectiveQuery)) {
@@ -2291,20 +2844,24 @@ export async function runConversationShortCircuit(query, options = {}) {
   }
 
   if (isSimpleFactualQuestion(effectiveQuery)) {
+    const assistantCapabilities =
+      isCapabilityOverviewRequest(effectiveQuery) ||
+      isMetaHelpScopeIntent(effectiveQuery) ||
+      isMetaConversationIntent(effectiveQuery);
     if (
-      shouldSuppressTurnFamilyPath(turnClassification, "simple_factual_lookup")
+      !assistantCapabilities &&
+      !shouldSuppressTurnFamilyPath(turnClassification, "simple_factual_lookup")
     ) {
-      return null;
+      return emit({
+        path: "simple_factual_lookup",
+        mode: RESPONSE_MODES.SIMPLE_FAST,
+        reply: null,
+        deferToLlm: true,
+        step: "🔎 Question factuelle simple — recherche ou réponse directe...",
+        enforce: { allowRefusal: false },
+        simpleFactual: true,
+      });
     }
-    return emit({
-      path: "simple_factual_lookup",
-      mode: RESPONSE_MODES.SIMPLE_FAST,
-      reply: null,
-      deferToLlm: true,
-      step: "🔎 Question factuelle simple — recherche ou réponse directe...",
-      enforce: { allowRefusal: false },
-      simpleFactual: true,
-    });
   }
 
   const anaphoraHit = resolveAnaphoraReferenceShortCircuit(query, history);

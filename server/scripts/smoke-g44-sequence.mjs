@@ -4,7 +4,7 @@
 import agent from "../src/agent/agent.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
-import { isPresentationOutlineRequest } from "../src/agent/utils/presentationOutlineIntentGuards.js";
+import { isPresentationOutlineRequest } from "../src/agent/utils/intent-guards/presentationOutlineIntentGuards.js";
 
 const history = [];
 
@@ -73,7 +73,7 @@ console.log("T3 OK — assistant_repair");
 // Tour 4
 const hit4 = await runConversationShortCircuit(TOUR4, { history });
 assert(
-  hit4?.path === "meta_assistant_behavior_deterministic",
+  hit4?.path === "meta_conversation_feedback",
   `tour4: path=${hit4?.path}`,
 );
 assert(!hit4?.deferToLlm, "tour4: pas defer orchestrateur");

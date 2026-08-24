@@ -1,7 +1,7 @@
 /**
  * Classification du type de tour — avant résolution de sujet métier (évite carry-over NFS, etc.).
  */
-import { normalizeText } from "../../utils/normalizationGuards.js";
+import { normalizeText } from "../../utils/parsing-normalization/normalizationGuards.js";
 import { isAssistantUtteranceClarifyRequest } from "../../policies/qualification/assistantUtteranceClarifyPolicy.js";
 
 export const CONVERSATION_TURN_TYPES = {

@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import {
   extractLocalFileReference,
   isExistingSourceAnalysisRequest,
-} from "../../utils/localFileUriIntentGuards.js";
+} from "../../utils/intent-guards/localFileUriIntentGuards.js";
 import { analyzeSourceFileContent } from "../../analysis/analyzers/index.js";
 import { SOURCE_FILE_ANALYSIS_CONTRACT_ID } from "../../analysis/sourceFileAnalysisContract.js";
 

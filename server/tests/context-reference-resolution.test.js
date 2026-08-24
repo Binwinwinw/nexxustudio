@@ -6,11 +6,11 @@ import {
   extractContextReferenceTarget,
   buildContextReferenceNotFoundMessage,
   detectContextReferenceType,
-} from "../src/agent/utils/contextReferenceIntentGuards.js";
+} from "../src/agent/utils/intent-guards/contextReferenceIntentGuards.js";
 import {
   resolveSessionContextReference,
   findSessionMatchForTarget,
-} from "../src/agent/utils/sessionContextReferenceResolver.js";
+} from "../src/agent/utils/context/sessionContextReferenceResolver.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolveClarificationGate } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";

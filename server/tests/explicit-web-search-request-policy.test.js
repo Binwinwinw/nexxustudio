@@ -26,20 +26,20 @@ import {
   shouldSkipWebSearchForIntent,
 } from "../src/agent/config/intentContractRegistry.js";
 import { isOpenProjectIdeation } from "../src/agent/config/modeResponseContracts.js";
-import { isPresentationOutlineRequest } from "../src/agent/utils/presentationOutlineIntentGuards.js";
+import { isPresentationOutlineRequest } from "../src/agent/utils/intent-guards/presentationOutlineIntentGuards.js";
 import { understandQuery } from "../src/agent/policies/conversation/conversationQueryUnderstanding.js";
 import {
   buildKnowledgeFreshnessSystemAddon,
 } from "../src/agent/micro/replies/knowledgeFreshnessComposerContract.js";
 import { getMissingProductRecommendationSlots } from "../src/agent/policies/routing/compareChooseCompositePolicy.js";
-import { extractCompareDomain } from "../src/agent/utils/compareChooseIntentGuards.js";
+import { extractCompareDomain } from "../src/agent/utils/intent-guards/compareChooseIntentGuards.js";
 import {
   requiresCompareChooseComposerContract,
   buildGuidedProductComposerUserPrompt,
   isCompareChooseContractViolation,
 } from "../src/agent/micro/replies/compareChooseComposer.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseContracts.js";
-import { isIdeationIntent } from "../src/agent/utils/ideationIntentGuards.js";
+import { isIdeationIntent } from "../src/agent/utils/intent-guards/ideationIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 
 const WEB_HELP_QUERY =

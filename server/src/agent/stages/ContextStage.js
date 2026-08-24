@@ -1,10 +1,10 @@
 /* server/src/agent/stages/ContextStage.js */
 import knowledgeService from "../knowledge/knowledgeService.js";
-import visionAgent from "../utils/visionAgent.js";
-import contextAgent from "../utils/contextAgent.js";
+import visionAgent from "../utils/agents/visionAgent.js";
+import contextAgent from "../utils/agents/contextAgent.js";
 import { memoryOrchestrator } from "../memory/MemoryOrchestrator.js";
 import retrievalGuard from "../../security/retrievalGuard.js";
-import sotLoader from "../utils/sotLoader.js";
+import sotLoader from "../utils/runtime/sotLoader.js";
 import { getClientForModel } from "../../llm/llmFactory.js";
 import { AGENT_ROLES } from "../policies/core/index.js";
 import turnTelemetry from "../telemetry/turnTelemetry.js";

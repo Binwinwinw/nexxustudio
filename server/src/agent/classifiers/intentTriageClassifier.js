@@ -9,10 +9,10 @@ import {
   classifyCodeIntent,
   getCodeIntentLabel,
 } from "../policies/code/codeIntentPolicy.js";
-import { isDocumentAnalysisIntent } from "../utils/conversationGuards.js";
+import { isDocumentAnalysisIntent } from "../utils/conversation/conversationGuards.js";
 import { isCodeIntentRequest } from "../policies/code/codeIntentPolicy.js";
 import { isCodeConceptExplainTriageSignal } from "../policies/code/codeConceptExplainPolicy.js";
-import { suppressesCodeGenerationForProgrammingPedagogy } from "../utils/programmingPedagogyLightIntentGuards.js";
+import { suppressesCodeGenerationForProgrammingPedagogy } from "../utils/intent-guards/programmingPedagogyLightIntentGuards.js";
 
 const CODE_ATTACHMENT_EXT_RE = /\.(py|js|ts|tsx|jsx|php|rb|go|rs|java|cs|cpp|c|h)\b/i;
 
@@ -23,9 +23,10 @@ function hasCodeFileAttachment(attachments = [], query = "") {
   }
   return CODE_ATTACHMENT_EXT_RE.test(String(query || ""));
 }
-import { isMetaConversationIntent } from "../utils/metaConversationIntentGuards.js";
+import { isMetaConversationIntent } from "../utils/intent-guards/metaConversationIntentGuards.js";
 import { isMetaCapabilitiesIntent } from "../policies/meta/metaCapabilitiesPolicy.js";
-import { isSelfModificationQuery } from "../utils/intentGuards.js";
+import { isFileAnalysisWorkRequest } from "../policies/attachment/fileAnalysisContract.js";
+import { isSelfModificationQuery } from "../utils/intent-guards/intentGuards.js";
 import { getCodeIntentLabel as labelFromCatalog } from "../../../../shared/codeIntentCatalog.js";
 
 export const TRIAGE_INTENTS = Object.freeze({
@@ -387,6 +388,14 @@ function clarificationHint(intent) {
  */
 export function resolveWantsAnalysisFromTriage(triage, query = "", attachments = []) {
   if (isMetaCapabilitiesIntent(query)) return false;
+
+  if (
+    Array.isArray(attachments) &&
+    attachments.length > 0 &&
+    isFileAnalysisWorkRequest(query)
+  ) {
+    return true;
+  }
 
   if (!triage) {
     if (isMetaConversationIntent(query)) return false;

@@ -4,7 +4,7 @@
  */
 import { AGENT_ROLES } from "../../policies/core/index.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../../config/modeResponseContracts.js";
-import responseThinkingCleaner from "../../utils/responseThinkingCleaner.js";
+import responseThinkingCleaner from "../../utils/quality-safety/responseThinkingCleaner.js";
 import { sanitizeQuery } from "../normalization/querySanitizer.js";
 
 const DEEPENING_SYSTEM_PROMPT = `Tu es NEXXUS, gardien de La Citadelle.

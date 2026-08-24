@@ -5,7 +5,7 @@
 import crypto from "node:crypto";
 import { auditLogger } from "../security/auditLogger.js";
 import securityHooks from "./securityHooks.js";
-import { TOOL_REGISTRY } from "../agent/utils/toolRegistry.js";
+import { TOOL_REGISTRY } from "../agent/utils/runtime/toolRegistry.js";
 import { WEB_SEARCH_EGRESS_HOSTS } from "./networkEgressPolicy.js";
 import { validateEgressUrl } from "../security/ssrfProtection.js";
 import { runPostEditHooks } from "./postEdit/postEditHook.js";

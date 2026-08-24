@@ -2,7 +2,7 @@
  * G37 — résumé d'œuvre culturelle (film, livre, série…) sans document joint.
  * Distinct de document_synthesis (passage / PJ / texte collé).
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { extractPastedSourceText } from "../document/index.js";
 import { suppressesCulturalSummaryForConceptExplain } from "../code/codeConceptExplainPolicy.js";
 

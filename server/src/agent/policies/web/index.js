@@ -11,4 +11,5 @@ export * from "./factualResearchDeliverablePolicy.js";
 export * from "./factualResearchReplyValidator.js";
 export * from "./factualResearchSourceRankPolicy.js";
 export * from "./factualResearchDeterministicBuilder.js";
+export * from "./factualResearchTopicMatchPolicy.js";
 export * from "./webCapabilityTruthPolicy.js";

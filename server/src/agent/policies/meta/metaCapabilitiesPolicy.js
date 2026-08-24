@@ -4,10 +4,13 @@
  * G47.x — avis sur un modèle déjà présent dans la stack Ollama locale.
  * Jamais document_synthesis ni document_analysis.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { isCapabilityQuery } from "../../utils/intentGuards.js";
-import { isIdentityIntent } from "../../utils/identityIntentGuards.js";
-import MODEL_CONFIG, { getReasonerModel } from "../../../config/models.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { isCapabilityQuery } from "../../utils/intent-guards/intentGuards.js";
+import { isIdentityIntent } from "../../utils/intent-guards/identityIntentGuards.js";
+import MODEL_CONFIG, {
+  getReasonerModel,
+  isTier2Enabled,
+} from "../../../config/models.js";
 import { AGENT_ROLES } from "../core/index.js";
 import { NEXXUS_VIDEO_LIMITS } from "../../../services/nexxus-video/videoRouterContract.js";
 
@@ -374,8 +377,8 @@ export function resolveStackModelProfile(tag = "") {
     return {
       tag: MODEL_CONFIG.TIER_1.model,
       tier: 1,
-      tierLabel: "Tier 1 — tour de contrôle + reasoner",
-      roles: ["CHAT", "SOCIAL", "WEB_SEARCHER", "ORCHESTRATOR", "PLANNER", "CHAT_REASONER"],
+      tierLabel: "Tier 1 — tour de contrôle",
+      roles: ["CHAT", "SOCIAL", "WEB_SEARCHER"],
       loadStrategy: "boot",
       vramGb: MODEL_CONFIG.TIER_1.vram_gb,
       alternative: MODEL_CONFIG.TIER_1.alternatives?.fast || null,
@@ -403,7 +406,7 @@ export function resolveStackModelProfile(tag = "") {
       tag: MODEL_CONFIG.TIER_2.model,
       tier: 2,
       tierLabel: "Tier 2 — raisonnement stratégique",
-      roles: ["ORCHESTRATOR", "PLANNER", "CHAT_REASONER"],
+      roles: ["ORCHESTRATOR", "PLANNER", "CHAT_REASONER", "FORGE_REASONER"],
       loadStrategy: MODEL_CONFIG.TIER_2.loadStrategy || "deferred",
       vramGb: MODEL_CONFIG.TIER_2.vram_gb,
       alternative: MODEL_CONFIG.TIER_2.alternatives?.heavy || null,
@@ -800,7 +803,7 @@ function buildDeepSeekPeerReply() {
     "(ex. chat.deepseek.com). C'est une interface conversationnelle grand public — je ne la pilote pas depuis La Citadelle.\n\n" +
     "Dans le paysage des assistants, DeepSeek se situe plutôt côté **modèles techniques** (raisonnement, code) " +
     "que côté orchestration locale sur ton dépôt.\n\n" +
-    "Tu veux le situer face à ChatGPT/Claude, ou le comparer à ta stack Ollama (reasoner = ornith:9b ; deepseek-r1 hors stack par défaut) ?"
+    "Tu veux le situer face à ChatGPT/Claude, ou le comparer à ta stack Ollama (chat = qwen3.5:2b ; reasoner = granite4.1:8b ; deepseek-r1 hors stack par défaut) ?"
   );
 }
 
@@ -1013,7 +1016,7 @@ export function buildModelStackOpinionReply(query = "") {
   if (!profile) {
     return (
       "Je ne retrouve pas ce modèle dans la matrice locale actuelle. " +
-      "Vérifie le tag Ollama exact (ex. qwen2.5-coder:7b, ornith:9b) et je te donne son rôle Tier / VRAM."
+      "Vérifie le tag Ollama exact (ex. qwen2.5-coder:7b, qwen3.5:2b, granite4.1:8b) et je te donne son rôle Tier / VRAM."
     );
   }
 
@@ -1027,7 +1030,7 @@ export function buildModelStackOpinionReply(query = "") {
     return (
       `**${profile.tag}** n'est **pas** dans la matrice warm-up / placement Citadelle actuelle.\n\n` +
       `- Tu peux le garder dans **Ollama** et l'invoquer manuellement (Forge async, CLI).\n` +
-      `- **Reasoner runtime** : **${reasonerModel}** (Tier 1), pas de Tier 2 actif.\n` +
+      `- **Reasoner runtime** : **${reasonerModel}** (${isTier2Enabled() ? "Tier 2 deferred" : "Tier 1"}).\n` +
       `- Alternative lourde documentée : ${profile.alternative || "deepseek-r1:14b"} (never / offload).`
     );
   }

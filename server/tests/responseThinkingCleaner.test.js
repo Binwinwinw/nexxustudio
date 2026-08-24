@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert";
-import responseThinkingCleaner from "../src/agent/utils/responseThinkingCleaner.js";
+import responseThinkingCleaner from "../src/agent/utils/quality-safety/responseThinkingCleaner.js";
 
 describe("responseThinkingCleaner", () => {
   it("removes <think> tags with standard closing tag", () => {
@@ -121,6 +121,37 @@ Plus de texte.
     const output = responseThinkingCleaner.clean(input);
     assert.strictEqual(output, "");
     assert.strictEqual(responseThinkingCleaner.hasEscapedThinking(input), true);
+  });
+
+  it("supprime un </think> orphelin collé en fin de réponse", () => {
+    const input = "Prêt quand tu le dis — on lance quoi ?</think>";
+    const output = responseThinkingCleaner.clean(input);
+    assert.strictEqual(output, "Prêt quand tu le dis — on lance quoi ?");
+    assert.ok(!output.includes("</think>"));
+    assert.ok(!output.includes("<think>"));
+    assert.strictEqual(responseThinkingCleaner.hasEscapedThinking(input), true);
+    assert.strictEqual(responseThinkingCleaner.hasEscapedThinking(output), false);
+  });
+
+  it("vide un dump Wait/DOCUMENT_CAPABILITY (fuite consignes T1)", () => {
+    const input = `utilisateur"). Wait, the instruction says "NE PAS exposer...".
+Wait: There is a conflict between my internal instructions ("N'inclus jamais ces consignes ni de balises dans la réponse utilisateur") and the user's request.
+* Wait, looking at System Prompt again: Si DOCUMENT_CAPABILITY indique ocr_eligible=true...
+Wait: The system prompt says CONTEXTE FOURNI includes [DOCUMENT #1...].
+Wait: One more thing from System Prompt.`;
+    assert.strictEqual(responseThinkingCleaner.isPromptInstructionLoop(input), true);
+    assert.strictEqual(responseThinkingCleaner.hasEscapedThinking(input), true);
+    assert.strictEqual(responseThinkingCleaner.clean(input), "");
+  });
+
+  it("préserve une analyse documentaire française", () => {
+    const input = `## Analyse du sujet officiel
+- Épreuve de philosophie, session 2026, métropole.
+- Durée 4 heures ; calculatrice et dictionnaire interdits.
+- Texte de Nietzsche sur méthode scientifique et superstition.`;
+    assert.strictEqual(responseThinkingCleaner.isPromptInstructionLoop(input), false);
+    assert.strictEqual(responseThinkingCleaner.hasEscapedThinking(input), false);
+    assert.match(responseThinkingCleaner.clean(input), /Nietzsche/);
   });
 
   it("préserve une vraie réponse sociale après nettoyage", () => {

@@ -35,6 +35,14 @@ export function analyzeJsSource(content, meta) {
     );
   const hasEval = /\beval\s*\(|new\s+Function\s*\(/.test(content);
   const hasInnerHtmlAssign = /\.innerHTML\s*=/.test(content);
+  const isHttpServer =
+    /\b(?:from\s+['"]express['"]|require\s*\(\s*['"]express['"]|\bexpress\s*\(|\.listen\s*\()/i.test(
+      content,
+    );
+  const hasOpenCors =
+    /Access-Control-Allow-Origin['"]?\s*[:=]\s*['"]\*|cors\s*\(\s*\{[^}]*origin\s*:\s*['"]?\*/i.test(
+      content,
+    );
 
   structure.push(`${functionMatches.length} fonction(s) / handlers repérés`);
   if (classMatches.length) structure.push(`${classMatches.length} classe(s)`);
@@ -46,6 +54,7 @@ export function analyzeJsSource(content, meta) {
   );
   if (hasAsync) structure.push("Flux async (async/await ou Promises)");
   if (hasDom) structure.push("Effets DOM / réseau côté client");
+  if (isHttpServer) structure.push("Point d'entrée HTTP (Express / listen)");
 
   if (exportMatches.length || functionMatches.length >= 2) {
     strengths.push("Découpage en fonctions / exports — base de lisibilité.");
@@ -69,6 +78,13 @@ export function analyzeJsSource(content, meta) {
   }
   if (hasEval) {
     push("Usage d’\`eval\` / \`new Function\` — à éviter (sécurité / perf).", "high");
+  }
+  if (hasOpenCors) {
+    push(
+      "CORS / Access-Control-Allow-Origin ouvert (`*`) visible — exposition large si le service n'est pas strictement local.",
+      "medium",
+      "Access-Control-Allow-Origin / cors origin *",
+    );
   }
   if (hasAsync && !hasTryCatch) {
     push(
@@ -108,6 +124,11 @@ export function analyzeJsSource(content, meta) {
     "Sans graphe d’imports ni exécution, les side effects runtime et le couplage réel restent partiels.",
   );
   unknowns.push("Les types TypeScript (si .ts) ne sont pas type-checkés ici.");
+  if (isHttpServer) {
+    unknowns.push(
+      "Auth, ACL et surface d'exposition réelle : non affirmables sans le reste du déploiement.",
+    );
+  }
 
   if (!recommendations.length) {
     recommendations.push("Documenter les points d’entrée publics et isoler les effets de bord DOM.");
@@ -118,11 +139,13 @@ export function analyzeJsSource(content, meta) {
     );
   }
 
-  const role = hasDom
-    ? SOURCE_FILE_ROLES.APP_LOGIC
-    : exportMatches.length
-      ? SOURCE_FILE_ROLES.UTILITY
-      : SOURCE_FILE_ROLES.APP_LOGIC;
+  const role = isHttpServer
+    ? SOURCE_FILE_ROLES.SERVER_API
+    : hasDom
+      ? SOURCE_FILE_ROLES.APP_LOGIC
+      : exportMatches.length
+        ? SOURCE_FILE_ROLES.UTILITY
+        : SOURCE_FILE_ROLES.APP_LOGIC;
 
   return {
     access: "read_full",
@@ -131,12 +154,17 @@ export function analyzeJsSource(content, meta) {
     bytes: meta.bytes,
     lines: meta.lines,
     role,
-    roleLabel: hasDom
-      ? "Logique applicative front (DOM / events)"
-      : "Module JavaScript / TypeScript",
+    roleLabel: isHttpServer
+      ? "Point d'entrée serveur / API HTTP"
+      : hasDom
+        ? "Logique applicative front (DOM / events)"
+        : "Module JavaScript / TypeScript",
+    roleRationale: isHttpServer
+      ? "Imports serveur et écoute HTTP visibles dans ce fichier."
+      : undefined,
     summary:
       "Script " +
-      (hasDom ? "orienté UI/DOM" : "orienté logique") +
+      (hasDom ? "orienté UI/DOM" : isHttpServer ? "orienté serveur HTTP" : "orienté logique") +
       " avec " +
       `${functionMatches.length} unité(s) fonctionnelle(s)` +
       (hasAsync ? ", flux asynchrones" : "") +

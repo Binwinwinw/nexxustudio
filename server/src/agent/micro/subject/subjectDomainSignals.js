@@ -1,4 +1,4 @@
-import { normalizeText } from "../../utils/normalizationGuards.js";
+import { normalizeText } from "../../utils/parsing-normalization/normalizationGuards.js";
 import { normalizeSubject } from "./subjectNormalizer.js";
 import { scanPublicEntitiesInQuery, resolveSubject } from "./subjectGraph.js";
 import { lookupKnownEntity } from "./knownEntityQuickLookup.js";

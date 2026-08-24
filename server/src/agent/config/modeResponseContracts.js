@@ -1,9 +1,16 @@
-import responseThinkingCleaner from "../utils/responseThinkingCleaner.js";
-import { isStructuredListReply } from "../utils/streamTextChunks.js";
-import { isIdeationRequest, isConversationMemoryRecallRequest, isArchitectureDesignIntent } from "../utils/conversationGuards.js";
+import responseThinkingCleaner from "../utils/quality-safety/responseThinkingCleaner.js";
+import { isStructuredListReply } from "../utils/runtime/streamTextChunks.js";
+import {
+  isIdeationRequest,
+  isConversationMemoryRecallRequest,
+  isArchitectureDesignIntent,
+  hasImageAttachments,
+  isAttachedVisionRequest,
+} from "../utils/conversation/conversationGuards.js";
 import { isFreshFactualCompareWithWebRequest } from "../policies/routing/explicitWebSearchRequestPolicy.js";
-import { isFamiliarityIntent } from "../utils/familiarityIntentGuards.js";
-import { isFamiliarityFollowupIntent } from "../utils/familiarityFollowupGuards.js";
+import { lookupRoutingCase } from "../policies/routing/routingCaseDictionary.js";
+import { isFamiliarityIntent } from "../utils/intent-guards/familiarityIntentGuards.js";
+import { isFamiliarityFollowupIntent } from "../utils/conversation/familiarityFollowupGuards.js";
 import { isConversationContinuityFollowup } from "../micro/continuity/conversationContinuityContext.js";
 import { isAnaphoraReferenceResolvable } from "../micro/continuity/anaphoraReferenceResolver.js";
 import {
@@ -20,11 +27,11 @@ import {
   buildKnowledgeFreshnessSystemAddon,
 } from "../micro/replies/knowledgeFreshnessComposerContract.js";
 import { getDocumentWebComparePromptAddon } from "../policies/document/index.js";
-import { sanitizeUnverifiedToolExecutionClaims } from "../utils/toolExecutionClaimGuard.js";
+import { sanitizeUnverifiedToolExecutionClaims } from "../utils/quality-safety/toolExecutionClaimGuard.js";
 import { sanitizeFalseWebCapabilityDenial } from "../policies/web/webCapabilityTruthPolicy.js";
 import { evaluateRefusalSufficiency } from "../micro/parsing/refusalSufficiencyEvaluator.js";
-import { isExploitableProcedureIntent } from "../utils/procedureIntentGuards.js";
-import { sanitizeUnverifiedSkillExecutionClaims } from "../utils/skillExecutionClaimGuard.js";
+import { isExploitableProcedureIntent } from "../utils/intent-guards/procedureIntentGuards.js";
+import { sanitizeUnverifiedSkillExecutionClaims } from "../utils/quality-safety/skillExecutionClaimGuard.js";
 import {
   buildCodeDeliveryAddon,
   isCodeGenerationRequest,
@@ -44,6 +51,7 @@ import {
   applyVoiceContinuityVisibleText,
 } from "../policies/posture/index.js";
 import { buildPostureDeliveryAddon } from "../policies/posture/index.js";
+import { buildOutputLanguageSystemAddon } from "../policies/posture/index.js";
 import { buildCodeIntentAddon } from "../policies/code/codeReviewPolicy.js";
 import {
   buildFileContextGuardAddon,
@@ -253,8 +261,7 @@ ANALYSE DOCUMENT JOINT (obligatoire):
 - Minimum : type de fichier, rôle/objectif, 3 à 6 points clés extraits du texte, limites éventuelles.
 - INTERDIT : répondre "${INSUFFICIENT_SIGNAL_REFUSAL}" ou prétendre ne pas avoir le document.
 - Si DOCUMENT_CAPABILITY indique ocr_eligible=true ou vision_eligible=true, NE PAS affirmer que l'OCR est indisponible : décrire honnêtement scan détecté, extraction native échouée, capacités aval disponibles.
-- Pour du code source (.js, .ts, etc.) : décris modules, exports, responsabilités, patterns détectés.
-${THINKING_RULE}`;
+- Pour du code source (.js, .ts, etc.) : décris modules, exports, responsabilités, patterns détectés.`;
 
 /**
  * Prompt DOCUMENT pour le fast path — variante sans refus agressif si fichier joint.
@@ -283,8 +290,7 @@ SUIVI DOCUMENT — amélioration / correction / exemple (document déjà analys�
 - Propose 3 à 5 améliorations concrètes ancrées dans le texte (sélecteurs, règles, blocs cités).
 - Montre au moins un bloc d'exemple modifié quand la demande l'implique.
 - Explique brièvement le pourquoi (maintenabilité, responsive, performance, accessibilité) selon pertinence.
-- INTERDIT : "${INSUFFICIENT_SIGNAL_REFUSAL}" ou prétendre ne pas avoir le document.
-${THINKING_RULE}`;
+- INTERDIT : "${INSUFFICIENT_SIGNAL_REFUSAL}" ou prétendre ne pas avoir le document.`;
 
 /**
  * Prompt DOCUMENT pour les tours de suivi (amélioration, explication, bloc d'exemple).
@@ -302,6 +308,22 @@ ${DOCUMENT_IMPROVEMENT_RULES}`;
   return `${base}\n\nCONTEXTE FOURNI:\n${contextBlock.trim()}`;
 }
 
+function pickDocumentPreviewLines(excerpt) {
+  const lines = String(excerpt || "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .filter((line) => !/page \d+\s+sur\s+\d+/i.test(line));
+  const salientRe =
+    /sujet\s*\d|nietzsche|calculatrice|dur[ée]e de l['’][eé]preuve|humain, trop humain|expliquer le texte|m[ée]thodes scientifiques/i;
+  const salient = [];
+  const rest = [];
+  for (const line of lines) {
+    (salientRe.test(line) ? salient : rest).push(line);
+  }
+  return [...salient, ...rest].slice(0, 15);
+}
+
 /**
  * Fallback déterministe quand le LLM refuse ou renvoie vide malgré un document ingéré.
  */
@@ -316,11 +338,7 @@ export function buildAttachedDocumentFallback(
     /CONTENU:\n([\s\S]*?)\n-{3,}/,
   );
   const excerpt = (contentMatch?.[1] || contextBlock || "").trim();
-  const previewLines = excerpt
-    .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0)
-    .slice(0, 15);
+  const previewLines = pickDocumentPreviewLines(excerpt);
 
   const bullets =
     previewLines.length > 0
@@ -343,6 +361,84 @@ ${String(query || "analyse du document").trim()}
 
 ### Limites
 Réponse générée en mode fallback — relancer si une analyse plus profonde est nécessaire.`;
+}
+
+/**
+ * Décide si la sortie LLM document est invalide (dump méta, refus, vide)
+ * et bascule alors sur le fallback déterministe — même si raw n'est pas vide.
+ */
+export function resolveDocumentLlmOutcome({
+  raw = "",
+  query = "",
+  fileName = "document",
+  contextBlock = "",
+  hasDocumentSignal = false,
+} = {}) {
+  let response = enforceModeContract(RESPONSE_MODES.DOCUMENT, raw, {
+    allowRefusal: !hasDocumentSignal,
+    attachedDocument: hasDocumentSignal,
+  });
+  const needsFallback =
+    hasDocumentSignal &&
+    (!String(response || "").trim() ||
+      isInsufficientSignalRefusal(response) ||
+      responseThinkingCleaner.hasEscapedThinking(response) ||
+      responseThinkingCleaner.isPromptInstructionLoop(raw));
+  if (needsFallback) {
+    response = enforceModeContract(
+      RESPONSE_MODES.DOCUMENT,
+      buildAttachedDocumentFallback(contextBlock, query, fileName),
+      { allowRefusal: false, attachedDocument: true },
+    );
+  }
+  return { response, usedFallback: needsFallback };
+}
+
+/** Après extraction valide : un fallback doit toujours émettre, y compris si le dump a déjà streamé. */
+export function shouldEmitDocumentFallbackChunks(usedFallback, onContent) {
+  return Boolean(usedFallback && onContent);
+}
+
+const VISION_HONEST_ERROR =
+  "L'analyse de l'image jointe a échoué ou n'a rien produit. Réessaie, ou décris l'image à la main.";
+
+/**
+ * VISION_ATTACHED + image réelle + demande Vision explicite.
+ * @param {object} packet
+ */
+export function isVisionAttachedDescribeContext(packet = {}) {
+  if (packet?.meta?.intent_contract_id !== "VISION_ATTACHED") return false;
+  const attachments = packet?.meta?._attachment_refs || [];
+  const query = packet?.user_query || "";
+  return (
+    hasImageAttachments(attachments) && isAttachedVisionRequest(query, attachments)
+  );
+}
+
+function formatVisionBriefingReply(briefing = "") {
+  return String(briefing || "")
+    .replace(/^-{3,}\s*BRIEFING[^\n]*\n?/gim, "")
+    .replace(/\[ÉCHEC\][^\n]*/g, "")
+    .replace(/^-{3,}\s*$/gm, "")
+    .trim();
+}
+
+/**
+ * Filet Vision : jamais livrer la phrase piste. Pas le fallback document.
+ * @param {object} packet
+ * @param {string} text
+ */
+export function resolveVisionAttachedComposerDelivery(packet = {}, text = "") {
+  if (!isVisionAttachedDescribeContext(packet)) return String(text || "");
+  const raw = String(text || "");
+  const piste = isInsufficientSignalRefusal(raw) || /^Je vois la piste/i.test(raw.trim());
+  const empty = !raw.trim();
+  if (!piste && !empty) return raw;
+
+  const failed = packet?.meta?.vision_failed === true;
+  const briefing = formatVisionBriefingReply(packet?.vision_briefing || "");
+  if (failed || !briefing) return VISION_HONEST_ERROR;
+  return briefing;
 }
 
 export function isInsufficientSignalRefusal(text = "") {
@@ -379,6 +475,11 @@ export function shouldApplyOpenPropositionContract(packet = {}) {
   if (packet?.meta?.open_proposition === true) return true;
   const query = packet?.user_query || "";
   if (isExplicitSourceCompilationRequest(query)) return false;
+  // Livrable nominal fiche/guide : open_proposition ne doit pas rester collé
+  // (contrat DIRECT_EXPLANATION via resolveIntentContract — pas d'import croisé ici).
+  if (packet?.meta?.intent_contract_matched_by === "guard:isExplicitNominalDocumentDeliverable") {
+    return false;
+  }
   return isOpenProjectIdeation(query, packet);
 }
 
@@ -387,10 +488,16 @@ export function shouldApplyOpenPropositionContract(packet = {}) {
  */
 export function resolveComposerContractMode(
   packet,
-  { forceShort = false, isSocial = false, useFactual = false, openProposition = false } = {},
+  {
+    forceShort = false,
+    isSocial = false,
+    useFactual = false,
+    openProposition = false,
+    generalKnowledge = false,
+  } = {},
 ) {
   if (openProposition) return RESPONSE_MODES.OPEN_PROPOSITION;
-  if (isSocial || forceShort) return RESPONSE_MODES.SIMPLE_FAST;
+  if (isSocial || (forceShort && !generalKnowledge)) return RESPONSE_MODES.SIMPLE_FAST;
   if (useFactual) {
     return packet?.risk_level === "high"
       ? RESPONSE_MODES.CRITICAL
@@ -413,6 +520,7 @@ export function getComposerSystemPrompt(
     generalKnowledge = false,
     knownEntitySummary = false,
     knowledgeFreshness = false,
+    volumeTier = null,
   } = {},
 ) {
   const mode = resolveComposerContractMode(packet, {
@@ -420,6 +528,7 @@ export function getComposerSystemPrompt(
     isSocial,
     useFactual,
     openProposition,
+    generalKnowledge,
   });
   let prompt = getModeSystemPrompt(mode);
 
@@ -432,8 +541,12 @@ export function getComposerSystemPrompt(
 - Message chaleureux et direct en français (sobre — pas de grandiloquence).
 - Rédige DIRECTEMENT la salutation ou réponse sociale finale.`;
   } else if (useFactual) {
+    const sixSections =
+      volumeTier === "light"
+        ? "- Synthèse rigoureuse et tracée. Pas de plan en sections pour une question simple."
+        : "- Synthèse rigoureuse et tracée. Structure markdown si le sujet est complexe (max 6 sections).";
     prompt += `\n\nVARIANTE ÉPISTÉMIQUE:
-- Synthèse rigoureuse et tracée. Structure markdown si le sujet est complexe (max 6 sections).
+${sixSections}
 - Cite les sources et URLs si elles sont fournies dans le contexte.`;
   } else if (mode === RESPONSE_MODES.COMPOSER) {
     prompt += `\n\nVARIANTE CONVERSATION:
@@ -487,7 +600,17 @@ export function getComposerSystemPrompt(
   if (knownEntitySummary) {
     prompt += `\n\n${buildCulturalContentSummarySystemAddon(packet?.user_query || "")}`;
   } else if (generalKnowledge) {
-    prompt += `\n\n${buildGeneralKnowledgeSystemAddon(packet?.user_query || "")}`;
+    prompt += `\n\n${buildGeneralKnowledgeSystemAddon(packet?.user_query || "", {
+      volumeTier,
+      hasWebEvidence: Boolean(
+        packet?.meta?.web_consulted_at ||
+          (packet?.expert_outputs || []).some(
+            (o) =>
+              o?.stage === "web_research" &&
+              String(o?.content || "").trim().length > 20,
+          ),
+      ),
+    })}`;
   } else if (directArbitration) {
     prompt += `\n\n${buildDirectArbitrationSystemAddon(packet?.user_query || "")}`;
   }
@@ -511,6 +634,13 @@ export function getComposerSystemPrompt(
     prompt += `\n\n${packet.meta.execution_brief_injection}`;
   }
 
+  const languageAddon = buildOutputLanguageSystemAddon(
+    packet?.meta?.languagePolicy || null,
+  );
+  if (languageAddon) {
+    prompt += `\n\n${languageAddon}`;
+  }
+
   return prompt;
 }
 
@@ -524,6 +654,12 @@ export function enforceComposerContract(
   const mode = resolveComposerContractMode(packet, composerOptions);
   return enforceModeContract(mode, rawText, {
     ...enforceOptions,
+    query: enforceOptions.query || packet?.user_query || "",
+    attachments:
+      enforceOptions.attachments || packet?.meta?._attachment_refs || [],
+    attachedDocument:
+      enforceOptions.attachedDocument ??
+      Boolean(packet?.meta?.has_attached_documents),
     codeDelivery: enforceOptions.codeDelivery ?? composerOptions.codeDelivery ?? false,
   });
 }
@@ -637,10 +773,25 @@ export function enforceModeContract(mode, rawText, options = {}) {
     blockGenericRefusal = null,
   } = options;
 
-  // R1 — refus « piste » interdit si sujet/format ancré (voix continuité)
+  const routingLookup =
+    options.routingLookup ||
+    (query
+      ? lookupRoutingCase(query, {
+          history: options.history || [],
+          priorState: options.priorState,
+          activeGoal: options.activeGoal,
+          attachments: options.attachments || [],
+        })
+      : null);
+  const routingCaseForbidPiste = Boolean(routingLookup?.forbidPiste);
+  const documentAttached =
+    Boolean(attachedDocument) || Boolean(routingLookup?.winning_rule === "document_attached_guard");
+
+  // R1 — refus « piste » interdit si sujet/format ancré OU fiche dictionnaire.
   const blockPisteRefusal =
     blockGenericRefusal === true ||
     allowRefusal === false ||
+    routingCaseForbidPiste ||
     (blockGenericRefusal !== false &&
       query &&
       shouldBlockGenericInsufficientRefusal(query, {
@@ -651,6 +802,7 @@ export function enforceModeContract(mode, rawText, options = {}) {
         howToProcedural: options.howToProcedural,
         debugDiagnostic: options.debugDiagnostic,
         translation: mode === RESPONSE_MODES.TRANSLATION,
+        routingCaseForbidPiste,
       }));
 
   const mayEmitPisteRefusal = allowRefusal && !blockPisteRefusal;
@@ -665,17 +817,13 @@ export function enforceModeContract(mode, rawText, options = {}) {
     if (mode === RESPONSE_MODES.OPEN_PROPOSITION) {
       return "";
     }
-    if (attachedDocument && mode === RESPONSE_MODES.DOCUMENT) {
+    if (documentAttached) {
       return "";
     }
     return mayEmitPisteRefusal ? INSUFFICIENT_SIGNAL_REFUSAL : "";
   }
 
-  if (
-    attachedDocument &&
-    mode === RESPONSE_MODES.DOCUMENT &&
-    isInsufficientSignalRefusal(cleaned)
-  ) {
+  if (documentAttached && isInsufficientSignalRefusal(cleaned)) {
     return "";
   }
 
@@ -1071,6 +1219,10 @@ export default {
   getHowToProceduralSystemPrompt,
   getDocumentAnalysisSystemPrompt,
   buildAttachedDocumentFallback,
+  isVisionAttachedDescribeContext,
+  resolveVisionAttachedComposerDelivery,
+  resolveDocumentLlmOutcome,
+  shouldEmitDocumentFallbackChunks,
   isInsufficientSignalRefusal,
   isOpenProjectIdeation,
   shouldApplyOpenPropositionContract,

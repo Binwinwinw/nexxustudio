@@ -1,7 +1,10 @@
 /**
  * P5 — Recommandation par défaut et prochain pas concret (déterministe).
  */
-import { normalizeArchitectureDesignQuery } from "../../utils/architectureDesignIntentGuards.js";
+import {
+  isCodeReviewArchitectureTemplateLicensed,
+  normalizeArchitectureDesignQuery,
+} from "../../utils/intent-guards/architectureDesignIntentGuards.js";
 import {
   INTENT_CONTRACTS,
   RECOMMENDATION_KEYS,
@@ -14,6 +17,12 @@ const ARCHITECTURE_OPTION_LABELS = {
     "l'approche intermédiaire (RAG + règles)",
   [RECOMMENDATION_KEYS.ARCHITECTURE_INDUSTRIAL]:
     "l'approche industrielle (pipeline complet)",
+};
+
+const ARCHITECTURE_GENERIC_LABELS = {
+  [RECOMMENDATION_KEYS.ARCHITECTURE_LIGHT]: "l'approche légère",
+  [RECOMMENDATION_KEYS.ARCHITECTURE_INTERMEDIATE]: "l'approche intermédiaire",
+  [RECOMMENDATION_KEYS.ARCHITECTURE_INDUSTRIAL]: "l'approche industrielle",
 };
 
 const ARCHITECTURE_OPTION_MARKERS = {
@@ -46,10 +55,12 @@ export function buildDefaultRecommendation(ctx = {}) {
 
   const q = normalizeArchitectureDesignQuery(query);
   const key = pickArchitectureRecommendationKey(q);
+  const licensed = isCodeReviewArchitectureTemplateLicensed(query) || /\brag\b/.test(q);
+  const labels = licensed ? ARCHITECTURE_OPTION_LABELS : ARCHITECTURE_GENERIC_LABELS;
 
   return {
     key,
-    label: ARCHITECTURE_OPTION_LABELS[key],
+    label: labels[key],
     rationale: buildArchitectureRationale(key, q),
     nextStep: buildArchitectureNextStep(q),
   };

@@ -4,10 +4,17 @@ import dotenv from "dotenv";
 import fs from "fs-extra";
 import path from "path";
 import { fileURLToPath } from "url";
-import { looksLooping } from "../agent/utils/qualityGuards.js";
+import { looksLooping } from "../agent/utils/quality-safety/qualityGuards.js";
 import turnTelemetry from "../agent/telemetry/turnTelemetry.js";
 import thermalTelemetry from "../agent/telemetry/thermalTelemetry.js";
-import { MODEL_CONFIG } from "../config/models.js";
+import { MODEL_CONFIG, getActiveTier1ChatModel } from "../config/models.js";
+import { resolveWarmupMatrixPath } from "../config/warmupExperimentPlan.js";
+import { logOllamaCallMetrics } from "./ollamaCallMetrics.js";
+import {
+  stripThinkOption,
+  buildNativeOllamaChatPayload,
+  summarizeOllamaChatPayload,
+} from "./ollamaChatPayload.js";
 
 dotenv.config();
 
@@ -76,13 +83,7 @@ class OllamaClient {
 
   loadModelWeights() {
     try {
-      const __filename = fileURLToPath(import.meta.url);
-      const __dirname = path.dirname(__filename);
-      const configPath = path.resolve(
-        __dirname,
-        "../../config/warmup.matrix.json",
-      );
-      const config = fs.readJsonSync(configPath);
+      const config = fs.readJsonSync(resolveWarmupMatrixPath());
       const weights = {};
       Object.values(config.tiers).forEach((tier) => {
         tier.models.forEach((m) => {
@@ -142,7 +143,7 @@ class OllamaClient {
         if (this.isStreaming) return;
 
         // 1. Core Residency
-        const coreModel = MODEL_CONFIG.TIER_1.model;
+        const coreModel = getActiveTier1ChatModel();
         try {
           if (this.activeModels.has(coreModel)) {
             console.log(
@@ -322,7 +323,7 @@ class OllamaClient {
    * Sync-style inference but PROTECTED by the output guardrails (V2.2.3)
    * Uses streaming internally to detect loops during "hidden" reasoning.
    */
-  async chatSafe(messages, model = "ornith:9b", options = {}) {
+  async chatSafe(messages, model = getActiveTier1ChatModel(), options = {}) {
     let fullText = "";
     try {
       await this.chatStream(
@@ -340,13 +341,26 @@ class OllamaClient {
     }
   }
 
-  async chat(messages, model = "ornith:9b", options = {}) {
+  async chat(messages, model = getActiveTier1ChatModel(), options = {}) {
     const controller = new AbortController();
     this.queueDepths.set(model, (this.queueDepths.get(model) || 0) + 1);
     this.isStreaming = true;
+    const requestStart = Date.now();
+    const attempt = options.attempt || 1;
 
     try {
-      const chatOptions = this.buildChatOptions(options);
+      const { think, rest } = stripThinkOption(options);
+      const chatOptions = this.buildChatOptions(rest);
+      const chatPayload = buildNativeOllamaChatPayload({
+        model,
+        messages,
+        stream: false,
+        chatOptions,
+        think,
+      });
+      console.log(
+        `[Ollama] payload ${JSON.stringify(summarizeOllamaChatPayload(chatPayload))}`,
+      );
 
       console.log(
         `[Ollama] 🧠 Sync inference on ${model} (ctx:${chatOptions.num_ctx})...`,
@@ -354,12 +368,7 @@ class OllamaClient {
 
       const response = await axios.post(
         `${this.host}/api/chat`,
-        {
-          model,
-          messages,
-          stream: false,
-          options: chatOptions,
-        },
+        chatPayload,
         {
           timeout: 0,
           signal: controller.signal,
@@ -374,7 +383,21 @@ class OllamaClient {
         lastUsed: Date.now(),
       });
 
-      const msg = response.data?.message || {};
+      const data = response.data || {};
+      logOllamaCallMetrics({
+        model,
+        attempt,
+        kind: "sync",
+        durationMs: Date.now() - requestStart,
+        total_duration: data.total_duration,
+        load_duration: data.load_duration,
+        prompt_eval_duration: data.prompt_eval_duration,
+        eval_duration: data.eval_duration,
+        eval_count: data.eval_count,
+        status: "ok",
+      });
+
+      const msg = data.message || {};
       const content = msg.content || "";
       const reasoning =
         msg.reasoning_content || msg.thinking || msg.thought || "";
@@ -389,11 +412,25 @@ class OllamaClient {
         error.__CANCEL__ ||
         error.name === "AbortError"
       ) {
+        logOllamaCallMetrics({
+          model,
+          attempt,
+          kind: "sync",
+          durationMs: Date.now() - requestStart,
+          status: "abort",
+        });
         console.log(`[Ollama] 🛑 Sync inference on ${model} cancelled.`);
         return "";
       }
 
       {
+        logOllamaCallMetrics({
+          model,
+          attempt,
+          kind: "sync",
+          durationMs: Date.now() - requestStart,
+          status: "error",
+        });
         const detail =
           error.response?.data?.error ||
           error.response?.data?.message ||
@@ -419,7 +456,7 @@ class OllamaClient {
   async chatStream(
     messages,
     onToken,
-    model = "ornith:9b",
+    model = getActiveTier1ChatModel(),
     options = {},
     keepAlive = 1800,
   ) {
@@ -430,7 +467,19 @@ class OllamaClient {
     this.queueDepths.set(model, (this.queueDepths.get(model) || 0) + 1);
 
     try {
-      const chatOptions = this.buildChatOptions(options);
+      const { think, rest } = stripThinkOption(options);
+      const chatOptions = this.buildChatOptions(rest);
+      const chatPayload = buildNativeOllamaChatPayload({
+        model,
+        messages,
+        stream: true,
+        keepAlive,
+        chatOptions,
+        think,
+      });
+      console.log(
+        `[Ollama] payload ${JSON.stringify(summarizeOllamaChatPayload(chatPayload))}`,
+      );
 
       console.log(
         `[Ollama] 🧠 Streaming ${model} (ctx:${chatOptions.num_ctx}, temp:${chatOptions.temperature}, rp:${chatOptions.repeat_penalty})...`,
@@ -438,13 +487,7 @@ class OllamaClient {
 
       const response = await axios.post(
         `${this.host}/api/chat`,
-        {
-          model,
-          messages,
-          stream: true,
-          keep_alive: keepAlive,
-          options: chatOptions,
-        },
+        chatPayload,
         {
           responseType: "stream",
           timeout: 0,
@@ -578,6 +621,21 @@ class OllamaClient {
                 turnTelemetry.setMetric("tps", parseFloat(tps.toFixed(2)));
                 turnTelemetry.setMetric("totalTokens", tokensReceived);
 
+                logOllamaCallMetrics({
+                  model,
+                  attempt: options.attempt || 1,
+                  kind: "stream",
+                  durationMs: totalDuration,
+                  ttftMs: ttft,
+                  total_duration: json.total_duration,
+                  load_duration: json.load_duration,
+                  prompt_eval_duration: json.prompt_eval_duration,
+                  eval_duration: json.eval_duration,
+                  eval_count: json.eval_count,
+                  tokenCount: tokensReceived,
+                  status: "ok",
+                });
+
                 finish(json);
                 return;
               }
@@ -612,6 +670,13 @@ class OllamaClient {
             err.name === "AbortError"
           ) {
             console.log(`[Ollama] 🛑 Stream for ${model} cleanly aborted.`);
+            logOllamaCallMetrics({
+              model,
+              attempt: options.attempt || 1,
+              kind: "stream",
+              durationMs: Date.now() - requestStart,
+              status: "abort",
+            });
             finish({ done: true, aborted: true });
           } else {
             fail(err);
@@ -634,10 +699,24 @@ class OllamaClient {
         error.name === "AbortError"
       ) {
         console.log(`[Ollama] 🛑 Stream for ${model} intentionally cancelled.`);
+        logOllamaCallMetrics({
+          model,
+          attempt: options.attempt || 1,
+          kind: "stream",
+          durationMs: Date.now() - requestStart,
+          status: "abort",
+        });
         return { done: true, aborted: true };
       }
 
       {
+        logOllamaCallMetrics({
+          model,
+          attempt: options.attempt || 1,
+          kind: "stream",
+          durationMs: Date.now() - requestStart,
+          status: "error",
+        });
         const detail =
           error.response?.data?.error ||
           error.response?.data?.message ||
@@ -677,7 +756,7 @@ class OllamaClient {
     const multiLoadedLimit =
       parseInt(process.env.OLLAMA_MAX_LOADED_MODELS) || 2;
     const vramSoftLimit = this.vramLimit * this.VRAM_THRESHOLDS.HIGH;
-    const stickyModels = [MODEL_CONFIG.TIER_1.model, "nomic-embed-text:latest"];
+    const stickyModels = [getActiveTier1ChatModel(), "nomic-embed-text:latest"];
 
     let currentPressure = await this.calculateVRAMPressure();
     const modelMeta = this.modelWeights[modelName] || {

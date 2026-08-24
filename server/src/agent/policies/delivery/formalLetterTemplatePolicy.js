@@ -2,8 +2,8 @@
  * FORMAL_LETTER_TEMPLATE — modèles de courrier administratif (résiliation, réclamation…).
  * Profil chat : template local, pas Document Analysis / info seeking niche / Forge.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { hasTextAttachments } from "../../utils/conversationGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { hasTextAttachments } from "../../utils/conversation/conversationGuards.js";
 
 export const FORMAL_LETTER_TEMPLATE_RULE = "formal_letter_template_v1";
 

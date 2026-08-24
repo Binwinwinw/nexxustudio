@@ -3,8 +3,8 @@
  * Extension de CODE_DELIVERY_V1 avec writeArtifact: true.
  */
 import contract from "../../config/codeProjectLightContract.json" with { type: "json" };
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { suppressesCodeGenerationForProgrammingPedagogy } from "../../utils/programmingPedagogyLightIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { suppressesCodeGenerationForProgrammingPedagogy } from "../../utils/intent-guards/programmingPedagogyLightIntentGuards.js";
 import { isHtmlProjectDeliverable } from "../delivery/index.js";
 import { buildFrontPresentationQualitySystemAddon } from "./frontendPresentationQualityContract.js";
 

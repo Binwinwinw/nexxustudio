@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
-import { parsePedagogicalOverview } from "../src/agent/utils/pedagogicalOverviewIntentGuards.js";
+import { parsePedagogicalOverview } from "../src/agent/utils/intent-guards/pedagogicalOverviewIntentGuards.js";
 import {
   COVERAGE_TIERS,
   PEDAGOGICAL_DISCIPLINE_INDEX,

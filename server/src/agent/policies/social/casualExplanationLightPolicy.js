@@ -2,7 +2,7 @@
  * G49 — casual_explanation_light : relance banter ancrée sur le fil en cours.
  * Ex. « et le poker se joue aussi avec des paires » après un tour Memory.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 
 export const CASUAL_EXPLANATION_LIGHT_RULE = "casual_explanation_light_g49";
 

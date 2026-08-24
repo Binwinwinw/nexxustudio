@@ -14,7 +14,7 @@ import {
   resolveIntentContract,
   shouldSkipWebSearchForIntent,
 } from "../src/agent/config/intentContractRegistry.js";
-import { isInformationSeekingWithTarget } from "../src/agent/utils/informationSeekingIntentGuards.js";
+import { isInformationSeekingWithTarget } from "../src/agent/utils/intent-guards/informationSeekingIntentGuards.js";
 import { isDocumentSynthesisExcluded } from "../src/agent/policies/document/index.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import {

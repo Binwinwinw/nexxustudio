@@ -9,7 +9,7 @@ import { analyzeRequestIntentFrame } from "../src/agent/policies/intent/requestI
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { resolveClarificationGate } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
-import { resolveSessionContextReference } from "../src/agent/utils/sessionContextReferenceResolver.js";
+import { resolveSessionContextReference } from "../src/agent/utils/context/sessionContextReferenceResolver.js";
 
 /** @typedef {{ id: number|string, query: string, expect: Record<string, unknown>, status: 'stable'|'gap'|'frame_bug' }} BatteryCase */
 

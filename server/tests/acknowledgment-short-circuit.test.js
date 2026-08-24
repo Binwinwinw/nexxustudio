@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isAcknowledgmentRequest } from "../src/agent/utils/acknowledgmentIntentGuards.js";
+import { isAcknowledgmentRequest } from "../src/agent/utils/intent-guards/acknowledgmentIntentGuards.js";
 
 describe("isAcknowledgmentRequest", () => {
   it("Positif fort : dis-moi oui si tu as bien compris", () => {

@@ -20,9 +20,23 @@ const GRANDILOQUENT_MARKERS_RE =
 const FORMAT_ANCHORED_RE =
   /\b(?:tableau(?:x)?|schema|schéma|diagramme|carte mentale|en\s+markdown|sous forme de|résumé|résumé ordonné|summary|synthèse|synthese)\b/i;
 
+/** Pourquoi causal déjà cadré — pas un hunt « infos sur X ». */
+export const WHY_EXPLAIN_SHELL_RE =
+  /\b(?:pourquoi|pour\s+quelles?\s+raisons?|comment\s+se\s+fait)\b/i;
+
 /** Sujet / mandat explicatif déjà présent → ancrage (R1). */
 const SUBJECT_ANCHORED_SHELL_RE =
-  /\b(?:explique|expliquer|expliquant|explication|c['’]est quoi|tu connais|connais[- ]?tu|dis[- ]?moi|détaille|detaille|fais?[- ]?(?:moi\s+)?un|pourrais[- ]?tu|résume|resumer|résumer)\b/i;
+  /\b(?:explique|expliquer|expliquant|explication|pourquoi|pour\s+quelles?\s+raisons?|comment\s+se\s+fait|c['’]est quoi|tu connais|connais[- ]?tu|dis[- ]?moi|détaille|detaille|fais?[- ]?(?:moi\s+)?un|pourrais[- ]?tu|résume|resumer|résumer)\b/i;
+
+/**
+ * « pour quelle raison / pourquoi / comment se fait » + assez de matière.
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function isCausalWhyExplainRequest(query = "") {
+  const q = String(query || "").trim();
+  return q.length >= 16 && WHY_EXPLAIN_SHELL_RE.test(q);
+}
 
 /**
  * Invariants stables (E1–E2, E6, R1–R3).
@@ -78,7 +92,8 @@ export function shouldBlockGenericInsufficientRefusal(query = "", flags = {}) {
     flags.simpleFactual ||
     flags.howToProcedural ||
     flags.debugDiagnostic ||
-    flags.translation
+    flags.translation ||
+    flags.routingCaseForbidPiste
   ) {
     return true;
   }

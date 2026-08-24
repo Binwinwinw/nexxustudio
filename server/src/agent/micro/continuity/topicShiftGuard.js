@@ -3,8 +3,8 @@
  * Quand l'utilisateur change franchement de domaine, on relâche la branche active
  * et on ne réinjecte pas le contexte du tour précédent.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { isStructuredAssistanceRequest } from "../../utils/conversationGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { isStructuredAssistanceRequest } from "../../utils/conversation/conversationGuards.js";
 import { isCodeGenerationRequest } from "../../policies/code/codeDeliveryPolicy.js";
 import {
   isShortFollowupText,

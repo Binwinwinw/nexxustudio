@@ -1,4 +1,5 @@
 import ollama from '../../llm/ollama.js';
+import { getActiveTier1ChatModel } from '../../config/models.js';
 
 const ELIGIBLE_FACT_TYPES = [
   'technical_preference',
@@ -69,7 +70,7 @@ RÈGLES:
   try {
     const responseText = await ollama.chat(
       [{ role: 'user', content: prompt }],
-      'ornith:9b', // Moteur Tier 1 — raisonnement court
+      getActiveTier1ChatModel(), // T1 — raisonnement court
       {
         temperature: 0.1,
         num_predict: 250

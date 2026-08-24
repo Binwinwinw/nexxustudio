@@ -1,12 +1,13 @@
 import AgentPipeline from "./agentPipeline.js";
 import { runPipeline } from "./orchestrator/runPipeline.js";
-import { isTechnicalStatusReport } from "./utils/conversationGuards.js";
-import { getIdentityDeterministicReply } from "./utils/identityIntentGuards.js";
+import { isTechnicalStatusReport } from "./utils/conversation/conversationGuards.js";
+import { getIdentityDeterministicReply } from "./utils/intent-guards/identityIntentGuards.js";
 import {
   buildParseState,
   evaluateAutoReplySufficiency,
 } from "./micro/parsing/responseSufficiencyEvaluator.js";
 import { resolveMultiSegmentPlan } from "./micro/parsing/multiSegmentResponsePlan.js";
+import { tryFileAnalysisAwaitingSource } from "./policies/attachment/fileAnalysisContract.js";
 
 class Agent {
   constructor() {
@@ -263,6 +264,26 @@ class Agent {
       ...options
     } = {},
   ) {
+    const awaitingSource = tryFileAnalysisAwaitingSource(query, {
+      images: options.images,
+      attachments: options.attachments,
+      forgeProduction: options.forgeProduction,
+    });
+    if (awaitingSource) {
+      console.log(
+        `[AGENT] ${awaitingSource.route} pipelinePath=${awaitingSource.pipelinePath} contract=null — stop simple_fast/expert_task/REPO_ANALYSIS`,
+      );
+      if (onStep) {
+        onStep("📎 Analyse de fichier — en attente de la pièce...", {
+          pipelinePath: awaitingSource.pipelinePath,
+          route: awaitingSource.route,
+          intentContractId: null,
+        });
+      }
+      if (onContent) onContent(awaitingSource.reply);
+      return awaitingSource.reply;
+    }
+
     const q = query.toLowerCase().trim();
     if (q.startsWith("diagnostic:") || q.startsWith("audit:")) {
       if (onStep)

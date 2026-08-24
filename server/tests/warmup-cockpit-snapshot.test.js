@@ -23,15 +23,17 @@ test('getSystemHeadline: tempo visible pour opérateur', () => {
   );
 });
 
-test('buildWarmupTimeline: boot → tier1 → ready (sans tier2 actif)', () => {
+test('buildWarmupTimeline: boot → tier1 → ready → tier2 deferred', () => {
   const timeline = buildWarmupTimeline({
     isReady: true,
     latency: { tiers: { tier1: 4600 } },
   });
-  assert.equal(timeline.length, 3);
+  assert.equal(timeline.length, 4);
   assert.equal(timeline[0].id, 'boot');
   assert.equal(timeline[1].id, 'tier1');
   assert.equal(timeline[2].id, 'system_ready');
+  assert.equal(timeline[3].id, 'tier2');
+  assert.equal(timeline[3].status, 'pending');
   assert.equal(timeline[1].duration_ms, 4600);
 });
 
@@ -39,20 +41,22 @@ test('buildWarmupCockpitSnapshot: payload Cockpit complet', () => {
   const snapshot = buildWarmupCockpitSnapshot({
     phase: 'ready',
     isReady: true,
-    tier2_deferred: false,
+    tier2_deferred: true,
     latency: { total: 5100, tiers: { tier1: 4600 } },
     models: {
-      'ornith:9b': 'ready',
+      'qwen3.5:2b': 'ready',
       'nomic-embed-text:latest': 'ready',
+      'granite4.1:8b': 'deferred',
       'qwen2.5-coder:7b': 'lazy',
     },
   });
 
   assert.equal(snapshot.boot_profile, 'reactive');
   assert.equal(snapshot.headline, 'Système prêt');
-  assert.equal(snapshot.tier2.state, 'disabled');
-  assert.equal(snapshot.tier2.label, 'Tier 2 désactivé — reasoner = Tier 1');
-  assert.equal(snapshot.tier2.model, 'ornith:9b');
+  assert.equal(snapshot.tier2.state, 'deferred');
+  assert.equal(snapshot.tier2.label, 'Raisonnement en attente');
+  assert.equal(snapshot.tier2.model, 'granite4.1:8b');
+  assert.equal(snapshot.tier1.chat_model, 'qwen3.5:2b');
   assert.ok(snapshot.boot_trace_id);
   assert.ok(Array.isArray(snapshot.timeline));
   assert.equal(snapshot.tier1.ready, true);

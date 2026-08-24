@@ -1,7 +1,7 @@
 /**
  * Fiches locales — pedagogy_soft_overview (lot #35).
  */
-import { PEDAGOGY_SOFT_DOMAINS } from "../../utils/pedagogySoftOverviewIntentGuards.js";
+import { PEDAGOGY_SOFT_DOMAINS } from "../../utils/intent-guards/pedagogySoftOverviewIntentGuards.js";
 
 const TARGETING_SUFFIX =
   "Tu veux approfondir un angle précis (chronologie, cartes, exemples concrets, figures clés…) ?";

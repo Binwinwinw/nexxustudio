@@ -5,7 +5,7 @@ import {
   classifyMetaConversationIntent,
   isMetaDeliverableTypesIntent,
   threadHasReliableInvestorFactualContext,
-} from "../src/agent/utils/metaConversationIntentGuards.js";
+} from "../src/agent/utils/intent-guards/metaConversationIntentGuards.js";
 import {
   resolveMetaConversationRoute,
   DELIVERABLE_TYPES_CLARIFY_REPLY,

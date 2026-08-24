@@ -4,8 +4,8 @@ import {
   filterRecallHistoryEntries,
   buildRecallFooter,
   buildConversationRecallResponse,
-} from '../src/agent/utils/conversationGuards.js';
-import { synthesizeConversationRecall } from '../src/agent/utils/conversationRecallSynthesizer.js';
+} from '../src/agent/utils/conversation/conversationGuards.js';
+import { synthesizeConversationRecall } from '../src/agent/utils/conversation/conversationRecallSynthesizer.js';
 
 test('filterRecallHistoryEntries: exclut refus épistémiques et requête courante', () => {
   const entries = filterRecallHistoryEntries(

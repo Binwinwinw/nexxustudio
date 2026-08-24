@@ -4,7 +4,7 @@
 import {
   isDebugDiagnosticRequest,
   parseDebugDiagnostic,
-} from "../../utils/debugDiagnosticIntentGuards.js";
+} from "../../utils/intent-guards/debugDiagnosticIntentGuards.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../../config/modeResponseContracts.js";
 
 export const DEBUG_DIAGNOSTIC_COMPOSER_RULE =
@@ -25,7 +25,7 @@ const SEVERITY_LABELS = {
 };
 
 /**
- * @param {import("../../utils/debugDiagnosticIntentGuards.js").DebugDiagnosticSlots} slots
+ * @param {import("../../utils/intent-guards/debugDiagnosticIntentGuards.js").DebugDiagnosticSlots} slots
  * @returns {string}
  */
 export function buildDebugDiagnosticSystemAddonFromSlots(slots) {
@@ -82,7 +82,7 @@ export function buildDebugDiagnosticSystemAddon(query = "") {
 
 /**
  * @param {string} query
- * @returns {{ path: string, deferToLlm: boolean, reflectiveHint: string, debugDiagnostic: boolean, slots?: import("../../utils/debugDiagnosticIntentGuards.js").DebugDiagnosticSlots }|null}
+ * @returns {{ path: string, deferToLlm: boolean, reflectiveHint: string, debugDiagnostic: boolean, slots?: import("../../utils/intent-guards/debugDiagnosticIntentGuards.js").DebugDiagnosticSlots }|null}
  */
 export function resolveDebugDiagnosticShortCircuit(query = "") {
   if (!isDebugDiagnosticRequest(query)) return null;
@@ -115,7 +115,7 @@ export function buildDebugDiagnosticClarifyReply(query = "") {
 
 /**
  * @param {string} query
- * @returns {{ slots: import("../../utils/debugDiagnosticIntentGuards.js").DebugDiagnosticSlots, needsClarify: boolean, clarifyQuestion: string|null }|null}
+ * @returns {{ slots: import("../../utils/intent-guards/debugDiagnosticIntentGuards.js").DebugDiagnosticSlots, needsClarify: boolean, clarifyQuestion: string|null }|null}
  */
 export function classifyDebugDiagnosticMove(query = "") {
   if (!isDebugDiagnosticRequest(query)) return null;
@@ -137,7 +137,7 @@ export function classifyDebugDiagnosticMove(query = "") {
 
 /**
  * @param {string} query
- * @param {import("../../utils/debugDiagnosticIntentGuards.js").DebugDiagnosticSlots|null} [slots]
+ * @param {import("../../utils/intent-guards/debugDiagnosticIntentGuards.js").DebugDiagnosticSlots|null} [slots]
  * @returns {string}
  */
 export function buildDebugDiagnosticDirectFallback(

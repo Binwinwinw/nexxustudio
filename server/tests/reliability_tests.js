@@ -1,4 +1,4 @@
-import criticAgent from '../src/agent/utils/criticAgent.js';
+import criticAgent from '../src/agent/utils/agents/criticAgent.js';
 import turnTelemetry from '../src/agent/telemetry/turnTelemetry.js';
 
 /**

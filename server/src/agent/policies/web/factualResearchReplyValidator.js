@@ -7,6 +7,8 @@ import {
   countFactualResearchSources,
   isFactualResearchSourcedReportPath,
   scoreFactualResearchRecency,
+  resolveFactualResearchOutputShape,
+  FACTUAL_RESEARCH_SHAPE_SOURCED_BRIEF,
 } from "./factualResearchDeliverablePolicy.js";
 import {
   buildWebEvidenceGroundedFallback,
@@ -464,6 +466,32 @@ export function validateFactualResearchReply(
       sanitized,
       sourceCount,
       sections,
+      recency,
+      wordCount: countWords(sanitized),
+    };
+  }
+
+  if (resolveFactualResearchOutputShape(q) === FACTUAL_RESEARCH_SHAPE_SOURCED_BRIEF) {
+    sanitized = sanitized
+      .replace(/Alignement brief\s*:[^\n]*/gi, "")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+    const leakedQuery = String(q).replace(/\s+/g, " ").trim();
+    if (leakedQuery.length >= 24 && sanitized.includes(leakedQuery)) {
+      issues.push("query_echo");
+      sanitized = sanitized.replace(leakedQuery, "").replace(/\n{3,}/g, "\n\n").trim();
+    }
+    if (hasExactCanonicalHeadings(sanitized)) {
+      issues.push("brief_promoted_to_p5");
+    }
+    const hasCitations = detectsFactualResearchCitations(sanitized);
+    if (!hasCitations) issues.push("missing_citations");
+    return {
+      valid: !issues.includes("brief_promoted_to_p5") && hasCitations,
+      issues,
+      sanitized,
+      sourceCount,
+      sections: detectFactualResearchSections(sanitized),
       recency,
       wordCount: countWords(sanitized),
     };

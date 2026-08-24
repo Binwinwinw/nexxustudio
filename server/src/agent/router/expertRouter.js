@@ -11,7 +11,7 @@ import {
   uniqueByFullKey,
   clampTop,
 } from './routerUtils.js';
-import { isPureSocial } from '../utils/conversationGuards.js';
+import { isPureSocial } from '../utils/conversation/conversationGuards.js';
 import {
   ROUTER_LIMITS,
   ROUTER_MESSAGES,
@@ -336,12 +336,13 @@ class ExpertRouter {
         console.warn("[Router] Failed to fetch feedback context:", e.message);
       }
 
+      // Hop cognitif = tri léger T1. T2 = CHAT_REASONER / FORGE_REASONER / shouldUseDeferredReasoner.
       const response = await ollama.chatSafe(
         [
           { role: 'system', content: master.prompt },
           { role: 'user', content: buildRouterDecisionPrompt(query, candidates) + feedbackContext },
         ],
-        AGENT_ROLES.ORCHESTRATOR,
+        AGENT_ROLES.CHAT,
         { temperature: 0.1, num_predict: 250 }
       );
 

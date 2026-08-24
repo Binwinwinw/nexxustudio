@@ -1,7 +1,7 @@
 /**
  * Worker Document Analysis — briefing ContextAgent + pipeline Forge.
  */
-import contextAgent from "../../agent/utils/contextAgent.js";
+import contextAgent from "../../agent/utils/agents/contextAgent.js";
 import { documentAnalysis } from "../../../../citadelle-vault/Citadelle/01-Architecture/03-Forge/document-analysis.js";
 import { buildAnalysisUserQuery } from "./documentAnalysisModes.js";
 import {

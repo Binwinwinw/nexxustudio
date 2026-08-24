@@ -6,8 +6,8 @@
  *   il essaie d'inférer, puis de clarifier, puis de vérifier,
  *   et seulement ensuite de répondre. »
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { isSubstantiveWorkRequest } from "../../utils/genericGreetingGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { isSubstantiveWorkRequest } from "../../utils/conversation/genericGreetingGuards.js";
 import {
   assessKnowledgeFreshnessRisk,
   isWebSearchThreadMaintenanceMessage,
@@ -22,6 +22,7 @@ import {
   isWellbeingCheckinIntent,
   resolveCulturalReferenceHypothesis,
 } from "../social/index.js";
+import { parseFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 
 export const EPISTEMIC_RESOLUTION_RULE =
   "Nexxus ne prétend jamais savoir ce qu'il ne sait pas ; il essaie d'inférer, puis de clarifier, puis de vérifier, et seulement ensuite de répondre.";
@@ -85,6 +86,25 @@ export function extractObscureReferenceHint(query = "") {
   const ligue = q.match(/\bligue\s+([a-z0-9]{2,20})\b/i);
   if (ligue?.[1]) return `la ligue ${ligue[1]}`;
 
+  const parsed = parseFamiliarityQuery(query);
+  let rest = String(parsed?.rawSubject || "").trim();
+  let example = "";
+  let context = "";
+  const exampleHit = rest.match(/\bpar exemple\s+((?:en |dans |a |à |aux |au )?.+)$/i);
+  if (exampleHit) {
+    example = exampleHit[1].replace(/^(?:en |dans |a |aux |au )/i, "").trim();
+    rest = rest.slice(0, exampleHit.index).trim();
+  }
+  const placeHit = rest.match(/\s+\b(?:dans|en|aux?)\s+(.+)$/i);
+  if (placeHit) {
+    context = placeHit[1].trim();
+    rest = rest.slice(0, placeHit.index).trim();
+  }
+  const lexical = rest.replace(/^(?:le |la |les |l'|un |une )/i, "").trim();
+  if (lexical.length >= 3 && !/[0-9]/.test(lexical)) {
+    return null;
+  }
+
   const matches = raw.match(PROPER_LIKE_RE) || [];
   const stop = new Set([
     "Je",
@@ -96,10 +116,12 @@ export function extractObscureReferenceHint(query = "") {
     "Heu",
     "NXT", // lexique culturel — ne devrait pas arriver ici
   ]);
+  const contextBag = `${example} ${context}`.toLowerCase();
   const candidates = matches
     .map((m) => m.trim())
-    .filter((m) => m.length >= 2 && !stop.has(m));
-  if (candidates.length) return candidates[candidates.length - 1];
+    .filter((m) => m.length >= 2 && !stop.has(m))
+    .filter((m) => !contextBag.includes(m.toLowerCase()));
+  if (candidates.length) return candidates[0];
   return null;
 }
 

@@ -1,4 +1,4 @@
-import { IDEATION_FRAMING_REPLY } from "../../utils/ideationIntentGuards.js";
+import { IDEATION_FRAMING_REPLY } from "../../utils/intent-guards/ideationIntentGuards.js";
 
 const CLARIFICATION_BY_KIND = {
   ideation_vague: IDEATION_FRAMING_REPLY,

@@ -2,8 +2,8 @@
  * Research-then-summarize — « va te renseigner sur X / GitHub puis résume ».
  * Distinct de document_synthesis (texte collé / PJ) et de summary/known_entity.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { hasTextAttachments } from "../../utils/conversationGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { hasTextAttachments } from "../../utils/conversation/conversationGuards.js";
 
 export const RESEARCH_THEN_SUMMARIZE_RULE = "research_then_summarize_v1";
 

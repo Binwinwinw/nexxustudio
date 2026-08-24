@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { classifyIntent } from '../src/agent/utils/intentClassifier.js';
+import { classifyIntent } from '../src/agent/utils/intent-guards/intentClassifier.js';
 
 describe('routing heuristics', () => {
   const cases = [

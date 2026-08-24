@@ -4,14 +4,16 @@ import assert from "node:assert/strict";
 import {
   isArchitectureDesignIntent,
   isWebArtifactBuildExclusionForArchitectureDesign,
+  isSpreadsheetBuildExclusionForArchitectureDesign,
+  isSpreadsheetCreateRequest,
   classifyArchitectureDesignSignal,
   getArchitectureDesignDeterministicReply,
   extractArchitectureTopic,
-} from "../src/agent/utils/architectureDesignIntentGuards.js";
+} from "../src/agent/utils/intent-guards/architectureDesignIntentGuards.js";
 import { buildArchitectureDesignReply } from "../src/agent/micro/replies/architectureDesignReplyBuilder.js";
-import { isAnalyticalTechnicalRequest } from "../src/agent/utils/conversationGuards.js";
+import { isAnalyticalTechnicalRequest } from "../src/agent/utils/conversation/conversationGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { classifyIntent } from "../src/agent/utils/intentClassifier.js";
+import { classifyIntent } from "../src/agent/utils/intent-guards/intentClassifier.js";
 import {
   resolveIntentContract,
   getExpectedResponseMode,
@@ -23,6 +25,10 @@ const CODE_REVIEWER_QUERY =
 
 import { ARCHITECTURE_DESIGN_SMOKE_V1_1 } from "./fixtures/architectureDesignSmokeV1_1.js";
 import { isGuidedCreationScopingRequest } from "../src/agent/policies/guided/index.js";
+import { isProjectIdeaCritiqueRequest } from "../src/agent/utils/intent-guards/ideationIntentGuards.js";
+import { resolvePosture } from "../src/agent/policies/posture/posturePolicy.js";
+import { POSTURES } from "../src/agent/policies/posture/sessionModeState.js";
+import { isSubstantiveWorkRequest } from "../src/agent/utils/conversation/genericGreetingGuards.js";
 
 describe("architectureDesignIntentGuards", () => {
   it("détecte « comment créer un code-reviewer »", () => {
@@ -102,6 +108,57 @@ describe("architectureDesignIntentGuards — exclusion artefacts web (P2)", () =
       }
     });
   }
+
+  const EXCEL_DASHBOARD_QUERY =
+    'aide moi à propos de ce projet sur excel, je veux créer "un tableau de bord" qui va afficher des calendriers (jours - semaines - années) permettant : 1 - de noter des rendez-vous dans un calendrier avec code couleurs (vert - bleu - rouge) accessible en cliquant sur le bouton "Rendez-vous" 2 - de noter des congés dans un calendrier avec un autre système coloré accessible en cliquant sur le bouton congés (datedebut-datefin)';
+
+  const SPREADSHEET_EXCLUSION_CASES = [
+    EXCEL_DASHBOARD_QUERY,
+    "je veux créer un tableau de bord excel avec calendrier rendez-vous et congés",
+    "comment créer un classeur xlsx pour suivre des rendez-vous",
+  ];
+
+  for (const query of SPREADSHEET_EXCLUSION_CASES) {
+    it(`exclut spreadsheet architecture_design : ${query.slice(0, 55)}…`, async () => {
+      assert.equal(isSpreadsheetBuildExclusionForArchitectureDesign(query), true);
+      assert.equal(isArchitectureDesignIntent(query), false);
+      const hit = await runConversationShortCircuit(query);
+      assert.notEqual(hit?.path, "architecture_design_deterministic");
+      assert.doesNotMatch(
+        String(hit?.reply || ""),
+        /Approche intermédiaire \(RAG \+ règles\)|3 approches distinctes/i,
+      );
+    });
+  }
+
+  it("conserve architecture_design pour RAG agent (pas Excel)", () => {
+    const q = "comment créer une architecture RAG pour mon agent de support";
+    assert.equal(isSpreadsheetBuildExclusionForArchitectureDesign(q), false);
+    assert.equal(isArchitectureDesignIntent(q), true);
+  });
+
+  it("typo jev eux + fichier excel → create spreadsheet, pas architecture", () => {
+    const q =
+      "jev eux créer un fichier excel avec un tableau de bord de gestion de rendez vous avec un calendrier affichant le jour et le nom de la personne";
+    assert.equal(isSpreadsheetCreateRequest(q), true);
+    assert.equal(isArchitectureDesignIntent(q), false);
+  });
+
+  it("générateur de blagues + critique d'idée ≠ architecture RAG", async () => {
+    const q =
+      "je voudrais créer un générateur de blagues avec IA est ce que ce projet te parait pertinent??? ne me complimente pas, ne soit pas obligatoirement d'accord avec moi, trouves des failles et pose des questions si nécessaire.";
+    assert.equal(isProjectIdeaCritiqueRequest(q), true);
+    assert.equal(isArchitectureDesignIntent(q), false);
+    assert.equal(isSubstantiveWorkRequest(q), false);
+    const posture = resolvePosture(q);
+    assert.equal(posture.posture, POSTURES.ADVISOR);
+    assert.notEqual(posture.breakReason, "execution_mandate");
+    const hit = await runConversationShortCircuit(q);
+    assert.equal(hit?.path, "project_idea_critique");
+    assert.equal(hit?.deferToLlm, true);
+    assert.match(String(hit?.reflectiveHint || ""), /failles/i);
+    assert.doesNotMatch(String(hit?.reply || ""), /RAG \+ règles|3 approches/i);
+  });
 
   for (const query of GUIDED_CREATION_CASES) {
     it(`route guided_creation_scoping : ${query.slice(0, 55)}…`, async () => {

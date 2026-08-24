@@ -4,7 +4,7 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import skillLoader from '../src/agent/utils/skillLoader.js';
+import skillLoader from '../src/agent/utils/runtime/skillLoader.js';
 import {
   FULL_TRIGGER_MATRIX,
   evaluateSkillTriggerAccuracy,

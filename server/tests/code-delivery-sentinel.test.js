@@ -9,7 +9,7 @@ import {
   mustIncludeMultiFileStructure,
   SENTINEL_IDS,
 } from "../src/agent/policies/code/codeDeliverySentinels.js";
-import { GENERIC_READY_GREETING } from "../src/agent/utils/genericGreetingGuards.js";
+import { GENERIC_READY_GREETING } from "../src/agent/utils/conversation/genericGreetingGuards.js";
 import {
   CODE_DELIVERY_GOLDEN_QUERIES,
   CODE_DELIVERY_PRODUCTION_BUG_QUERIES,

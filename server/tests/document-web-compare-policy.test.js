@@ -93,6 +93,7 @@ describe("documentWebComparePolicy — batterie #29", () => {
     });
     assert.match(prompt, /WEB PROBE/i);
     assert.match(prompt, /Points à actualiser/i);
+    assert.doesNotMatch(prompt, /PENSÉE INTERNE/);
     assert.doesNotMatch(getDocumentWebComparePromptAddon(), /octobre 2023.*autorisé/i);
   });
 });

@@ -3,7 +3,7 @@
  * Lot 1 : domaine weather ; seul weather_current est actif pour le routage runtime.
  * Vocabulaire forecast / alerts / conditions déjà prévu pour éviter un parseur jetable.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 
 export const COMPOSITE_FRAME_RULE = "composite_query_frame_v1";
 

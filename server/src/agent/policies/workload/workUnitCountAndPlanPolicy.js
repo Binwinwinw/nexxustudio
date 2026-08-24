@@ -3,7 +3,7 @@
  * Count → Reconcile → Normalize → Plan → (exécute seulement si verrouillé).
  * Le parallèle ne vient qu’après stabilisation du plan.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { resolveRequestWorkloadSignal } from "./requestWorkloadSignalPolicy.js";
 
 export const WORK_UNIT_COUNT_AND_PLAN_CONTRACT = "WORK_UNIT_COUNT_AND_PLAN_V1";

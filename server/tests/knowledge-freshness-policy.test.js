@@ -143,4 +143,16 @@ describe("knowledgeFreshnessComposerContract — divulgation temporelle", () => 
     assert.match(addon, /sources web/i);
     assert.match(addon, /vérifiées/i);
   });
+
+  it("livraison Excel / CODE_DELIVERY_V1 : pas de contrat fraîcheur même si web injecté", () => {
+    const query =
+      "je veux créer un fichier excel avec un tableau de bord de gestion de rendez vous";
+    assert.equal(
+      requiresKnowledgeFreshnessComposerContract(query, {
+        meta: { intent_contract_id: "CODE_DELIVERY_V1" },
+        expert_outputs: [{ stage: "web_research", content: "openpyxl docs" }],
+      }),
+      false,
+    );
+  });
 });

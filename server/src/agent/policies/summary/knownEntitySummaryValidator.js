@@ -3,6 +3,7 @@
  */
 import { extractCulturalSummarySubject } from "./culturalContentSummaryPolicy.js";
 import {
+  assessKnownEntityLocalSummary,
   buildKnownEntitySummarySoberFallback,
   countSummarySentences,
 } from "./knownEntitySummaryExecutionPolicy.js";
@@ -61,6 +62,12 @@ export function validateKnownEntitySummaryReply(reply = "", ctx = {}) {
     issues.push("known_entity_uncertain_casting");
   }
 
+  const local = assessKnownEntityLocalSummary(body);
+  for (const reason of local.reasons) {
+    const issue = `known_entity_${reason}`;
+    if (!issues.includes(issue)) issues.push(issue);
+  }
+
   if (entityLabel) {
     const token = String(entityLabel)
       .split(/\s+/)
@@ -78,6 +85,9 @@ export function validateKnownEntitySummaryReply(reply = "", ctx = {}) {
       "known_entity_excessive_length",
       "known_entity_response_too_short",
       "known_entity_missing_subject",
+      "known_entity_local_refusal",
+      "known_entity_weak_confidence",
+      "known_entity_absent",
     ].includes(issue),
   );
 

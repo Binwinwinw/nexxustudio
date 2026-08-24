@@ -7,7 +7,7 @@ import {
   validateMultiTargetTranslationOutput,
   TRANSLATION_PLAN_MODES,
   TRANSLATION_EXECUTION_MODES,
-} from "../src/agent/utils/translationRequestPlan.js";
+} from "../src/agent/utils/parsing-normalization/translationRequestPlan.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { buildTranslationOrchestrationEvent } from "../src/agent/telemetry/translationOrchestrationTelemetry.js";
 

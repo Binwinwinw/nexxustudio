@@ -18,6 +18,8 @@ async function main() {
   assert.equal(isHeavyStreamingModel("deepseek-r1:14b"), false);
   assert.equal(isHeavyStreamingModel("deepseek-r1:8b"), false);
   assert.equal(isHeavyStreamingModel("qwen3.5:9b"), false);
+  assert.equal(isHeavyStreamingModel("qwen3.5:2b"), false);
+  assert.equal(isHeavyStreamingModel("granite4.1:8b"), false);
   assert.equal(isHeavyStreamingModel("ornith:9b"), false);
   assert.equal(isHeavyStreamingModel("starcoder2:15b"), false);
   assert.equal(isHeavyStreamingModel("qwen2.5-coder:7b"), false);
@@ -25,6 +27,8 @@ async function main() {
 
   assert.equal(getClientName("deepseek-r1:14b"), "ollama");
   assert.equal(getClientName("qwen3.5:9b"), "ollama");
+  assert.equal(getClientName("qwen3.5:2b"), "ollama");
+  assert.equal(getClientName("granite4.1:8b"), "ollama");
   assert.equal(getClientName("ornith:9b"), "ollama");
   assert.equal(getClientName("qwen2.5-coder:7b"), "ollama");
   pass("client name defaults to ollama when AirLLM is disabled");

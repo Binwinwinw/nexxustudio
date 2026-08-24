@@ -2,13 +2,14 @@
  * Fraîcheur des connaissances — relative à la date du jour (pas d'année figée).
  * Détecte les sujets mouvants par NATURE (marque/modèle/prix), pas par domaine tech figé.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { classifySelectiveDecisionIntent } from "../../utils/selectiveDecisionIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { classifySelectiveDecisionIntent } from "../../utils/intent-guards/selectiveDecisionIntentGuards.js";
 import {
   wasWebSearchSkippedByContract,
   wasWebSearchAttempted,
 } from "../routing/explicitWebSearchRequestPolicy.js";
 import { isWebSearchThreadMaintenanceMessage } from "./webSearchThreadContinuityPolicy.js";
+import { detectExistenceScopeGuard } from "../conversation/existenceScopeGuardPolicy.js";
 
 export const KNOWLEDGE_FRESHNESS_RULE = "temporal_freshness_relative_to_today";
 
@@ -88,6 +89,7 @@ export function scoreKnowledgeFreshnessRisk(query = "", _options = {}) {
   if (/\b(?:dernier|derniere|dernière|actuel|actuelle|nouveau|nouvelle)\b/.test(q)) {
     score += 0.1;
   }
+  if (detectExistenceScopeGuard(query)) score = Math.max(score, 0.55);
 
   return Math.min(1, Math.round(score * 100) / 100);
 }

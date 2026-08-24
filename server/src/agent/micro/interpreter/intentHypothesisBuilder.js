@@ -1,9 +1,9 @@
 /**
  * P4 — Hypothèses d'intention (1–2 lectures probables, déterministes).
  */
-import { parseFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { isIdeationIntent } from "../../utils/ideationIntentGuards.js";
-import { resolveKnownOrUnknownSubject } from "../../utils/familiarityIntentGuards.js";
+import { parseFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { isIdeationIntent } from "../../utils/intent-guards/ideationIntentGuards.js";
+import { resolveKnownOrUnknownSubject } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { sanitizeQuery } from "../normalization/querySanitizer.js";
 
 export const INTERPRETER_INTENTS = {

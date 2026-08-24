@@ -11,7 +11,7 @@ import {
   resolveSubjectTypingFromQuery,
   resumeSubjectTypeClarification,
 } from "../src/agent/policies/qualification/subjectTypingPolicy.js";
-import { classifySubjectCategory, SUBJECT_CATEGORIES } from "../src/agent/utils/familiarityIntentGuards.js";
+import { classifySubjectCategory, SUBJECT_CATEGORIES } from "../src/agent/utils/intent-guards/familiarityIntentGuards.js";
 import { buildFamiliarityReply } from "../src/agent/micro/replies/familiarityReplyBuilder.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resumePendingClarification } from "../src/agent/policies/qualification/pendingClarificationResumePolicy.js";

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-import { looksTruncatedResponse, isIllusionOfCompleteness } from '../src/agent/utils/qualityGuards.js';
+import { looksTruncatedResponse, isIllusionOfCompleteness } from '../src/agent/utils/quality-safety/qualityGuards.js';
 
 function run() {
   {

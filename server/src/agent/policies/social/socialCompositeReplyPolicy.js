@@ -1,8 +1,8 @@
 /**
  * G41.1 — réponses sociales composées (identité + capacités, etc.).
  */
-import { isIdentityIntent } from "../../utils/identityIntentGuards.js";
-import { isCapabilityOverviewRequest } from "../../utils/metaConversationIntentGuards.js";
+import { isIdentityIntent } from "../../utils/intent-guards/identityIntentGuards.js";
+import { isCapabilityOverviewRequest } from "../../utils/intent-guards/metaConversationIntentGuards.js";
 import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,

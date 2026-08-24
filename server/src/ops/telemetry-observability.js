@@ -4,7 +4,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { REPO_ROOT } from '../agent/utils/skillRuntimeRegistry.js';
+import { REPO_ROOT } from '../agent/utils/runtime/skillRuntimeRegistry.js';
 
 const DEFAULT_PERSIST_DIR = path.join(REPO_ROOT, 'server', 'data', 'telemetry');
 const RANGE_MS = {

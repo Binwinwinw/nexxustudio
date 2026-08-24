@@ -1,10 +1,10 @@
 import { getClientForModel } from "../../../llm/llmFactory.js";
 import { AGENT_ROLES } from "../../policies/core/index.js";
-import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/externalCalendarLookupIntentGuards.js";
+import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/intent-guards/externalCalendarLookupIntentGuards.js";
 import {
   isComprehensionDemonstrationRequest,
   isMetaAssistantBehaviorRequest,
-} from "../../utils/metaAssistantBehaviorGuards.js";
+} from "../../utils/intent-guards/metaAssistantBehaviorGuards.js";
 import { shouldSuppressTurnFamilyPath } from "./conversationTurnClassifier.js";
 
 const SYSTEM_PROMPT = `You are a semantic intent resolver for a conversational assistant.

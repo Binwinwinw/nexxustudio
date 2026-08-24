@@ -16,45 +16,17 @@ import {
   getLastAnalysis,
 } from "../services/document-analysis/documentStore.js";
 import { DOCUMENT_ANALYSIS_MODES } from "../services/document-analysis/documentAnalysisModes.js";
-import { isArchiveFile } from "../services/document-analysis/archiveExtractor.js";
+import {
+  classifyFileCapability,
+  isAdmittedAtNameGate,
+} from "../agent/policies/attachment/fileCapabilityPolicy.js";
 
 const router = express.Router();
 
-const ALLOWED_TEXT_MIMES = new Set([
-  "text/plain",
-  "text/markdown",
-  "text/csv",
-  "text/html",
-  "text/css",
-  "text/javascript",
-  "text/x-typescript",
-  "application/json",
-  "application/javascript",
-  "application/xml",
-  "application/x-yaml",
-  "application/yaml",
-  "application/pdf",
-]);
-
-const TEXT_ATTACHMENT_EXT =
-  /\.(txt|csv|json|md|html|htm|php|js|css|ts|jsx|tsx|xml|yml|yaml|py|sql|pdf)$/i;
-
-const ARCHIVE_ATTACHMENT_EXT = /\.(zip|gz|tgz|tar\.gz)$/i;
-
 function isAllowedDocumentUpload(file) {
   const mime = String(file?.mimetype || "");
-  const name = String(file?.originalname || file?.name || "");
   if (mime.startsWith("image/")) return false;
-  if (isArchiveFile(mime, name) || ARCHIVE_ATTACHMENT_EXT.test(name)) return true;
-  if (ALLOWED_TEXT_MIMES.has(mime)) return true;
-  if (mime.startsWith("text/")) return true;
-  if (
-    (mime === "application/octet-stream" || mime === "") &&
-    TEXT_ATTACHMENT_EXT.test(name)
-  ) {
-    return true;
-  }
-  return TEXT_ATTACHMENT_EXT.test(name);
+  return isAdmittedAtNameGate(file, { channel: "document" });
 }
 
 const documentUpload = multer({
@@ -125,6 +97,19 @@ router.post("/upload", (req, res, next) => {
     if (!file) {
       return res.status(400).json({
         error: "Fichier requis (champ document).",
+        trace_id: req.traceId || null,
+      });
+    }
+
+    const cap = classifyFileCapability(file, { channel: "document" });
+    file._fileCapability = cap;
+    console.log(
+      `[FileCapability:document] ${cap.verdict} · ${cap.class} · ${cap.status} · ${cap.justification}`,
+    );
+    if (cap.status === "reject") {
+      return res.status(403).json({
+        error: cap.userSafeMessage,
+        code: cap.codes[0] || "FILE_CAPABILITY_REJECTED",
         trace_id: req.traceId || null,
       });
     }

@@ -1,5 +1,5 @@
-import { isAssistantRepairIntent } from "../../utils/assistantRepairGuards.js";
-import { isIdeationIntent } from "../../utils/ideationIntentGuards.js";
+import { isAssistantRepairIntent } from "../../utils/quality-safety/assistantRepairGuards.js";
+import { isIdeationIntent } from "../../utils/intent-guards/ideationIntentGuards.js";
 
 /**
  * Builds a grounded, minimalistic response acknowledging a misunderstanding

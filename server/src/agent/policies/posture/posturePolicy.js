@@ -2,8 +2,9 @@
  * PosturePolicy P0 — sticky modes + switch explicite + override d’autorité.
  * Ne change pas les rails métiers : sélectionne/maintient la posture relationnelle.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { isSubstantiveWorkRequest } from "../../utils/genericGreetingGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { isSubstantiveWorkRequest } from "../../utils/conversation/genericGreetingGuards.js";
+import { isProjectIdeaCritiqueRequest } from "../../utils/intent-guards/ideationIntentGuards.js";
 import { isExplicitWebSearchRequest } from "../routing/explicitWebSearchRequestPolicy.js";
 import {
   POSTURES,
@@ -169,6 +170,9 @@ export function detectExplicitPostureSwitch(query = "") {
 export function inferPostureFromQuery(query = "") {
   const q = normalizeFamiliarityQuery(query);
   if (!q) return null;
+  if (isProjectIdeaCritiqueRequest(query)) {
+    return { posture: POSTURES.ADVISOR, confidence: "high" };
+  }
   if (INFER_MENTOR_RE.test(q)) {
     return { posture: POSTURES.MENTOR, confidence: "medium" };
   }
@@ -190,6 +194,10 @@ export function detectHardPostureBreak(query = "", ctx = {}) {
   void ctx;
   const q = normalizeFamiliarityQuery(query);
   if (!q) return { break: false, reason: null, forceExecutor: false };
+
+  if (isProjectIdeaCritiqueRequest(query)) {
+    return { break: false, reason: null, forceExecutor: false };
+  }
 
   if (EXECUTION_MANDATE_RE.test(q) || isSubstantiveWorkRequest(query)) {
     return { break: true, reason: "execution_mandate", forceExecutor: true };

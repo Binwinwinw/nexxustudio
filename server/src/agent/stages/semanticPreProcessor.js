@@ -1,7 +1,11 @@
 import ollamaClient from "../../llm/ollama.js";
+import { resolveLightJsonModel } from "../policies/core/agentRolePolicy.js";
 
-const DEFAULT_MODEL = process.env.OLLAMA_SEMANTIC_PREPROCESSOR_MODEL || "zephyr";
 const TIMEOUT_MS = parseInt(process.env.SEMANTIC_PREPROCESSOR_TIMEOUT_MS || "2000", 10);
+
+export function getSemanticPreprocessorModel() {
+  return resolveLightJsonModel(process.env.OLLAMA_SEMANTIC_PREPROCESSOR_MODEL);
+}
 
 const SYSTEM_PROMPT = `Tu es le Préprocesseur Sémantique de Nexxus Studio.
 Ta mission est d'analyser la requête brute de l'utilisateur, de corriger la syntaxe si elle est bancale, et d'en extraire l'intention profonde.
@@ -20,7 +24,7 @@ Règles de réécriture (Stateless Context Tracker) :
 Réponds UNIQUEMENT en JSON valide avec ces clés exactes, sans aucun texte ou markdown autour.`;
 
 /**
- * Lance une mini-réflexion sémantique rapide via Zephyr pour normaliser la requête.
+ * Lance une mini-réflexion sémantique rapide via T1 (JSON léger) pour normaliser la requête.
  * Fail-open : en cas de timeout ou de JSON invalide, renvoie null.
  * 
  * @param {string} rawQuery La requête utilisateur brute.
@@ -43,7 +47,7 @@ export async function runSemanticPreProcessing(rawQuery, history = []) {
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: `${historyContext}\n\nDernière Requête brute : "${rawQuery}"` },
       ],
-      DEFAULT_MODEL,
+      getSemanticPreprocessorModel(),
       {
         temperature: 0.1,
         num_predict: 200,

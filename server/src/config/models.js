@@ -1,17 +1,19 @@
 /**
  * Configuration modèles Ollama — tiers warm-up La Citadelle (local-first).
- * Doctrine réactive : Tier 1 au boot, Tier 2 désactivé (reasoner = Tier 1), Tier 3 lazy.
+ * Doctrine : T1 qwen3.5:2b au boot, T2 granite4.1:8b deferred (pas de cohabitation VRAM),
+ * T3 experts lazy. T1/T2 via resolveWarmupExperimentPlan() uniquement.
  */
 import process from 'node:process';
+import { resolveWarmupExperimentPlan } from './warmupExperimentPlan.js';
 
 export const BOOT_PROFILES = Object.freeze(['reactive', 'fast', 'aggressive']);
 
 export const MODEL_CONFIG = Object.freeze({
   TIER_1: Object.freeze({
-    model: 'ornith:9b',
+    model: 'qwen3.5:2b',
     embeddings: 'nomic-embed-text:latest',
     loadAtBoot: true,
-    vram_gb: 7.8,
+    vram_gb: 2.7,
     alternatives: Object.freeze({
       fast: 'qwen3.5:9b',
       multimodal: 'qwen3.5:9b',
@@ -19,11 +21,11 @@ export const MODEL_CONFIG = Object.freeze({
   }),
 
   TIER_2: Object.freeze({
-    enabled: false,
-    model: null,
+    enabled: true,
+    model: 'granite4.1:8b',
     loadAtBoot: false,
-    loadStrategy: 'disabled',
-    vram_gb: 0,
+    loadStrategy: 'deferred',
+    vram_gb: 5.3,
     priming_estimate_ms: 0,
     alternatives: Object.freeze({
       heavy: 'deepseek-r1:14b',
@@ -74,21 +76,23 @@ export function getBootProfile(profile = process.env.OLLAMA_BOOT_PROFILE || 'rea
 }
 
 /**
- * Modèle chat Tier 1 actif selon profil boot.
+ * Modèle chat Tier 1 actif. Profil `fast` ne bascule plus vers 9b (VRAM 8 Go).
  * @param {string} [profile]
  */
 export function getActiveTier1ChatModel(profile = getBootProfile()) {
-  if (profile === 'fast') {
-    return MODEL_CONFIG.TIER_1.alternatives.fast;
-  }
-  return MODEL_CONFIG.TIER_1.model;
+  void profile;
+  return resolveWarmupExperimentPlan().tier1Chat;
 }
 
 /**
- * Reasoner runtime = chat Tier 1 (plus de couloir Tier 2 R1).
+ * Reasoner runtime : T2 granite si enabled, sinon T1.
  * @param {string} [profile]
  */
 export function getReasonerModel(profile = getBootProfile()) {
+  const plan = resolveWarmupExperimentPlan();
+  if (plan.tier2.enabled && plan.tier2.model) {
+    return plan.tier2.model;
+  }
   return getActiveTier1ChatModel(profile);
 }
 
@@ -96,7 +100,8 @@ export function getReasonerModel(profile = getBootProfile()) {
  * @returns {boolean}
  */
 export function isTier2Enabled() {
-  return MODEL_CONFIG.TIER_2.enabled === true && Boolean(MODEL_CONFIG.TIER_2.model);
+  const plan = resolveWarmupExperimentPlan();
+  return plan.tier2.enabled === true && Boolean(plan.tier2.model);
 }
 
 /**
@@ -110,12 +115,12 @@ export function getTier1ChatAlternative(kind = 'multimodal') {
 }
 
 /**
- * Tier 2 primé au boot — désactivé (doctrine sans Tier 2 actif).
+ * Tier 2 primé au boot — via experiment plan uniquement.
  * @param {string} [profile]
  */
 export function shouldWarmTier2AtBoot(profile = getBootProfile()) {
   void profile;
-  return false;
+  return resolveWarmupExperimentPlan().tier2.warmAtBoot === true;
 }
 
 /** @deprecated Utiliser shouldWarmTier2AtBoot */
@@ -127,8 +132,17 @@ export function shouldWarmTier2(profile = getBootProfile()) {
  * @param {string} modelName
  */
 export function isTier2Model(modelName = '') {
-  void modelName;
-  return false;
+  const plan = resolveWarmupExperimentPlan();
+  if (!plan.tier2.enabled || !plan.tier2.model) return false;
+  return String(modelName || '').toLowerCase() === String(plan.tier2.model).toLowerCase();
+}
+
+/**
+ * Modèle Tier 2 actif (null si désactivé).
+ */
+export function getTier2Model() {
+  const plan = resolveWarmupExperimentPlan();
+  return plan.tier2.enabled ? plan.tier2.model : null;
 }
 
 /**

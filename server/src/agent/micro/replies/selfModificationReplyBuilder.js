@@ -5,7 +5,7 @@
 import {
   classifyIntentGuard,
   isSelfModificationQuery,
-} from "../../utils/intentGuards.js";
+} from "../../utils/intent-guards/intentGuards.js";
 
 const DENY_CAPABILITY_REPLY = `Non — dans mon mode opératoire actuel, je ne suis pas capable de modifier les fichiers qui me composent (orchestrateur, prompts, hooks, pipeline). Ce périmètre est l'infrastructure runtime, pas l'espace Forge où je peux produire des artefacts pour vos projets.`;
 

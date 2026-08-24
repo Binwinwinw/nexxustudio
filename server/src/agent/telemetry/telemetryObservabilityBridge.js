@@ -68,7 +68,7 @@ export async function capturePipelineIntentTelemetry(ctx, query, intent, options
   ctx.intent = intent;
 
   try {
-    const skillLoader = (await import('../utils/skillLoader.js')).default;
+    const skillLoader = (await import('../utils/runtime/skillLoader.js')).default;
     const skillId = await skillLoader.identifyRelevantSkill(query, {
       intentContractId: options.intentContractId || null,
     });

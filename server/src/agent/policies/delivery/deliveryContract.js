@@ -2,7 +2,7 @@
  * DELIVERY_CONTRACT_V1 — tout tour terminal doit produire un texte visible
  * ou un fallback utile avant la couche HTTP.
  */
-import { resolvePipelineFallback } from "../../utils/genericGreetingGuards.js";
+import { resolvePipelineFallback } from "../../utils/conversation/genericGreetingGuards.js";
 
 export const DELIVERY_CONTRACT_V1 = "DELIVERY_CONTRACT_V1";
 

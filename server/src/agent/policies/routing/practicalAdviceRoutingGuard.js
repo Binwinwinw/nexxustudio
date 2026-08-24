@@ -2,8 +2,8 @@
  * Routage par charge décisionnelle — évite multi_segment / SIMPLE_FAST tronqué
  * au profit du pipeline complet (orchestrateur / composer non tronqué).
  */
-import { requiresFullPipelineForDecision } from "../../utils/selectiveDecisionIntentGuards.js";
-import { isGeneralKnowledgeRequest } from "../../utils/generalKnowledgeIntentGuards.js";
+import { requiresFullPipelineForDecision } from "../../utils/intent-guards/selectiveDecisionIntentGuards.js";
+import { isGeneralKnowledgeRequest } from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
 
 export const PRACTICAL_ADVICE_FULL_PIPELINE_RULE =
   "defer_selective_decision_to_full_pipeline_not_simple_fast";
@@ -48,6 +48,8 @@ export function shouldBypassMultiSegmentShortCircuit(query = "") {
  */
 export function shouldDeferShortCircuitToFullPipeline(shortCircuit = null, query = "") {
   if (!shortCircuit) return false;
+  if (shortCircuit.path === "conversational_light") return false;
+  if (shortCircuit.skipSovereign || shortCircuit.skipPlanner) return false;
   if (shortCircuit.lexiconExplainLight) return false;
   if (shortCircuit.deferToFullPipeline) return true;
   if (

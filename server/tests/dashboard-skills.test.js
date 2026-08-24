@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   loadSkills,
   logRuntimeModuleStatus,
-} from '../src/agent/utils/skillRuntimeRegistry.js';
+} from '../src/agent/utils/runtime/skillRuntimeRegistry.js';
 import {
   generateSkillsDashboard,
 } from '../src/ops/dashboard-skills.js';

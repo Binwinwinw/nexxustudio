@@ -2,15 +2,15 @@
  * Extraction transversale de sujet — vérité unique pour P2 (routage) et P3 (subject_mismatch).
  * Spec : docs/agents/conversation-move-governance.md (G17–G19)
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import {
   extractInformationSeekingTarget,
   isInformationSeekingWithTarget,
-} from "../../utils/informationSeekingIntentGuards.js";
+} from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import {
   extractGeneralKnowledgeSubject,
   isGeneralKnowledgeRequest,
-} from "../../utils/generalKnowledgeIntentGuards.js";
+} from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
 
 export const TEMPORAL_TARGET_KIND = Object.freeze({
   HISTORICAL: "historical",

@@ -9,7 +9,7 @@ import {
 import { applyConversationMomentum } from "../src/agent/micro/momentum/conversationMomentumOrchestrator.js";
 import { buildArchitectureDesignReply } from "../src/agent/micro/replies/architectureDesignReplyBuilder.js";
 import { CONVERSATION_NEXT_MOVES, INTENT_CONTRACTS } from "../src/agent/micro/momentum/conversationMoveTypes.js";
-import { buildArchitectureDesignOptionsReply } from "../src/agent/utils/architectureDesignIntentGuards.js";
+import { buildArchitectureDesignOptionsReply } from "../src/agent/utils/intent-guards/architectureDesignIntentGuards.js";
 
 const CODE_REVIEWER_QUERY =
   "comment créer un code-reviewer qui analyse tout le code d'un projet";

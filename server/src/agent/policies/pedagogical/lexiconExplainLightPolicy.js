@@ -5,10 +5,10 @@ import {
   normalizeFamiliarityQuery,
   parseFamiliarityQuery,
   isFamiliarityDomainOverviewRequest,
-} from "../../utils/familiarityIntentGuards.js";
+} from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { isSubjectReferenceAvailabilityRequest } from "../../micro/continuity/sessionSubjectReferenceGuards.js";
-import { isRecipeKnowledgeRequest } from "../../utils/recipeKnowledgeIntentGuards.js";
-import { isHowToRequestShell } from "../../utils/howToRequestIntentGuards.js";
+import { isRecipeKnowledgeRequest } from "../../utils/intent-guards/recipeKnowledgeIntentGuards.js";
+import { isHowToRequestShell } from "../../utils/intent-guards/howToRequestIntentGuards.js";
 import {
   isInformationSeekingLightQuery,
   extractKnownGameEntity,
@@ -73,9 +73,12 @@ export function isLexiconExplainLightRequest(query = "") {
   if (isInformationSeekingLightQuery(query) && extractKnownGameEntity(query)) return false;
   if (isMetaKnownPeerProductQuery(query)) return false;
   if (isFamiliarityDomainOverviewRequest(query)) return false;
+  // Blague = performance sociale, pas entrée de lexique (« tu connais des blagues ? »).
+  if (/\bblagues?\b/i.test(query)) return false;
   const parsed = parseFamiliarityQuery(query);
   if (!parsed?.rawSubject) return false;
   if (/\brecette\b/i.test(parsed.rawSubject)) return false;
+  if (/\bblagues?\b/i.test(parsed.rawSubject)) return false;
   if (parsed.kind !== "recognition") return false;
   if (isSubjectReferenceAvailabilityRequest(query)) return false;
   return parsed.rawSubject.length >= 3;

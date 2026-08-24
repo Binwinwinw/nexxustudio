@@ -20,7 +20,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const MATRIX_PATH = path.resolve(__dirname, "../config/warmup.matrix.json");
 
 describe("placementPlan P0 — buildPlacementPlan", () => {
-  it("reactive → resident = ornith:9b + nomic-embed-text", async () => {
+  it("reactive → resident = qwen3.5:2b + nomic-embed-text", async () => {
     const matrix = await fs.readJson(MATRIX_PATH);
     const plan = buildPlacementPlan({ profile: "reactive", matrix });
 
@@ -30,33 +30,39 @@ describe("placementPlan P0 — buildPlacementPlan", () => {
     assert.equal(plan.honesty.keepAliveTransport, PLACEMENT_KEEPALIVE_TRANSPORT);
 
     const resident = listModelIdsByClass(plan, PLACEMENT_CLASSES.RESIDENT);
-    assert.ok(resident.includes("ornith:9b"), `resident=${resident.join(",")}`);
+    assert.ok(resident.includes("qwen3.5:2b"), `resident=${resident.join(",")}`);
     assert.ok(
       resident.includes("nomic-embed-text:latest"),
       `resident=${resident.join(",")}`,
     );
 
     const lazy = listModelIdsByClass(plan, PLACEMENT_CLASSES.LAZY);
+    assert.ok(lazy.includes("granite4.1:8b"), `lazy=${lazy.join(",")}`);
     assert.ok(!lazy.includes("deepseek-r1:8b"));
     assert.ok(lazy.includes("qwen2.5-coder:7b"));
+    assert.ok(lazy.includes("gemma4:12b"));
+    assert.ok(lazy.includes("glm-ocr:q8_0"));
+    assert.ok(lazy.includes("nexxus-vox:latest"));
 
     const never = listModelIdsByClass(plan, PLACEMENT_CLASSES.NEVER);
     assert.ok(never.includes("deepseek-r1:8b"));
     assert.ok(never.includes("deepseek-r1:14b"));
   });
 
-  it("fast → resident chat = qwen3.5:9b", async () => {
+  it("fast → resident chat reste qwen3.5:2b (pas 9b)", async () => {
     const matrix = await fs.readJson(MATRIX_PATH);
     const plan = buildPlacementPlan({ profile: "fast", matrix });
     const resident = listModelIdsByClass(plan, PLACEMENT_CLASSES.RESIDENT);
-    assert.ok(resident.includes("qwen3.5:9b"));
+    assert.ok(resident.includes("qwen3.5:2b"));
+    assert.ok(!resident.includes("qwen3.5:9b"));
     assert.ok(!resident.includes("ornith:9b"));
   });
 
-  it("aggressive → pas de tier2 prefetch (Tier 2 off)", async () => {
+  it("aggressive → granite prefetch (T2 enabled, pas au boot warmup)", async () => {
     const matrix = await fs.readJson(MATRIX_PATH);
     const plan = buildPlacementPlan({ profile: "aggressive", matrix });
     const prefetch = listModelIdsByClass(plan, PLACEMENT_CLASSES.PREFETCH);
+    assert.ok(prefetch.includes("granite4.1:8b"));
     assert.ok(!prefetch.includes("deepseek-r1:8b"));
   });
 
@@ -79,9 +85,9 @@ describe("placementPlan P0 — buildPlacementPlan", () => {
       matrix,
       activePsModels: [
         {
-          name: "ornith:9b",
-          size: 7.8e9,
-          size_vram: 7.8e9,
+          name: "qwen3.5:2b",
+          size: 2.7e9,
+          size_vram: 2.7e9,
         },
         {
           name: "deepseek-r1:8b",
@@ -90,10 +96,10 @@ describe("placementPlan P0 — buildPlacementPlan", () => {
         },
       ],
     });
-    const ornith = plan.models.find((m) => m.modelId === "ornith:9b");
+    const qwen = plan.models.find((m) => m.modelId === "qwen3.5:2b");
     const r1 = plan.models.find((m) => m.modelId === "deepseek-r1:8b");
-    assert.equal(ornith.observedProcessor, "gpu");
-    assert.ok(ornith.observedSizeGb > 7);
+    assert.equal(qwen.observedProcessor, "gpu");
+    assert.ok(qwen.observedSizeGb > 2);
     assert.equal(r1.class, PLACEMENT_CLASSES.NEVER);
     assert.equal(r1.observedProcessor, "cpu");
   });
@@ -130,23 +136,25 @@ describe("placementPlan — helpers", () => {
     const summary = summarizePlacementForCockpit(plan);
     assert.deepEqual(
       summary.resident.sort(),
-      ["nomic-embed-text:latest", "ornith:9b"].sort(),
+      ["nomic-embed-text:latest", "qwen3.5:2b"].sort(),
     );
 
     const snapshot = buildWarmupCockpitSnapshot({
       phase: "ready",
       isReady: true,
-      tier2_deferred: false,
+      tier2_deferred: true,
       placementPlan: plan,
       models: {
-        "ornith:9b": "ready",
+        "qwen3.5:2b": "ready",
         "nomic-embed-text:latest": "ready",
+        "granite4.1:8b": "deferred",
         "qwen2.5-coder:7b": "lazy",
       },
     });
     assert.ok(snapshot.placement);
     assert.equal(snapshot.placement.profile, "reactive");
-    assert.ok(snapshot.placement.resident.includes("ornith:9b"));
+    assert.ok(snapshot.placement.resident.includes("qwen3.5:2b"));
+    assert.ok(snapshot.placement.lazy.includes("granite4.1:8b"));
     assert.ok(!snapshot.placement.lazy.includes("deepseek-r1:8b"));
     assert.ok(snapshot.placement.never.includes("deepseek-r1:8b"));
   });

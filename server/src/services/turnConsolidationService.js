@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import groundTruthService from '../agent/utils/groundTruthService.js';
+import groundTruthService from '../agent/utils/context/groundTruthService.js';
 import knowledgeHub from './knowledgeHub.js';
 import vaultManager from '../tools/vaultManager.js';
 

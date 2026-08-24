@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { generateSkillsDashboard } from './dashboard-skills.js';
-import { REPO_ROOT } from '../agent/utils/skillRuntimeRegistry.js';
+import { REPO_ROOT } from '../agent/utils/runtime/skillRuntimeRegistry.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

@@ -19,7 +19,7 @@ import {
   isResearchThenSummarizeRequest,
 } from "../routing/researchThenSummarizePolicy.js";
 import { isFormalLetterTemplateRequest } from "../delivery/index.js";
-import { hasTextAttachments } from "../../utils/conversationGuards.js";
+import { hasTextAttachments } from "../../utils/conversation/conversationGuards.js";
 
 export const CHAT_AGENT_PROFILE_RULE = "chat_agent_profile_v1";
 

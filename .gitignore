@@ -30,6 +30,7 @@ build/
 # Server specifics
 server/node_modules/
 server/.env
+server/tmp/
 
 # Async Forge scratch workspaces (may contain copied .env secrets)
 scratch/

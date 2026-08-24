@@ -1,7 +1,7 @@
 /**
  * Composer — recherche externe puis synthèse (GitHub, repo, etc.).
  */
-import responseThinkingCleaner from "../../utils/responseThinkingCleaner.js";
+import responseThinkingCleaner from "../../utils/quality-safety/responseThinkingCleaner.js";
 import { isResearchThenSummarizeRequest } from "../../policies/routing/researchThenSummarizePolicy.js";
 import { extractResearchThenSummarizeTarget } from "../../policies/routing/researchThenSummarizePolicy.js";
 

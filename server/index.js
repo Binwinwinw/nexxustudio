@@ -30,9 +30,9 @@ import {
   setSessionListCache,
   invalidateSessionListCache,
 } from "./src/services/sessionListCache.js";
-import { isPureSocial } from "./src/agent/utils/conversationGuards.js";
+import { isPureSocial } from "./src/agent/utils/conversation/conversationGuards.js";
 import authService from "./src/security/authService.js";
-import vramManager from "./src/agent/utils/vramManager.js";
+import vramManager from "./src/agent/utils/runtime/vramManager.js";
 import { requireAuth } from "./src/security/authMiddleware.js";
 import {
   createRequireMandatorySession,
@@ -46,7 +46,7 @@ import {
   loadQAAudit,
 } from "./src/forge/utils/projectScanner.js";
 import handoffRepository from "./src/db/repositories/handoffRepository.js";
-import warmupModels, { warmupStatus, scheduleTier2Warmup } from "./src/services/warmupService.js";
+import warmupModels, { warmupStatus } from "./src/services/warmupService.js";
 import { buildWarmupCockpitSnapshot } from "./src/services/warmupCockpitSnapshot.js";
 import {
   getActiveTier1ChatModel,
@@ -77,8 +77,8 @@ import traceContextMiddleware from "./src/middleware/traceContextMiddleware.js";
 import impactAuditModule from "./src/forge/audit/impactAuditModule.js";
 import projectMemoryPromoter from "./src/tools/projectMemoryPromoter.js";
 import projectScanner from "./src/tools/projectScanner.js";
-import reliabilityLogger from "./src/agent/utils/reliabilityLogger.js";
-import groundTruthService from "./src/agent/utils/groundTruthService.js";
+import reliabilityLogger from "./src/agent/utils/quality-safety/reliabilityLogger.js";
+import groundTruthService from "./src/agent/utils/context/groundTruthService.js";
 import turnConsolidationService from "./src/services/turnConsolidationService.js";
 import AsyncForgeService from "./src/services/AsyncForgeService.js";
 import analyticsRouter from "./src/routes/analyticsApi.js";
@@ -93,13 +93,13 @@ import {
   createSessionRunsHandlers,
 } from "./src/routes/artifactRoutes.js";
 import { scheduleArtifactCleanup } from "./src/services/artifacts/artifactCleanup.js";
-import responseThinkingCleaner from "./src/agent/utils/responseThinkingCleaner.js";
-import { resolvePipelineFallback } from "./src/agent/utils/genericGreetingGuards.js";
+import responseThinkingCleaner from "./src/agent/utils/quality-safety/responseThinkingCleaner.js";
+import { resolvePipelineFallback } from "./src/agent/utils/conversation/genericGreetingGuards.js";
 import { scheduleCuratedMemoryIngest } from "./src/agent/memory/guardianship/curatedMemoryIngest.js";
 import { scheduleWebCandidateMemoryIngest } from "./src/agent/memory/web-candidates/scheduleWebCandidateMemory.js";
 import { applyWebCandidateSessionFeedback } from "./src/agent/memory/web-candidates/webFallbackMemoryRecorder.js";
-import OllamaStreamProcessor from "./src/agent/utils/ollamaStreamProcessor.js";
-import { emitTextChunksSmooth } from "./src/agent/utils/streamTextChunks.js";
+import OllamaStreamProcessor from "./src/agent/utils/runtime/ollamaStreamProcessor.js";
+import { emitTextChunksSmooth } from "./src/agent/utils/runtime/streamTextChunks.js";
 import productionJobManager from "./src/services/ProductionJobManager.js";
 import videoJobManager from "./src/services/nexxus-video/VideoJobManager.js";
 import {
@@ -210,45 +210,14 @@ import {
   validateDoubleExtension,
   UPLOAD_REJECTION_CODES,
 } from "../shared/uploadGuards.js";
-const ALLOWED_IMAGE_MIMES = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/gif",
-]);
-
-const ALLOWED_TEXT_MIMES = new Set([
-  "text/plain",
-  "text/markdown",
-  "text/csv",
-  "text/html",
-  "text/css",
-  "text/javascript",
-  "text/x-typescript",
-  "application/json",
-  "application/javascript",
-  "application/xml",
-  "application/x-yaml",
-  "application/yaml",
-  "application/pdf",
-]);
-
-const TEXT_ATTACHMENT_EXT =
-  /\.(txt|csv|json|md|html|htm|php|js|css|ts|jsx|tsx|xml|yml|yaml|py|sql|pdf)$/i;
+import {
+  classifyFileCapability,
+  isAdmittedAtNameGate,
+  shouldBlockFileCapability,
+} from "./src/agent/policies/attachment/fileCapabilityPolicy.js";
 
 function isAllowedUpload(file) {
-  const mime = String(file?.mimetype || "");
-  const name = String(file?.originalname || file?.name || "");
-  if (ALLOWED_IMAGE_MIMES.has(mime)) return true;
-  if (ALLOWED_TEXT_MIMES.has(mime)) return true;
-  if (mime.startsWith("text/")) return true;
-  if (
-    (mime === "application/octet-stream" || mime === "") &&
-    TEXT_ATTACHMENT_EXT.test(name)
-  ) {
-    return true;
-  }
-  return TEXT_ATTACHMENT_EXT.test(name);
+  return isAdmittedAtNameGate(file, { channel: "chat" });
 }
 
 const upload = multer({
@@ -1251,8 +1220,6 @@ app.post(
     req.socket.setNoDelay(true);
     req.socket.setKeepAlive(true);
 
-    scheduleTier2Warmup('first_traffic');
-
     const traceId = turnTelemetry.startTrace({
       traceId: req.traceId,
       sessionId,
@@ -1339,6 +1306,37 @@ app.post(
       // Tracer la propagation des images (diagnostic vision)
       const imageFiles = req.files || [];
       if (imageFiles.length > 0) {
+        const blockedCaps = [];
+        for (const uploaded of imageFiles) {
+          const cap = classifyFileCapability(
+            {
+              originalname: uploaded.originalname,
+              mimetype: uploaded.mimetype,
+              size: uploaded.size,
+              buffer: uploaded.buffer,
+            },
+            { channel: "chat" },
+          );
+          uploaded._fileCapability = cap;
+          console.log(
+            `[FileCapability] ${cap.verdict} · ${cap.class} · ${cap.status} · ${cap.justification}`,
+          );
+          if (shouldBlockFileCapability(cap, "chat")) blockedCaps.push(cap);
+        }
+        if (blockedCaps.length) {
+          const msg = blockedCaps[0].userSafeMessage;
+          emitVisibleToken(msg);
+          send({
+            done: true,
+            trace_id: traceId,
+            result: msg,
+            delivery_mode: "upload_capability_reject",
+          });
+          clearInterval(heartbeat);
+          res.write("data: [DONE]\n\n");
+          res.end();
+          return;
+        }
         console.log(
           `[Upload] 📎 ${imageFiles.length} fichier(s) reçu(s) par /api/stream → transmission à agent.run`,
         );
@@ -1353,6 +1351,7 @@ app.post(
         },
       });
 
+      // file_analysis_awaiting_source : intercepté dans agent.run, avant simple_fast / EXPERT_TASK.
       const result = await agent.run(q, resolvedHistory, {
         projectState,
         sessionId,
@@ -1812,7 +1811,7 @@ app.post(
       // 1. Définition des agents du consensus (Configuration ADR-003 ajustée aux modèles dispos)
       const agents = [
         { name: "Architecte", model: "qwen3.5:9b", temperature: 0.1 },
-        { name: "Analyste", model: "ornith:9b", temperature: 0.2 },
+        { name: "Analyste", model: AGENT_ROLES.CHAT, temperature: 0.2 },
         { name: "Auditeur", model: AGENT_ROLES.SECURITY_AUDITOR, temperature: 0.4 },
       ];
 
@@ -1991,8 +1990,6 @@ app.post(
       `[CHAT][${requestId}] REQUEST_RECEIVED session=${req.sessionId} history=${Array.isArray(history) ? history.length : 0} isNewThread=${Boolean(isNewThread)}`,
     );
 
-    scheduleTier2Warmup('first_traffic');
-
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
@@ -2027,18 +2024,26 @@ app.post(
       console.log(
         `[CHAT][${requestId}] AGENT_RUN_START resolvedHistory=${resolvedHistory.length} clientHistory=${Array.isArray(history) ? history.length : 0}`,
       );
+      const streamProcessor = new OllamaStreamProcessor({
+        onChunk: (chunk) => {
+          if (!chunk) return;
+          tokenCount++;
+          send({ token: chunk });
+        },
+      });
       const result = await agent.run(query, resolvedHistory, {
         projectState,
+        sessionId,
         onStep: (text, meta) => send({ step: text, meta }),
         onContent: (token) => {
-          tokenCount++;
-          send({ token });
+          streamProcessor.processToken(String(token || ""));
         },
         forcedExpertKey: expertKey || undefined,
         disableRecentMemory: Boolean(isNewThread),
         chatMode: true,
         cavemanLevel: req.body.cavemanLevel || "LITE",
       });
+      streamProcessor.finalize();
       console.log(
         `[CHAT][${requestId}] AGENT_RUN_COMPLETED tokens=${tokenCount} resultLength=${String(result || "").length}`,
       );

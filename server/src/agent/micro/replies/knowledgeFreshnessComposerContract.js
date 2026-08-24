@@ -15,6 +15,10 @@ import {
   isExplicitWebSearchRequest,
   wasWebSearchSkippedByContract,
 } from "../../policies/routing/explicitWebSearchRequestPolicy.js";
+import {
+  buildExistenceScopeComposerAddon,
+  detectExistenceScopeGuard,
+} from "../../policies/conversation/existenceScopeGuardPolicy.js";
 
 export const KNOWLEDGE_FRESHNESS_COMPOSER_RULE =
   "temporal_disclosure_and_verified_refresh";
@@ -23,10 +27,22 @@ export const KNOWLEDGE_FRESHNESS_COMPOSER_RULE =
  * @param {string} query
  * @param {object} [packet]
  */
+const CODE_DELIVERY_FRESHNESS_SKIP = new Set([
+  "CODE_DELIVERY_V1",
+  "CODE_PROJECT_LIGHT",
+]);
+
 export function requiresKnowledgeFreshnessComposerContract(query = "", packet = {}) {
+  if (CODE_DELIVERY_FRESHNESS_SKIP.has(packet?.meta?.intent_contract_id)) {
+    return false;
+  }
   const hasWeb = (packet?.expert_outputs || []).some((o) => o?.stage === "web_research");
   const assessment = assessKnowledgeFreshnessRisk(query);
-  return assessment.temporalDisclosureRequired || hasWeb;
+  return (
+    assessment.temporalDisclosureRequired ||
+    hasWeb ||
+    Boolean(detectExistenceScopeGuard(query))
+  );
 }
 
 export function buildKnowledgeFreshnessSystemAddon(query = "", packet = {}) {
@@ -36,7 +52,9 @@ export function buildKnowledgeFreshnessSystemAddon(query = "", packet = {}) {
   const hasWeb = hasSuccessfulWebGrounding(packet);
   const bridged = requiresBridgedFreshnessFallback(query, packet);
 
+  const existenceAddon = buildExistenceScopeComposerAddon(query);
   const lines = [
+    ...(existenceAddon ? [existenceAddon] : []),
     "VARIANTE FRAÎCHEUR TEMPORELLE (date du jour dynamique) :",
     `- Date de référence système : **${today}**. Ne jamais figer une année arbitraire dans le code — toujours « à ce jour ».`,
   ];

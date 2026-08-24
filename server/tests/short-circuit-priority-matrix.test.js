@@ -2,7 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { classifyWebProjectScopingRequest } from "../src/agent/utils/webProjectScopingGuards.js";
+import { classifyWebProjectScopingRequest } from "../src/agent/utils/intent-guards/webProjectScopingGuards.js";
 
 const G11_SHAREPOINT = "je veux créer un site sharepoint pour mon équipe";
 const G13_NGINX = "mon nginx renvoie une erreur 502 depuis ce matin";

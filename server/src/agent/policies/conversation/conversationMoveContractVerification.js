@@ -25,7 +25,7 @@ import {
 import {
   isWebProjectScopingContractViolation,
   enforceWebProjectScopingDirectness,
-} from "../../utils/webProjectScopingGuards.js";
+} from "../../utils/intent-guards/webProjectScopingGuards.js";
 import {
   isInformationSeekingContractViolation,
   enforceInformationSeekingDirectness,
@@ -38,7 +38,7 @@ import { resolveMultiSegmentPlan } from "../../micro/parsing/multiSegmentRespons
 import {
   isCompareChooseRequest,
   extractCompareDomain,
-} from "../../utils/compareChooseIntentGuards.js";
+} from "../../utils/intent-guards/compareChooseIntentGuards.js";
 import { isGuidedProductRecommendationRequest } from "../guided/index.js";
 
 export const MOVE_CONTRACT_PROFILES = Object.freeze({
@@ -117,6 +117,10 @@ export function resolveMoveContractProfile(
     family === "meta_capabilities" ||
     family === "meta_conversation"
   ) {
+    return null;
+  }
+  // Création nommée / architecture : pas de rewrite « preuves ancrées / recherche web ».
+  if (path === "named_create_start" || path.startsWith("architecture_design")) {
     return null;
   }
 

@@ -5,7 +5,7 @@ import { getClientForModel } from "../src/llm/llmFactory.js";
 import { AGENT_ROLES } from "../src/agent/policies/core/index.js";
 import { finalRendererAgent } from "../src/agent/agents/finalRendererAgent.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
-import responseThinkingCleaner from "../src/agent/utils/responseThinkingCleaner.js";
+import responseThinkingCleaner from "../src/agent/utils/quality-safety/responseThinkingCleaner.js";
 
 const RAW_THINKING_LEAK = `
 <think>Internal planning should never be visible.</think>
@@ -17,7 +17,7 @@ Utilise un environnement virtuel Python avec venv, puis installe tes dependances
 `.trim();
 
 test("finalRendererAgent.compose: supprime les fuites de pensee brutes et paraphrasees", async () => {
-  const model = AGENT_ROLES.CHAT || "ornith:9b";
+  const model = AGENT_ROLES.CHAT;
   const client = getClientForModel(model);
   const originalChat = client.chat;
   const originalMakersGate = finalRendererAgent._applyMakersCheckerGate;

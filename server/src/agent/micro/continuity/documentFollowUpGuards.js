@@ -1,4 +1,4 @@
-import { normalizeText } from "../../utils/normalizationGuards.js";
+import { normalizeText } from "../../utils/parsing-normalization/normalizationGuards.js";
 
 const DOCUMENT_FOLLOW_UP_MARKERS =
   /\b(amélioration|amelioration|améliorations|ameliorations|améliorer|ameliorer|améliore|ameliore|optimiser|optimise|corriger|corrige|correction|refais|refaire|plus propre|plus clair|explique tes choix|explique ton choix|pourquoi tu|montre[- ]?moi|montre le|ce fichier|ce code|ce bloc|bloc concerné|bloc concerne|ce document|ce css|ces sélecteurs|ces selecteurs|dans le fichier|sur le fichier|sur ce fichier|avec le bloc|exemple modifié|exemple modifie|utilité|utilite|compar(?:er|aison|e).*web|réalité du web|realite du web|documentation actuelle|mise[s]? à jour|ocr|scan|capacité|capacite|plus court|synthese plus|resume plus|resumer plus|synthese|résume|résumer|resumer|resume)\b/i;

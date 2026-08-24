@@ -7,8 +7,10 @@ import {
   WEATHER_CANONICAL_MIAMI_QUERY,
   WEATHER_CANONICAL_NARRATIVE_QUERY,
   WEATHER_CANONICAL_PASTED_NARRATIVE_QUERY,
+  buildWeatherCurrentFactualReply,
   buildWeatherCurrentRecoveryMessage,
   buildWeatherCurrentWebQuery,
+  isNonTerrestrialWeatherLocation,
   extractLastWeatherLocationFromHistory,
   isNarrativeOrExpressiveWeatherUtterance,
   isQuotedOrPastedWeatherContext,
@@ -196,13 +198,99 @@ describe("weatherCurrentRequestPolicy — routage + fallback", () => {
     assert.ok(hit?.weatherWebQuery);
   });
 
-  it("recovery message — honnête et ciblé", () => {
+  it("recovery message — borné + une alternative, pas de liste", () => {
     const msg = buildWeatherCurrentRecoveryMessage(
       WEATHER_CANONICAL_MIAMI_QUERY,
       "empty_short_circuit_llm",
     );
     assert.match(msg, /Miami/i);
-    assert.doesNotMatch(msg, /géographie|histoire/i);
+    assert.match(msg, /meteofrance\.com/i);
+    assert.doesNotMatch(msg, /géographie|histoire|option\s*1|voici quelques/i);
+  });
+
+  it("factual reply — temp + condition + source principale", () => {
+    const reply = buildWeatherCurrentFactualReply(
+      "Quelle est la météo actuelle en Martinique ?",
+      [
+        {
+          url: "https://www.meteofrance.com/previsions-meteo-france/fort-de-france/97200",
+          title: "Météo Fort-de-France",
+          snippet:
+            "Actuellement à Fort-de-France : ciel partiellement nuageux, 29 °C, vent faible.",
+        },
+        {
+          url: "https://example.com/autre",
+          title: "Autre",
+          snippet: "Lien générique sans donnée.",
+        },
+      ],
+    );
+    assert.ok(reply);
+    assert.match(reply, /Martinique|29/i);
+    assert.match(reply, /29\s*°C/i);
+    assert.match(reply, /partiellement nuageux|nuageux/i);
+    assert.match(reply, /meteofrance\.com/i);
+    assert.doesNotMatch(reply, /option\s*[123]|je n'ai pas accès|navigateur/i);
+    assert.ok(
+      (reply.match(/https?:\/\//g) || []).length <= 1,
+      "une seule source principale attendue",
+    );
+  });
+
+  it("factual reply — sans température → condition ancrée + source", () => {
+    const reply = buildWeatherCurrentFactualReply(WEATHER_CANONICAL_FDF_QUERY, [
+      {
+        url: "https://weather.com/fr-FR/temps/aujourdhuid/l/Fort+de+France",
+        title: "Temps Fort-de-France",
+        snippet: "Conditions actuelles stables, averses possibles en soirée.",
+      },
+    ]);
+    assert.ok(reply);
+    assert.match(reply, /Fort-de-France|averses?/i);
+    assert.match(reply, /weather\.com/i);
+    assert.doesNotMatch(reply, /voici (?:trois|quelques) (?:liens|options)/i);
+  });
+
+  it("factual reply — Mars hors périmètre terrestre (pas de pluie inventée)", () => {
+    assert.equal(isNonTerrestrialWeatherLocation("Mars"), true);
+    const reply = buildWeatherCurrentFactualReply(
+      "quel temps fait il sur mars à l'heure actuelle?",
+      [
+        {
+          url: "https://meteofrance.com/",
+          title: "Météo France",
+          snippet: "Prévisions mars : pluie possible sur plusieurs régions.",
+        },
+      ],
+    );
+    assert.match(reply, /pas un lieu de météo terrestre|NASA/i);
+    assert.doesNotMatch(reply, /Météo actuelle en Mars\s*:\s*pluie/i);
+  });
+
+  it("factual reply — homepage marketing France → null (pas de blurb)", () => {
+    const reply = buildWeatherCurrentFactualReply(
+      "quel temps fait il en france à l'heure actuelle?",
+      [
+        {
+          url: "https://meteofrance.com/",
+          title: "METEO FRANCE",
+          snippet:
+            "Retrouvez les prévisions METEO France de Météo-France à 15 jours, les prévisions météos locales gratuites.",
+        },
+      ],
+    );
+    assert.equal(reply, null);
+  });
+
+  it("short-circuit Mars → réponse bornée sans web", async () => {
+    const hit = await runConversationShortCircuit(
+      "quel temps fait il sur mars à l'heure actuelle?",
+    );
+    assert.equal(hit?.weatherCurrent, true);
+    assert.equal(hit?.deferToFullPipeline, false);
+    assert.equal(hit?.preferWebResearch, false);
+    assert.match(hit?.reply || "", /pas un lieu de météo terrestre|NASA/i);
+    assert.equal(hit?.weatherWebQuery, null);
   });
 
   it("orchestrateur — web échoué → fallback honnête rapide (pas raisonneur)", async () => {
@@ -242,9 +330,60 @@ describe("weatherCurrentRequestPolicy — routage + fallback", () => {
       const elapsed = Date.now() - started;
 
       assert.equal(typeof result, "string");
-      assert.match(result, /Je n'ai pas réussi à récupérer la météo actuelle pour Miami/i);
+      assert.match(result, /Je n'ai pas pu récupérer la météo temps réel pour Miami/i);
+      assert.match(result, /meteofrance\.com/i);
       assert.doesNotMatch(result, /géographie|histoire|précise l'angle/i);
       assert.ok(elapsed < 60_000, `fallback trop lent: ${elapsed}ms`);
+    } finally {
+      expertWebSearch.run = originalRun;
+    }
+  });
+
+  it("orchestrateur — web OK → réponse factuelle immédiate", async () => {
+    const { expertWebSearch } = await import(
+      "../src/agent/agents/expertWebSearch.js"
+    );
+    const { SovereignOrchestrator } = await import(
+      "../src/agent/orchestrator/SovereignOrchestrator.js"
+    );
+    const originalRun = expertWebSearch.run;
+    expertWebSearch.run = async (envelope) => ({
+      expert: "expert_web_search",
+      query: envelope?.query || "",
+      sources: [
+        {
+          url: "https://www.meteofrance.com/previsions-meteo-outremer/martinique",
+          title: "Météo Martinique",
+          snippet: "Temps actuel : ensoleillé, 30 °C, alizé modéré.",
+          confidence: 0.9,
+        },
+      ],
+      summary: "ensoleillé 30 °C Martinique",
+      confidence: 0.9,
+      requires_human_caution: false,
+      stage: "web_research",
+      content: "ensoleillé 30 °C",
+    });
+
+    try {
+      const orchestrator = new SovereignOrchestrator({});
+      const result = await orchestrator.orchestrate(
+        "Quelle est la météo actuelle en Martinique ?",
+        [],
+        {
+          forcedExpertKey: "expert_web_search",
+          webSearchQuery: "météo actuelle Martinique température maintenant",
+          intent: "normal_conversation",
+        },
+      );
+
+      assert.equal(typeof result, "string");
+      assert.match(result, /30\s*°C/i);
+      assert.match(result, /meteofrance\.com|Météo-France/i);
+      assert.doesNotMatch(
+        result,
+        /je n'ai pas accès|option\s*[123]|voici quelques liens/i,
+      );
     } finally {
       expertWebSearch.run = originalRun;
     }

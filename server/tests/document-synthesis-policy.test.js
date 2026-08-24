@@ -22,7 +22,7 @@ import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetec
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolveDocumentContinuity } from "../src/agent/micro/continuity/documentContinuityContext.js";
 import { isDocumentFollowUpIntent } from "../src/agent/micro/continuity/documentFollowUpGuards.js";
-import { resolvePipelineFallback } from "../src/agent/utils/genericGreetingGuards.js";
+import { resolvePipelineFallback } from "../src/agent/utils/conversation/genericGreetingGuards.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseContracts.js";
 
 const PDF_ANALYSIS_HISTORY = [

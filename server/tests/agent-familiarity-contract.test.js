@@ -17,7 +17,7 @@ import {
   SUBJECT_CATEGORIES,
   PLACE_SUBTYPES,
   PERSON_SUBTYPES,
-} from "../src/agent/utils/familiarityIntentGuards.js";
+} from "../src/agent/utils/intent-guards/familiarityIntentGuards.js";
 import {
   enforceModeContract,
   evaluateEpistemicRefusal,

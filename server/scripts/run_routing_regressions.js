@@ -8,11 +8,11 @@ import {
   classifyUserProfile,
   isAnalyticalTechnicalRequest,
   isTechnicalStatusReport,
-} from "../src/agent/utils/conversationGuards.js";
+} from "../src/agent/utils/conversation/conversationGuards.js";
 import { resolveGovernedTopic } from "../src/agent/knowledge/knowledgeRouter.js";
 import knowledgeService from "../src/agent/knowledge/knowledgeService.js";
 import controlHarness from "../src/agent/harness/controlHarness.js";
-import intentClassifier from "../src/agent/utils/intentClassifier.js";
+import intentClassifier from "../src/agent/utils/intent-guards/intentClassifier.js";
 
 function pass(name) {
   console.log(`PASS - ${name}`);

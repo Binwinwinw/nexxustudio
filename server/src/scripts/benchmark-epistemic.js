@@ -1,5 +1,5 @@
 /* server/src/scripts/benchmark-epistemic.js */
-import criticAgent, { REJECTION_TAXONOMY } from '../agent/utils/criticAgent.js';
+import criticAgent, { REJECTION_TAXONOMY } from '../agent/utils/agents/criticAgent.js';
 
 const BENCHMARK_CASES = [
   {

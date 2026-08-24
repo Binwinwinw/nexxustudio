@@ -5,7 +5,7 @@ import {
   detectUnverifiedSkillExecutionClaims,
   sanitizeUnverifiedSkillExecutionClaims,
   isSkillExecutableAtRuntime,
-} from "../src/agent/utils/skillExecutionClaimGuard.js";
+} from "../src/agent/utils/quality-safety/skillExecutionClaimGuard.js";
 
 describe("skillExecutionClaimGuard", () => {
   it("skill-industrial-maturation n'est pas exécutable au runtime", () => {

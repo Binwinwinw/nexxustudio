@@ -5,6 +5,7 @@ import {
   getBootProfile,
   getActiveTier1ChatModel,
   getReasonerModel,
+  getTier2Model,
   isTier2Enabled,
   MODEL_CONFIG,
   listTier3ExpertModels,
@@ -56,7 +57,7 @@ export function resolveTier2State(warmupStatus = {}) {
   if (!isTier2Enabled()) {
     return 'disabled';
   }
-  const tier2Model = MODEL_CONFIG.TIER_2.model;
+  const tier2Model = getTier2Model();
   if (!tier2Model) return 'disabled';
   return warmupStatus.models?.[tier2Model] || 'deferred';
 }
@@ -167,7 +168,7 @@ export function buildWarmupCockpitSnapshot(warmupStatus = {}) {
       ready: tier1ChatState === 'ready' && ['ready', 'lazy'].includes(tier1EmbedState),
     },
     tier2: {
-      model: isTier2Enabled() ? MODEL_CONFIG.TIER_2.model : reasonerModel,
+      model: isTier2Enabled() ? getTier2Model() : reasonerModel,
       state: tier2State,
       label: getTier2DisplayLabel(tier2State),
       policy: isTier2Enabled()

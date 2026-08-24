@@ -8,8 +8,8 @@ import {
   TRIAGE_INTENTS,
   TRIAGE_ROUTING_ACTION,
 } from "./intentTriageClassifier.js";
+import { resolveLightJsonModel } from "../policies/core/agentRolePolicy.js";
 
-const DEFAULT_MODEL = process.env.OLLAMA_INTENT_TRIAGE_MODEL || "zephyr";
 const TIMEOUT_MS = parseInt(process.env.INTENT_TRIAGE_TIMEOUT_MS || "3500", 10);
 
 function isTieBreakEnabled() {
@@ -111,7 +111,10 @@ export function shouldAttemptLlmTiebreak(triage = {}) {
  * }} input
  */
 export async function applyIntentTriageLlmTiebreak(input = {}) {
-  const { query, ruleTriage, llmClient, model = DEFAULT_MODEL } = input;
+  const { query, ruleTriage, llmClient, model } = input;
+  const resolvedModel = resolveLightJsonModel(
+    model ?? process.env.OLLAMA_INTENT_TRIAGE_MODEL,
+  );
 
   if (!shouldAttemptLlmTiebreak(ruleTriage)) {
     return { triage: ruleTriage, usedLlm: false, source: "rules_only" };
@@ -121,14 +124,19 @@ export async function applyIntentTriageLlmTiebreak(input = {}) {
     query,
     ruleTriage,
     llmClient,
-    model,
+    model: resolvedModel,
   });
 
   if (!llmTriage) {
     return { triage: ruleTriage, usedLlm: false, source: "rule_fallback" };
   }
 
-  return { triage: llmTriage, usedLlm: true, source: "ollama_tiebreak", model };
+  return {
+    triage: llmTriage,
+    usedLlm: true,
+    source: "ollama_tiebreak",
+    model: resolvedModel,
+  };
 }
 
 async function tryOllamaTiebreak({ query, ruleTriage, llmClient, model }) {

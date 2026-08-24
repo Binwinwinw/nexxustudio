@@ -3,7 +3,7 @@ import { canAccessProductionJob } from "../security/productionJobAccess.js";
 import agent from "../agent/agent.js";
 import runtimeService from "./runtimeService.js";
 import snapshotRepository from "../db/repositories/snapshotRepository.js";
-import responseThinkingCleaner from "../agent/utils/responseThinkingCleaner.js";
+import responseThinkingCleaner from "../agent/utils/quality-safety/responseThinkingCleaner.js";
 import telemetryPersistor from "../agent/telemetry/telemetryPersistor.js";
 import turnTelemetry from "../agent/telemetry/turnTelemetry.js";
 import crypto from "crypto";

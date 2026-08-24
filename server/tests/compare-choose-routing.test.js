@@ -6,13 +6,13 @@ import {
   parseCompareChoose,
   extractCompareOptions,
   extractCompareDomain,
-} from "../src/agent/utils/compareChooseIntentGuards.js";
+} from "../src/agent/utils/intent-guards/compareChooseIntentGuards.js";
 import { resolveCompareChooseShortCircuit } from "../src/agent/micro/replies/compareChooseComposer.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
-import { isTechnicalOverviewRequest } from "../src/agent/utils/technicalOverviewIntentGuards.js";
-import { isDebugDiagnosticRequest } from "../src/agent/utils/debugDiagnosticIntentGuards.js";
-import { SELECTIVE_DECISION_TASKS } from "../src/agent/utils/selectiveDecisionIntentGuards.js";
+import { isTechnicalOverviewRequest } from "../src/agent/utils/intent-guards/technicalOverviewIntentGuards.js";
+import { isDebugDiagnosticRequest } from "../src/agent/utils/intent-guards/debugDiagnosticIntentGuards.js";
+import { SELECTIVE_DECISION_TASKS } from "../src/agent/utils/intent-guards/selectiveDecisionIntentGuards.js";
 
 describe("compareChoose — lot 9", () => {
   it("Redis vs Memcached que choisir → compare_choose", async () => {

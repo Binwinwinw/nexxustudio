@@ -8,7 +8,7 @@
  * 4. Si 1 candidat + fiche locale optionnelle → réponse déterministe
  * 5. Si 1 candidat sans fiche → defer LLM avec hint de continuité (véhicules, avions, chaussures…)
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { readRecentTurns } from "./conversationContinuityContext.js";
 import { assessConversationTopicShift } from "./topicShiftGuard.js";
 import { extractSalientSpansFromAssistantText } from "./salientSpanExtractor.js";

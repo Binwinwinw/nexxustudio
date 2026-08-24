@@ -7,27 +7,27 @@
  * - needs_clarification     : ambiguïté bloquante — sujet/objectif réellement manquant
  */
 import { INTENT_DOMAINS, EXECUTION_STRATEGIES } from "../../../../../shared/justIntentCatalog.js";
-import { isGeneralKnowledgeRequest } from "../../utils/generalKnowledgeIntentGuards.js";
+import { isGeneralKnowledgeRequest } from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
 import {
   normalizeFamiliarityQuery,
   parseFamiliarityQuery,
-} from "../../utils/familiarityIntentGuards.js";
+} from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { shouldSuppressPrematureClarify } from "../posture/index.js";
-import { isPedagogicalOverviewRequest } from "../../utils/pedagogicalOverviewIntentGuards.js";
-import { isBeginnerTopicOverviewRequest } from "../../utils/beginnerTopicOverviewIntentGuards.js";
+import { isPedagogicalOverviewRequest } from "../../utils/intent-guards/pedagogicalOverviewIntentGuards.js";
+import { isBeginnerTopicOverviewRequest } from "../../utils/intent-guards/beginnerTopicOverviewIntentGuards.js";
 import { isCodeConceptExplainRequest } from "../code/codeConceptExplainPolicy.js";
-import { isTechnicalOverviewRequest } from "../../utils/technicalOverviewIntentGuards.js";
-import { isDebugDiagnosticRequest } from "../../utils/debugDiagnosticIntentGuards.js";
-import { isCompareChooseRequest, extractCompareDomain } from "../../utils/compareChooseIntentGuards.js";
+import { isTechnicalOverviewRequest } from "../../utils/intent-guards/technicalOverviewIntentGuards.js";
+import { isDebugDiagnosticRequest } from "../../utils/intent-guards/debugDiagnosticIntentGuards.js";
+import { isCompareChooseRequest, extractCompareDomain } from "../../utils/intent-guards/compareChooseIntentGuards.js";
 import {
   getMissingProductRecommendationSlots,
   buildProductRecommendationClarifyReply,
 } from "./compareChooseCompositePolicy.js";
-import { isAdminProcedureRequest } from "../../utils/adminProcedureIntentGuards.js";
-import { isCareerLearningPathRequest } from "../../utils/careerLearningPathIntentGuards.js";
-import { isTechnicalLearningPathRequest } from "../../utils/technicalLearningPathIntentGuards.js";
-import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIntentGuards.js";
-import { isTranslationRequestReady, isTranslationPipelineReady, isMultiTargetTranslationRequest } from "../../utils/translationIntentGuards.js";
+import { isAdminProcedureRequest } from "../../utils/intent-guards/adminProcedureIntentGuards.js";
+import { isCareerLearningPathRequest } from "../../utils/intent-guards/careerLearningPathIntentGuards.js";
+import { isTechnicalLearningPathRequest } from "../../utils/intent-guards/technicalLearningPathIntentGuards.js";
+import { isInformationSeekingWithTarget } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
+import { isTranslationRequestReady, isTranslationPipelineReady, isMultiTargetTranslationRequest } from "../../utils/intent-guards/translationIntentGuards.js";
 import {
   isMathArithmeticSatisfiable,
   isMathSimpleSatisfiable,
@@ -65,9 +65,9 @@ import {
   isFullExplanationResumeRequest,
   isConversationContinuityFollowup,
 } from "../../micro/continuity/conversationContinuityContext.js";
-import { isMetaAssistantBehaviorRequest, isComprehensionDemonstrationRequest } from "../../utils/metaAssistantBehaviorGuards.js";
-import { isMetaConversationIntent } from "../../utils/metaConversationIntentGuards.js";
-import { isExploratoryTopicIntent } from "../../utils/exploratoryConversationGuards.js";
+import { isMetaAssistantBehaviorRequest, isComprehensionDemonstrationRequest } from "../../utils/intent-guards/metaAssistantBehaviorGuards.js";
+import { isMetaConversationIntent } from "../../utils/intent-guards/metaConversationIntentGuards.js";
+import { isExploratoryTopicIntent } from "../../utils/conversation/exploratoryConversationGuards.js";
 import {
   isSocialChatThreadActive,
   isSoftSocialChatFollowup,
@@ -77,8 +77,9 @@ import {
   EPISTEMIC_ACTIONS,
   evaluateEpistemicUncertaintyResolution,
 } from "../epistemic/index.js";
-import { isReactAuditRequest } from "../../utils/reactAuditIntentGuards.js";
-import { shouldAllowClarifyThenBuild } from "../../utils/deliverableMandateGuards.js";
+import { isReactAuditRequest } from "../../utils/intent-guards/reactAuditIntentGuards.js";
+import { isAttachmentWorkRequest } from "../attachment/index.js";
+import { shouldAllowClarifyThenBuild } from "../../utils/context/deliverableMandateGuards.js";
 import { isExistingSourceAnalysisSatisfiable } from "../analysis/index.js";
 import {
   decomposeRequest,
@@ -182,6 +183,7 @@ export function evaluateClarificationDecision(
   intentTriage = null,
   history = [],
   attachments = [],
+  options = {},
 ) {
   const signals = [];
   const q = normalizeQueryForClarificationGate(query);
@@ -192,6 +194,16 @@ export function evaluateClarificationDecision(
     return pack(
       CLARIFICATION_DECISIONS.CAN_ANSWER_NOW,
       "voice_anchor_no_premature_clarify",
+      true,
+      signals,
+    );
+  }
+
+  if (isAttachmentWorkRequest(query, attachments)) {
+    signals.push("attachment_read_mandate");
+    return pack(
+      CLARIFICATION_DECISIONS.CAN_ANSWER_NOW,
+      "attachment_work_no_objective_clarify",
       true,
       signals,
     );
@@ -337,7 +349,11 @@ export function evaluateClarificationDecision(
     }
   }
 
-  if (isConversationSocialOnlyQuery(query)) {
+  if (
+    isConversationSocialOnlyQuery(query, {
+      turnComprehension: options.turnComprehension,
+    })
+  ) {
     signals.push("conversation_social_only");
     return pack(
       CLARIFICATION_DECISIONS.CAN_ANSWER_NOW,
@@ -991,7 +1007,13 @@ export function buildClarificationMessage({
  */
 export function resolveClarificationGate(
   query = "",
-  { justIntent = {}, intentTriage = null, history = [], attachments = [] } = {},
+  {
+    justIntent = {},
+    intentTriage = null,
+    history = [],
+    attachments = [],
+    turnComprehension = null,
+  } = {},
 ) {
   const normalizedQuery = normalizeQueryForClarificationGate(query);
   const decision = evaluateClarificationDecision(
@@ -1000,6 +1022,7 @@ export function resolveClarificationGate(
     intentTriage,
     history,
     attachments,
+    { turnComprehension },
   );
   const triageWantsClarify =
     intentTriage?.routing_action === TRIAGE_ROUTING_ACTION.ASK_CLARIFICATION;

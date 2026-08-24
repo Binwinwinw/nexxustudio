@@ -6,7 +6,7 @@
  *
  * Spec : docs/agents/posture-deliverable-epistemic-spec-v1.md §2.3.2
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 
 /** Mandat d’exécution local — évite l’import circulaire via genericGreetingGuards. */
 const SUBSTANTIVE_MANDATE_RE =
@@ -29,7 +29,7 @@ const BARE_OPEN_FIELD_RE =
 
 /** Pilotage perso (« tu veux faire quoi ») — autre surface. */
 const PERSONAL_DRIVER_RE =
-  /\b(?:tu|je|vous)\s+(?:veux|voudrais|veut)\s+(?:faire\s+)?quoi\b/i;
+  /\b(?:qu['\u2019]?\s*est[- ]?ce\s+que\s+(?:tu|vous)(?:\s+tu)?\s+(?:veux|voudrais|veut|voulez)\s+(?:faire|continuer)|(?:tu|je|vous)\s+(?:veux|voudrais|veut)\s+(?:faire\s+)?quoi|que\s+veux[- ]?(?:tu|vous)\s+(?:faire|continuer))\b/i;
 
 /** Verbe d’activité large — la cible précise est un anti-slot séparé. */
 const OPEN_ACTIVITY_SHELL_RE =
@@ -45,6 +45,62 @@ const CONCRETE_OBJECT_RE =
 const CONSTRAINT_HEAVY_RE =
   /\b(?:en\s+(?:python|js|html)|avec\s+(?:contrainte|deadline)|format\s+\w+|niveau\s+\w+|pour\s+lundi|avant\s+demain)\b/i;
 
+/** Soirée / week-end / midi — relance sociale, pas un menu de chantier. */
+const LEISURE_TIME_RE =
+  /\b(?:ce\s+soir|cet?\s+apr[eè]s[- ]?midi|ce\s+we(?:ek(?:[- ]?end)?)?|cette\s+nuit|demain\s+soir|ce\s+midi)\b/i;
+
+const SOCIAL_RELANCE_LEAD_RE =
+  /^(?:ok(?:e|é|ey|éy|ay)?y?|okay|okey|sympa|cool|nice|bon|du\s+coup|et\s+sinon|allez|bah|ben)\b/i;
+
+const PROJECT_INTENT_RE =
+  /\b(?:projet|livrable|forge|handoff|agent|code|script|audit|d[eé]p[oô]t|depot|repo|atelier|feature|ticket|sprint|backlog|architecture|\brag\b)\b/i;
+
+const SOCIAL_OPENING_RE =
+  /(?:comment\s+(?:(?:ça|ca)\s+)?(?:va|se\s+passe|roule)|(?:^|\s)(?:salut|bonjour|hello|coucou|hey|yop|yo)\b|(?:^|\s)(?:ça|ca)\s+roule|(?:^|\s)tout\s+roule)/i;
+
+/** « qu'est-ce qu'on fait » nu = statut projet, pas loisir / menu exploration. */
+const PROJECT_STATUS_ON_FAIT_RE =
+  /\bqu\s+est[- ]ce\s+qu\s+on\s+fait\b(?!\s+quoi\b)/i;
+
+function isProjectStatusOnFait(q = "") {
+  return PROJECT_STATUS_ON_FAIT_RE.test(q) && !LEISURE_TIME_RE.test(q);
+}
+
+function lastUserText(history = []) {
+  if (!Array.isArray(history)) return "";
+  for (let i = history.length - 1; i >= 0; i -= 1) {
+    if (history[i]?.role === "user" && String(history[i]?.content || "").trim()) {
+      return String(history[i].content).trim();
+    }
+  }
+  return "";
+}
+
+/**
+ * Relance small-talk (« ce soir ? », filler après check-in) — pas open_exploration.
+ * @param {string} query
+ * @param {Array<{ role?: string, content?: string }>} [history]
+ */
+export function isSocialLeisureRelance(query = "", history = []) {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q) return false;
+  if (PERSONAL_DRIVER_RE.test(q)) return false;
+  if (CONCRETE_OBJECT_RE.test(q) || PROJECT_INTENT_RE.test(q)) return false;
+  if (SUBSTANTIVE_MANDATE_RE.test(q) || CONSTRAINT_HEAVY_RE.test(q)) return false;
+
+  const hasCollectiveOpener =
+    COLLECTIVE_OPENER_RE.test(q) || BARE_OPEN_FIELD_RE.test(q);
+  if (!hasCollectiveOpener) return false;
+  if (!OPEN_ACTIVITY_SHELL_RE.test(q)) return false;
+  if (isProjectStatusOnFait(q)) return false;
+
+  if (LEISURE_TIME_RE.test(q)) return true;
+  if (SOCIAL_RELANCE_LEAD_RE.test(q)) return true;
+
+  const previous = normalizeFamiliarityQuery(lastUserText(history));
+  return Boolean(previous && SOCIAL_OPENING_RE.test(previous));
+}
+
 /**
  * @param {string} query
  * @returns {{
@@ -55,7 +111,7 @@ const CONSTRAINT_HEAVY_RE =
  *   isExplorationFrame: boolean,
  * }}
  */
-export function assessOpenExplorationSlots(query = "") {
+export function assessOpenExplorationSlots(query = "", history = []) {
   const q = normalizeFamiliarityQuery(query);
   if (!q) {
     return {
@@ -64,6 +120,7 @@ export function assessOpenExplorationSlots(query = "") {
       hasConcreteObject: false,
       isShortAndUnderspecified: false,
       isExplorationFrame: false,
+      isLeisureRelance: false,
     };
   }
 
@@ -78,12 +135,16 @@ export function assessOpenExplorationSlots(query = "") {
     words.length <= 16 &&
     !CONSTRAINT_HEAVY_RE.test(q) &&
     !SUBSTANTIVE_MANDATE_RE.test(q);
+  const isLeisureRelance = isSocialLeisureRelance(query, history);
+  const projectStatusOnFait = isProjectStatusOnFait(q);
 
   const isExplorationFrame =
     hasCollectiveOpener &&
     hasOpenActivityShell &&
     !hasConcreteObject &&
-    isShortAndUnderspecified;
+    isShortAndUnderspecified &&
+    !isLeisureRelance &&
+    !projectStatusOnFait;
 
   return {
     hasCollectiveOpener,
@@ -91,23 +152,26 @@ export function assessOpenExplorationSlots(query = "") {
     hasConcreteObject,
     isShortAndUnderspecified,
     isExplorationFrame,
+    isLeisureRelance,
   };
 }
 
 /**
  * @param {string} query
+ * @param {Array<{ role?: string, content?: string }>} [history]
  * @returns {boolean}
  */
-export function isOpenExplorationFrame(query = "") {
-  return assessOpenExplorationSlots(query).isExplorationFrame;
+export function isOpenExplorationFrame(query = "", history = []) {
+  return assessOpenExplorationSlots(query, history).isExplorationFrame;
 }
 
 /**
  * Contribution compréhension (avant JUST) — pas un rail autonome.
  * @param {string} query
+ * @param {Array<{ role?: string, content?: string }>} [history]
  */
-export function resolveOpenExplorationFrame(query = "") {
-  const slots = assessOpenExplorationSlots(query);
+export function resolveOpenExplorationFrame(query = "", history = []) {
+  const slots = assessOpenExplorationSlots(query, history);
   if (!slots.isExplorationFrame) {
     return {
       contract: OPEN_EXPLORATION_FRAME_ID,

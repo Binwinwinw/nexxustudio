@@ -13,7 +13,7 @@ import {
   resolveCasualExplanationLightShortCircuit,
 } from "../src/agent/policies/social/index.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { isInformationSeekingWithTarget } from "../src/agent/utils/informationSeekingIntentGuards.js";
+import { isInformationSeekingWithTarget } from "../src/agent/utils/intent-guards/informationSeekingIntentGuards.js";
 
 const CARD_GAME_QUERY =
   "salut salut comment ca va??? je cherche un jeu de cartes qui se joue avec des paires tu en connais ??";

@@ -5,7 +5,7 @@ import {
   emitOnContent,
   emitTextChunksSmooth,
   LARGE_PAYLOAD_THRESHOLD,
-} from "../src/agent/utils/streamTextChunks.js";
+} from "../src/agent/utils/runtime/streamTextChunks.js";
 
 test("emitTextChunksSmooth — découpe un long texte en plusieurs fragments", () => {
   const text =

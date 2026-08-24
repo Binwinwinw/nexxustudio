@@ -1,4 +1,4 @@
-import { isExploitableProcedureIntent } from "../../utils/procedureIntentGuards.js";
+import { isExploitableProcedureIntent } from "../../utils/intent-guards/procedureIntentGuards.js";
 import {
   resolveSubjectIntelligence,
   isProcedureFormWithResolvableSubject,

@@ -2,7 +2,7 @@
  * P4 — Interprète de requête gouverné (normaliser → hypothétiser → clarifier si nécessaire).
  * Ne remplace pas les micro-outils de réponse : prépare une lecture fiable de la demande.
  */
-import { parseFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { parseFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { extractConversationState, readRecentTurns } from "../continuity/conversationContinuityContext.js";
 import {
   canonicalizeRequest,
@@ -16,6 +16,7 @@ import {
   INTERPRETER_ACTIONS,
   REQUEST_INTERPRETER_RULE,
 } from "./clarificationPolicy.js";
+import { preserveExistenceInEffectiveQuery } from "../../policies/conversation/existenceScopeGuardPolicy.js";
 
 export { REQUEST_INTERPRETER_RULE, INTERPRETER_ACTIONS };
 
@@ -114,10 +115,13 @@ export function interpretRequest(rawQuery = "", options = {}) {
 /**
  * Applique l'interprétation au texte effectivement routé vers les micro-outils.
  */
-export function resolveEffectiveQuery(rawQuery = "", interpretation = null) {
-  if (!interpretation) return rawQuery;
-  if (interpretation.nextAction === INTERPRETER_ACTIONS.RESPOND && interpretation.canonicalQuery) {
-    return interpretation.canonicalQuery;
+export function resolveEffectiveQuery(rawQuery = "", interpretation = null, options = {}) {
+  let resolved = rawQuery;
+  if (
+    interpretation?.nextAction === INTERPRETER_ACTIONS.RESPOND &&
+    interpretation.canonicalQuery
+  ) {
+    resolved = interpretation.canonicalQuery;
   }
-  return rawQuery;
+  return preserveExistenceInEffectiveQuery(rawQuery, resolved, options);
 }

@@ -6,8 +6,8 @@ import {
   suppressesCompareChooseForOpenPrompt,
   resolveOpenPromptContinuityShortCircuit,
 } from "../src/agent/policies/meta/openPromptContinuityPolicy.js";
-import { isCompareChooseRequest } from "../src/agent/utils/compareChooseIntentGuards.js";
-import { classifySelectiveDecisionIntent } from "../src/agent/utils/selectiveDecisionIntentGuards.js";
+import { isCompareChooseRequest } from "../src/agent/utils/intent-guards/compareChooseIntentGuards.js";
+import { classifySelectiveDecisionIntent } from "../src/agent/utils/intent-guards/selectiveDecisionIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { COMPARE_CHOOSE_SMARTPHONE_CANONICAL_QUERY } from "../src/agent/policies/routing/compareChooseCompositePolicy.js";
 

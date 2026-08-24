@@ -41,7 +41,7 @@ test('evaluateReady: 503 si warmup pas terminé', () => {
     routerReady: true,
     warmupIsReady: false,
     warmupPhase: 'tier2_warming',
-    warmupModels: { 'ornith:9b': 'warming' },
+    warmupModels: { 'qwen3.5:2b': 'warming' },
     knowledgeHubReady: false,
   });
   assert.equal(ready.httpStatus, 503);
@@ -54,7 +54,7 @@ test('evaluateReady: 200 si dépendances critiques OK (knowledge hub optionnel)'
     warmupIsReady: true,
     warmupPhase: 'ready',
     warmupModels: {
-      'ornith:9b': 'ready',
+      'qwen3.5:2b': 'ready',
       'nomic-embed-text:latest': 'ready',
     },
     knowledgeHubReady: false,

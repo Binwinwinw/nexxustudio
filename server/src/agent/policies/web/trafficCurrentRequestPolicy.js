@@ -2,14 +2,14 @@
  * traffic_current_request — trafic routier actuel (lot #38a).
  * Patron transverse current_web_fact ; web prioritaire, fallback honnête.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import {
   CURRENT_WEB_FACT_TYPES,
   extractCurrentWebFactTimeScope,
   isCurrentWebFactGloballyExcluded,
   isCurrentWebFactMechanismExplanation,
   requiresCurrentWebFactFreshness,
-} from "../../utils/currentWebFactIntentGuards.js";
+} from "../../utils/intent-guards/currentWebFactIntentGuards.js";
 
 export const TRAFFIC_CURRENT_REQUEST_RULE = "traffic_current_request_v1";
 

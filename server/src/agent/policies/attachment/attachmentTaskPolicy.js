@@ -2,7 +2,8 @@
  * AttachmentTask — taxonomie légère intention × kind de pièce jointe.
  * Route doc vs code sans explosion de rails.
  */
-import { hasTextAttachments } from "../../utils/conversationGuards.js";
+import { hasTextAttachments } from "../../utils/conversation/conversationGuards.js";
+import { resolveFileAnalysisDepth } from "./fileAnalysisContract.js";
 
 export const ATTACHMENT_TASK_RULE = "attachment_task_p1";
 
@@ -27,7 +28,7 @@ const CODE_EXT_RE =
   /\.(py|js|mjs|cjs|ts|tsx|jsx|php|html|htm|css|rb|go|rs|java|cs|cpp|c|h|vue|svelte)\b/i;
 
 const DOC_EXT_RE =
-  /\.(md|txt|pdf|docx?|csv|json|xml|ya?ml|rtf)\b/i;
+  /\.(md|txt|pdf|docx?|csv|json|xml|ya?ml|rtf|sql)\b/i;
 
 // Pas de « erreur » seul — « recherche d'erreur / problème de sécurité » ≠ code_fix
 const FIX_VERB_RE =
@@ -44,6 +45,10 @@ const IMPROVE_VERB_RE =
 
 const REVIEW_VERB_RE =
   /\b(revue|review|audit(?:er)?|analys(?:e|er)|inspecte(?:r)?|erreurs?\s+bloquantes?)\b/i;
+
+/** Revue / inspecte / erreurs — pas « analyser » seul. */
+const CODE_REVIEW_EXPLICIT_RE =
+  /\b(revue|review|inspecte(?:r)?|erreurs?\s+bloquantes?)\b/i;
 
 /** Accent-safe : `\b` JS casse sur « sécurité » même avec flag `u`. */
 function hasSecurityAuditSignal(query = "") {
@@ -86,6 +91,82 @@ export function resolveAttachmentFileKind(names = []) {
   return ATTACHMENT_FILE_KINDS.NONE;
 }
 
+const HTML_CODE_NATURE_RE = /\b(?:le\s+code|html\s*\/\s*css|xss|balise|dom)\b/i;
+
+/** Analyse / explication du fichier — pas revue de code. */
+const ANALYZE_DOC_VERB_RE = /\b(analys(?:e(?:s|r|z)?)|expliqu(?:e(?:s|r|z)?))\b/i;
+
+/**
+ * Point unique de priorité cadrage HTML/document.
+ * 1. nature réelle (sécu / fix / refactor / marqueurs code)
+ * 2. verbe métier (améliorer / résumer / analyser → document)
+ * 3. type de fichier (html ∈ code par défaut)
+ *
+ * @param {string} query
+ * @param {unknown[]} [attachments]
+ * @returns {{
+ *   fileKind: string,
+ *   defaultKind: string,
+ *   htmlOnly: boolean,
+ *   winner: 'request_nature'|'work_verb'|'file_type',
+ *   chain: string[],
+ * }}
+ */
+export function resolveAttachmentFraming(query = "", attachments = []) {
+  const names = attachmentNames(attachments);
+  const defaultKind = resolveAttachmentFileKind(names);
+  const q = String(query || "").trim();
+  const htmlOnly = names.length > 0 && names.every((n) => /\.html?$/i.test(n));
+  const chain = ["request_nature", "work_verb", "file_type"];
+
+  if (!htmlOnly) {
+    return {
+      fileKind: defaultKind,
+      defaultKind,
+      htmlOnly: false,
+      winner: "file_type",
+      chain,
+    };
+  }
+
+  if (
+    hasSecurityAuditSignal(q) ||
+    FIX_VERB_RE.test(q) ||
+    REFACTOR_VERB_RE.test(q) ||
+    HTML_CODE_NATURE_RE.test(q)
+  ) {
+    return {
+      fileKind: ATTACHMENT_FILE_KINDS.CODE,
+      defaultKind,
+      htmlOnly: true,
+      winner: "request_nature",
+      chain,
+    };
+  }
+
+  if (
+    IMPROVE_VERB_RE.test(q) ||
+    SUMMARIZE_VERB_RE.test(q) ||
+    ANALYZE_DOC_VERB_RE.test(q)
+  ) {
+    return {
+      fileKind: ATTACHMENT_FILE_KINDS.DOCUMENT,
+      defaultKind,
+      htmlOnly: true,
+      winner: "work_verb",
+      chain,
+    };
+  }
+
+  return {
+    fileKind: defaultKind,
+    defaultKind,
+    htmlOnly: true,
+    winner: "file_type",
+    chain,
+  };
+}
+
 /**
  * @param {string} task
  */
@@ -122,7 +203,6 @@ export function isDocumentAttachmentTask(task = "") {
  */
 export function classifyAttachmentTask(query = "", attachments = []) {
   const names = attachmentNames(attachments);
-  const fileKind = resolveAttachmentFileKind(names);
   const hasFiles = hasTextAttachments(attachments) || names.length > 0;
 
   if (!hasFiles) {
@@ -136,16 +216,18 @@ export function classifyAttachmentTask(query = "", attachments = []) {
   }
 
   const q = String(query || "").trim();
+  const framing = resolveAttachmentFraming(query, attachments);
+  const effectiveKind = framing.fileKind;
   const isCodeish =
-    fileKind === ATTACHMENT_FILE_KINDS.CODE ||
-    fileKind === ATTACHMENT_FILE_KINDS.MIXED;
+    effectiveKind === ATTACHMENT_FILE_KINDS.CODE ||
+    effectiveKind === ATTACHMENT_FILE_KINDS.MIXED;
 
   // Sécurité avant fix/refactor — « analyse … erreur … sécurité » ≠ code_fix
   if (hasSecurityAuditSignal(q) && (isCodeish || ATTACHMENT_HINT_RE.test(q))) {
     return {
       task: ATTACHMENT_TASKS.SECURITY_AUDIT,
       confidence: isCodeish ? "high" : "medium",
-      fileKind,
+      fileKind: effectiveKind,
       matched: true,
       rule: ATTACHMENT_TASK_RULE,
     };
@@ -155,7 +237,7 @@ export function classifyAttachmentTask(query = "", attachments = []) {
     return {
       task: ATTACHMENT_TASKS.CODE_REFACTOR,
       confidence: "high",
-      fileKind,
+      fileKind: effectiveKind,
       matched: true,
       rule: ATTACHMENT_TASK_RULE,
     };
@@ -165,7 +247,7 @@ export function classifyAttachmentTask(query = "", attachments = []) {
     return {
       task: ATTACHMENT_TASKS.CODE_FIX,
       confidence: "high",
-      fileKind,
+      fileKind: effectiveKind,
       matched: true,
       rule: ATTACHMENT_TASK_RULE,
     };
@@ -175,17 +257,17 @@ export function classifyAttachmentTask(query = "", attachments = []) {
     return {
       task: ATTACHMENT_TASKS.DOC_SUMMARIZE,
       confidence: "high",
-      fileKind,
+      fileKind: effectiveKind,
       matched: true,
       rule: ATTACHMENT_TASK_RULE,
     };
   }
 
-  if (SUMMARIZE_VERB_RE.test(q) && fileKind === ATTACHMENT_FILE_KINDS.DOCUMENT) {
+  if (SUMMARIZE_VERB_RE.test(q) && effectiveKind === ATTACHMENT_FILE_KINDS.DOCUMENT) {
     return {
       task: ATTACHMENT_TASKS.DOC_SUMMARIZE,
       confidence: "high",
-      fileKind,
+      fileKind: effectiveKind,
       matched: true,
       rule: ATTACHMENT_TASK_RULE,
     };
@@ -194,48 +276,62 @@ export function classifyAttachmentTask(query = "", attachments = []) {
   if (IMPROVE_VERB_RE.test(q) && !REFACTOR_VERB_RE.test(q) && !hasSecurityAuditSignal(q)) {
     return {
       task: ATTACHMENT_TASKS.DOC_IMPROVE,
-      confidence: fileKind === ATTACHMENT_FILE_KINDS.DOCUMENT ? "high" : "medium",
-      fileKind,
+      confidence: effectiveKind === ATTACHMENT_FILE_KINDS.DOCUMENT ? "high" : "medium",
+      fileKind: effectiveKind,
       matched: true,
       rule: ATTACHMENT_TASK_RULE,
     };
   }
 
-  if (isCodeish && REVIEW_VERB_RE.test(q)) {
+  if (isCodeish && CODE_REVIEW_EXPLICIT_RE.test(q)) {
     return {
       task: ATTACHMENT_TASKS.CODE_REVIEW,
       confidence: "medium",
-      fileKind,
+      fileKind: effectiveKind,
       matched: true,
       rule: ATTACHMENT_TASK_RULE,
     };
   }
 
   if (!q || ATTACHMENT_HINT_RE.test(q) || REVIEW_VERB_RE.test(q)) {
-    if (isCodeish && !SUMMARIZE_VERB_RE.test(q) && !IMPROVE_VERB_RE.test(q)) {
+    if (
+      isCodeish &&
+      !SUMMARIZE_VERB_RE.test(q) &&
+      !IMPROVE_VERB_RE.test(q) &&
+      !ANALYZE_DOC_VERB_RE.test(q)
+    ) {
       return {
         task: ATTACHMENT_TASKS.CODE_REVIEW,
         confidence: q ? "medium" : "low",
-        fileKind,
+        fileKind: effectiveKind,
         matched: true,
         rule: ATTACHMENT_TASK_RULE,
       };
     }
-    return {
+    return withFileAnalysisDepth({
       task: ATTACHMENT_TASKS.DOC_ANALYZE,
       confidence: q ? "medium" : "low",
-      fileKind,
+      fileKind: effectiveKind,
       matched: true,
       rule: ATTACHMENT_TASK_RULE,
-    };
+    }, q);
   }
 
-  return {
+  return withFileAnalysisDepth({
     task: ATTACHMENT_TASKS.DOC_ANALYZE,
     confidence: "low",
-    fileKind,
+    fileKind: effectiveKind,
     matched: true,
     rule: ATTACHMENT_TASK_RULE,
+  }, q);
+}
+
+function withFileAnalysisDepth(hit, query) {
+  if (hit.task !== ATTACHMENT_TASKS.DOC_ANALYZE) return hit;
+  return {
+    ...hit,
+    fileAnalysisDepth: resolveFileAnalysisDepth(query),
+    outputContract: "FILE_ANALYSIS_V1",
   };
 }
 
@@ -246,7 +342,13 @@ export function formatAttachmentTaskSummary(classification = {}) {
   if (!classification?.matched || !classification.task) {
     return "attachmentTask=none";
   }
-  return `attachmentTask=${classification.task} fileKind=${classification.fileKind} conf=${classification.confidence}`;
+  const contract = classification.outputContract
+    ? ` contract=${classification.outputContract}`
+    : "";
+  const depth = classification.fileAnalysisDepth
+    ? ` depth=${classification.fileAnalysisDepth}`
+    : "";
+  return `attachmentTask=${classification.task} fileKind=${classification.fileKind} conf=${classification.confidence}${contract}${depth}`;
 }
 
 /**
@@ -288,5 +390,15 @@ export function shouldRouteAttachmentTaskToFullPipeline(
   query = "",
   attachments = [],
 ) {
+  const hit = classifyAttachmentTask(query, attachments);
+  const names = attachmentNames(attachments);
+  const htmlOnly = names.length > 0 && names.every((n) => /\.html?$/i.test(n));
+  if (
+    htmlOnly &&
+    hit.task === ATTACHMENT_TASKS.DOC_ANALYZE &&
+    hit.fileKind === ATTACHMENT_FILE_KINDS.DOCUMENT
+  ) {
+    return false;
+  }
   return shouldSuppressSummaryContractForAttachment(query, attachments);
 }

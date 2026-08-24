@@ -6,10 +6,10 @@
  * - local_generative    : slots clairs, pas de module local → LLM ancré (simpleFast)
  * - web_rag_grounded    : hors couverture, supérieur, fraîcheur ou source officielle
  */
-import { requiresPedagogicalOfficialProgramEscalation } from "../../utils/pedagogicalOverviewIntentGuards.js";
+import { requiresPedagogicalOfficialProgramEscalation } from "../../utils/intent-guards/pedagogicalOverviewIntentGuards.js";
 import {
   resolvePedagogicalRenderLevel,
-} from "../../utils/pedagogicalOverviewParser.js";
+} from "../../utils/parsing-normalization/pedagogicalOverviewParser.js";
 import {
   getPedagogicalTopicKnowledge,
 } from "../../micro/replies/pedagogicalOverviewKnowledge.js";
@@ -41,7 +41,7 @@ const FRESHNESS_ESCALATION_RE =
   /\b(?:a\s+jour|à\s+jour|derniere\s+reforme|dernière\s+réforme|reforme\s+recente|réforme\s+récente|programme\s+202[0-9]|nouveau\s+programme|actualise|actualisé)\b/i;
 
 /**
- * @param {import("../utils/pedagogicalOverviewParser.js").PedagogicalOverviewSlots} slots
+ * @param {import("../utils/parsing-normalization/pedagogicalOverviewParser.js").PedagogicalOverviewSlots} slots
  * @returns {boolean}
  */
 export function hasLocalDeterministicModule(slots) {
@@ -60,7 +60,7 @@ export function hasLocalDeterministicModule(slots) {
 }
 
 /**
- * @param {import("../utils/pedagogicalOverviewParser.js").PedagogicalOverviewSlots} slots
+ * @param {import("../utils/parsing-normalization/pedagogicalOverviewParser.js").PedagogicalOverviewSlots} slots
  * @returns {boolean}
  */
 export function isStablePedagogicalFamily(slots) {
@@ -68,7 +68,7 @@ export function isStablePedagogicalFamily(slots) {
 }
 
 /**
- * @param {import("../utils/pedagogicalOverviewParser.js").PedagogicalOverviewSlots} slots
+ * @param {import("../utils/parsing-normalization/pedagogicalOverviewParser.js").PedagogicalOverviewSlots} slots
  * @returns {import("./pedagogicalCoverageRegistry.js").CoverageTier|null}
  */
 export function getExpectedCoverageTier(slots) {
@@ -80,12 +80,12 @@ export function getExpectedCoverageTier(slots) {
 
 /**
  * @param {string} query
- * @param {import("../utils/pedagogicalOverviewParser.js").PedagogicalOverviewSlots} slots
+ * @param {import("../utils/parsing-normalization/pedagogicalOverviewParser.js").PedagogicalOverviewSlots} slots
  * @returns {{
  *   mode: string,
  *   provenance: string,
  *   reason: string,
- *   confidence: import("../utils/pedagogicalOverviewParser.js").SlotConfidence,
+ *   confidence: import("../utils/parsing-normalization/pedagogicalOverviewParser.js").SlotConfidence,
  *   policy: string,
  * }}
  */
@@ -198,7 +198,7 @@ export function resolvePedagogicalCoverage(query = "", slots) {
 }
 
 /**
- * @param {import("../utils/pedagogicalOverviewParser.js").PedagogicalOverviewSlots} slots
+ * @param {import("../utils/parsing-normalization/pedagogicalOverviewParser.js").PedagogicalOverviewSlots} slots
  * @returns {string}
  */
 export function buildPedagogicalWebGroundedAddon(slots) {

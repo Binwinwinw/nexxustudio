@@ -4,7 +4,7 @@
 import {
   isAdminProcedureRequest,
   parseAdminProcedure,
-} from "../../utils/adminProcedureIntentGuards.js";
+} from "../../utils/intent-guards/adminProcedureIntentGuards.js";
 import {
   resolveAdminProcedureCoverage,
   buildAdminProcedureWebGroundedAddon,
@@ -41,7 +41,7 @@ export function buildAdminProcedureSystemAddon(query = "") {
 
 /**
  * @param {string} query
- * @returns {{ path: string, deferToLlm: boolean, deferToFullPipeline: boolean, reflectiveHint: string, adminProcedure: boolean, preferWebResearch: boolean, slots?: import("../../utils/adminProcedureIntentGuards.js").AdminProcedureSlots, coverage?: ReturnType<typeof resolveAdminProcedureCoverage> }|null}
+ * @returns {{ path: string, deferToLlm: boolean, deferToFullPipeline: boolean, reflectiveHint: string, adminProcedure: boolean, preferWebResearch: boolean, slots?: import("../../utils/intent-guards/adminProcedureIntentGuards.js").AdminProcedureSlots, coverage?: ReturnType<typeof resolveAdminProcedureCoverage> }|null}
  */
 export function resolveAdminProcedureShortCircuit(query = "") {
   if (!isAdminProcedureRequest(query)) return null;

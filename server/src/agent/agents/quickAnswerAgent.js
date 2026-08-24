@@ -5,7 +5,7 @@ import { validateQuickAnswer } from "../validators/pipelineValidators.js";
 export const quickAnswerAgent = {
   async answer(queryEnvelope) {
     try {
-      const model = AGENT_ROLES.CHAT || "ornith:9b";
+      const model = AGENT_ROLES.CHAT;
       const client = getClientForModel(model);
 
       const systemPrompt = `Tu es le QuickAnswerAgent de Nexxus Citadel.

@@ -1,5 +1,5 @@
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { resolveFamiliaritySubject } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { resolveFamiliaritySubject } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { SUBJECT_SHAPES, classifyUnknownSubjectShape } from "../classifiers/subjectUnderstanding.js";
 import { normalizeSubject } from "./subjectNormalizer.js";
 import { confidenceFromSource } from "./subjectConfidence.js";

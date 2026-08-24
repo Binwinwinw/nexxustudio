@@ -2,34 +2,34 @@
  * JUST_INTENT_DETECTION_V1 — détection multicouche : domaine → action → livrable → stratégie.
  * Complète intentTriage (routage pipeline) sans le remplacer.
  */
-import { isGeneralKnowledgeRequest } from "../../utils/generalKnowledgeIntentGuards.js";
-import { suppressesBuildIntentForTechnicalLearning } from "../../utils/technicalLearningPathIntentGuards.js";
-import { isCasualSocialCheckInQuery } from "../../utils/genericGreetingGuards.js";
-import { isKnownSocialPattern } from "../social/index.js";
+import { isGeneralKnowledgeRequest } from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
+import { suppressesBuildIntentForTechnicalLearning } from "../../utils/intent-guards/technicalLearningPathIntentGuards.js";
+import { isCasualSocialCheckInQuery } from "../../utils/conversation/genericGreetingGuards.js";
+import { isKnownSocialPattern, isWellbeingCheckinIntent } from "../social/index.js";
 import { isOpenExplorationFrame } from "../conversation/openExplorationFramePolicy.js";
-import { isIdeationIntent } from "../../utils/ideationIntentGuards.js";
-import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIntentGuards.js";
+import { isIdeationIntent } from "../../utils/intent-guards/ideationIntentGuards.js";
+import { isInformationSeekingWithTarget } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import {
   isMultiTargetTranslationRequest,
   isTranslationDerivedRequest,
   isTranslationPipelineReady,
   isTranslationShell,
   requiresTranslationClarification,
-} from "../../utils/translationIntentGuards.js";
+} from "../../utils/intent-guards/translationIntentGuards.js";
 import {
   isLearningRequestForTechnicalDomain,
   isLearningRequestWithTarget,
-} from "../../utils/learningRequestIntentGuards.js";
-import { isExistingSourceAnalysisRequest } from "../../utils/localFileUriIntentGuards.js";
-import { isRepoAnalysisRequest } from "../../utils/repoAnalysisIntentGuards.js";
-import { isUiNavigationRestructureFeedback } from "../../utils/uiNavigationFeedbackGuards.js";
+} from "../../utils/intent-guards/learningRequestIntentGuards.js";
+import { isExistingSourceAnalysisRequest } from "../../utils/intent-guards/localFileUriIntentGuards.js";
+import { isRepoAnalysisRequest } from "../../utils/intent-guards/repoAnalysisIntentGuards.js";
+import { isUiNavigationRestructureFeedback } from "../../utils/conversation/uiNavigationFeedbackGuards.js";
 import {
   resolveClarificationGate,
 } from "../routing/clarificationDecisionPolicy.js";
 import {
   normalizeFamiliarityQuery,
   parseFamiliarityQuery,
-} from "../../utils/familiarityIntentGuards.js";
+} from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { extractSubjectCandidate } from "../../micro/continuity/sessionSubjectReferenceGuards.js";
 import {
   classifyCodeIntent,
@@ -46,7 +46,7 @@ import {
 import { resolveAiVerificationNotice } from "../epistemic/index.js";
 import { JUST_INTENT_THRESHOLDS } from "./justIntentThresholds.js";
 import { isWebCitationsStructuredReportCluster } from "../routing/explicitWebSearchRequestPolicy.js";
-import { isMetaDeliverableTypesIntent } from "../../utils/metaConversationIntentGuards.js";
+import { isMetaDeliverableTypesIntent } from "../../utils/intent-guards/metaConversationIntentGuards.js";
 import {
   INTENT_DOMAINS,
   INTENT_ACTIONS,
@@ -132,6 +132,7 @@ const DOMAIN_RULES = [
     detect: (q) =>
       isOpenExplorationFrame(q) ||
       isKnownSocialPattern(q) ||
+      isWellbeingCheckinIntent(q) ||
       (q.length < 25 &&
         /^(salut|bonjour|hello|coucou|hey|yépa|yepa|merci|ok|d'accord|dacord|bien|bonsoir|bien ou bien|ça va|ca va|tranquille|good|yo|yop|top|au top|c'est top|tout bon|carré|carre|ok top)\b/i.test(
           q,

@@ -1,14 +1,19 @@
 /**
  * G35 — social_pattern_hardening : patterns sociaux répertoriés > clarify / factuel / web.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { isSubstantiveWorkRequest } from "../../utils/genericGreetingGuards.js";
-import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { isSubstantiveWorkRequest } from "../../utils/conversation/genericGreetingGuards.js";
+import { isInformationSeekingWithTarget } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
 } from "../posture/index.js";
-import { isOpenExplorationFrame } from "../conversation/openExplorationFramePolicy.js";
+import { isOpenExplorationFrame, isSocialLeisureRelance } from "../conversation/openExplorationFramePolicy.js";
+import { inferActiveGoal, buildWhoDrivesContinuityReply } from "../conversation/activeGoalPolicy.js";
+import {
+  hasPostRepairSocialClose,
+  buildPostRepairSocialCloseReply,
+} from "./postRepairSocialClosePolicy.js";
 
 export const SOCIAL_PATTERN_HARDENING_RULE = "social_pattern_hardening_g35";
 export const SOCIAL_PHATIC_CHECKIN_RULE = "social_phatic_checkin_g43";
@@ -23,7 +28,7 @@ export const SOCIAL_PATTERN_BLOCKED_PATHS = Object.freeze([
   "general_knowledge_deterministic",
 ]);
 
-/** @typedef {'social/open_prompt'|'social/meta_who_drives'|'social/anthropomorphic_checkin'|'social/casual_status'|'social/chat_invite'|'social/phatic_checkin'|'social/mood_checkin'|'social/papoter_citadelle'|'social/personal_discomfort'|'social/whimsical_pivot'|'social/gratitude'} SocialPatternName */
+/** @typedef {'social/open_prompt'|'social/leisure_relance'|'social/meta_who_drives'|'social/anthropomorphic_checkin'|'social/user_family_clarify'|'social/casual_status'|'social/chat_invite'|'social/work_ready'|'social/play_invite'|'social/joke_perform'|'social/joke_meta'|'social/checkin_consistency'|'social/tone_repair'|'social/phatic_checkin'|'social/mood_checkin'|'social/papoter_citadelle'|'social/personal_discomfort'|'social/whimsical_pivot'|'social/gratitude'} SocialPatternName */
 
 const GRATITUDE_FOR_CONTENT_RE =
   /\bmerci\b.{0,50}\b(?:pour|de)\b.{0,70}\b(?:info(?:rmation)?s?|réponse|reponse|explication|aide|détails|details|précisions|precisions|synthèse|synthese|retour|ça|ca|cela|ton|tes|les|cette|ces|tout)\b/i;
@@ -35,7 +40,11 @@ const MOOD_CHECKIN_RE =
   /\b(?:ca roule|ça roule|quel mood|dans quel mood|comment tu te sens ce soir)\b/i;
 
 const WELLBEING_CHECKIN_RE =
-  /(?:comment\s+(?:(?:ça|ca)\s+)?(?:va|se\s+passe|roule)|comment\s+(?:tu\s+)?vas|comment\s+vas[- ]?tu|(?:^|\s)(?:ça|ca)\s+va|tu\s+vas\s+bien|(?:^|\s)tout\s+roule|(?:^|\s)ça\s+roule|(?:^|\s)ca\s+roule)/i;
+  /(?:comment\s+(?:(?:ça|ca)\s+)?(?:va|se\s+passe|roule)|comment\s+cava\b|comment\s+(?:tu\s+)?vas|comment\s+vas[- ]?tu|comment\s+allez[- ]?vous|comment\s+vous\s+allez|(?:^|\s)(?:ça|ca)\s+va|(?:^|\s)cava\b|tu\s+vas\s+bien|vous\s+allez\s+bien|(?:^|\s)tout\s+roule|(?:^|\s)ça\s+roule|(?:^|\s)ca\s+roule)/i;
+
+/** Critique méta sur incohérence de réponses check-in — pas un check-in lui-même. */
+const CHECKIN_CONSISTENCY_CRITIQUE_RE =
+  /\b(?:pourquoi\s+(?:as[- ]?tu|tu\s+as)\s+r[eé]pondu|m[eê]me\s+valeur|deux\s+fa[cç]ons|compl[eè]tement\s+(?:diff[eé]rente|[àa]\s+l['']?\s*ouest)|incoh[eé]ren|consid[eé]r(?:e|é|és|er)\s+comme)\b/i;
 
 const WELLBEING_LOCATIVE_RE =
   /(?:l[àa]\s+dedans|chez\s+(?:toi|vous)|de\s+ton\s+c[ôo]t[ée]|de\s+votre\s+c[ôo]t[ée]|ici\b)/i;
@@ -64,17 +73,222 @@ const PHATIC_TASK_OBJECT_RE =
   /\bfais(?:es|ez)?\s+(?:pour|avec|sur|ce|cet|cette|le|la|les|un|une|mon|ton|ma|ta|du|de\s+la|l['\u2019])/i;
 
 const META_WHO_DRIVES_RE =
-  /\b(?:(?:tu|on) (?:veux|voudrais|veut) (?:faire )?quoi(?:\s+maintenant)?|je (?:veux|voudrais) faire quoi(?:\s+maintenant)?|c['']?\s*est (?:moi|toi) qui (?:choisit|decide|décide))\b/i;
+  /\b(?:qu['\u2019]?\s*est[- ]?ce\s+que\s+(?:tu|vous)(?:\s+tu)?\s+(?:veux|voudrais|veut|voulez)\s+(?:faire|continuer)|que\s+veux[- ]?(?:tu|vous)\s+(?:faire|continuer)|(?:tu|on) (?:veux|voudrais|veut) (?:faire )?quoi(?:\s+maintenant)?|je (?:veux|voudrais) faire quoi(?:\s+maintenant)?|c['']?\s*est (?:moi|toi) qui (?:choisit|decide|décide))\b/i;
+
+export function isMetaWhoDrivesIntent(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || q.length < 8) return false;
+  return META_WHO_DRIVES_RE.test(q);
+}
 
 const ANTHROPOMORPHIC_RE =
   /\b(?:(?:est[- ]ce que )?tu as (?:faim|soif|sommeil)|as[- ]tu faim|tu dors|tu es fatigu[eé]|tu t['']?ennuies|tu manges|tu bois|tu reves|tu rêves)\b/i;
 
+/** Kinship nouns — not every occurrence of « famille ». */
+const FAMILY_NOUN_RE =
+  /\b(?:famille|fr[eè]res?|s(?:oe|œ)urs?|parents?|papa|maman|p[eè]re|m[eè]re)\b/i;
+
+const ASSISTANT_FAMILY_POSSESSIVE_RE =
+  /\b(?:ta|tes|ton|tu\s+as|t['’]as|as[- ]tu)\b/i;
+
+const USER_FAMILY_POSSESSIVE_RE = /\b(?:ma|mes|mon|notre|nos)\b/i;
+
+const FAMILY_WRITE_RE =
+  /\b(?:[eé]cris|[eé]crire|r[eé]dig(?:e|er)|redige)\b/i;
+
+const FAMILY_WRITE_OBJECT_RE = /\b(?:message|lettre|mail|courrier|texto)\b/i;
+
+const FAMILY_EXPLAIN_SHELL_RE =
+  /\b(?:que\s+repr[eé]sente|c['’]est\s+quoi|qu['’]est[- ]ce\s+qu['’]?(?:est\s+)?|d[eé]finition|signifie|veut\s+dire)\b/i;
+
+const FAMILY_HOWARETHEY_RE =
+  /\b(?:comment\s+vont|comment\s+va|vont[- ]ils|vont\s+elles|vont\s+bien|va\s+bien|(?:ça|ca)\s+va)\b/i;
+
+export const ANTHROPOMORPHIC_FAMILY_REPLY =
+  "Je n’ai pas de famille ni de frères et sœurs : je suis une IA. Je suis Nexxus, l’assistant de la Citadelle.";
+
+export const USER_FAMILY_CLARIFY_REPLY =
+  "Tu parles de ta famille à toi ? Dis-moi si tu veux des nouvelles, un message, ou autre chose.";
+
+export function isFamilyWriteRequest(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q) return false;
+  return FAMILY_WRITE_RE.test(q) && FAMILY_WRITE_OBJECT_RE.test(q);
+}
+
+/**
+ * Check-in kin adressé à Nexxus (« ta famille », « tes frères », « tu as des parents »).
+ * Pas « ma/mes », pas rédaction, pas définition.
+ */
+export function isAssistantFamilyCheckin(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || !FAMILY_NOUN_RE.test(q)) return false;
+  if (isFamilyWriteRequest(query) || FAMILY_EXPLAIN_SHELL_RE.test(q)) return false;
+  if (USER_FAMILY_POSSESSIVE_RE.test(q) && !ASSISTANT_FAMILY_POSSESSIVE_RE.test(q)) {
+    return false;
+  }
+  return ASSISTANT_FAMILY_POSSESSIVE_RE.test(q);
+}
+
+/**
+ * Check-in kin de l’utilisateur (« mes frères », « ma famille »).
+ */
+export function isUserFamilyCheckin(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || !FAMILY_NOUN_RE.test(q)) return false;
+  if (isFamilyWriteRequest(query) || FAMILY_EXPLAIN_SHELL_RE.test(q)) return false;
+  if (ASSISTANT_FAMILY_POSSESSIVE_RE.test(q)) return false;
+  if (!USER_FAMILY_POSSESSIVE_RE.test(q)) return false;
+  const words = q.split(/\s+/).filter(Boolean);
+  return FAMILY_HOWARETHEY_RE.test(q) || words.length <= 8;
+}
+
+/**
+ * « et la famille, les frères… comment vont-ils ? » — possessif absent.
+ * Réservé au fil papoter (continuité), pas un match lexical isolé.
+ */
+export function isBareFamilyCheckinFollowup(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || !FAMILY_NOUN_RE.test(q)) return false;
+  if (isFamilyWriteRequest(query) || FAMILY_EXPLAIN_SHELL_RE.test(q)) return false;
+  if (USER_FAMILY_POSSESSIVE_RE.test(q) || ASSISTANT_FAMILY_POSSESSIVE_RE.test(q)) {
+    return false;
+  }
+  return (
+    FAMILY_HOWARETHEY_RE.test(q) ||
+    /\bet\s+(?:la|les)\s+(?:famille|fr[eè]res?|s(?:oe|œ)urs?)/i.test(q)
+  );
+}
+
+const INTERNAL_LEAK_HIGH = [
+  { id: "[MODIFICATEUR]", re: /\[MODIFICATEUR\]/i },
+  { id: "MEMOIRE-TAMPON", re: /M[EÉ]MOIRE(?:-|\s*)TAMPON/i },
+  { id: "Section INTERDIT", re: /Section\s+\d+\s+INTERDIT/i },
+  { id: "options actuelles", re: /options actuelles/i },
+  { id: "système interne", re: /syst[eè]me interne/i },
+  { id: "contrat de sortie", re: /contrat de sortie/i },
+];
+
+const INTERNAL_LEAK_LOW = [
+  { id: "orchestrateur", re: /orchestrateur/i },
+  { id: "pipeline", re: /\bpipeline\b/i },
+];
+
+export function listInternalPromptLeakMarkers(text = "") {
+  const raw = String(text || "");
+  if (!raw) return [];
+  return [...INTERNAL_LEAK_HIGH, ...INTERNAL_LEAK_LOW]
+    .filter((m) => m.re.test(raw))
+    .map((m) => m.id);
+}
+
+export function containsInternalPromptLeak(text = "", options = {}) {
+  const raw = String(text || "");
+  if (!raw) return false;
+  if (INTERNAL_LEAK_HIGH.some((m) => m.re.test(raw))) return true;
+  if (!options.allowLowConfidence) return false;
+  return INTERNAL_LEAK_LOW.some((m) => m.re.test(raw));
+}
+
+export function resolveInternalLeakFallback(pipelinePath = "") {
+  if (/social|exploratory_conversation/i.test(String(pipelinePath || ""))) {
+    return ANTHROPOMORPHIC_FAMILY_REPLY;
+  }
+  return "Je n’ai pas pu formuler une réponse propre. Reformule ta question.";
+}
+
 const CASUAL_STATUS_RE =
   /\b(?:tout va bien|ça va bien|ca va bien|de mon c[oô]t[eé]|de ton c[oô]t[eé]|ben je ne sais pas|je ne sais pas trop|je sais pas trop|pas grand chose|rien de sp[eé]cial|on peut discuter|papoter un peu|discut(?:e|er) un peu)\b/i;
 
-/** Invitation à papoter avant le travail (« bah on discute un peu avant si tu veux », « on va papoter »). */
+/** Mise en route phatique — pas un livrable (« prêt à tafer », « t'es prêt ? »). */
+const WORK_READY_RE =
+  /\b(?:t['’]es|tu\s+es|tu\s+est|tes)\s+pr[eê]t(?:e)?s?(?:\s+[àa]\s+(?:tafer|taf(?:er)?|bosser|travailler|y\s+aller))?\b|\bpr[eê]t(?:e)?s?\s+[àa]\s+(?:tafer|taf(?:er)?|bosser|travailler)\b/i;
+
+const WORK_READY_DELIVERABLE_RE =
+  /\bpr[eê]t(?:e)?s?\s+[àa]\s+(?:l['’]emploi|copier|coller|envoyer|livrer)\b/i;
+
+/** Invitation à papoter avant le travail (« bah on discute… », « on va papoter », « et si on papotait ? »). */
 const CHAT_INVITE_RE =
-  /\b(?:(?:bah|ben|bon)\s+)?on\s+(?:peut\s+|veut\s+|voudrais\s+|va\s+|vais\s+|allons\s+)?(?:discut(?:e|er)|papoter|bavarder)(?:\s+un peu)?(?:\s+avant(?:\s+(?:de|si|di)\b[^?]{0,40})?)?(?:\s+(?:pour le moment|tu veux bien))?\b/i;
+  /\b(?:(?:et\s+)?si\s+on\s+(?:peut\s+|veut\s+|va\s+)?(?:discut(?:e|er|ait|ais|ons)|papot(?:e|er|ait|ais|ons|age)|bavard(?:e|er|ait|ais|ons))|(?:(?:bah|ben|bon)\s+)?on\s+(?:peut\s+|veut\s+|voudrais\s+|va\s+|vais\s+|allons\s+)?(?:discut(?:e|er|ait|ais|ons)|papot(?:e|er|ait|ais|ons|age)|bavard(?:e|er|ait|ais|ons))(?:\s+un peu)?(?:\s+avant(?:\s+(?:de|si|di)\b[^?]{0,40})?)?(?:\s+(?:pour le moment|tu veux bien))?)\b/i;
+
+/** Proposition de jeu / activité ludique (domine le greeting générique). */
+const PLAY_INVITE_RE =
+  /\b(?:(?:allons|on|viens)\s+(?:jouer|jouons)|jouer\s+[àa]\s+un\s+jeu|un\s+jeu\b|pierre[\s-]*feuille[\s-]*ciseaux?|chifoumi|morpion|pendu|nombre\s+myst[eè]re)\b/i;
+
+/** Demande de performance humoristique (pas définition lexicale). */
+const JOKE_PERFORM_RE =
+  /\b(?:blagues?|fais[- ]?moi\s+rire|raconte[- ]?(?:moi\s+)?une\s+blague|connais(?:[- ]tu)?\s+(?:des\s+)?blagues?|tu\s+connais\s+des\s+blagues?)\b/i;
+
+const JOKE_DEFINITION_SHELL_RE =
+  /\b(?:c['']est\s+quoi|qu['']est[- ]ce\s+qu['']une?|d[eé]finition\s+d)\b/i;
+
+/** Réaction méta-humoristique (pas question « c’est quoi une blague »). */
+const JOKE_META_RE =
+  /\b(?:bonne\s+blague|tu\s+devrais\s+postuler|plumes?\s+originales?|m[eê]le\s+l['']?absurde|faire\s+rire\s+avec\s+intelligence)\b/i;
+
+/** Sujet métier collé à l'invite (« papoter de mon projet ») — pas un signal chat_invite pur. */
+const CHAT_INVITE_SUBSTANTIVE_TOPIC_RE =
+  /\b(?:de|sur)\s+(?:le|la|les|un|une|mon|ma|ton|ta|ce|cet)\b/i;
+
+/**
+ * Signal « prêt à bosser » — composite social, pas un chantier métier.
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function hasSocialWorkReadySignal(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || q.length < 8 || q.length > 220) return false;
+  if (suppressesKnownSocialPattern(query)) return false;
+  if (WORK_READY_DELIVERABLE_RE.test(q)) return false;
+  if (hasSocialPlayInviteSignal(query)) return false;
+  return WORK_READY_RE.test(q);
+}
+
+export function hasSocialPlayInviteSignal(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || q.length < 4 || q.length > 220) return false;
+  if (suppressesKnownSocialPattern(query)) return false;
+  return PLAY_INVITE_RE.test(q);
+}
+
+/**
+ * Demande de raconter / enchaîner des blagues (action), pas fiche lexicale.
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function hasJokePerformSignal(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || q.length < 5 || q.length > 280) return false;
+  // Correction utilisateur : « je ne demande pas la définition, raconte ».
+  if (/\bje\s+ne\s+demande\s+pas\b/i.test(q) && /\bblague/i.test(q)) return true;
+  if (JOKE_DEFINITION_SHELL_RE.test(q)) return false;
+  return JOKE_PERFORM_RE.test(q);
+}
+
+/**
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function hasJokeMetaSignal(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || q.length < 12 || q.length > 320) return false;
+  return JOKE_META_RE.test(q);
+}
+
+/**
+ * Signal d'invitation à discuter (inventaire multi-signal) — indépendant du gagnant classifySocialPattern.
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function hasSocialChatInviteSignal(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || q.length < 6 || q.length > 200) return false;
+  if (suppressesKnownSocialPattern(query)) return false;
+  if (CHAT_INVITE_SUBSTANTIVE_TOPIC_RE.test(q)) return false;
+  // Jeu / activité = invite sociale prioritaire (greeting absorbé ensuite).
+  if (hasSocialPlayInviteSignal(query)) return true;
+  return CHAT_INVITE_RE.test(q);
+}
 
 /** Mal-être / inconfort personnel (pas diagnostic tech, pas conseil médical). */
 const PERSONAL_DISCOMFORT_RE =
@@ -112,22 +326,203 @@ export function isPhaticSocialCheckinIntent(query = "") {
 }
 
 /**
+ * Typo orale fréquente : « cava » → « ca va » pour le matching check-in.
+ * @param {string} q
+ */
+export function normalizeWellbeingCheckinQuery(q = "") {
+  return String(q || "")
+    .replace(/\bcomment\s+cava\b/gi, "comment ca va")
+    .replace(/(^|[\s,.?!])cava\b/gi, "$1ca va");
+}
+
+/** Sorties check-in verrouillées — courte, stable, non explicative. */
+export const SOCIAL_CHECKIN_REPLY_PANEL = Object.freeze([
+  "Ça va bien, merci.",
+  "Tout va bien ici.",
+  "Ça va, merci.",
+]);
+
+/** Check-in formel — miroir vouvoiement, pas de demande d'objectif. */
+export const SOCIAL_CHECKIN_FORMAL_REPLY =
+  "Je vais bien, merci. Et vous, comment allez-vous ?";
+
+/** Plafond mécanique (caractères) — au-delà = panel[0]. Informal seulement. */
+export const SOCIAL_CHECKIN_REPLY_MAX_CHARS = 28;
+
+/**
+ * Clé canonique : variantes typo/forme → même intention → même bucket de sortie.
+ * @param {string} query
+ */
+function canonicalSocialCheckinKey(query = "") {
+  const q = normalizeWellbeingCheckinQuery(normalizeFamiliarityQuery(query))
+    .replace(/[?!.,…]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (
+    /\bcomment\s+(?:ca|ça)\s+va\b/.test(q) ||
+    /\bcomment\s+vas[- ]?tu\b/.test(q) ||
+    /\bcomment\s+tu\s+vas\b/.test(q) ||
+    /\bcomment\s+allez[- ]?vous\b/.test(q) ||
+    /\bcomment\s+vous\s+allez\b/.test(q) ||
+    /^(?:ca|ça)\s+va\b/.test(q) ||
+    /\btu\s+vas\s+bien\b/.test(q) ||
+    /\bvous\s+allez\s+bien\b/.test(q) ||
+    /\b(?:tout|ça|ca)\s+roule\b/.test(q)
+  ) {
+    return "wellbeing_checkin";
+  }
+  return q || "wellbeing_checkin";
+}
+
+/**
+ * Réponse check-in sociale fixe (micro-variation de style uniquement).
+ * @param {string} [query]
+ * @returns {string}
+ */
+export function usesFormalSocialAddress(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  return /\b(?:vous|votre|vos|monsieur|madame|mademoiselle)\b/i.test(q);
+}
+
+export function buildSocialCheckinReply(query = "") {
+  if (usesFormalSocialAddress(query)) {
+    return SOCIAL_CHECKIN_FORMAL_REPLY;
+  }
+  const panel = SOCIAL_CHECKIN_REPLY_PANEL;
+  const key = canonicalSocialCheckinKey(query);
+  let h = 0;
+  for (let i = 0; i < key.length; i += 1) {
+    h = (h + key.charCodeAt(i) * (i + 1)) % 997;
+  }
+  const reply = panel[h % panel.length];
+  if (reply.length > SOCIAL_CHECKIN_REPLY_MAX_CHARS) {
+    return panel[0];
+  }
+  return reply;
+}
+
+/**
+ * Garde-fou longueur — refuse toute digression collée après coup.
+ * @param {string} reply
+ * @returns {string}
+ */
+export function clampSocialCheckinReply(reply = "", query = "") {
+  const t = String(reply || "").trim();
+  if (usesFormalSocialAddress(query) || t === SOCIAL_CHECKIN_FORMAL_REPLY) {
+    return t || SOCIAL_CHECKIN_FORMAL_REPLY;
+  }
+  if (!t) return SOCIAL_CHECKIN_REPLY_PANEL[0];
+  if (t.length > SOCIAL_CHECKIN_REPLY_MAX_CHARS) {
+    return SOCIAL_CHECKIN_REPLY_PANEL[0];
+  }
+  // Digression / menu / analyse → panel fixe.
+  if (
+    /\b(?:aujourd'?hui|avancer|discut|papoter|étymolog|linguist|micro-?d[eé]lest|ancien fran[cç]|pourquoi|parce que)\b/i.test(
+      t,
+    )
+  ) {
+    return SOCIAL_CHECKIN_REPLY_PANEL[0];
+  }
+  return t;
+}
+
+/**
+ * « tu m'as fait peur / réponse bizarre / induit en erreur / peur disparue »
+ * — réparation de ton sociale courte, pas exploratory ni debug.
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function isSocialToneRepairIntent(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || q.length < 10 || q.length > 220) return false;
+  if (isSubstantiveWorkRequest(query)) return false;
+  if (isInformationSeekingWithTarget(query)) return false;
+  // Incident tech réel (stack, crash…) — pas ce rail.
+  if (
+    /\b(?:stack\s*trace|crash|ECONN|errno|status\s*5\d\d|redis|nginx|docker)\b/i.test(
+      q,
+    )
+  ) {
+    return false;
+  }
+  // Clôture explicite après repair — ack social, zéro diagnostic.
+  if (hasPostRepairSocialClose(query)) return true;
+  return (
+    /\b(?:ta|cette|la)\s+r[eé]ponse\b.{0,40}\b(?:bizarre|chelou|[eé]trange)\b/i.test(
+      q,
+    ) ||
+    /\btu\s+m['']as\s+fai[st]\s+peur\b/i.test(q) ||
+    /\binduit(?:e|es)?\s+en\s+erreur\b/i.test(q) ||
+    /\bton\s+comportement\b.{0,60}\b(?:erreur|bizarre|peur|induit)\b/i.test(q) ||
+    /\bma\s+peur\b.{0,50}\b(?:disparu|pas\s+justifi|injustifi)\b/i.test(q) ||
+    /\bfai[st]\s+peur\b.{0,40}\b(?:r[eé]ponse|bizarre)\b/i.test(q)
+  );
+}
+
+/**
+ * « pourquoi as-tu répondu différemment à comment ça va / comment vas-tu ? »
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function isSocialCheckinConsistencyCritique(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || q.length < 36) return false;
+  const mentionsCheckinForms =
+    /\bcomment\s+(?:ca|ça)\s+va\b/i.test(q) ||
+    /\bcomment\s+cava\b/i.test(q) ||
+    /\bcomment\s+vas[- ]?tu\b/i.test(q);
+  return mentionsCheckinForms && CHECKIN_CONSISTENCY_CRITIQUE_RE.test(q);
+}
+
+/**
  * Check-in wellbeing pur (« comment ça va ? », « tu vas bien ? ») — indépendant du fil papoter.
  * @param {string} query
  * @returns {boolean}
  */
 export function isWellbeingCheckinIntent(query = "") {
-  const q = normalizeFamiliarityQuery(query);
+  const q = normalizeWellbeingCheckinQuery(normalizeFamiliarityQuery(query));
   if (!q) return false;
+  // Longue critique méta ≠ check-in.
+  if (isSocialCheckinConsistencyCritique(query)) return false;
+  // Phatic (« tu fais quoi ») ≠ santé — pattern social/phatic_checkin à part.
+  if (isPhaticSocialCheckinIntent(query)) return false;
   if (WELLBEING_ACTION_BOUND_RE.test(q)) return false;
   if (WELLBEING_EXPLANATORY_RE.test(q)) return false;
   if (WELLBEING_CONDITIONAL_RE.test(q)) return false;
-  if (isPhaticSocialCheckinIntent(query)) return true;
   if (WELLBEING_CHECKIN_RE.test(q)) return true;
   if (WELLBEING_LOCATIVE_RE.test(q) && /\b(?:se\s+passe|roule|va\b)\b/i.test(q)) {
     return true;
   }
   return false;
+}
+
+/**
+ * Check-in social confirmé, sans tâche active ni mandat opérationnel explicite.
+ * L'intention courante gagne sur l'invitation opérationnelle du tour précédent.
+ */
+export function isIdleConfirmedSocialCheckin(query = "", options = {}) {
+  // JUST/G46 étiquettent trop de tours « social_checkin » (greeting, open_prompt…).
+  // Seul le wellbeing explicite, sans autre unité, préempte l'invitation opérationnelle.
+  if (!isWellbeingCheckinIntent(query)) return false;
+  if (isSubstantiveWorkRequest(query)) return false;
+  if (
+    /\b(?:traduis|corrige|calcule|analyse|r[eé]sume|impl[eé]mente)\b/i.test(
+      query,
+    )
+  ) {
+    return false;
+  }
+  if (hasSocialWorkReadySignal(query)) return false;
+  if (hasSocialPlayInviteSignal(query)) return false;
+  if (options.hasNonSocialWork) return false;
+  // ponytail: check-in pur reste court ; au-delà = autre unité (multi_unit / how-to).
+  if (String(query || "").trim().length > 100) return false;
+  const history = options.history || [];
+  const goal =
+    options.activeGoal !== undefined
+      ? options.activeGoal
+      : inferActiveGoal(history, options.priorState);
+  return !goal;
 }
 
 /**
@@ -253,10 +648,53 @@ export function isWhimsicalSocialPivot(query = "") {
   return WHIMSICAL_PIVOT_RE.test(q);
 }
 
-export function classifySocialPattern(query = "") {
+export function classifySocialPattern(query = "", history = [], priorState = null) {
   const q = normalizeFamiliarityQuery(query);
-  if (!q || q.length < 4 || q.length > 200) return null;
+  if (!q || q.length < 4) return null;
+
+  // Critique check-in / repair : avant suppress (sinon « sais tu que » = info/GK).
+  if (q.length <= 500 && isSocialCheckinConsistencyCritique(query)) {
+    return {
+      patternName: "social/checkin_consistency",
+      reply: buildSocialPatternReply("social/checkin_consistency", query),
+    };
+  }
+  if (q.length <= 220 && isSocialToneRepairIntent(query)) {
+    return {
+      patternName: "social/tone_repair",
+      reply: buildSocialPatternReply("social/tone_repair", query),
+    };
+  }
+
   if (suppressesKnownSocialPattern(query)) return null;
+
+  // Engage humour / jeu : avant le plafond 200 (souvent long).
+  if (q.length <= 320 && hasJokeMetaSignal(query)) {
+    return {
+      patternName: "social/joke_meta",
+      reply: buildSocialPatternReply("social/joke_meta", query),
+    };
+  }
+  if (q.length <= 320 && hasJokePerformSignal(query)) {
+    return {
+      patternName: "social/joke_perform",
+      reply: buildSocialPatternReply("social/joke_perform", query),
+    };
+  }
+  if (q.length <= 220 && hasSocialPlayInviteSignal(query)) {
+    return {
+      patternName: "social/play_invite",
+      reply: buildSocialPatternReply("social/play_invite", query),
+    };
+  }
+  if (q.length <= 220 && hasSocialWorkReadySignal(query)) {
+    return {
+      patternName: "social/work_ready",
+      reply: buildSocialPatternReply("social/work_ready", query),
+    };
+  }
+
+  if (q.length > 200) return null;
 
   if (isGratitudeClosureIntent(query)) {
     return {
@@ -285,7 +723,7 @@ export function classifySocialPattern(query = "") {
       reply: buildSocialPatternReply("social/phatic_checkin", query),
     };
   }
-  if (CHAT_INVITE_RE.test(q) && !/\b(?:de|sur)\s+(?:le|la|les|un|une|mon|ma|ton|ta|ce|cet)\b/i.test(q)) {
+  if (hasSocialChatInviteSignal(query)) {
     return {
       patternName: "social/chat_invite",
       reply: buildSocialPatternReply("social/chat_invite", query),
@@ -303,20 +741,33 @@ export function classifySocialPattern(query = "") {
       reply: buildSocialPatternReply("social/papoter_citadelle", query),
     };
   }
-  if (ANTHROPOMORPHIC_RE.test(q)) {
+  if (isUserFamilyCheckin(query)) {
+    return {
+      patternName: "social/user_family_clarify",
+      reply: buildSocialPatternReply("social/user_family_clarify", query),
+    };
+  }
+  if (ANTHROPOMORPHIC_RE.test(q) || isAssistantFamilyCheckin(query)) {
     return {
       patternName: "social/anthropomorphic_checkin",
-      reply: buildSocialPatternReply("social/anthropomorphic_checkin"),
+      reply: buildSocialPatternReply("social/anthropomorphic_checkin", query),
     };
   }
   if (META_WHO_DRIVES_RE.test(q)) {
     return {
       patternName: "social/meta_who_drives",
-      reply: buildSocialPatternReply("social/meta_who_drives"),
+      reply: buildWhoDrivesContinuityReply(inferActiveGoal(history, priorState)),
+    };
+  }
+  // Relance loisir / après check-in — avant open_exploration (sinon menu chantier).
+  if (isSocialLeisureRelance(query, history)) {
+    return {
+      patternName: "social/leisure_relance",
+      reply: buildSocialPatternReply("social/leisure_relance", query),
     };
   }
   // Frame open_exploration (slots) — pas un match lexical sur le modal
-  if (isOpenExplorationFrame(query)) {
+  if (isOpenExplorationFrame(query, history)) {
     return {
       patternName: "social/open_prompt",
       reply: buildSocialPatternReply("social/open_prompt"),
@@ -336,8 +787,8 @@ export function classifySocialPattern(query = "") {
  * @param {string} query
  * @returns {boolean}
  */
-export function isKnownSocialPattern(query = "") {
-  return Boolean(classifySocialPattern(query));
+export function isKnownSocialPattern(query = "", history = []) {
+  return Boolean(classifySocialPattern(query, history));
 }
 
 /**
@@ -372,6 +823,8 @@ export function buildSocialPatternReply(patternName = "", query = "") {
         "Volontiers — on peut papoter de La Citadelle : comment Nexxus évolue, " +
         "ce que tu construis, ou un sujet tech qui te turlupine. Tu veux commencer par quoi ?"
       );
+    case "social/leisure_relance":
+      return "On peut discuter, jouer, ou tester un truc léger — tu préfères quoi ?";
     case "social/open_prompt":
       return composeMannerReply({
         family: RESPONSE_MANNER_FAMILIES.OPEN_PROMPT_EXPLORATION,
@@ -379,11 +832,13 @@ export function buildSocialPatternReply(patternName = "", query = "") {
         salt: query || patternName,
       });
     case "social/meta_who_drives":
-      return (
-        "C'est plutôt toi qui choisis — je suis là pour t'aider à avancer. " +
-        "Tu préfères papoter un peu ou se lancer sur quelque chose de concret ?"
-      );
+      return buildWhoDrivesContinuityReply(null);
+    case "social/user_family_clarify":
+      return USER_FAMILY_CLARIFY_REPLY;
     case "social/anthropomorphic_checkin":
+      if (isAssistantFamilyCheckin(query) || isBareFamilyCheckinFollowup(query)) {
+        return ANTHROPOMORPHIC_FAMILY_REPLY;
+      }
       return (
         "Non, je ne mange pas — mais je prends volontiers une question ou une idée à la place. " +
         "On fait quoi ?"
@@ -393,11 +848,82 @@ export function buildSocialPatternReply(patternName = "", query = "") {
         "Content que tout aille bien de ton côté. " +
         "Tu veux qu'on discute un peu ou qu'on parte sur un sujet précis ?"
       );
-    case "social/chat_invite":
+    case "social/play_invite": {
+      const q = normalizeFamiliarityQuery(query);
+      const opener = /^(?:bonjour|bonsoir)\b/i.test(q)
+        ? "Bonjour"
+        : /^(?:salut|hello|coucou|hey|yo|yop)\b/i.test(q)
+          ? "Salut"
+          : "Ok";
+      if (/\bpierre[\s-]*feuille|\bchifoumi\b/i.test(q)) {
+        return (
+          `${opener} — pierre-feuille-ciseaux, parfait. ` +
+          "Tu joues : écris pierre, feuille ou ciseaux, je joue en même temps, puis on compare."
+        );
+      }
       return (
-        "Oui bien sûr, on peut discuter. " +
+        `${opener} — oui, un jeu me va. ` +
+        "Pierre-feuille-ciseaux, nombre mystère, énigme… tu choisis lequel et on lance."
+      );
+    }
+    case "social/joke_perform":
+      return (
+        "Ok, en voici une :\n\n" +
+        "Pourquoi les plongeurs plongent-ils toujours en arrière ?\n" +
+        "Parce que sinon ils tombent dans le bateau.\n\n" +
+        "Tu en veux une autre ?"
+      );
+    case "social/joke_meta":
+      return (
+        "Bien vu — absurde + vrai, ça pique. " +
+        "Tu en as d'autres dans ce registre, ou on repart sur un jeu ?"
+      );
+    case "social/checkin_consistency":
+      return "Tu as raison — même check-in, même réponse courte. Désolé.";
+    case "social/tone_repair": {
+      if (hasPostRepairSocialClose(query)) {
+        return buildPostRepairSocialCloseReply(query);
+      }
+      const q = normalizeFamiliarityQuery(query);
+      if (/\binduit(?:e|es)?\s+en\s+erreur\b/i.test(q)) {
+        return "Compris — mauvaise piste de ma part. On laisse ça là.";
+      }
+      return "Désolé pour la réponse bizarre. On laisse ça là.";
+    }
+    case "social/work_ready": {
+      const q = normalizeFamiliarityQuery(query);
+      const opener = /^(?:bonjour|bonsoir)\b/i.test(q)
+        ? "Bonjour"
+        : /(?:^|\s)(?:salut|hello|coucou|hey|yo|yop)\b/i.test(q)
+          ? "Salut"
+          : "";
+      const checkin = isWellbeingCheckinIntent(query);
+      const lead = opener
+        ? checkin
+          ? `${opener} — tout va bien ici.`
+          : `${opener} !`
+        : checkin
+          ? "Tout va bien ici."
+          : "";
+      return [lead, "Prêt — on lance quoi ?"].filter(Boolean).join(" ");
+    }
+    case "social/chat_invite": {
+      const q = normalizeFamiliarityQuery(query);
+      // Greeting + invite : accepter le fil, pas renvoyer le menu d'accueil.
+      if (
+        /^(?:salut|bonjour|hello|coucou|hey|bonsoir|yo|yop|yepa|yépa)\b/i.test(q)
+      ) {
+        const opener = /^(?:bonjour|bonsoir)\b/i.test(q) ? "Bonjour" : "Salut";
+        return (
+          `${opener} — ok, je t'écoute. ` +
+          "De quel sujet tu as envie qu'on parle ?"
+        );
+      }
+      return (
+        "Oui bien sûr, on peut papoter. " +
         "Tu as un sujet en tête ou quelque chose de particulier à faire ?"
       );
+    }
     case "social/personal_discomfort": {
       const q = normalizeFamiliarityQuery(query);
       if (isBodilySymptomCuriosity(query)) {
@@ -440,8 +966,36 @@ export function buildSocialPatternReply(patternName = "", query = "") {
  * @returns {{ path: string, reply: string, patternName: SocialPatternName, blockedPaths: string[] }|null}
  */
 export function resolveSocialPatternShortCircuit(query = "", ctx = {}) {
-  const hit = classifySocialPattern(query);
+  const hit = classifySocialPattern(query, ctx.history || [], ctx.priorState || null);
   if (!hit) return null;
+
+  const bypassSocialGate =
+    hit.patternName === "social/checkin_consistency" ||
+    hit.patternName === "social/tone_repair" ||
+    hit.patternName === "social/leisure_relance" ||
+    hit.patternName === "social/phatic_checkin" ||
+    hit.patternName === "social/meta_who_drives" ||
+    hit.patternName === "social/anthropomorphic_checkin" ||
+    hit.patternName === "social/user_family_clarify";
+
+  // TurnComprehension — Decide: pas de finalize social si le but principal est le travail.
+  // Exception : clôture / critique check-in (sinon GK essaye « expliquer »).
+  const tc = ctx.turnComprehension;
+  if (
+    !bypassSocialGate &&
+    tc &&
+    tc.responseExpectations &&
+    !tc.responseExpectations.mayFinalizeSocial
+  ) {
+    if (typeof ctx.onSocialGateDenied === "function") {
+      ctx.onSocialGateDenied({
+        action: "finalize_social",
+        rail: "social_deterministic",
+        source: `socialPattern:${hit.patternName}`,
+      });
+    }
+    return null;
+  }
 
   const reply =
     hit.patternName === "social/gratitude"

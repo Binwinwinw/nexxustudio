@@ -20,7 +20,7 @@ import {
   clearCapabilityToolsForTurn,
   isCapabilityToolEnabled,
 } from "../src/agent/capabilities/capabilityToolSession.js";
-import { isToolAvailable } from "../src/agent/utils/toolRegistry.js";
+import { isToolAvailable } from "../src/agent/utils/runtime/toolRegistry.js";
 import { getAllowedTools } from "../src/agent/policies/prompt/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

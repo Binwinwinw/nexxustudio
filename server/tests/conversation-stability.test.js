@@ -1,9 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { enforceSimpleFastContract } from "../src/agent/utils/responseContract.js";
-import OllamaStreamProcessor from "../src/agent/utils/ollamaStreamProcessor.js";
-import responseThinkingCleaner from "../src/agent/utils/responseThinkingCleaner.js";
+import { enforceSimpleFastContract } from "../src/agent/utils/runtime/responseContract.js";
+import OllamaStreamProcessor from "../src/agent/utils/runtime/ollamaStreamProcessor.js";
+import responseThinkingCleaner from "../src/agent/utils/quality-safety/responseThinkingCleaner.js";
 import conversationHealth from "../src/agent/telemetry/conversationHealth.js";
 
 test("stability: SIMPLE_FAST contract keeps response to max two sentences", () => {

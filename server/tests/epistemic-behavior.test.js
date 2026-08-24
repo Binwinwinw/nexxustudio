@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { auditLogger } from '../src/security/auditLogger.js';
 import AgentPipeline from '../src/agent/agentPipeline.js';
-import responseThinkingCleaner from '../src/agent/utils/responseThinkingCleaner.js';
+import responseThinkingCleaner from '../src/agent/utils/quality-safety/responseThinkingCleaner.js';
 
 async function runEpistemicBehaviorTest() {
     console.log("Démarrage du test comportemental : Doctrine Epistémique Fail-Closed...");

@@ -197,7 +197,7 @@ export const EPISTEMIC_REFUSAL_MATRIX = [
 export const FULL_TRIGGER_MATRIX = [...TRIGGER_MATRIX, ...EPISTEMIC_REFUSAL_MATRIX];
 
 /**
- * @param {import('../agent/utils/skillLoader.js').default} loader
+ * @param {import('../agent/utils/runtime/skillLoader.js').default} loader
  * @param {number} [minAccuracy=0.88]
  */
 export async function evaluateSkillTriggerAccuracy(loader, minAccuracy = 0.88) {

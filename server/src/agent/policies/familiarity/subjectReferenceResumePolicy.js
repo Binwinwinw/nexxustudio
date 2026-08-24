@@ -7,7 +7,7 @@ import {
   getFamiliarityDeterministicReply,
   isFamiliarityDomainOverviewRequest,
   resolveKnownOrUnknownSubject,
-} from "../../utils/familiarityIntentGuards.js";
+} from "../../utils/intent-guards/familiarityIntentGuards.js";
 import {
   extractSubjectCandidate,
   isImplicitSubjectReferenceQuery,

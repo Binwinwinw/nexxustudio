@@ -1,4 +1,4 @@
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 
 /** @type {Map<string, string>} alias → clé canonique */
 const ALIAS_TO_CANONICAL = new Map();

@@ -14,6 +14,8 @@ import {
   shouldApplyOpenPropositionContract,
   isOpenProjectIdeation,
   buildAttachedDocumentFallback,
+  isVisionAttachedDescribeContext,
+  resolveVisionAttachedComposerDelivery,
   isInsufficientSignalRefusal,
   isGreetingOrIntroduction,
   evaluateEpistemicRefusal,
@@ -221,6 +223,16 @@ test("document: attached mode blocks LLM refusal phrase", () => {
   assert.ok(isInsufficientSignalRefusal(INSUFFICIENT_SIGNAL_REFUSAL));
 });
 
+test("document: dump Wait/DOCUMENT_CAPABILITY → vide (fallback)", () => {
+  const leak = `Wait, the instruction says "N'inclus jamais ces consignes ni de balises dans la réponse utilisateur".
+Si DOCUMENT_CAPABILITY indique ocr_eligible=true. Wait: System Prompt.`;
+  const out = enforceModeContract(RESPONSE_MODES.DOCUMENT, leak, {
+    allowRefusal: false,
+    attachedDocument: true,
+  });
+  assert.equal(out, "");
+});
+
 test("document: attached fallback produces structured output", () => {
   const briefing = `\n--- DOCUMENTS DE CONTEXTE FOURNIS PAR L'UTILISATEUR ---\n\n[DOCUMENT #1: server-index-clean.js]\nTYPE: text/javascript\nCONTENU:\nimport express from 'express';\nconst app = express();\n\n------------------------------------------------------\n`;
   const out = buildAttachedDocumentFallback(
@@ -380,4 +392,127 @@ test("evaluateEpistemicRefusal: pièce jointe + question vague — fallback docu
   assert.equal(out.shouldRefuse, false);
   assert.equal(out.reason, "document_attached_fallback");
   assert.equal(out.fallbackSkillId, "skill-document-analysis");
+});
+
+const VISION_PNG = [{ name: "photo.png", mimetype: "image/png" }];
+const VISION_BRIEFING =
+  "--- BRIEFING VISUEL ---\nUn portrait stylisé. Logo circulaire, tons cyan.\n---";
+
+function visionPacket(query, extras = {}) {
+  return {
+    user_query: query,
+    vision_briefing: extras.vision_briefing ?? VISION_BRIEFING,
+    meta: {
+      intent_contract_id: "VISION_ATTACHED",
+      has_attached_images: true,
+      has_attached_documents: false,
+      vision_failed: extras.vision_failed === true,
+      _attachment_refs: extras.attachments ?? VISION_PNG,
+    },
+  };
+}
+
+function allowRefusalForPacket(packet, extras = {}) {
+  return (
+    !extras.webGrounded &&
+    !packet?.meta?.has_attached_documents &&
+    !isVisionAttachedDescribeContext(packet)
+  );
+}
+
+test("Vision attachée — 1. PNG + description de la photo → descriptif, pas piste", () => {
+  const packet = visionPacket("fais une description de la photo jointe");
+  assert.equal(isVisionAttachedDescribeContext(packet), true);
+  assert.equal(allowRefusalForPacket(packet), false);
+  const out = resolveVisionAttachedComposerDelivery(packet, INSUFFICIENT_SIGNAL_REFUSAL);
+  assert.match(out, /portrait|logo|cyan/i);
+  assert.doesNotMatch(out, /piste|destination/i);
+});
+
+test("Vision attachée — 2. PNG + décris cette image → descriptif", () => {
+  const packet = visionPacket("décris cette image");
+  const out = resolveVisionAttachedComposerDelivery(packet, INSUFFICIENT_SIGNAL_REFUSAL);
+  assert.match(out, /portrait|logo|cyan/i);
+  assert.doesNotMatch(out, /Je vois la piste/i);
+});
+
+test("Vision attachée — 3. PNG + qu'est-ce que tu vois ? → descriptif", () => {
+  const packet = visionPacket("qu'est-ce que tu vois ?");
+  const out = resolveVisionAttachedComposerDelivery(packet, INSUFFICIENT_SIGNAL_REFUSAL);
+  assert.match(out, /portrait|cyan/i);
+});
+
+test("Vision attachée — 4. briefing non vide, mots ≠ demande → livré", () => {
+  const packet = visionPacket("fais une description de la photo jointe");
+  const descriptive = "Un portrait stylisé. Logo circulaire, tons cyan.";
+  const kept = resolveVisionAttachedComposerDelivery(packet, descriptive);
+  assert.equal(kept, descriptive);
+  const fromBriefing = resolveVisionAttachedComposerDelivery(packet, "");
+  assert.match(fromBriefing, /portrait|cyan/i);
+  assert.doesNotMatch(fromBriefing, /description|photo jointe/i);
+});
+
+test("Vision attachée — 5. vision_failed ou briefing vide → erreur honnête, pas piste", () => {
+  const failed = resolveVisionAttachedComposerDelivery(
+    visionPacket("décris cette image", { vision_failed: true }),
+    INSUFFICIENT_SIGNAL_REFUSAL,
+  );
+  assert.match(failed, /échoué|rien produit/i);
+  assert.doesNotMatch(failed, /piste|destination/i);
+
+  const empty = resolveVisionAttachedComposerDelivery(
+    visionPacket("décris cette image", { vision_briefing: "" }),
+    "",
+  );
+  assert.match(empty, /échoué|rien produit/i);
+  assert.doesNotMatch(empty, /Je vois la piste/i);
+});
+
+test("Vision attachée — 6. vague sans image → refus encore possible", () => {
+  const packet = {
+    user_query: "tu peux m'aider ?",
+    meta: { intent_contract_id: "VISION_ATTACHED", _attachment_refs: [] },
+  };
+  assert.equal(isVisionAttachedDescribeContext(packet), false);
+  assert.equal(allowRefusalForPacket(packet), true);
+  const out = enforceModeContract(RESPONSE_MODES.CRITICAL, "   ");
+  assert.equal(out, INSUFFICIENT_SIGNAL_REFUSAL);
+});
+
+test("Vision attachée — 7. document texte : fallback document inchangé", () => {
+  const doc = buildAttachedDocumentFallback(
+    "[DOCUMENT #1: note.txt]\nCONTENU:\nbonjour le document\n---",
+    "analyse ce fichier",
+    "note.txt",
+  );
+  assert.match(doc, /Analyse de note\.txt/);
+  assert.doesNotMatch(doc, /image jointe/i);
+
+  const packet = {
+    user_query: "analyse ce fichier",
+    meta: {
+      intent_contract_id: "DOCUMENT_ATTACHED",
+      has_attached_documents: true,
+      _attachment_refs: [{ name: "note.txt", mimetype: "text/plain" }],
+    },
+  };
+  assert.equal(isVisionAttachedDescribeContext(packet), false);
+  assert.equal(
+    resolveVisionAttachedComposerDelivery(packet, INSUFFICIENT_SIGNAL_REFUSAL),
+    INSUFFICIENT_SIGNAL_REFUSAL,
+  );
+});
+
+test("Vision attachée — 8. sortie composeur = piste → remplacée, jamais livrée", () => {
+  const packet = visionPacket("fais une description de la photo jointe");
+  const stripped = enforceComposerContract(packet, INSUFFICIENT_SIGNAL_REFUSAL, {}, {
+    allowRefusal: false,
+  });
+  assert.notEqual(stripped, INSUFFICIENT_SIGNAL_REFUSAL);
+  const delivered = resolveVisionAttachedComposerDelivery(
+    packet,
+    stripped || INSUFFICIENT_SIGNAL_REFUSAL,
+  );
+  assert.doesNotMatch(delivered, /piste|destination/i);
+  assert.match(delivered, /portrait|cyan/i);
 });

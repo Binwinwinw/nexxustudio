@@ -2,7 +2,7 @@
  * WorkloadSignal — pré-comptage des unités de travail avant orchestration.
  * Invariant : explicit_unit_count doit être préservé jusqu’au plan d’exécution.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 
 export const WORKLOAD_SIGNAL_RULE = "request_workload_signal_v1";
 

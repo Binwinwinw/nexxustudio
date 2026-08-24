@@ -15,7 +15,7 @@ import {
   CODE_EXPLAIN_CONTRACT_ID,
   CODE_DIAGNOSTIC_CONTRACT_ID,
 } from "../src/agent/policies/code/codeReviewPolicy.js";
-import { isDocumentAnalysisIntent } from "../src/agent/utils/conversationGuards.js";
+import { isDocumentAnalysisIntent } from "../src/agent/utils/conversation/conversationGuards.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
 import {
   CODE_REVIEW_PRODUCTION_BUG_QUERIES,
@@ -63,6 +63,14 @@ describe("codeIntentPolicy — taxonomie", () => {
     const c = classifyCodeIntent(explicitQ);
     assert.equal(c.kind, CODE_INTENT_KINDS.REVIEW);
     assert.equal(c.confidence, "explicit");
+  });
+
+  it("HTML + analyser sans nature code → pas d'intention code", () => {
+    const q = "voici un html à analyser";
+    const files = [{ originalname: "page.html" }];
+    assert.equal(classifyCodeIntent(q, { attachments: files }), null);
+    assert.equal(isCodeIntentRequest(q, { attachments: files }), false);
+    assert.equal(isDocumentAnalysisIntent(q, files), true);
   });
 
   it("n'envoie pas les intentions code vers Document Analysis", () => {

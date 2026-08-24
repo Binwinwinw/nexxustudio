@@ -5,8 +5,8 @@ import {
   PROGRAMMING_PEDAGOGY_CANONICAL_PYTHON_QUERY,
   isProgrammingPedagogyLightRequest,
   suppressesCodeGenerationForProgrammingPedagogy,
-} from "../src/agent/utils/programmingPedagogyLightIntentGuards.js";
-import { isBeginnerTopicOverviewRequest } from "../src/agent/utils/beginnerTopicOverviewIntentGuards.js";
+} from "../src/agent/utils/intent-guards/programmingPedagogyLightIntentGuards.js";
+import { isBeginnerTopicOverviewRequest } from "../src/agent/utils/intent-guards/beginnerTopicOverviewIntentGuards.js";
 import { isCodeGenerationRequest } from "../src/agent/policies/code/codeDeliveryPolicy.js";
 import {
   triageUserIntent,

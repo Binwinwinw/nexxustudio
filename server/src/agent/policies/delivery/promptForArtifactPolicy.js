@@ -4,7 +4,7 @@
 import {
   isPromptForArtifactRequest,
   parsePromptForArtifactTask,
-} from "../../utils/promptForArtifactIntentGuards.js";
+} from "../../utils/intent-guards/promptForArtifactIntentGuards.js";
 
 export const PROMPT_FOR_ARTIFACT_POLICY = "prompt_for_artifact_policy_v1";
 

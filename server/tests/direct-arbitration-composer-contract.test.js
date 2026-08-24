@@ -9,7 +9,7 @@ import {
   extractExplicitDecisionCriterion,
 } from "../src/agent/micro/replies/directArbitrationComposerContract.js";
 import { evaluateEpistemicRefusal } from "../src/agent/config/modeResponseContracts.js";
-import { sanitizeUnverifiedToolExecutionClaims } from "../src/agent/utils/toolExecutionClaimGuard.js";
+import { sanitizeUnverifiedToolExecutionClaims } from "../src/agent/utils/quality-safety/toolExecutionClaimGuard.js";
 
 const RECIPE_QUERY =
   "as tu assez de connaissances pour me proposer la recette la plus rapide a servir parmi toute les recettes classiques que tu connais ??";

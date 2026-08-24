@@ -4,15 +4,15 @@ import assert from "node:assert/strict";
 import {
   isAssistantUtteranceClarifyRequest,
 } from "../src/agent/policies/qualification/assistantUtteranceClarifyPolicy.js";
-import { isMetaAssistantBehaviorRequest } from "../src/agent/utils/metaAssistantBehaviorGuards.js";
+import { isMetaAssistantBehaviorRequest } from "../src/agent/utils/intent-guards/metaAssistantBehaviorGuards.js";
 import { resolveMetaAssistantBehaviorShortCircuit } from "../src/agent/policies/meta/metaAssistantBehaviorPolicy.js";
 import { classifyConversationTurn } from "../src/agent/micro/classifiers/conversationTurnType.js";
 import { resolveMetaFeedbackShortCircuit } from "../src/agent/micro/replies/metaFeedbackReplyBuilder.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { isPresentationOutlineRequest } from "../src/agent/utils/presentationOutlineIntentGuards.js";
+import { isPresentationOutlineRequest } from "../src/agent/utils/intent-guards/presentationOutlineIntentGuards.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
 import { resolveComprehensionGroundingShortCircuit } from "../src/agent/policies/meta/comprehensionGroundingPolicy.js";
-import { isComprehensionDemonstrationRequest } from "../src/agent/utils/metaAssistantBehaviorGuards.js";
+import { isComprehensionDemonstrationRequest } from "../src/agent/utils/intent-guards/metaAssistantBehaviorGuards.js";
 
 const SALUT_HISTORY = [
   { role: "user", content: "salut salut" },
@@ -78,10 +78,20 @@ describe("G44 — meta assistant behavior (critique réflexion)", () => {
         { role: "assistant", content: "J'ai mal interprété." },
       ],
     });
-    assert.equal(hit?.path, "meta_assistant_behavior_deterministic");
+    assert.equal(hit?.path, "meta_conversation_feedback");
     assert.match(hit?.reply || "", /façon de répondre|rails/i);
     assert.doesNotMatch(hit?.reply || "", /Laquelle t'intéresse/i);
     assert.doesNotMatch(hit?.reply || "", /auto-réflexion/i);
+  });
+
+  it("G44 — « tu ne devrais pas répondre de cette manière / en cours »", async () => {
+    const q =
+      "en fait n'ayant rien encore à faire tu ne devrais pas répondre de cette manière car tu dois avoir la capacité de savoir ce qui est en cours";
+    assert.equal(isMetaAssistantBehaviorRequest(q), true);
+    const hit = await runConversationShortCircuit(q, { history: [] });
+    assert.equal(hit?.path, "meta_conversation_feedback");
+    assert.doesNotMatch(hit?.reply || "", /erreur critique/i);
+    assert.doesNotMatch(hit?.reply || "", /Design Extract/i);
   });
 
   it("G44-T06 bloque PRESENTATION_OUTLINE et contrat orchestrateur", () => {

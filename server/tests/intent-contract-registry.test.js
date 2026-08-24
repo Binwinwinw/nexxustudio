@@ -13,6 +13,8 @@ import {
   listIntentContracts,
 } from "../src/agent/config/intentContractRegistry.js";
 import { RESPONSE_MODES } from "../src/agent/config/modeResponseContracts.js";
+import { validateDeliverablePromise } from "../src/agent/policies/delivery/deliverablePromiseGuard.js";
+import { isCodeGenerationRequest } from "../src/agent/policies/code/codeDeliveryPolicy.js";
 import {
   interpretStructuredRequest,
   resolveInterpreterLock,
@@ -72,7 +74,7 @@ test("registry: attached document bypasses SIMPLE_FAST", () => {
 
 test("conversationGuards: detects attached document analysis request", async () => {
   const { isAttachedDocumentAnalysisRequest, hasTextAttachments } =
-    await import("../src/agent/utils/conversationGuards.js");
+    await import("../src/agent/utils/conversation/conversationGuards.js");
   const attachments = [
     { originalname: "doc.txt", mimetype: "text/plain" },
   ];
@@ -149,6 +151,27 @@ test("registry: video attached resolves VIDEO_ANALYSIS", () => {
   assert.match(matchedBy, /hasAttachedVideoContext/);
 });
 
+test("registry: créer un Excel ≠ VIDEO_ANALYSIS, → CODE_DELIVERY_V1", () => {
+  const query =
+    "jev eux créer un fichier excel avec un tableau de bord de gestion de rendez vous avec un calendrier affichant le jour et le nom de la personne";
+  assert.equal(isCodeGenerationRequest(query), true);
+  const { contract, matchedBy } = resolveIntentContract(query, {
+    user_intent: "expert_task",
+  });
+  assert.notEqual(contract.id, "VIDEO_ANALYSIS");
+  assert.equal(contract.id, "CODE_DELIVERY_V1");
+  assert.equal(contract.routing.skipWebSearch, true);
+  assert.equal(contract.routing.orchestratorMode, "OPERATIONAL");
+  assert.equal(shouldSkipWebSearchForIntent(query, { user_intent: "expert_task" }), true);
+  assert.match(matchedBy, /isCodeDeliveryRequest/);
+  const guard = validateDeliverablePromise(
+    "voici le code complet pour générer le fichier Excel",
+    "COMPOSER",
+    query,
+  );
+  assert.equal(guard.ok, true);
+});
+
 test("registry: design create resolves DESIGN_CREATE", () => {
   const query = "conçois une landing dark mode avec design system";
   const { contract } = resolveIntentContract(query, {});
@@ -168,6 +191,33 @@ test("registry: design extract resolves DESIGN_EXTRACT", () => {
   const { contract } = resolveIntentContract(query, {});
   assert.equal(contract.id, "DESIGN_EXTRACT");
   assert.equal(contract.routing.skillId, "skill-design-extract");
+});
+
+test("registry: expert_task sans garde design ≠ DESIGN_EXTRACT", () => {
+  const query =
+    "en fait n'ayant rien encore à faire tu ne devrais pas répondre de cette manière car tu dois avoir la capacité de savoir ce qui est en cours";
+  const { contract } = resolveIntentContract(query, {
+    user_intent: "expert_task",
+  });
+  assert.notEqual(contract.id, "DESIGN_EXTRACT");
+  assert.notEqual(contract.id, "DESIGN_AUDIT");
+  assert.notEqual(contract.id, "DESIGN_CREATE");
+  assert.notEqual(contract.id, "REPO_ANALYSIS");
+});
+
+test("registry: analyse un fichier sans PJ ≠ REPO_ANALYSIS", () => {
+  const query = "j'aimerais que tu analyses un fichier es tu disponible ?";
+  const { contract } = resolveIntentContract(query, {
+    user_intent: "expert_task",
+  });
+  assert.notEqual(contract.id, "REPO_ANALYSIS");
+});
+
+test("registry: analyse le code sans cible ≠ REPO_ANALYSIS", () => {
+  const { contract } = resolveIntentContract("analyse le code", {
+    user_intent: "expert_task",
+  });
+  assert.notEqual(contract.id, "REPO_ANALYSIS");
 });
 
 test("registry: image attachment bypasses SIMPLE_FAST without vision verb", () => {
@@ -204,14 +254,14 @@ test("registry: URL bypasses SIMPLE_FAST on short query", () => {
 
 test("conversationGuards: unified isAnalyticalTechnicalRequest includes debug", async () => {
   const { isAnalyticalTechnicalRequest } =
-    await import("../src/agent/utils/conversationGuards.js");
+    await import("../src/agent/utils/conversation/conversationGuards.js");
   assert.equal(isAnalyticalTechnicalRequest("debug ce timeout"), true);
   assert.equal(isAnalyticalTechnicalRequest("refactor ce module"), true);
 });
 
 test("conversationGuards: isDocumentAnalysisIntent covers extraire", async () => {
   const { isDocumentAnalysisIntent } =
-    await import("../src/agent/utils/conversationGuards.js");
+    await import("../src/agent/utils/conversation/conversationGuards.js");
   assert.equal(isDocumentAnalysisIntent("extraire les dates"), true);
 });
 
@@ -236,7 +286,7 @@ test("conversationGuards: memory recall detection and response", async () => {
   const {
     isConversationMemoryRecallRequest,
     buildConversationRecallResponse,
-  } = await import("../src/agent/utils/conversationGuards.js");
+  } = await import("../src/agent/utils/conversation/conversationGuards.js");
 
   const query = "saurais tu retrouver de quoi nous avons parlé hier ?";
   assert.equal(isConversationMemoryRecallRequest(query), true);

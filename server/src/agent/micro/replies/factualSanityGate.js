@@ -2,7 +2,7 @@
  * factualSanityGate — juge heuristique minimal (answer / clarify / abstain).
  * Couche plausibilité post-classification, avant simple_factual_lookup + LLM.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { isSimpleFactualQuestion } from "../../policies/intent/justIntentDetectionPolicy.js";
 import { resolveAnaphoraReferenceShortCircuit } from "../continuity/anaphoraReferenceResolver.js";
 

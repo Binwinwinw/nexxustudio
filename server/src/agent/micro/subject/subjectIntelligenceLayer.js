@@ -1,7 +1,7 @@
 /**
  * Subject Intelligence Layer — résolution pure (état du monde, pas de texte ni routage).
  */
-import { normalizeText } from "../../utils/normalizationGuards.js";
+import { normalizeText } from "../../utils/parsing-normalization/normalizationGuards.js";
 import { lookupKnownEntity, lookupKnownEntityCandidates } from "./knownEntityQuickLookup.js";
 import { lookupInternalEntity } from "./internalEntityRegistry.js";
 import { normalizeSubject } from "./subjectNormalizer.js";

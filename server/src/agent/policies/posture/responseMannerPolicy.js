@@ -54,7 +54,7 @@ const VARIANT_POOLS = Object.freeze({
   ],
   [RESPONSE_MANNER_FAMILIES.CAPABILITY_OVERVIEW]: [
     "Je suis NEXXUS, l'assistant souverain de La Citadelle / Nexxus Studio. Aujourd'hui je peux t'aider à : cadrer une architecture ou une idée, analyser des documents (PDF/texte), maintenir la continuité du fil, et orienter vers la Forge pour du prototypage local. Donne-moi un objectif concret et on avance.",
-    "NEXXUS ici — assistant de La Citadelle. Je cadrerai une idée ou une architecture, j'analyserai tes documents, je garde le fil de la session, et je t'orienterai vers la Forge si tu veux prototyper en local. Quel est ton prochain objectif ?",
+    "Je suis NEXXUS l'assistant de La Citadelle. Je cadre une idée ou une architecture, j'analyse tes documents, je garde le fil de la session, et je t'oriente vers la conceptualisation si tu veux prototyper en local ou en prod. Quel est ton idée ou ton objectif ?",
     "Je suis ton assistant NEXXUS sur Nexxus Studio : conversation gouvernée, analyse documentaire, continuité de session, et passage vers la Forge quand un livrable code est visé. Dis-moi ce que tu veux faire en premier.",
     "Côté capacités actuelles : cadrage et architecture, lecture de documents, suivi du fil, et orchestration vers la Forge pour du code local. Pose-moi un objectif précis et on y va.",
   ],

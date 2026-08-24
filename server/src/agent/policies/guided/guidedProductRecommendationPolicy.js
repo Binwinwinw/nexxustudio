@@ -5,7 +5,7 @@ import {
   isCompareChooseRequest,
   extractCompareDomain,
   parseCompareChoose,
-} from "../../utils/compareChooseIntentGuards.js";
+} from "../../utils/intent-guards/compareChooseIntentGuards.js";
 import {
   hasExplicitWebProductRecoSignals,
   isFreshFactualCompareWithWebRequest,

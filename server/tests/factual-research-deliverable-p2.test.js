@@ -44,8 +44,9 @@ import {
 } from "../src/agent/micro/replies/factualResearchComposerContract.js";
 import { buildKnowledgeFreshnessSystemAddon } from "../src/agent/micro/replies/knowledgeFreshnessComposerContract.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
-import { isPresentationOutlineRequest } from "../src/agent/utils/presentationOutlineIntentGuards.js";
+import { isPresentationOutlineRequest } from "../src/agent/utils/intent-guards/presentationOutlineIntentGuards.js";
 
+// Query rapport explicite (structured_report) — ne pas remplacer par une demande simple.
 const STREAMING_SERIES_A = `Je suis responsable marketing d'une startup de streaming indépendante et nous préparons un dossier de présentation pour une levée de fonds de série A. Pourriez-vous effectuer une recherche sur l'état actuel du marché du streaming de films indépendants et identifier les tendances clés, le positionnement des concurrents et les opportunités de croissance ? Veuillez utiliser des sources web récentes avec citations et structurer le tout sous forme de rapport professionnel de 5 pages maximum, comprenant un résumé, une analyse de marché, une analyse concurrentielle et une présentation des opportunités de croissance. Focus juillet 2026.`;
 
 const SLIDES_PLAN =

@@ -29,6 +29,41 @@ export function isFactualResearchSourcedReportPath(query = "", packet = {}) {
   return false;
 }
 
+export const FACTUAL_RESEARCH_SHAPE_STRUCTURED_REPORT = "structured_report";
+export const FACTUAL_RESEARCH_SHAPE_SOURCED_BRIEF = "sourced_brief";
+
+/** Demande explicite d’un livrable lourd — pas un driver composition.format. */
+const EXPLICIT_STRUCTURED_REPORT_RE =
+  /\b(?:r[eé]sum[eé]\s+ex[eé]cuti[fv]e?|analyse\s+(?:de\s+|du\s+)?march[eé]|analyse\s+concurrentielle|opportunit[eé]s\s+de\s+croissance|tableau\s+strat[eé]gique|rapport(?:\s+(?:long|professionnel|structur[eé]|d[eé]taill[eé]))?|compte[- ]rendu)\b/i;
+
+/**
+ * Shape de sortie seulement. Ne remplace pas isFactualResearchSourcedReportPath.
+ * @param {string} query
+ * @returns {"structured_report"|"sourced_brief"}
+ */
+export function resolveFactualResearchOutputShape(query = "") {
+  const q = String(query || "").trim();
+  if (!q) return FACTUAL_RESEARCH_SHAPE_SOURCED_BRIEF;
+  if (isWebCitationsStructuredReportCluster(q)) {
+    return FACTUAL_RESEARCH_SHAPE_STRUCTURED_REPORT;
+  }
+  if (EXPLICIT_STRUCTURED_REPORT_RE.test(q)) {
+    return FACTUAL_RESEARCH_SHAPE_STRUCTURED_REPORT;
+  }
+  return FACTUAL_RESEARCH_SHAPE_SOURCED_BRIEF;
+}
+
+/**
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function isFactualResearchStructuredReportShape(query = "") {
+  return (
+    resolveFactualResearchOutputShape(query) ===
+    FACTUAL_RESEARCH_SHAPE_STRUCTURED_REPORT
+  );
+}
+
 /**
  * @param {object} packet
  * @returns {number}

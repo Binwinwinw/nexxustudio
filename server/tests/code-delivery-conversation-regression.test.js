@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { buildSystemPrompt } from "../src/agent/prompts/systemPromptBuilder.js";
 import { getComposerSystemPrompt } from "../src/agent/config/modeResponseContracts.js";
 import { shouldBypassSimpleFast } from "../src/agent/config/intentContractRegistry.js";
-import { isGenericReadyGreeting } from "../src/agent/utils/genericGreetingGuards.js";
+import { isGenericReadyGreeting } from "../src/agent/utils/conversation/genericGreetingGuards.js";
 import {
   detectCodeDeliveryLanguage,
   resolveCodeDeliveryLanguage,

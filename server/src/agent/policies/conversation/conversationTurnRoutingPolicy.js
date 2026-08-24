@@ -12,14 +12,17 @@ import {
 import { resolveMetaAssistantBehaviorShortCircuit } from "../meta/metaAssistantBehaviorPolicy.js";
 import { resolveAssistantRepairShortCircuit } from "../../micro/replies/assistantRepairReplyBuilder.js";
 import { resolveOpenPromptContinuityShortCircuit } from "../meta/openPromptContinuityPolicy.js";
-import { getIdeationDeterministicReply } from "../../utils/ideationIntentGuards.js";
-import { isComprehensionDemonstrationRequest } from "../../utils/metaAssistantBehaviorGuards.js";
-import { isIdeationIntent } from "../../utils/ideationIntentGuards.js";
-import { isAssistantRepairIntent } from "../../utils/assistantRepairGuards.js";
-import { isMetaAssistantBehaviorRequest } from "../../utils/metaAssistantBehaviorGuards.js";
+import { getIdeationDeterministicReply } from "../../utils/intent-guards/ideationIntentGuards.js";
+import { isComprehensionDemonstrationRequest } from "../../utils/intent-guards/metaAssistantBehaviorGuards.js";
+import { isIdeationIntent } from "../../utils/intent-guards/ideationIntentGuards.js";
+import { isAssistantRepairIntent } from "../../utils/quality-safety/assistantRepairGuards.js";
+import { isMetaAssistantBehaviorRequest } from "../../utils/intent-guards/metaAssistantBehaviorGuards.js";
 import {
   isSocialAcceptanceOfOffer,
   resolveSocialAcceptanceOfOfferShortCircuit,
+  isIdleConfirmedSocialCheckin,
+  buildSocialCheckinReply,
+  clampSocialCheckinReply,
 } from "../social/index.js";
 import {
   isMetaCapabilitiesIntent,
@@ -28,7 +31,7 @@ import {
 import { isExplicitWebSearchRequest } from "../routing/explicitWebSearchRequestPolicy.js";
 
 const SOCIAL_HEALTH_RE =
-  /\b(?:comment (?:ca|ça) va|comment vas[- ]?tu|comment allez[- ]?vous|tu vas bien|ca va\b|ça va\b|comment tu te sens)\b/i;
+  /\b(?:comment (?:ca|ça) va|comment vas[- ]?tu|comment allez[- ]?vous|comment vous allez|tu vas bien|vous allez bien|ca va\b|ça va\b|comment tu te sens)\b/i;
 const SOCIAL_GREETING_RE =
   /^(?:salut|bonjour|coucou|hello|hey|bonsoir)(?:\s+[!?.…]*)?$/i;
 
@@ -128,13 +131,23 @@ function routeFamilyToShortCircuit(family, query = "", options = {}) {
     }
     case CONVERSATION_TURN_FAMILIES.SOCIAL_CHECKIN: {
       const hit = resolveSocialAcceptanceOfOfferShortCircuit(query, options);
-      if (!hit?.reply) return null;
-      return {
-        path: hit.path,
-        reply: hit.reply,
-        turnFamily: family,
-        turnFamilyTier: options.tier || "high",
-      };
+      if (hit?.reply) {
+        return {
+          path: hit.path,
+          reply: hit.reply,
+          turnFamily: family,
+          turnFamilyTier: options.tier || "high",
+        };
+      }
+      if (isIdleConfirmedSocialCheckin(query, options)) {
+        return {
+          path: "social_deterministic",
+          reply: clampSocialCheckinReply(buildSocialCheckinReply(query), query),
+          turnFamily: family,
+          turnFamilyTier: options.tier || "high",
+        };
+      }
+      return null;
     }
     case CONVERSATION_TURN_FAMILIES.META_CAPABILITIES: {
       const hit = resolveMetaCapabilitiesShortCircuit(query, options);

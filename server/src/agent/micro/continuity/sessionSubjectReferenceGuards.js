@@ -11,7 +11,7 @@ import {
   normalizeFamiliarityQuery,
   parseFamiliarityQuery,
   resolveKnownOrUnknownSubject,
-} from "../../utils/familiarityIntentGuards.js";
+} from "../../utils/intent-guards/familiarityIntentGuards.js";
 import {
   buildConversationContinuityContext,
   parseFamiliarityProposalFromTurn,
@@ -82,6 +82,13 @@ const DOMAIN_OVERVIEW_ASSISTANT_SUBJECT_RE =
   /je peux t'aider sur\s+([^:]+):/i;
 
 /**
+ * « à propos de ce projet : … » = brief de création / aide projet,
+ * pas un sujet de disponibilité domaine (≠ « à propos de PHP »).
+ */
+const PROJECT_BRIEF_SUBJECT_RE =
+  /^(?:ce|cet|cette|mon|ma|mes|ton|ta|tes|notre|votre|le|la|les|un|une)\s+projets?\b/;
+
+/**
  * @param {string} tail
  */
 function cleanSubjectCandidate(tail = "") {
@@ -125,6 +132,13 @@ export function parseSubjectReferenceShell(query = "") {
     if (!match?.[1]) continue;
     const rawSubject = cleanSubjectCandidate(match[1]);
     if (!rawSubject || rawSubject.length < 2) continue;
+    // Brief projet (« aide moi à propos de ce projet : … ») ≠ shell infos domaine.
+    if (
+      rule.shell === "a_propos_de" &&
+      PROJECT_BRIEF_SUBJECT_RE.test(rawSubject)
+    ) {
+      continue;
+    }
     return {
       kind: rule.kind,
       rawSubject,

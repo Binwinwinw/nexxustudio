@@ -21,8 +21,8 @@ import {
   INSUFFICIENT_SIGNAL_REFUSAL,
   getSimpleFactualSystemPrompt,
 } from "../src/agent/config/modeResponseContracts.js";
-import { resolvePipelineFallback } from "../src/agent/utils/genericGreetingGuards.js";
-import { buildInformationRecoveryMessage } from "../src/agent/utils/genericGreetingGuards.js";
+import { resolvePipelineFallback } from "../src/agent/utils/conversation/genericGreetingGuards.js";
+import { buildInformationRecoveryMessage } from "../src/agent/utils/conversation/genericGreetingGuards.js";
 import { isSimpleFactualQuestion } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { detectSimpleFactualDirectnessViolation } from "../src/agent/telemetry/conversationMoveShadowTelemetry.js";
 
@@ -185,5 +185,14 @@ describe("simpleFactualComposer — P3 directness (G12)", () => {
     const out = tryResolveDeterministicSimpleFactual(q);
     assert.match(out, /Paris/i);
     assert.match(out, /5 lettres/i);
+  });
+
+  it("pourquoi lune / terre loin — explication simple, pas piste", () => {
+    const q = "pour quelle raison la lune est aussi loin de la terre ??";
+    const local = resolveLocalSimpleFactualAnswer(q);
+    assert.match(local, /Lune|marées|3,8/i);
+    const out = enforceSimpleFactualDirectness(INSUFFICIENT_SIGNAL_REFUSAL, q);
+    assert.equal(out, local);
+    assert.doesNotMatch(out, /piste|destination/i);
   });
 });

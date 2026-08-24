@@ -9,7 +9,7 @@ import {
   buildFamiliarityFollowupApercuReply,
   getFamiliarityDeterministicReply,
   parseFamiliarityQuery,
-} from "../../utils/familiarityIntentGuards.js";
+} from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { assessConversationTopicShift } from "./topicShiftGuard.js";
 import {
   buildLexiconPedagogicalSchemaReply,
@@ -71,7 +71,8 @@ const DOMAIN_RESUME_OFFER_PATTERN = /on peut reprendre sur\s+([^:\n.]+)/i;
 const FULL_RESUME_PATTERN =
   /\b(?:si tu peux )?tout reprendre|reprendre tout|tout (?:détailler|detailer)|(?:en )?mode complet|depuis le (?:début|debut)|vas[- ]?y en (?:mode )?complet\b/i;
 
-const CONFIRM_SUBJECT_PATTERN = /^Tu parles de (.+?) \?$/i;
+const CONFIRM_SUBJECT_PATTERN =
+  /^Tu parles de (.+?) \?(?:\s*Si oui,?\s*je vois\.?)?\s*$/i;
 
 const SHORT_FOLLOWUP_PATTERNS = [
   /^oui$/,

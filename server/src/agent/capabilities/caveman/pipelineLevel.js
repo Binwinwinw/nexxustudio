@@ -1,4 +1,4 @@
-import { detectCavemanLevel } from "../../utils/intentGuards.js";
+import { detectCavemanLevel } from "../../utils/intent-guards/intentGuards.js";
 
 /**
  * Mode économie tokens serveur — Caveman instruction LITE si le tour est compatible.

@@ -1,6 +1,7 @@
 # G38 — Summary Contract Router — Spec fonctionnelle
 
-**État** : juillet 2026 — **spec figée** ; router + tests **livrés** (47/47).
+**État** : juillet 2026 — **spec figée** ; router + tests **livrés** (47/47).  
+**G38.2** : cadrage web-on-local-miss **validé** 2026-08-17 (addendum ci-dessous ; G38 n'est pas dégelé).
 
 **Référence noyau** : [query-understanding-g29-spec.md](./query-understanding-g29-spec.md)
 
@@ -16,6 +17,7 @@
 **Voir aussi** :
 - [nexxus-routing-behavior-registry-v1.md](./nexxus-routing-behavior-registry-v1.md) — pack G38
 - G37 livré : `cultural-content-summary-routing.test.js`
+- G38.2 : `knownEntitySummaryExecutionPolicy.js`, `summary-execution-g38-2.test.js`
 
 ---
 
@@ -533,3 +535,65 @@ Format attendu des tests `summary-contract-g38-routing.test.js` :
 ## Résumé en une phrase
 
 G38 fige le contrat `summary/*` pour que Nexxus sache **avant tout agent** si une requête « résumer » exige un texte, une URL, ou une réponse directe de connaissance — avec smart default déclaré et clarification uniquement sur ambiguïté bloquante.
+
+---
+
+## G38.2 — Cadrage validé (rail culturel)
+
+**Date** : 2026-08-17.  
+**Statut** : **lot fermé**.  
+**Périmètre** : exécution `summary/known_entity` / `DIRECT_SUMMARY` uniquement.  
+**Hors périmètre** : canon input (`citadelle-input-invariants.md`) ; Vision ; JUST ; `subject_angle_explore` ; cadrage sujet ; existence ; `entities` ; tout autre rail.
+
+Le rail G38.2 est distinct du canon input. Cet addendum ne dégèle pas G38.
+
+### Règle
+
+Œuvre identifiée + local vide / refus / trop faible = recherche web obligatoire.
+
+La réponse reste courte et sourcée.
+
+Synopsis local factuel = pas de web.
+
+Identifiant runtime : `cultural_work_local_miss_triggers_mandatory_web`.
+
+Le fallback local ne termine plus le tour quand il est vide, refusé ou trop faible. Le texte « je n'ai pas de synopsis fiable en local… » n'est pas une réponse livrable : c'est un miss. Pour une œuvre identifiée, la recherche web est le filet de sécurité.
+
+### Pipeline attendu
+
+1. Tentative locale : `cultural_content_summary` (SIMPLE_FAST).
+2. Miss local (vide / refus / confiance trop faible) : arrêt du local.
+3. Escalade obligatoire : `cultural_content_summary_web`.
+
+Contrat known_entity : `forbidDocumentRequest: true`, `forbidWebSearch: false`, `webOnLocalMiss: true`.  
+Le champ `forbidWebSearch: true` de l'exemple JSON G38 ci-dessus est **supersédé** pour known_entity par cet addendum.
+
+### Preuve de validation
+
+| Preuve | Attendu |
+|--------|---------|
+| `server/tests/summary-execution-g38-2.test.js` | vert |
+| Replay *Les Bronzés font du ski* après reload | synopsis court sourcé, pas le refus local |
+| Pipeline replay | `cultural_content_summary_web` après arrêt du local |
+
+### Garde-fous
+
+- Ne pas élargir la règle à tout le canon input.
+- Ne pas toucher à Vision.
+- Ne pas toucher à JUST.
+- Ne pas toucher à `subject_angle_explore`.
+- Ne pas introduire de nouveau parser.
+- Ne pas transformer ce rail en comportement systématique hors œuvres identifiées.
+- Pas de web si le synopsis local est déjà court mais factuel.
+
+### Refus d'élargissement
+
+Toute proposition est refusée si elle :
+
+- étend la règle au-delà du rail culturel G38.2 ;
+- remplace la distinction « local suffisant / local insuffisant » par une règle aveugle ;
+- introduit une nouvelle couche de traitement qui n'était pas demandée.
+
+### Critère de fermeture
+
+Le lot est fermé : addendum écrit ; pack registry v1.7 à jour ; règle explicite ; preuve conservée ; garde-fous contre tout élargissement hors périmètre.

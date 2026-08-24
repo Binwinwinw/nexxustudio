@@ -32,7 +32,7 @@ import {
   resolveSimpleFastResponseMode,
   applySimpleFastDeliveryPipeline,
 } from "../src/agent/paths/simpleFastPath.js";
-import { isGeneralKnowledgeRequest } from "../src/agent/utils/generalKnowledgeIntentGuards.js";
+import { isGeneralKnowledgeRequest } from "../src/agent/utils/intent-guards/generalKnowledgeIntentGuards.js";
 import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
 import {
   CLARIFICATION_DECISIONS,
@@ -221,7 +221,7 @@ describe("lexicon_explain_light — guards", () => {
 
   it("solo — expliquer … tableau → structured edu, pas technical_overview", async () => {
     const { isTechnicalOverviewRequest } = await import(
-      "../src/agent/utils/technicalOverviewIntentGuards.js"
+      "../src/agent/utils/intent-guards/technicalOverviewIntentGuards.js"
     );
     const { evaluateJustIntent } = await import(
       "../src/agent/policies/intent/justIntentDetectionPolicy.js"

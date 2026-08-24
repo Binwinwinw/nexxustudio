@@ -6,11 +6,11 @@ import {
   isDebugDiagnosticSignal,
   parseTechnicalOverview,
   extractTechnicalSubject,
-} from "../src/agent/utils/technicalOverviewIntentGuards.js";
+} from "../src/agent/utils/intent-guards/technicalOverviewIntentGuards.js";
 import { resolveTechnicalOverviewShortCircuit } from "../src/agent/micro/replies/technicalOverviewComposer.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
-import { isBeginnerTopicOverviewRequest } from "../src/agent/utils/beginnerTopicOverviewIntentGuards.js";
+import { isBeginnerTopicOverviewRequest } from "../src/agent/utils/intent-guards/beginnerTopicOverviewIntentGuards.js";
 
 describe("technicalOverview — lot 7", () => {
   it("explique Redis → technical_overview", () => {

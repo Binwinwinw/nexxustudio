@@ -40,6 +40,11 @@ class TurnTelemetry {
       [OTEL_ATTRIBUTES.GEN_AI_INPUT_TOKENS]: 0,
       [OTEL_ATTRIBUTES.GEN_AI_OUTPUT_TOKENS]: 0,
       ttft: 0,
+      ttft_ms: 0,
+      routing_ms: 0,
+      generation_ms: 0,
+      analysis_mode: null,
+      depth_trigger: null,
       tps: 0,
       totalTokens: 0,
     };

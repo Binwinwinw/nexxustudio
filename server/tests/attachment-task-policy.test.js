@@ -26,7 +26,7 @@ import {
   classifyCodeIntent,
   isCodeIntentRequest,
 } from "../src/agent/policies/code/codeIntentPolicy.js";
-import { hasTextAttachments } from "../src/agent/utils/conversationGuards.js";
+import { hasTextAttachments } from "../src/agent/utils/conversation/conversationGuards.js";
 import {
   isDocxFile,
   isLegacyDocFile,
@@ -85,10 +85,37 @@ describe("attachmentTaskPolicy", () => {
       hasCodeAttachmentSignal([{ originalname: "index.html" }], ""),
       true,
     );
-    const c = classifyAttachmentTask("analyse le fichier joint", [
+    const c = classifyAttachmentTask("revue le fichier joint", [
       { originalname: "index.html" },
     ]);
     assert.equal(c.task, ATTACHMENT_TASKS.CODE_REVIEW);
+  });
+
+  it("server-index-clean.js + analyser → doc_analyze FILE_ANALYSIS, pas code_review", () => {
+    const q = "analyse le fichier";
+    const files = [{ originalname: "server-index-clean.js" }];
+    const c = classifyAttachmentTask(q, files);
+    assert.equal(c.task, ATTACHMENT_TASKS.DOC_ANALYZE);
+    assert.equal(c.outputContract, "FILE_ANALYSIS_V1");
+    assert.equal(c.fileAnalysisDepth, "simple");
+    assert.equal(isCodeIntentRequest(q, { attachments: files }), false);
+    assert.equal(shouldBypassDocumentAnalysisRoute(q, null, files), false);
+  });
+
+  it("HTML + analyser (sans nature code) → doc_analyze document", () => {
+    const q = "voici un html à analyser";
+    const files = [
+      {
+        originalname:
+          "Un dessin animé d'un homme tenant un appareil photo.html",
+      },
+    ];
+    const c = classifyAttachmentTask(q, files);
+    assert.equal(c.task, ATTACHMENT_TASKS.DOC_ANALYZE);
+    assert.equal(c.fileKind, "document");
+    assert.equal(isDocumentAttachmentTask(c.task), true);
+    assert.equal(shouldBypassDocumentAnalysisRoute(q, null, files), false);
+    assert.equal(shouldRouteAttachmentTaskToFullPipeline(q, files), false);
   });
 
   it("sans PJ → unmatched", () => {
@@ -119,12 +146,25 @@ describe("attachmentTaskPolicy", () => {
     assert.equal(shouldRouteAttachmentTaskToFullPipeline(q, files), true);
   });
 
+  it("guide HTML + axes d'améliorations → doc_improve document, pas code", () => {
+    const q =
+      "analyse le fichier joint pour proposer des axes d'améliorations de celui-ci";
+    const files = [
+      { originalname: "Guide de remédiation 3ème _ Programmes 2025.html" },
+    ];
+    const c = classifyAttachmentTask(q, files);
+    assert.equal(c.task, ATTACHMENT_TASKS.DOC_IMPROVE);
+    assert.equal(c.fileKind, "document");
+    assert.equal(isDocumentAttachmentTask(c.task), true);
+    assert.equal(shouldRouteAttachmentTaskToFullPipeline(q, files), true);
+  });
+
   it("index.html + analyse + contenu amélioré → suppress TEXT_SUMMARY", () => {
     const q = "Analyse le fichier joint et propose un contenu amélioré";
     const files = [{ originalname: "index.html" }];
     const c = classifyAttachmentTask(q, files);
     assert.equal(c.task, ATTACHMENT_TASKS.DOC_IMPROVE);
-    assert.equal(c.fileKind, "code");
+    assert.equal(c.fileKind, "document");
     assert.equal(shouldSuppressSummaryContractForAttachment(q, files), true);
     assert.equal(shouldRouteAttachmentTaskToFullPipeline(q, files), true);
     assert.equal(classifySummaryContract(q, { attachments: files }), null);

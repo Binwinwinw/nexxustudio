@@ -1,12 +1,12 @@
 import {
   canProvideSafeGenericProcedure,
   isExploitableProcedureIntent,
-} from "../../utils/procedureIntentGuards.js";
+} from "../../utils/intent-guards/procedureIntentGuards.js";
 import { evaluateProcedureSubjectNatureGate } from "../subject/subjectNatureResolver.js";
 import { buildSubjectInterpretedState } from "../subject/subjectInterpretedState.js";
 import { shouldBlockThinAutoProcedure } from "../subject/subjectDeliberationPolicy.js";
 import { runMiniDeliberation } from "../subject/miniDeliberationGate.js";
-import { isFamiliarityIntent } from "../../utils/familiarityIntentGuards.js";
+import { isFamiliarityIntent } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { isForgeProjectScopingQuery } from "../subject/forgeProjectScoping.js";
 
 /**

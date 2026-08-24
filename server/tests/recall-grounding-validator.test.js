@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { validateRecallGrounding } from '../src/agent/utils/recallGroundingValidator.js';
+import { validateRecallGrounding } from '../src/agent/utils/context/recallGroundingValidator.js';
 
 test('validateRecallGrounding: OK si marqueur temporel présent dans historique', () => {
   const result = validateRecallGrounding('Nous avons parlé hier du projet.', [

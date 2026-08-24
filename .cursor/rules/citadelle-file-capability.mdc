@@ -1,0 +1,16 @@
+---
+description: Canon Citadelle — capacité / sécurité fichiers. Lire le document avant tout changement upload, MIME, archives, FILE_ANALYSIS admission.
+alwaysApply: false
+---
+
+# Citadelle — capacité fichiers
+
+Source unique : `docs/governance/file-capability-policy.md`
+
+Lire le canon avant tout changement upload, allowlist, archives, signatures ou admission PJ.
+
+Ne pas recopier le canon ici ni ailleurs.
+
+Divergence : le canon gagne. Pointer, ne pas redéfinir.
+
+Ne pas casser FILE_ANALYSIS_V1 / SQL / HTML / PDF.

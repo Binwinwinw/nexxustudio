@@ -6,7 +6,7 @@ import {
   extractCulturalSummarySubject,
   suppressesDocumentSynthesisForCulturalSummary,
 } from "../src/agent/policies/summary/index.js";
-import { isGeneralKnowledgeRequest } from "../src/agent/utils/generalKnowledgeIntentGuards.js";
+import { isGeneralKnowledgeRequest } from "../src/agent/utils/intent-guards/generalKnowledgeIntentGuards.js";
 import { hasDocumentSynthesisShell, isDocumentSynthesisExcluded } from "../src/agent/policies/document/index.js";
 import {
   CLARIFICATION_DECISIONS,
@@ -15,7 +15,7 @@ import {
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { resolveGeneralKnowledgeShortCircuit } from "../src/agent/micro/replies/generalKnowledgeComposerContract.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { isPresentationOutlineRequest } from "../src/agent/utils/presentationOutlineIntentGuards.js";
+import { isPresentationOutlineRequest } from "../src/agent/utils/intent-guards/presentationOutlineIntentGuards.js";
 
 const INTERSTELLAR_QUERY =
   "pourrais tu faire un résumé du film interstellar ?";

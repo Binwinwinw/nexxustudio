@@ -21,7 +21,7 @@ import {
 import { applyCodeProjectLightWrite } from "../src/agent/policies/code/codeProjectLightExecutionPolicy.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
 import { isCodeGenerationRequest } from "../src/agent/policies/code/codeDeliveryPolicy.js";
-import { suppressesCodeGenerationForProgrammingPedagogy } from "../src/agent/utils/programmingPedagogyLightIntentGuards.js";
+import { suppressesCodeGenerationForProgrammingPedagogy } from "../src/agent/utils/intent-guards/programmingPedagogyLightIntentGuards.js";
 
 export const CODE_PROJECT_LIGHT_CANONICAL_QUERY =
   "Crée une page HTML/CSS/JS simple pour présenter La Citadelle, enregistre les fichiers dans projects/demo-citadelle";

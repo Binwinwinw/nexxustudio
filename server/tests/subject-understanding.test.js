@@ -12,8 +12,8 @@ import {
   getFamiliarityDeterministicReply,
   resolveKnownOrUnknownSubject,
   resolveSubjectFromLabel,
-} from "../src/agent/utils/familiarityIntentGuards.js";
-import { getFamiliarityFollowupDeterministicReply } from "../src/agent/utils/familiarityFollowupGuards.js";
+} from "../src/agent/utils/intent-guards/familiarityIntentGuards.js";
+import { getFamiliarityFollowupDeterministicReply } from "../src/agent/utils/conversation/familiarityFollowupGuards.js";
 
 describe("subject understanding — shape & inférence", () => {
   it("classifie un événement culturel inconnu", () => {

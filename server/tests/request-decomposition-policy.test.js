@@ -11,6 +11,8 @@ import {
   allWorkUnitsSatisfiable,
   shouldPreemptMultiSegment,
   inventoryRequestUnits,
+  composeSocialSituation,
+  SOCIAL_SITUATIONS,
   REQUEST_MODES,
 } from "../src/agent/policies/routing/requestDecompositionPolicy.js";
 import { buildRequestDecompositionTelemetryEvent } from "../src/agent/telemetry/requestDecompositionTelemetry.js";
@@ -140,5 +142,143 @@ describe("requestDecompositionPolicy", () => {
     assert.ok(types.includes("time_request"));
     assert.ok(types.includes("date_request"));
     assert.ok(types.includes("how_to_request"));
+  });
+});
+
+describe("Social multi-signal v1 — inventaire + composition", () => {
+  it("salut + papoter → N unités + situation chat_invite (greeting absorbé)", () => {
+    const q = "salut et si on papotait ?";
+    const units = inventoryRequestUnits(q);
+    assert.ok(units.some((u) => u.unitType === "social_greeting"));
+    assert.ok(units.some((u) => u.unitType === "social_chat_invite"));
+    assert.ok(units.length >= 2);
+
+    const composed = composeSocialSituation(units);
+    assert.equal(composed?.situation, SOCIAL_SITUATIONS.CHAT_INVITE);
+    assert.deepEqual(composed?.absorbedUnitTypes, [SOCIAL_SITUATIONS.GREETING]);
+
+    const d = decomposeRequest(q);
+    assert.equal(d.socialSituation?.situation, SOCIAL_SITUATIONS.CHAT_INVITE);
+    assert.ok(d.unitTypes.includes("social_greeting"));
+    assert.ok(d.unitTypes.includes("social_chat_invite"));
+  });
+
+  it("bonjour on discute ? → même composition chat_invite", () => {
+    const d = decomposeRequest("bonjour on discute ?");
+    assert.ok(d.unitTypes.includes("social_greeting"));
+    assert.ok(d.unitTypes.includes("social_chat_invite"));
+    assert.equal(d.socialSituation?.situation, SOCIAL_SITUATIONS.CHAT_INVITE);
+  });
+
+  it("salut seul → situation greeting", () => {
+    const d = decomposeRequest("salut");
+    assert.deepEqual(d.unitTypes, ["social_greeting"]);
+    assert.equal(d.socialSituation?.situation, SOCIAL_SITUATIONS.GREETING);
+  });
+
+  it("comment ça va ? → situation checkin", () => {
+    const d = decomposeRequest("comment ça va ?");
+    assert.ok(d.unitTypes.includes("social_checkin"));
+    assert.equal(d.socialSituation?.situation, SOCIAL_SITUATIONS.CHECKIN);
+  });
+
+  it("salut + ça va + prêt à tafer → work_ready (greeting/checkin absorbés)", () => {
+    const q = "salut comment ca va ??? tu es prêt à tafer ?";
+    const units = inventoryRequestUnits(q);
+    assert.ok(units.some((u) => u.unitType === "social_greeting"));
+    assert.ok(units.some((u) => u.unitType === "social_checkin"));
+    assert.ok(units.some((u) => u.unitType === "social_work_ready"));
+
+    const composed = composeSocialSituation(units);
+    assert.equal(composed?.situation, SOCIAL_SITUATIONS.WORK_READY);
+    assert.ok(composed?.absorbedUnitTypes.includes(SOCIAL_SITUATIONS.GREETING));
+    assert.ok(composed?.absorbedUnitTypes.includes(SOCIAL_SITUATIONS.CHECKIN));
+    assert.equal(composed?.preemptedByWork, false);
+
+    const d = decomposeRequest(q);
+    assert.equal(d.socialSituation?.situation, SOCIAL_SITUATIONS.WORK_READY);
+    assert.ok(d.unitTypes.includes("social_work_ready"));
+  });
+
+  it("greeting + tâche métier → social preemptedByWork, multi_unit intact", () => {
+    const q = "Bonjour, corrige-moi ce HTML";
+    const d = decomposeRequest(q);
+    assert.ok(d.unitTypes.includes("social_greeting"));
+    assert.ok(d.unitTypes.includes("html_transform"));
+    assert.equal(d.socialSituation?.preemptedByWork, true);
+    assert.equal(d.socialSituation?.situation, null);
+    assert.equal(isMultiUnitRequest(d), true);
+  });
+});
+
+describe("Social multi-signal v1 — short-circuit après composition", () => {
+  it("salut et si on papotait ? → entrée conversation, pas menu d'accueil", async () => {
+    const hit = await runConversationShortCircuit("salut et si on papotait ?", {
+      history: [],
+    });
+    assert.equal(hit?.path, "social_deterministic");
+    assert.equal(hit?.socialPatternName, "social/chat_invite");
+    assert.match(hit?.step || "", /multi-signal|chat_invite/i);
+    assert.match(hit?.reply || "", /écoute|sujet/i);
+    assert.doesNotMatch(
+      hit?.reply || "",
+      /cadrer un projet|structurer des livrables/i,
+    );
+  });
+
+  it("bonjour on discute ? → chat_invite déterministe", async () => {
+    const hit = await runConversationShortCircuit("bonjour on discute ?", {
+      history: [],
+    });
+    assert.equal(hit?.path, "social_deterministic");
+    assert.equal(hit?.socialPatternName, "social/chat_invite");
+    assert.doesNotMatch(
+      hit?.reply || "",
+      /cadrer un projet|structurer des livrables/i,
+    );
+  });
+
+  it("salut seul → greeting déterministe rapide (menu OK)", async () => {
+    const hit = await runConversationShortCircuit("salut", { history: [] });
+    assert.equal(hit?.path, "social_deterministic");
+    assert.match(hit?.reply || "", /Salut/i);
+    assert.match(hit?.step || "", /Réponse sociale déterministe/i);
+  });
+
+  it("comment ça va ? → checkin déterministe", async () => {
+    const hit = await runConversationShortCircuit("comment ça va ?", {
+      history: [],
+    });
+    assert.equal(hit?.path, "social_deterministic");
+    assert.match(hit?.reply || "", /Ça va bien|va bien/i);
+    assert.match(hit?.step || "", /État\/Santé/i);
+  });
+
+  it("salut + ça va + prêt à tafer → work_ready, pas panel santé seul", async () => {
+    const q = "salut comment ca va ??? tu es prêt à tafer ?";
+    const hit = await runConversationShortCircuit(q, { history: [] });
+    assert.equal(hit?.path, "social_deterministic");
+    assert.equal(hit?.socialPatternName, "social/work_ready");
+    assert.match(hit?.step || "", /work_ready/i);
+    assert.match(hit?.reply || "", /Salut/i);
+    assert.match(hit?.reply || "", /va bien|Tout va bien/i);
+    assert.match(hit?.reply || "", /prêt|lance/i);
+    assert.doesNotMatch(hit?.step || "", /État\/Santé/i);
+    assert.doesNotMatch(
+      hit?.reply || "",
+      /cadrer un projet|structurer des livrables|Choisis un numéro/i,
+    );
+  });
+
+  it("salut + HTML → pas short-circuit greeting menu (laisse multi_unit)", async () => {
+    const q = "Bonjour, corrige-moi ce HTML";
+    const hit = await runConversationShortCircuit(q, { history: [] });
+    assert.notEqual(hit?.socialPatternName, "social/chat_invite");
+    if (hit?.path === "social_deterministic") {
+      assert.doesNotMatch(
+        hit.reply || "",
+        /^Salut ! Si tu veux on peut papoter/i,
+      );
+    }
   });
 });

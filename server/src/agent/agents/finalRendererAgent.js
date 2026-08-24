@@ -1,22 +1,28 @@
 import { getClientForModel } from "../../llm/llmFactory.js";
 import { AGENT_ROLES } from "../policies/core/index.js";
-import OllamaStreamProcessor from "../utils/ollamaStreamProcessor.js";
-import responseThinkingCleaner from "../utils/responseThinkingCleaner.js";
+import OllamaStreamProcessor from "../utils/runtime/ollamaStreamProcessor.js";
+import responseThinkingCleaner from "../utils/quality-safety/responseThinkingCleaner.js";
 import {
   getComposerSystemPrompt,
   enforceComposerContract,
   resolveComposerContractMode,
   INSUFFICIENT_SIGNAL_REFUSAL,
+  isInsufficientSignalRefusal,
   RESPONSE_MODES,
   shouldApplyOpenPropositionContract,
+  buildAttachedDocumentFallback,
+  isVisionAttachedDescribeContext,
+  resolveVisionAttachedComposerDelivery,
 } from "../config/modeResponseContracts.js";
 import { getComposerObservabilityContext } from "../config/intentContractRegistry.js";
+import { shouldBlockGenericInsufficientRefusal } from "../policies/posture/index.js";
 import conversationHealth from "../telemetry/conversationHealth.js";
 import { recordComposerTelemetry } from "../telemetry/telemetryObservabilityBridge.js";
 import {
   validateRendererWithMakersChecker,
 } from "../verification/makersCheckerBridge.js";
-import { resolvePipelineFallback } from "../utils/genericGreetingGuards.js";
+import { resolvePipelineFallback } from "../utils/conversation/genericGreetingGuards.js";
+import { enforceSimpleFactualDirectness } from "../micro/replies/simpleFactualComposer.js";
 import { isCodeReviewRequest } from "../policies/code/codeReviewPolicy.js";
 import {
   applyCodeReviewRuntimeGuard,
@@ -36,6 +42,10 @@ import {
   requiresGeneralKnowledgeComposerContract,
   buildGeneralKnowledgeUserPrompt,
   isGeneralKnowledgeContractViolation,
+  resolveGeneralKnowledgeVolumeTier,
+  resolveGeneralKnowledgeNumPredict,
+  GK_VOLUME_TIER_DEEP,
+  GK_VOLUME_TIER_LIGHT,
 } from "../micro/replies/generalKnowledgeComposerContract.js";
 import {
   requiresKnowledgeFreshnessComposerContract,
@@ -64,17 +74,30 @@ import {
 } from "../micro/replies/factualResearchComposerContract.js";
 import { buildFactualResearchDeterministicReport } from "../policies/web/factualResearchDeterministicBuilder.js";
 import {
+  resolveFactualResearchOutputShape,
+  FACTUAL_RESEARCH_SHAPE_STRUCTURED_REPORT,
+} from "../policies/web/factualResearchDeliverablePolicy.js";
+import {
   buildHtmlAnalyzerFactsSystemAddon,
   stripContradictedHtmlHeadClaims,
 } from "../policies/attachment/attachmentInterpretationPolicy.js";
-import { deduplicateNearDuplicateBlocks } from "../utils/qualityGuards.js";
+import {
+  compressComposerFinalPass,
+  deduplicateNearDuplicateBlocks,
+} from "../utils/quality-safety/qualityGuards.js";
 import { getRepoAnalysisSystemPrompt } from "../analysis/repoAnalysisContract.js";
 import { buildProductSourcesInsufficientReply } from "../policies/guided/index.js";
 import { wasWebSearchAttempted } from "../policies/routing/explicitWebSearchRequestPolicy.js";
-import { ensureExplicitWebSourceLinks } from "../policies/web/index.js";
+import {
+  ensureExplicitWebSourceLinks,
+  isRawWebEvidenceDump,
+  resolveVisibleWebDelivery,
+  buildWebEvidenceGroundedFallback,
+} from "../policies/web/index.js";
 import {
   isCodeGenerationRequest,
 } from "../policies/code/codeDeliveryPolicy.js";
+import { applyCodeDeliveryPreserveOrFail, extractCodeDeliverySourceText } from "../policies/code/codeDeliveryRuntimeGuard.js";
 import { isCodeProjectLightRequest } from "../policies/code/codeProjectLightPolicy.js";
 import { runContractQualityLoop } from "../quality/contractQualityLoop.js";
 import { frontPresentationQualityPolicy } from "../quality/policies/frontPresentationQualityPolicy.js";
@@ -85,13 +108,68 @@ import {
   buildConstructiveDeliveryUserPrompt,
   isClearConstructiveDeliverable,
   isCodeDeliveryContractViolation,
+  requiresStructuredContentComposerBudget,
 } from "../policies/delivery/index.js";
 import {
   buildHtmlProjectUserAddon,
   evaluateHtmlProjectDelivery,
 } from "../policies/delivery/index.js";
 import { recordHtmlProjectComposerOutcome } from "../telemetry/htmlProjectDeliveryTelemetry.js";
-import { sanitizeUnverifiedToolExecutionClaims } from "../utils/toolExecutionClaimGuard.js";
+import { sanitizeUnverifiedToolExecutionClaims } from "../utils/quality-safety/toolExecutionClaimGuard.js";
+
+/**
+ * Budget composer — charge réelle, pas un plafond global.
+ * @param {object} composerOptions
+ * @param {object} [packet]
+ * @returns {number}
+ */
+export function resolveComposerNumPredict(composerOptions = {}, packet = {}) {
+  if (composerOptions.openProposition) return 420;
+  if (composerOptions.knownEntitySummary) return 240;
+  if (composerOptions.factualResearch) {
+    return resolveFactualResearchOutputShape(packet.user_query || "") ===
+      FACTUAL_RESEARCH_SHAPE_STRUCTURED_REPORT
+      ? 2200
+      : 700;
+  }
+  if (composerOptions.structuredContent) return 2200;
+  if (
+    composerOptions.generalKnowledge &&
+    composerOptions.volumeTier !== GK_VOLUME_TIER_DEEP
+  ) {
+    return resolveGeneralKnowledgeNumPredict(composerOptions.volumeTier);
+  }
+  if (
+    composerOptions.directArbitration ||
+    composerOptions.knowledgeFreshness ||
+    composerOptions.compareChoose ||
+    composerOptions.researchThenSummarize ||
+    composerOptions.repoAnalysis ||
+    composerOptions.codeDelivery
+  ) {
+    return 4000;
+  }
+  if (composerOptions.generalKnowledge) {
+    return resolveGeneralKnowledgeNumPredict(composerOptions.volumeTier);
+  }
+  if (composerOptions.volumeTier === GK_VOLUME_TIER_DEEP) return 1200;
+  if (composerOptions.forceShort) return 400;
+  if (packet.mode === "EPISTEMIC") return 1200;
+  return 600;
+}
+
+function packetHasWebEvidence(packet = {}) {
+  if (
+    (packet?.expert_outputs || []).some(
+      (o) =>
+        o?.stage === "web_research" &&
+        String(o?.content || "").trim().length > 20,
+    )
+  ) {
+    return true;
+  }
+  return Boolean(packet?.meta?.web_consulted_at);
+}
 
 // ── Composer principal ───────────────────────────────────────────────────────
 export const finalRendererAgent = {
@@ -198,10 +276,35 @@ export const finalRendererAgent = {
       }
     }
 
+    if (composerOptions.codeDelivery) {
+      const deliveryGuard = applyCodeDeliveryPreserveOrFail({
+        query: packet.user_query || "",
+        packet,
+        composerText: "",
+      });
+      if (deliveryGuard.action === "preserved" || deliveryGuard.action === "blocked") {
+        packet.meta = packet.meta || {};
+        packet.meta.code_delivery_runtime = deliveryGuard.action;
+        packet.meta.code_delivery_skip_llm = true;
+        this._logComposerPath(observability, "code_delivery_preserve_or_fail", {
+          action: deliveryGuard.action,
+          reasons: deliveryGuard.reasons,
+        });
+        await recordComposerTelemetry({
+          outcome: deliveryGuard.action === "blocked" ? "blocked" : "success",
+          skillId: observability.intentContractId || null,
+          latencyMs: Date.now() - composerStartedAt,
+          responseLength: deliveryGuard.text.length,
+          path: "code_delivery_preserve_or_fail",
+        });
+        return deliveryGuard.text;
+      }
+    }
+
     this._logComposerPath(observability, "llm_start");
 
     try {
-      const model = AGENT_ROLES.CHAT || "ornith:9b";
+      const model = AGENT_ROLES.CHAT;
       const client = getClientForModel(model);
       let systemPrompt = getComposerSystemPrompt(packet, composerOptions);
       if (composerOptions.repoAnalysis) {
@@ -225,32 +328,18 @@ export const finalRendererAgent = {
         if (factsAddon) systemPrompt += `\n\n${factsAddon}`;
       }
 
-      // P3 — FACTUAL_RESEARCH : budget plus court (cible ~1400 mots, pas 4000 tokens)
-      const numPredict = composerOptions.openProposition
-        ? 420
-        : composerOptions.knownEntitySummary
-          ? 240
-        : composerOptions.factualResearch
-          ? 2200
-        : composerOptions.generalKnowledge ||
-            composerOptions.directArbitration ||
-            composerOptions.knowledgeFreshness ||
-            composerOptions.compareChoose ||
-            composerOptions.researchThenSummarize ||
-            composerOptions.repoAnalysis ||
-            composerOptions.codeDelivery
-          ? 4000
-          : composerOptions.forceShort
-            ? 400
-            : packet.mode === "EPISTEMIC"
-              ? 1200
-              : 600;
+      const numPredict = resolveComposerNumPredict(composerOptions, packet);
 
       const userPrompt = this._buildComposerUserPrompt(packet, composerOptions);
 
       let rendered = "";
       const isBuffered = this._requiresBufferedFinalDelivery(packet, composerOptions);
+      // Jamais d'émission UI avant compression / post-traitement final.
       const activeOnContent = isBuffered ? null : onContent;
+      if (packet?.meta) {
+        packet.meta.composer_ui_emit_blocked = Boolean(isBuffered);
+        packet.meta.composer_streamed_to_ui = false;
+      }
 
       if (activeOnContent) {
         console.log("[FinalResponseComposer] Starting stream mode...");
@@ -294,9 +383,18 @@ export const finalRendererAgent = {
       }
 
       const webGrounded = this._hasUsableWebGrounding(packet);
+      const hasAttachedDocument = Boolean(packet?.meta?.has_attached_documents);
+      const visionAttachedDescribe = isVisionAttachedDescribeContext(packet);
+      const queryForRefusal = packet?.user_query || "";
+      const blockPisteOnExplain =
+        packet?.meta?.intent_contract_id === "DIRECT_EXPLANATION" ||
+        shouldBlockGenericInsufficientRefusal(queryForRefusal);
       let enforced = enforceComposerContract(packet, rendered, composerOptions, {
         allowRefusal:
           !webGrounded &&
+          !hasAttachedDocument &&
+          !visionAttachedDescribe &&
+          !blockPisteOnExplain &&
           !composerOptions.directArbitration &&
           !composerOptions.generalKnowledge &&
           !composerOptions.knownEntitySummary &&
@@ -304,6 +402,7 @@ export const finalRendererAgent = {
           !composerOptions.researchThenSummarize &&
           !composerOptions.repoAnalysis &&
           !composerOptions.codeDelivery,
+        attachedDocument: hasAttachedDocument,
         codeDelivery: composerOptions.codeDelivery,
       });
       enforced = sanitizeUnverifiedToolExecutionClaims(
@@ -640,15 +739,40 @@ export const finalRendererAgent = {
           onContent: activeOnContent,
         });
 
-        const finalized = this._applyHtmlAttachmentPostCompose(
+        let finalized = this._applyHtmlAttachmentPostCompose(
           packet,
           guardedText,
           composerOptions,
         );
+        if (composerOptions.codeDelivery) {
+          const deliveryGuard = applyCodeDeliveryPreserveOrFail({
+            query: packet.user_query || "",
+            packet,
+            composerText: finalized,
+          });
+          packet.meta = packet.meta || {};
+          packet.meta.code_delivery_runtime = deliveryGuard.action;
+          finalized = deliveryGuard.text;
+        }
+        // Compression finale AVANT toute émission UI (fiche / dump ## inline / général).
+        if (finalized) {
+          const compressed = compressComposerFinalPass(finalized);
+          finalized = compressed.text;
+          if (packet?.meta) {
+            packet.meta.composer_final_compressed = Boolean(compressed.compressed);
+            if (compressed.compressed) {
+              packet.meta.composer_redundancy_scrubbed = true;
+            }
+          }
+        }
         this._logComposerPath(observability, "primary", {
           chars: finalized.length,
           makersChecker: makersGate.validation?.outcome || "skipped",
           composer_deduped: Boolean(packet?.meta?.composer_deduped),
+          composer_final_compressed: Boolean(
+            packet?.meta?.composer_final_compressed,
+          ),
+          composer_ui_emit_blocked: Boolean(packet?.meta?.composer_ui_emit_blocked),
         });
         await recordComposerTelemetry({
           outcome: "success",
@@ -662,10 +786,16 @@ export const finalRendererAgent = {
             composerPath: "composer_primary",
           });
         }
+        // Buffered : retour texte seul (pipeline émet en buffered_final).
+        // Non-buffered : émettre uniquement le texte déjà compressé.
+        const emitCb = isBuffered ? null : onContent;
+        if (emitCb && packet?.meta) {
+          packet.meta.composer_streamed_to_ui = true;
+        }
         return this._emitWithExplicitWebSourceLinks(
           packet,
-          finalized,
-          activeOnContent,
+          resolveVisionAttachedComposerDelivery(packet, finalized),
+          emitCb,
         );
       }
 
@@ -695,6 +825,26 @@ export const finalRendererAgent = {
         this._logComposerPath(observability, "fallback", { reason: "expert_or_quick_answer" });
       }
       let finalText = enforced || genericFallback;
+      if (
+        hasAttachedDocument &&
+        (finalText === INSUFFICIENT_SIGNAL_REFUSAL ||
+          !String(finalText || "").trim() ||
+          /^Je vois la piste/i.test(String(finalText || "")))
+      ) {
+        const fileName =
+          packet?.meta?._attachment_refs?.[0]?.name || "document";
+        finalText = buildAttachedDocumentFallback(
+          packet?.vision_briefing || packet?.meta?.document_briefing || "",
+          packet?.user_query || "",
+          fileName,
+        );
+        this._logComposerPath(observability, "document_attached_refusal_replaced", {});
+      }
+      const visionDelivered = resolveVisionAttachedComposerDelivery(packet, finalText);
+      if (visionDelivered !== finalText) {
+        finalText = visionDelivered;
+        this._logComposerPath(observability, "vision_attached_refusal_replaced", {});
+      }
       // Preuves web présentes : ne jamais livrer le refus « piste / destination ».
       if (
         webGrounded &&
@@ -705,6 +855,24 @@ export const finalRendererAgent = {
           allowRefusal: false,
         });
         this._logComposerPath(observability, "web_grounded_refusal_replaced", {});
+      }
+      if (blockPisteOnExplain) {
+        const needsExplainFallback =
+          isInsufficientSignalRefusal(finalText) ||
+          !String(finalText || "").trim() ||
+          /synthèse courte sourcée|source\(s\) web consultée/i.test(
+            String(finalText || ""),
+          );
+        if (needsExplainFallback) {
+          const honest = enforceSimpleFactualDirectness(
+            finalText,
+            queryForRefusal,
+          );
+          if (honest && !isInsufficientSignalRefusal(honest)) {
+            finalText = honest;
+            this._logComposerPath(observability, "direct_explanation_refusal_replaced", {});
+          }
+        }
       }
       if (
         composerOptions.compareChoose &&
@@ -802,7 +970,7 @@ export const finalRendererAgent = {
     const isSocial =
       packet.user_intent === "social" ||
       packet.user_intent === "social_chit_chat";
-    const forceShort =
+    const rawForceShort =
       expectedMode === RESPONSE_MODES.SIMPLE_FAST ||
       this.shouldForceShortResponse(packet);
     const openProposition =
@@ -810,7 +978,7 @@ export const finalRendererAgent = {
       shouldApplyOpenPropositionContract(packet);
     const useFactualPrompt =
       !isSocial &&
-      !forceShort &&
+      !rawForceShort &&
       !openProposition &&
       (expectedMode === RESPONSE_MODES.DOCUMENT ||
         expectedMode === RESPONSE_MODES.CRITICAL ||
@@ -824,10 +992,6 @@ export const finalRendererAgent = {
       requiresGeneralKnowledgeComposerContract(packet.user_query || "") &&
       !directArbitration &&
       !knownEntitySummary;
-    const knowledgeFreshness = requiresKnowledgeFreshnessComposerContract(
-      packet.user_query || "",
-      packet,
-    );
     const compareChoose = requiresCompareChooseComposerContract(
       packet.user_query || "",
       packet,
@@ -848,11 +1012,46 @@ export const finalRendererAgent = {
       isCodeProjectLightRequest(packet.user_query || "") ||
       isCodeGenerationRequest(packet.user_query || "") ||
       isClearConstructiveDeliverable(packet.user_query || "");
+    const knowledgeFreshness =
+      !codeDelivery &&
+      requiresKnowledgeFreshnessComposerContract(
+        packet.user_query || "",
+        packet,
+      );
+    const structuredContent = requiresStructuredContentComposerBudget(
+      packet.user_query || "",
+      [
+        ...(Array.isArray(packet.expert_outputs) ? packet.expert_outputs : []),
+        packet.quick_answer ? { content: packet.quick_answer } : null,
+      ].filter(Boolean),
+    );
+    const volumeTier = resolveGeneralKnowledgeVolumeTier(packet.user_query || "", {
+      hasWebEvidence: packetHasWebEvidence(packet),
+      codeDelivery,
+      repoAnalysis,
+      factualResearch,
+      structuredContent,
+    });
+    const forceShortHeavy =
+      knowledgeFreshness ||
+      codeDelivery ||
+      structuredContent ||
+      compareChoose ||
+      researchThenSummarize ||
+      repoAnalysis ||
+      factualResearch ||
+      volumeTier === GK_VOLUME_TIER_DEEP ||
+      (generalKnowledge && volumeTier !== GK_VOLUME_TIER_LIGHT);
 
     return {
-      forceShort: forceShort && !generalKnowledge && !knowledgeFreshness && !codeDelivery && !compareChoose && !researchThenSummarize && !repoAnalysis && !factualResearch,
+      forceShort: rawForceShort && !forceShortHeavy,
       isSocial,
-      useFactual: useFactualPrompt || generalKnowledge || researchThenSummarize || repoAnalysis || factualResearch,
+      useFactual:
+        useFactualPrompt ||
+        (generalKnowledge && volumeTier !== GK_VOLUME_TIER_LIGHT) ||
+        researchThenSummarize ||
+        repoAnalysis ||
+        factualResearch,
       openProposition,
       directArbitration,
       generalKnowledge,
@@ -863,6 +1062,8 @@ export const finalRendererAgent = {
       repoAnalysis,
       factualResearch,
       codeDelivery,
+      structuredContent,
+      volumeTier,
     };
   },
 
@@ -936,12 +1137,14 @@ export const finalRendererAgent = {
       openProposition = false,
       directArbitration = false,
       generalKnowledge = false,
+      volumeTier = null,
       knowledgeFreshness = false,
       compareChoose = false,
       researchThenSummarize = false,
       repoAnalysis = false,
       factualResearch = false,
       codeDelivery = false,
+      structuredContent = false,
     } = {},
   ) {
     const freshnessUserAddon = knowledgeFreshness
@@ -968,6 +1171,25 @@ export const finalRendererAgent = {
       return buildFactualResearchComposerUserPrompt(packet, {
         freshnessUserAddon,
       });
+    }
+
+    if (codeDelivery) {
+      const source = extractCodeDeliverySourceText(packet);
+      if (source) {
+        return `Demande utilisateur :
+"${packet.user_query || ""}"
+
+SCRIPT SOURCE — recopier TEL QUEL dans un fence, sans abréger :
+\`\`\`python
+${source}
+\`\`\`
+
+CONSIGNE LIVRAISON CODE :
+- Recopie le script intégralement. Interdit d'omettre imports, constantes ou fonctions.
+- Autour du fence uniquement : pip + commande d'exécution.
+- INTERDIT : sources récentes, cadrage, pseudo-code, fragments, réécriture « plus jolie ».`;
+      }
+      return buildConstructiveDeliveryUserPrompt(packet.user_query || "");
     }
 
     const expertSynthesis = (packet.expert_outputs || [])
@@ -1009,6 +1231,8 @@ Décris DIRECTEMENT ce que montre le briefing. Tu as bien reçu une analyse d'im
       const base = buildGeneralKnowledgeUserPrompt(packet.user_query || "", {
         expertSynthesis,
         quickAnswer: packet.quick_answer,
+        volumeTier,
+        hasWebEvidence: packetHasWebEvidence(packet),
       });
       return freshnessUserAddon ? `${base}\n\n${freshnessUserAddon}` : base;
     }
@@ -1023,6 +1247,8 @@ Décris DIRECTEMENT ce que montre le briefing. Tu as bien reçu une analyse d'im
     const isEpistemic = packet.mode === "EPISTEMIC";
     const lengthDirective = forceShort
       ? "RÉPONDS EN 1-3 PHRASES OU 2 PARAGRAPHES COURTS MAXIMUM. Zéro titre, zéro liste longue, zéro sous-section."
+      : structuredContent
+        ? "Livre DIRECTEMENT le livrable demandé (fiche/guide) jusqu'au bout. Maximum 8 sections. Une idée = une seule occurrence. INTERDIT : proposer 3 formats ; reformuler après un tableau ; reprendre une phrase d'intro dans le corps ; dupliquer une section (ex. « Cas d'usage » deux fois). N'interromps pas une liste ou une fiche en cours."
       : isEpistemic
         ? "Structure ta réponse si le sujet est complexe. Maximum 6 sections ou paragraphes."
         : "RÉPONDS EN 2-4 PARAGRAPHES MAXIMUM. Pas de titre de rapport, pas de plan en 5 points.";
@@ -1079,10 +1305,13 @@ Rédige DIRECTEMENT la réponse finale en français. Si la synthèse experte con
 
   _requiresBufferedFinalDelivery(packet, composerOptions) {
     if (composerOptions.codeDelivery) return true;
-    
+    // Fiche/guide + explication directe : buffer obligatoire → compress avant UI.
+    if (composerOptions.structuredContent) return true;
+    if (packet?.meta?.intent_contract_id === "DIRECT_EXPLANATION") return true;
+
     const query = packet?.user_query || "";
     if (isCodeReviewRequest(query)) return true;
-    
+
     const attachmentRefs = packet?.meta?._attachment_refs || [];
     if (shouldApplyFileContextGuard(query, attachmentRefs)) return true;
 
@@ -1184,6 +1413,10 @@ Laquelle t'intéresse ?`;
         packet?.meta?.sourceBacked != null
           ? Boolean(packet.meta.sourceBacked)
           : attachmentRefs.length > 0 || attachments.length > 0,
+      ingestedText:
+        packet?.meta?.document_briefing ||
+        packet?.vision_briefing ||
+        "",
     });
 
     if (guard.blocked) {
@@ -1288,7 +1521,10 @@ Laquelle t'intéresse ?`;
    * @returns {string}
    */
   _withExplicitWebSourceLinks(packet = {}, text = "") {
-    return ensureExplicitWebSourceLinks(text, packet);
+    return ensureExplicitWebSourceLinks(
+      resolveVisibleWebDelivery(text, packet),
+      packet,
+    );
   },
 
   /**
@@ -1335,11 +1571,23 @@ Laquelle t'intéresse ?`;
         o.content &&
         String(o.content).length > 20,
     );
-    const best =
-      webFirst ||
-      (packet.expert_outputs || []).find(
-        (o) => o.content && o.content.length > 20,
-      );
+    if (webFirst) {
+      const webCleaned = responseThinkingCleaner
+        .clean(String(webFirst.content))
+        .trim();
+      if (isRawWebEvidenceDump(webCleaned) || this._hasUsableWebGrounding(packet)) {
+        return buildWebEvidenceGroundedFallback(
+          packet,
+          packet.user_query || "",
+        );
+      }
+    }
+    const best = (packet.expert_outputs || []).find(
+      (o) =>
+        o?.stage !== "web_research" &&
+        o.content &&
+        o.content.length > 20,
+    );
     if (best) {
       const cleaned = responseThinkingCleaner.clean(String(best.content)).trim();
       if (cleaned.length > 10 && !responseThinkingCleaner.hasEscapedThinking(cleaned)) {

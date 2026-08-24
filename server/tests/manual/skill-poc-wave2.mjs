@@ -3,7 +3,7 @@
  * PoC vague 2 — validation déclenchement skills plateforme (sans runtime LLM).
  * Usage: node server/tests/manual/skill-poc-wave2.mjs
  */
-import skillLoader from '../../src/agent/utils/skillLoader.js';
+import skillLoader from '../../src/agent/utils/runtime/skillLoader.js';
 
 const SCENARIOS = [
   {

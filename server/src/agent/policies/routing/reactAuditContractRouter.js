@@ -12,7 +12,7 @@ import {
   isReactAuditExcluded,
   isReactAuditRequest,
   isReactAuditScoreOnlyRequest,
-} from "../../utils/reactAuditIntentGuards.js";
+} from "../../utils/intent-guards/reactAuditIntentGuards.js";
 import { RESPONSE_MODES } from "../../config/modeResponseContracts.js";
 
 export const REACT_AUDIT_INTENTS = Object.freeze({

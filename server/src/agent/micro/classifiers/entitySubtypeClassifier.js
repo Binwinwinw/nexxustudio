@@ -7,4 +7,4 @@ export {
   inferPersonSubtype,
   PERSON_SUBTYPES,
   FAMILIARITY_MAIN_ENTITY_OPENING_RULE,
-} from "../../utils/familiarityIntentGuards.js";
+} from "../../utils/intent-guards/familiarityIntentGuards.js";

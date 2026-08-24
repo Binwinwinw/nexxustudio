@@ -7,21 +7,21 @@ import {
 } from "../config/modeResponseContracts.js";
 import { shouldBlockGenericInsufficientRefusal } from "../policies/posture/index.js";
 import { isSimpleFactualQuestion } from "../policies/intent/justIntentDetectionPolicy.js";
-import { isPedagogicalOverviewRequest } from "../utils/pedagogicalOverviewIntentGuards.js";
-import { isBeginnerTopicOverviewRequest } from "../utils/beginnerTopicOverviewIntentGuards.js";
-import { isPedagogySoftOverviewRequest } from "../utils/pedagogySoftOverviewIntentGuards.js";
-import { isTechnicalOverviewRequest } from "../utils/technicalOverviewIntentGuards.js";
-import { isDebugDiagnosticRequest } from "../utils/debugDiagnosticIntentGuards.js";
-import { isCareerLearningPathRequest } from "../utils/careerLearningPathIntentGuards.js";
-import { isTechnicalLearningPathRequest } from "../utils/technicalLearningPathIntentGuards.js";
-import { isPresentationOutlineRequest } from "../utils/presentationOutlineIntentGuards.js";
+import { isPedagogicalOverviewRequest } from "../utils/intent-guards/pedagogicalOverviewIntentGuards.js";
+import { isBeginnerTopicOverviewRequest } from "../utils/intent-guards/beginnerTopicOverviewIntentGuards.js";
+import { isPedagogySoftOverviewRequest } from "../utils/intent-guards/pedagogySoftOverviewIntentGuards.js";
+import { isTechnicalOverviewRequest } from "../utils/intent-guards/technicalOverviewIntentGuards.js";
+import { isDebugDiagnosticRequest } from "../utils/intent-guards/debugDiagnosticIntentGuards.js";
+import { isCareerLearningPathRequest } from "../utils/intent-guards/careerLearningPathIntentGuards.js";
+import { isTechnicalLearningPathRequest } from "../utils/intent-guards/technicalLearningPathIntentGuards.js";
+import { isPresentationOutlineRequest } from "../utils/intent-guards/presentationOutlineIntentGuards.js";
 import { isCodeConceptExplainRequest } from "../policies/code/codeConceptExplainPolicy.js";
 import {
   finalizeSimpleFactualAnswer,
   resolveLocalSimpleFactualAnswer,
 } from "../micro/replies/simpleFactualComposer.js";
-import { resolveLocalDeterministicFallback, resolvePipelineFallback } from "../utils/genericGreetingGuards.js";
-import responseThinkingCleaner from "../utils/responseThinkingCleaner.js";
+import { resolveLocalDeterministicFallback, resolvePipelineFallback } from "../utils/conversation/genericGreetingGuards.js";
+import responseThinkingCleaner from "../utils/quality-safety/responseThinkingCleaner.js";
 import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
@@ -37,7 +37,7 @@ import { applySurfaceMicroContract } from "../micro/parsing/surfaceMicroContract
 import {
   buildTranslationReflectiveHint,
   validateMultiTargetTranslationOutput,
-} from "../utils/translationRequestPlan.js";
+} from "../utils/parsing-normalization/translationRequestPlan.js";
 import { enforceHowToProceduralDirectness } from "../policies/qualification/howToQualificationPolicy.js";
 import { enforceSimpleFactualDirectness } from "../micro/replies/simpleFactualComposer.js";
 import { enforceDebugDiagnosticDirectness } from "../micro/replies/debugDiagnosticComposer.js";

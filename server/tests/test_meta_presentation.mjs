@@ -1,7 +1,7 @@
 import { IntentStage } from "../src/agent/stages/IntentStage.js";
 import { runSemanticPreProcessing } from "../src/agent/stages/semanticPreProcessor.js";
 import { resolveMetaConversationRoute } from "../src/agent/micro/replies/metaConversationReplyBuilder.js";
-import { classifyMetaConversationIntent } from "../src/agent/utils/metaConversationIntentGuards.js";
+import { classifyMetaConversationIntent } from "../src/agent/utils/intent-guards/metaConversationIntentGuards.js";
 
 async function runMetaTest() {
   console.log("==========================================");

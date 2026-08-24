@@ -9,6 +9,16 @@ const AUTHORIZED_DELIVERY_MODES = new Set([
   'HTML_PROJECT_DELIVERY'
 ]);
 
+const REQUESTED_SPREADSHEET_DELIVERY_RE =
+  /\b(?:excel|xlsx|spreadsheet|classeurs?|google\s*sheets?|tableau(?:x)?\s+de\s+bord|dashboards?)\b/i;
+const REQUESTED_CREATE_VERB_RE =
+  /\b(?:creer|créer|cree|construis|construire|generer|générer|genere|fais|faire)\b/i;
+
+function isRequestedSpreadsheetDelivery(query = "") {
+  const q = String(query || "");
+  return REQUESTED_SPREADSHEET_DELIVERY_RE.test(q) && REQUESTED_CREATE_VERB_RE.test(q);
+}
+
 const STRICT_BLOCK_MODES = new Set([
   'CRITICAL',
   'DOCUMENT',
@@ -50,12 +60,21 @@ const ARTIFACT_NOUNS = [
  * Valide si un texte respecte la politique anti-surpromesse.
  * @param {string} responseText 
  * @param {string} pipelinePath (le mode, e.g. 'COMPOSER', 'CODE_DELIVERY', etc.)
+ * @param {string} [query]
  * @returns {{ ok: boolean, severity?: 'none'|'sanitize'|'block', suggestedRewrite?: string, hits?: string[] }}
  */
-export function validateDeliverablePromise(responseText, pipelinePath) {
+export function validateDeliverablePromise(responseText, pipelinePath, query = "") {
   if (!responseText) return { ok: true, severity: 'none' };
   
   if (AUTHORIZED_DELIVERY_MODES.has(pipelinePath)) {
+    return { ok: true, severity: 'none' };
+  }
+
+  // COMPOSER = rail de livraison code/tableur : ne pas écraser le livrable par un cadrage.
+  if (
+    String(pipelinePath || "").toUpperCase() === "COMPOSER" &&
+    isRequestedSpreadsheetDelivery(query)
+  ) {
     return { ok: true, severity: 'none' };
   }
 

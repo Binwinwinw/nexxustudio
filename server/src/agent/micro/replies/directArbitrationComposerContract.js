@@ -1,11 +1,11 @@
 /**
  * Contrat composer « arbitrage direct » — critère explicite → pas de clarify-first.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import {
   classifySelectiveDecisionIntent,
   SELECTIVE_DECISION_TASKS,
-} from "../../utils/selectiveDecisionIntentGuards.js";
+} from "../../utils/intent-guards/selectiveDecisionIntentGuards.js";
 
 export const DIRECT_ARBITRATION_COMPOSER_RULE =
   "explicit_criterion_direct_arbitration_no_clarify_first";

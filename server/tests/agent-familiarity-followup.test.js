@@ -8,8 +8,8 @@ import {
   getFamiliarityFollowupDeterministicReply,
   FAMILIARITY_FOLLOWUP_NO_REFUSAL_RULE,
   FAMILIARITY_FOLLOWUP_REPLY_MODE,
-} from "../src/agent/utils/familiarityFollowupGuards.js";
-import { getFamiliarityDeterministicReply } from "../src/agent/utils/familiarityIntentGuards.js";
+} from "../src/agent/utils/conversation/familiarityFollowupGuards.js";
+import { getFamiliarityDeterministicReply } from "../src/agent/utils/intent-guards/familiarityIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import {
   evaluateEpistemicRefusal,

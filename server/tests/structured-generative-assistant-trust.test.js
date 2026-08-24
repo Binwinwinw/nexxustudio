@@ -6,7 +6,7 @@ import {
   buildAssistantTrustStructuredAddon,
   finalizeAssistantTrustLlmOutput,
 } from "../src/agent/micro/replies/metaConversationReplyBuilder.js";
-import { classifyMetaConversationIntent } from "../src/agent/utils/metaConversationIntentGuards.js";
+import { classifyMetaConversationIntent } from "../src/agent/utils/intent-guards/metaConversationIntentGuards.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseContracts.js";
 
 describe("SGT — assistant_trust", () => {

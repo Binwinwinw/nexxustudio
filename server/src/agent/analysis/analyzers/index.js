@@ -10,6 +10,7 @@ import { analyzeJsSource } from "./jsAnalyzer.js";
 import { analyzeJsxSource } from "./jsxAnalyzer.js";
 import { analyzeYamlSource } from "./yamlAnalyzer.js";
 import { analyzePhpSource } from "./phpAnalyzer.js";
+import { analyzeSqlSource } from "./sqlAnalyzer.js";
 import { analyzeGenericSource } from "./genericAnalyzer.js";
 import {
   formatSourceFileAnalysisReply,
@@ -56,6 +57,9 @@ export function analyzeSourceFileContent(content, options = {}) {
     case "php":
       report = analyzePhpSource(content, meta);
       break;
+    case "sql":
+      report = analyzeSqlSource(content, meta);
+      break;
     default:
       report = analyzeGenericSource(content, meta);
   }
@@ -76,5 +80,14 @@ export {
   analyzeJsxSource,
   analyzeYamlSource,
   analyzePhpSource,
+  analyzeSqlSource,
   analyzeGenericSource,
 };
+export {
+  extractHtmlDocumentViews,
+  formatHtmlDocumentBriefing,
+  buildHtmlDocumentAnalysisReply,
+  evaluateHtmlDocumentCriticChecks,
+  shouldUseAnchoredHtmlDocumentReply,
+  HTML_DOC_AVAILABILITY,
+} from "./htmlDocumentExtract.js";

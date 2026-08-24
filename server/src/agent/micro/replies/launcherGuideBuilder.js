@@ -16,7 +16,8 @@ import { USAGE_INTENTS } from "../subject/subjectUsageIntent.js";
 import { SUBJECT_NATURES } from "../subject/subjectIntelligenceLayer.js";
 import { getEntityPlatforms, hasRelation } from "../subject/subjectGraph.js";
 import { classifyConversationTurn } from "../classifiers/conversationTurnType.js";
-import { isBeginnerTopicOverviewRequest } from "../../utils/beginnerTopicOverviewIntentGuards.js";
+import { isBeginnerTopicOverviewRequest } from "../../utils/intent-guards/beginnerTopicOverviewIntentGuards.js";
+import { isCreateMandateRequest } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 
 const PLATFORM_PATTERNS = [
   { id: "steam", pattern: /\bsteam\b/i, label: "Steam" },
@@ -172,6 +173,7 @@ export function buildLauncherGuideReply(interpreted = {}, plan = {}, options = {
  */
 export async function resolveLauncherGuideShortCircuit(query = "", options = {}) {
   if (isBeginnerTopicOverviewRequest(query)) return null;
+  if (isCreateMandateRequest(query)) return null;
 
   const turn = classifyConversationTurn(query, { history: options.history || [] });
   if (turn.disableLauncherHints) return null;

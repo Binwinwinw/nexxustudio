@@ -2,13 +2,15 @@
  * repo_analysis — revue de dépôt (local projects/ ou distant GitHub).
  * Contrat REPO_ANALYSIS_V1 — pas DOCUMENT social/explain.
  */
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   isRepoAnalysisRequest,
   extractRepoTarget,
   deriveRepoAnalysisWebQuery,
-} from "../../utils/repoAnalysisIntentGuards.js";
+  looksLikeDocumentationSubject,
+} from "../../utils/intent-guards/repoAnalysisIntentGuards.js";
 import {
   REPO_ANALYSIS_CONTRACT_ID,
   formatRepoAnalysisReply,
@@ -48,10 +50,78 @@ export function resolveLocalRepoPath(relative = "") {
   ) {
     return { ok: false, reason: "outside_allowlist", absolutePath };
   }
+  try {
+    if (!fs.existsSync(absolutePath) || !fs.statSync(absolutePath).isDirectory()) {
+      return {
+        ok: false,
+        reason: "not_found",
+        absolutePath,
+        relativePath: rel,
+      };
+    }
+  } catch {
+    return {
+      ok: false,
+      reason: "not_found",
+      absolutePath,
+      relativePath: rel,
+    };
+  }
   return {
     ok: true,
     absolutePath,
     relativePath: rel,
+  };
+}
+
+/**
+ * Arrêt déterministe — pas de rapport review-grade sans cible accessible.
+ * @param {{ query?: string, target?: object, reason?: string }} [input]
+ * @returns {string}
+ */
+export function buildUnconfirmedRepoTargetReply(input = {}) {
+  const query = String(input.query || "");
+  const target = input.target || {};
+  const rawLabel = target.localRelative || target.label || null;
+  const label =
+    rawLabel && !/cible non r[eé]solue/i.test(rawLabel) ? rawLabel : null;
+  const docSubject = looksLikeDocumentationSubject(query);
+  const subject = docSubject
+    ? "documentation (guide / mémo / specs)"
+    : "revue de dépôt";
+  const source = label
+    ? `\`${label}\` — introuvable ou non vérifié`
+    : "aucune cible dépôt confirmée";
+  const expected = docSubject
+    ? "analyse ou production de la documentation, pas une revue de codebase"
+    : "revue technique d'un dépôt accessible";
+  const next = docSubject
+    ? "Recadrage : envoie le document à analyser, ou un chemin `projects/<slug>` / URL GitHub si tu veux vraiment une revue de dépôt."
+    : "Donne un objet vérifiable : `projects/<slug>` existant, ou `https://github.com/owner/repo`. Si le besoin est une documentation, envoie le texte ou le fichier — pas un dépôt.";
+
+  return [
+    "**Cible non confirmée — analyse factuelle refusée.**",
+    "",
+    `- **Sujet** : ${subject}`,
+    `- **Source** : ${source}`,
+    `- **Réponse attendue** : ${expected}`,
+    "",
+    "Je m'arrête ici : pas de stack inventée, pas de rapport de revue.",
+    "",
+    next,
+  ].join("\n");
+}
+
+function emitUnconfirmedRepoTarget(query, target, reason) {
+  return {
+    path: "repo_analysis_target_unconfirmed",
+    kind:
+      reason === "not_found"
+        ? "local_workspace_missing"
+        : "repo_target_unconfirmed",
+    reply: buildUnconfirmedRepoTargetReply({ query, target, reason }),
+    repoTarget: target,
+    step: "📂 Cible dépôt non confirmée — arrêt...",
   };
 }
 
@@ -87,7 +157,11 @@ export function resolveRepoAnalysisShortCircuit(query = "") {
     url: null,
   };
 
-  // Local workspace
+  if (target.kind === "unresolved" || (!target.localRelative && !target.url && !target.repo)) {
+    return emitUnconfirmedRepoTarget(query, target, "unresolved");
+  }
+
+  // Local workspace — analyser seulement si le dossier existe.
   if (target.localRelative || target.kind === "workspace_projects" || target.kind === "named_repo") {
     const candidate =
       target.localRelative ||
@@ -111,29 +185,24 @@ export function resolveRepoAnalysisShortCircuit(query = "") {
           step: "📂 Repo local — revue REPO_ANALYSIS_V1...",
         };
       }
-      // named_repo absent localement → si pas d'URL, tenter quand même un not_found structuré
-      if (target.kind === "named_repo" && !target.url) {
-        const abs = path.resolve(WORKSPACE_ROOT, candidate);
-        const { report, quality } = analyzeLocalRepoDirectory(abs, candidate);
-        return {
-          path: "repo_analysis_not_found",
-          kind: "local_workspace_missing",
-          reply: formatRepoAnalysisReply(report),
-          repoTarget: { ...target, quality },
-          step: "📂 Repo local introuvable — rapport borné...",
-        };
-      }
+      return {
+        ...emitUnconfirmedRepoTarget(query, { ...target, resolved }, resolved.reason || "not_found"),
+        repoTarget: { ...target, resolved },
+      };
     }
   }
 
-  // Distant GitHub / unresolved with repo signal → pipeline LLM + web
-  return {
-    path: "repo_analysis_llm",
-    kind: "remote_or_web_repo",
-    reply: null,
-    deferToLlm: true,
-    repoTarget: target,
-    webQuery: deriveRepoAnalysisWebQuery(query),
-    step: "🔍 Repo distant — exploration structurée REPO_ANALYSIS_V1...",
-  };
+  if (target.kind === "github_url" || target.kind === "github_owner_repo") {
+    return {
+      path: "repo_analysis_llm",
+      kind: "remote_or_web_repo",
+      reply: null,
+      deferToLlm: true,
+      repoTarget: target,
+      webQuery: deriveRepoAnalysisWebQuery(query),
+      step: "🔍 Repo distant — exploration structurée REPO_ANALYSIS_V1...",
+    };
+  }
+
+  return emitUnconfirmedRepoTarget(query, target, "unverified");
 }

@@ -15,7 +15,7 @@ import {
 } from "../src/agent/policies/attachment/attachmentInterpretationPolicy.js";
 import {
   deduplicateNearDuplicateBlocks,
-} from "../src/agent/utils/qualityGuards.js";
+} from "../src/agent/utils/quality-safety/qualityGuards.js";
 
 const GOOD_HTML = `<!DOCTYPE html>
 <html lang="fr">

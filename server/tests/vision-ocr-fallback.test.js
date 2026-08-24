@@ -8,7 +8,7 @@ import {
 import {
   isOllamaUnreachableError,
   buildLlmUnreachableUserMessage,
-} from "../src/agent/utils/llmConnectionErrors.js";
+} from "../src/agent/utils/quality-safety/llmConnectionErrors.js";
 
 describe("vision + OCR fallback", () => {
   it("buildVisionInfrastructureFailureReply mentionne Ollama", () => {

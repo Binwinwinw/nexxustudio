@@ -3,6 +3,10 @@
  */
 import { evaluateJustIntent } from "../policies/intent/justIntentDetectionPolicy.js";
 import {
+  projectFrameToJustIntentHints,
+  compareJustIntentToFrameHints,
+} from "../policies/intent/requestIntentFrame.js";
+import {
   evaluateClarificationDecision,
   isAvoidableClarification,
   normalizeQueryForClarificationGate,
@@ -13,14 +17,74 @@ import { recordIntentTriageClarification } from "../classifiers/intentTriageFeed
 export const JUST_INTENT_TELEMETRY_EVENT = "just_intent_detection";
 export const CLARIFICATION_GATE_TELEMETRY_EVENT = "clarification_gate";
 
+const EMPTY_SHADOW = {
+  frame_task_kind: null,
+  frame_domain_kind: null,
+  frame_family_hint: null,
+  frame_family_confidence: null,
+  hint_domain: null,
+  hint_action: null,
+  hint_family_id: null,
+  hint_preempt_family: null,
+  just_domain: null,
+  just_action: null,
+  just_strategy: null,
+  shadow_compatible: null,
+  shadow_reason: "no_hint",
+};
+
+/**
+ * @param {object|null} evaluation
+ * @param {object|null} [frame]
+ * @param {object|null} [frameHints]
+ */
+function buildJustFrameShadowFields(evaluation, frame, frameHints) {
+  const hints = frameHints ?? (frame ? projectFrameToJustIntentHints(frame) : null);
+  const compare = compareJustIntentToFrameHints(evaluation, hints, frame);
+  return {
+    frame_task_kind: frame?.task?.kind ?? null,
+    frame_domain_kind: frame?.domain?.kind ?? null,
+    frame_family_hint: frame?.familyHint?.id ?? null,
+    frame_family_confidence: frame?.familyHint?.confidence ?? null,
+    hint_domain: hints?.domain ?? null,
+    hint_action: hints?.action ?? null,
+    hint_family_id: hints?.familyId ?? null,
+    hint_preempt_family: hints?.preemptFamily ?? null,
+    just_domain: evaluation?.domain ?? null,
+    just_action: evaluation?.action ?? null,
+    just_strategy: evaluation?.strategy ?? null,
+    shadow_compatible: compare.compatible,
+    shadow_reason: compare.reason,
+  };
+}
+
 /**
  * @param {string} query
- * @param {{ clarificationUsed?: boolean }} [outcome]
+ * @param {{
+ *   clarificationUsed?: boolean,
+ *   clarificationSource?: string|null,
+ *   triageSuppressed?: boolean,
+ *   justIntent?: object,
+ *   requestFrame?: object|null,
+ *   frameHints?: object|null,
+ * }} [outcome]
  */
 export function buildJustIntentTelemetryEvent(query = "", outcome = {}) {
-  const evaluation = evaluateJustIntent(query);
+  const evaluation = outcome.justIntent || evaluateJustIntent(query);
   const clarificationDecision = evaluateClarificationDecision(query, evaluation);
   const normalized = normalizeQueryForClarificationGate(query) || "";
+  const shadow = outcome.requestFrame
+    ? buildJustFrameShadowFields(
+        evaluation,
+        outcome.requestFrame,
+        outcome.frameHints,
+      )
+    : {
+        ...EMPTY_SHADOW,
+        just_domain: evaluation?.domain ?? null,
+        just_action: evaluation?.action ?? null,
+        just_strategy: evaluation?.strategy ?? null,
+      };
 
   return {
     event: JUST_INTENT_TELEMETRY_EVENT,
@@ -52,6 +116,7 @@ export function buildJustIntentTelemetryEvent(query = "", outcome = {}) {
     query_preview: String(query || "").slice(0, 120),
     query_length: normalized.length,
     thresholds: { ...JUST_INTENT_THRESHOLDS },
+    ...shadow,
   };
 }
 

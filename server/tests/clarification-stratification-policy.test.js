@@ -9,9 +9,9 @@ import {
   EXPLORATORY_CANONICAL_MARTIAL_QUERY,
   resolveExploratoryConversationShortCircuit,
 } from "../src/agent/policies/conversation/exploratoryConversationPolicy.js";
-import { isMetaAssistantBehaviorRequest } from "../src/agent/utils/metaAssistantBehaviorGuards.js";
-import { isExploratoryTopicIntent } from "../src/agent/utils/exploratoryConversationGuards.js";
-import { shouldAllowClarifyThenBuild } from "../src/agent/utils/deliverableMandateGuards.js";
+import { isMetaAssistantBehaviorRequest } from "../src/agent/utils/intent-guards/metaAssistantBehaviorGuards.js";
+import { isExploratoryTopicIntent } from "../src/agent/utils/conversation/exploratoryConversationGuards.js";
+import { shouldAllowClarifyThenBuild } from "../src/agent/utils/context/deliverableMandateGuards.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
@@ -43,7 +43,7 @@ describe("meta_assistant_behavior — guards", () => {
     const hit = resolveMetaAssistantBehaviorShortCircuit(META_BEHAVIOR_CANONICAL_REFLECT_QUERY, {
       history: MARTIAL_HISTORY,
     });
-    assert.equal(hit?.path, "meta_assistant_behavior_deterministic");
+    assert.equal(hit?.path, "meta_conversation_feedback");
     assert.match(hit?.reply || "", /façon de répondre|rails|comportement/i);
     assert.doesNotMatch(hit?.reply || "", /Je vois la piste/i);
   });
@@ -114,7 +114,7 @@ describe("clarificationDecisionPolicy — stratification", () => {
     const hit = await runConversationShortCircuit(META_BEHAVIOR_CANONICAL_REFLECT_QUERY, {
       history: MARTIAL_HISTORY,
     });
-    assert.equal(hit?.path, "meta_assistant_behavior_deterministic");
+    assert.equal(hit?.path, "meta_conversation_feedback");
   });
 
   it("mandat flou explicite → clarification toujours légitime", () => {

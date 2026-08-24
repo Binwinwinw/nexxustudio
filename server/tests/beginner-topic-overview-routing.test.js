@@ -4,11 +4,11 @@ import assert from "node:assert/strict";
 import {
   isBeginnerTopicOverviewRequest,
   extractBeginnerTopicSubject,
-} from "../src/agent/utils/beginnerTopicOverviewIntentGuards.js";
+} from "../src/agent/utils/intent-guards/beginnerTopicOverviewIntentGuards.js";
 import {
   isPedagogicalOverviewRequest,
   hasSchoolCurriculumContext,
-} from "../src/agent/utils/pedagogicalOverviewIntentGuards.js";
+} from "../src/agent/utils/intent-guards/pedagogicalOverviewIntentGuards.js";
 import { resolveBeginnerTopicOverviewShortCircuit } from "../src/agent/micro/replies/beginnerTopicOverviewComposer.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";

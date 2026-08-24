@@ -8,7 +8,7 @@ import {
   resolveAnaphoraReference,
   isAnaphoraReferenceResolvable,
 } from "../src/agent/micro/continuity/anaphoraReferenceResolver.js";
-import { isFamiliarityIntent } from "../src/agent/utils/familiarityIntentGuards.js";
+import { isFamiliarityIntent } from "../src/agent/utils/intent-guards/familiarityIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { evaluateEpistemicRefusal } from "../src/agent/config/modeResponseContracts.js";
 

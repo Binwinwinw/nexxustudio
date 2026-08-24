@@ -5,6 +5,8 @@ import {
   FACTUAL_RESEARCH_TARGET_SOURCES,
   isFactualResearchSourcedReportPath,
   countFactualResearchSources,
+  resolveFactualResearchOutputShape,
+  FACTUAL_RESEARCH_SHAPE_STRUCTURED_REPORT,
 } from "../../policies/web/factualResearchDeliverablePolicy.js";
 import { hasSuccessfulWebGrounding } from "../../policies/web/knowledgeFreshnessPolicy.js";
 import {
@@ -39,6 +41,17 @@ export function requiresFactualResearchComposerContract(query = "", packet = {})
 export function buildFactualResearchSystemAddon(query = "", packet = {}) {
   const n = countFactualResearchSources(packet);
   const today = new Date().toISOString().slice(0, 10);
+  if (resolveFactualResearchOutputShape(query) !== FACTUAL_RESEARCH_SHAPE_STRUCTURED_REPORT) {
+    return [
+      "VARIANTE BRIEF SOURCÉ (FACTUAL_RESEARCH) :",
+      `- Date de référence : ${today}.`,
+      `- Sources disponibles : ${n} (appui seulement — le nombre n'impose pas la longueur).`,
+      "- FORMAT : 1 ou 2 paragraphes, puis 3 à 5 points utiles maximum, puis limites pratiques, puis sources courtes.",
+      "- INTERDIT : titres P5 (Résumé Exécutif, Analyse de Marché, Analyse Concurrentielle, Opportunités de Croissance).",
+      "- INTERDIT : recopier la requête, « Alignement brief », tableau stratégique, rapport 1200–1800 mots.",
+      "- INTERDIT : inventer des chiffres absents des preuves.",
+    ].join("\n");
+  }
   const evidenceSources = (packet.evidence || []).map((e) => ({
     url: e.source,
     snippet: e.excerpt,
@@ -110,6 +123,26 @@ export function buildFactualResearchComposerUserPrompt(
   const hasFigures =
     packet?.meta?.factual_research_evidence_has_figures === true ||
     evidenceHasKeyFigures(evidenceSources);
+
+  const query = packet.user_query || "";
+  if (resolveFactualResearchOutputShape(query) !== FACTUAL_RESEARCH_SHAPE_STRUCTURED_REPORT) {
+    const briefParts = [
+      `Demande (à traiter, NE PAS recopier dans la réponse) :
+"${query}"`,
+      "",
+      "PREUVES WEB (appui, pas un plan de rapport) :",
+      expertSynthesis || "(synthèse web absente)",
+      "",
+      "URLs / extraits :",
+      evidenceLines || "(aucune URL)",
+      "",
+      "CONSIGNE BRIEF :",
+      "Réponse directe 1–2 paragraphes, 3–5 points max, limites pratiques, sources courtes à la fin.",
+      "INTERDIT : 5 titres P5, recopier la demande, Alignement brief, longueur type rapport.",
+    ];
+    if (freshnessUserAddon) briefParts.push("", freshnessUserAddon);
+    return briefParts.join("\n");
+  }
 
   const parts = [
     `Demande utilisateur :

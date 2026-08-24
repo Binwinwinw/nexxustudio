@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { runConversationShortCircuit } from '../src/agent/micro/classifiers/intentShortCircuit.js';
-import { isConversationMemoryRecallRequest } from '../src/agent/utils/conversationGuards.js';
+import { isConversationMemoryRecallRequest } from '../src/agent/utils/conversation/conversationGuards.js';
 
 test('rappel: short-circuit ne capture pas vers multi_segment', async () => {
   const query = 'tu te souviens de mon dernier message ???';

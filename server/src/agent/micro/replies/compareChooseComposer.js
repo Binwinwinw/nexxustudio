@@ -5,12 +5,12 @@ import {
   isCompareChooseRequest,
   parseCompareChoose,
   SELECTIVE_DECISION_TASKS,
-} from "../../utils/compareChooseIntentGuards.js";
+} from "../../utils/intent-guards/compareChooseIntentGuards.js";
 import { buildDirectArbitrationSystemAddon } from "./directArbitrationComposerContract.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../../config/modeResponseContracts.js";
 import { hasSuccessfulWebGrounding } from "../../policies/web/index.js";
 import { buildKnowledgeFreshnessUserAddon } from "./knowledgeFreshnessComposerContract.js";
-import responseThinkingCleaner from "../../utils/responseThinkingCleaner.js";
+import responseThinkingCleaner from "../../utils/quality-safety/responseThinkingCleaner.js";
 
 export const GUIDED_PRODUCT_RECOMMENDATION_COMPOSER_RULE =
   "guided_product_recommendation_composer_g31_5";
@@ -37,7 +37,7 @@ const DOMAIN_LABELS = {
 };
 
 /**
- * @param {import("../../utils/compareChooseIntentGuards.js").CompareChooseSlots} slots
+ * @param {import("../../utils/intent-guards/compareChooseIntentGuards.js").CompareChooseSlots} slots
  * @returns {string}
  */
 export function buildCompareChooseSystemAddonFromSlots(slots) {
@@ -200,7 +200,7 @@ export function buildGuidedProductComposerUserPrompt(
 
 /**
  * @param {string} query
- * @returns {{ path: string, deferToLlm: boolean, deferToFullPipeline: boolean, reflectiveHint: string, compareChoose: boolean, slots?: import("../../utils/compareChooseIntentGuards.js").CompareChooseSlots }|null}
+ * @returns {{ path: string, deferToLlm: boolean, deferToFullPipeline: boolean, reflectiveHint: string, compareChoose: boolean, slots?: import("../../utils/intent-guards/compareChooseIntentGuards.js").CompareChooseSlots }|null}
  */
 export function resolveCompareChooseShortCircuit(query = "") {
   if (!isCompareChooseRequest(query)) return null;

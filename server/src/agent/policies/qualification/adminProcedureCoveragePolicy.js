@@ -1,7 +1,7 @@
 /**
  * Politique de couverture — procédures administratives (sources officielles prioritaires).
  */
-import { parseAdminProcedure } from "../../utils/adminProcedureIntentGuards.js";
+import { parseAdminProcedure } from "../../utils/intent-guards/adminProcedureIntentGuards.js";
 
 export const ADMIN_PROCEDURE_COVERAGE_POLICY_V1 =
   "admin_procedure_coverage_policy_v1";
@@ -31,7 +31,7 @@ const DOMAIN_SOURCE_HINTS = {
 
 /**
  * @param {string} query
- * @param {import("../utils/adminProcedureIntentGuards.js").AdminProcedureSlots|null} [slots]
+ * @param {import("../utils/intent-guards/adminProcedureIntentGuards.js").AdminProcedureSlots|null} [slots]
  */
 export function resolveAdminProcedureCoverage(query = "", slots = null) {
   const resolved = slots || parseAdminProcedure(query);
@@ -56,7 +56,7 @@ export function resolveAdminProcedureCoverage(query = "", slots = null) {
 }
 
 /**
- * @param {import("../utils/adminProcedureIntentGuards.js").AdminProcedureSlots} slots
+ * @param {import("../utils/intent-guards/adminProcedureIntentGuards.js").AdminProcedureSlots} slots
  * @param {{ sourceHints?: string }} [coverage]
  * @returns {string}
  */

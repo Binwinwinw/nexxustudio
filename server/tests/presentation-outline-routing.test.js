@@ -5,7 +5,7 @@ import { resolveIntentContract } from "../src/agent/config/intentContractRegistr
 import {
   isPresentationOutlineRequest,
   parsePresentationOutline,
-} from "../src/agent/utils/presentationOutlineIntentGuards.js";
+} from "../src/agent/utils/intent-guards/presentationOutlineIntentGuards.js";
 import { resolvePresentationOutlineShortCircuit } from "../src/agent/micro/replies/presentationOutlineComposer.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 

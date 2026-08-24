@@ -2,8 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import agent from "../src/agent/agent.js";
-import OllamaStreamProcessor from "../src/agent/utils/ollamaStreamProcessor.js";
-import responseThinkingCleaner from "../src/agent/utils/responseThinkingCleaner.js";
+import OllamaStreamProcessor from "../src/agent/utils/runtime/ollamaStreamProcessor.js";
+import responseThinkingCleaner from "../src/agent/utils/quality-safety/responseThinkingCleaner.js";
 import { validateOrchestratorPacket } from "../src/agent/validators/pipelineValidators.js";
 
 function includesAll(text, patterns = []) {

@@ -2,7 +2,7 @@
  * Subject Graph — source de vérité locale pour entités, alias et relations (déterministe).
  * Consommé par SIL, familiarité, launcher, domain signals.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { normalizeSubject } from "./subjectNormalizer.js";
 import { confidenceFromSource, SUBJECT_CONFIDENCE } from "./subjectConfidence.js";
 import { ENTITY_IDS, ENTITY_DOMAINS, sessionProjectEntityId } from "./subjectEntityIds.js";

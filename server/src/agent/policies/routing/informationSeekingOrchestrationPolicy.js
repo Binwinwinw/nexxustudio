@@ -11,7 +11,7 @@ import {
   extractInformationSeekingTarget,
   buildInformationSeekingWebQuery,
   isInformationSeekingRecoveryResponse,
-} from "../../utils/informationSeekingIntentGuards.js";
+} from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import { resolveLocalGeneralKnowledgeDetail } from "../../micro/replies/generalKnowledgeComposerContract.js";
 
 export const INFORMATION_SEEKING_ORCHESTRATION_RULE =
@@ -109,7 +109,9 @@ export function resolveInformationSeekingOrchestration(query = "", ctx = {}) {
   const targetType = classifyInformationSeekingTargetType(query);
   const local = assessInformationSeekingLocalCoverage(query);
   const shortCircuitStatus = resolveShortCircuitStatus(ctx);
-  const webQuery = buildInformationSeekingWebQuery(query);
+  const webQuery = buildInformationSeekingWebQuery(query, {
+    history: ctx.history,
+  });
 
   let recommendedAction = INFORMATION_SEEKING_ACTIONS.FULL_PIPELINE;
   let escalationReason = null;

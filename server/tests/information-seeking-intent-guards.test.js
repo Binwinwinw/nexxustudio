@@ -8,7 +8,7 @@ import {
   shouldEscalateSimpleFactualToFullPipeline,
   buildInformationSeekingWebQuery,
   isInformationSeekingRecoveryResponse,
-} from "../src/agent/utils/informationSeekingIntentGuards.js";
+} from "../src/agent/utils/intent-guards/informationSeekingIntentGuards.js";
 import { isSimpleFactualQuestion } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { resolveClarificationGate } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
@@ -157,5 +157,30 @@ describe("informationSeekingIntentGuards", () => {
     const q = "quelles informations aurais tu sur le kimono";
     const hit = await runConversationShortCircuit(q);
     assert.equal(hit?.path, "information_seeking_full_pipeline");
+  });
+
+  it("je voudrais créer un OS desktop — pas fiche web / named_create", async () => {
+    const q =
+      "pourrais tu m'aider : je voudrais créer un système d'exploitation avec interface graphique simple mais windows-friendly, sans réellement avoir la présentation de windows, mais une barre tâches dans laquelle l'icône des fenêtres ouvertes pourra apparaitre, un menu démarrer (style) un navigateur internet une calculatrice, la possibilité d'avoir l'heure peut être une base linux simple mais pas simplement un terminal";
+    assert.equal(isInformationSeekingWithTarget(q), false);
+    const hit = await runConversationShortCircuit(q);
+    assert.notEqual(hit?.path, "information_seeking_full_pipeline");
+    assert.notEqual(hit?.path, "named_create_start");
+    assert.notEqual(hit?.path, "launcher_guide_clarify");
+    assert.notEqual(hit?.path, "launcher_guide_deterministic");
+    assert.equal(hit?.path, "architecture_design_deterministic");
+    assert.doesNotMatch(hit?.reply || "", /preuves ancr[eé]es/i);
+    assert.doesNotMatch(hit?.reply || "", /Recto/i);
+    assert.doesNotMatch(hit?.reply || "", /lancer ou d[eé]marrer/i);
+  });
+
+  it("j'aimerais + pour quelle raison — pas web Terre, simple_factual", async () => {
+    const q =
+      "j'aimerais savoir pour quelle raison la lune est aussi loin de la terre ??";
+    assert.equal(isInformationSeekingWithTarget(q), false);
+    const hit = await runConversationShortCircuit(q);
+    assert.equal(hit?.path, "simple_factual_lookup");
+    assert.notEqual(hit?.path, "information_seeking_full_pipeline");
+    assert.equal(hit?.simpleFactual, true);
   });
 });

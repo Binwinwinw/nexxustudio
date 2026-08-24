@@ -15,7 +15,7 @@ import {
   resolvePlatformDocumentCapabilities,
 } from "../src/agent/policies/document/index.js";
 import { processPdfAttachment } from "../src/services/pdf-extractor.js";
-import contextAgent from "../src/agent/utils/contextAgent.js";
+import contextAgent from "../src/agent/utils/agents/contextAgent.js";
 
 const fixturesDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),

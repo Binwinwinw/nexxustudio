@@ -288,7 +288,7 @@ Pattern commun : **intent family + slots + contract + telemetry + validator + fo
 | **Social pattern hardening** | G35 | B | `social_deterministic` | `SOCIAL` | `social_pattern_matched`, `social_pattern_name`, `social_fallback_blocked_paths[]` | guards amont |
 | **Cultural content summary** | G37 | B | `cultural_content_summary` | `DIRECT_SUMMARY` (sous-ensemble G38) | `cultural_content_summary_g37` | anti document_synthesis |
 | **Summary contract router** | G38 | A→B | `summary/*` → paths ci-dessous | `DIRECT_SUMMARY` / `TEXT_SUMMARY` / `WEB_SUMMARY` | `summaryContract.*`, `resolution.strategy` | [summary-contract-g38-spec.md](summary-contract-g38-spec.md) |
-| **Known entity execution lock** | G38.2 | B | `cultural_content_summary` / `_fallback` | `DIRECT_SUMMARY` terminal | `summary_execution_path`, `composer_bypassed`, `known_entity_validation_issues[]` | `knownEntitySummaryValidator.js` |
+| **Known entity execution lock** | G38.2 | B | `cultural_content_summary` / `_fallback` / `_web` | `DIRECT_SUMMARY` terminal ; web **si miss local** | `summary_execution_path`, `composer_bypassed`, `known_entity_validation_issues[]` | `knownEntitySummaryValidator.js` |
 | **Code concept explain** | G40 | A→B | hors summary/code_delivery | `code_explain` (triage) | `code_concept_explain_g40` | `codeConceptExplainPolicy.js` |
 | **HTML tag explain vs web create** | G40.1 | A | `web_html/create` supprimé si concept explain | `code/explain` (justIntent) | `can_answer_now` (clarification) | `htmlProjectDeliveryPolicy.js`, `justIntentDetectionPolicy.js`, `clarificationDecisionPolicy.js` |
 | **Code concept execution lock** | G40.2 | B | `technical_overview` terminal | `code_explain` sans orchestrateur | `code_concept_execution_path`, `composer_bypassed` | `codeConceptExplainExecutionPolicy.js` |
@@ -344,6 +344,18 @@ Pattern commun : **intent family + slots + contract + telemetry + validator + fo
 | G32 | `guidedDocumentSynthesisPolicy.js`, `documentSynthesisCompositePolicy.js` | slot telemetry | `guided-document-synthesis-g32-policy.test.js` |
 | Guided creation | `guidedCreationScopingPolicy.js` | `guidedCreationScopingTelemetry.js` | `guided-creation-scoping.test.js` |
 
+### Pack G38.2 (cadrage validé 2026-08-17)
+
+Rail culturel seulement. Distinct du canon input. Lots voisins (Vision, JUST, `subject_angle_explore`) non rouverts.
+
+| Champ | Valeur |
+|-------|--------|
+| Paths | `cultural_content_summary` (local) ; `cultural_content_summary_fallback` (ne clôt pas si miss) ; `cultural_content_summary_web` (filet si miss) |
+| Règle | Œuvre identifiée + local vide / refus / trop faible = web obligatoire. Synopsis local factuel suffisant = pas de web. Réponse courte et sourcée. |
+| Preuve | `summary-execution-g38-2.test.js` vert ; replay Bronzés après reload ; path `cultural_content_summary_web` après arrêt local |
+| Garde-fous | Pas d'élargissement au canon input. Vision / JUST / `subject_angle_explore` intacts. Pas de nouveau parser. Pas de web systématique hors œuvres identifiées. |
+| Spec | [summary-contract-g38-spec.md](summary-contract-g38-spec.md) — addendum G38.2 |
+
 ---
 
 ## Doctrine G46 — famille de tour avant intention métier
@@ -386,7 +398,7 @@ Les intentions métier (`general/explain`, `compare_choose`, `simple_factual_loo
 | **G49 OpenPencil Forge atelier** | B→C | Design-as-Code UI canvas | P1 (spec à faire) |
 | **G47 GUI Operator (Peekaboo MCP)** | C | Vision + action GUI macOS only | P2 conditionnel |
 | **G38 Summary Contract Router** | A→B | Unifier `summary/*` sous contrat JSON — implémentation post-spec | **livré** |
-| **G38.2 known_entity execution lock** | B | Rail terminal DIRECT_SUMMARY — pas d'escalade COMPOSER | **livré** |
+| **G38.2 known_entity execution lock** | B | Rail terminal DIRECT_SUMMARY — pas d'escalade COMPOSER ; web-on-local-miss validé 2026-08-17 | **livré** |
 | **G36 orchestrator social lock** | C | Si pattern G35 aurait dû matcher, forcer `SOCIAL` + refus web/COMPOSER | Haute |
 | **conversation_repair** | B | Réparation légère sans `clarification_gate` bureaucratique | Haute |
 | **complex_request_handling** | A→C | Détection multi-étapes avec contrat dédié (pas nouveau runtime) | Moyenne |
@@ -412,6 +424,9 @@ Légende : **N/A** = SIL Plan B, contrat orchestrateur non atteint.
 | `DOCUMENT` | `DOCUMENT_*` / `FACTUAL_RESEARCH` | Variable | |
 | `CRITICAL` | `DIAGNOSTIC` / `DESIGN_AUDIT` | Rare | |
 | `clarification_gate` | — | Non | Pas de contrat |
+| `cultural_content_summary` | `DIRECT_SUMMARY` | Non (local) | G37 / G38.2 — œuvre identifiée |
+| `cultural_content_summary_fallback` | `DIRECT_SUMMARY` | Non | G38.2 — miss local ne clôt pas le tour |
+| `cultural_content_summary_web` | `DIRECT_SUMMARY` | Oui (miss local) | G38.2 — pas de web systématique |
 
 ---
 
@@ -482,3 +497,4 @@ Fichier machine : [nexxus-pipeline-path-registry.csv](./nexxus-pipeline-path-reg
 | 2026-07-14 | v1.4 | G47 : `meta_capabilities` — blacklist document_synthesis / document_analysis |
 | 2026-07-14 | v1.5 | G47.x self_awareness ; G44.x meta-critique ; G46.x social/ideation élargis |
 | 2026-07-14 | v1.6 | G47.x model_stack_opinion — avis modèle stack sans COMPOSER |
+| 2026-08-17 | v1.7 | Pack G38.2 + paths `_fallback` / `_web` : œuvre identifiée + miss local = web obligatoire ; synopsis local factuel = pas de web ; hors périmètre : canon input, Vision, JUST, `subject_angle_explore`, nouveau parser |

@@ -2,25 +2,48 @@
  * Continuité du fil « on discute » après social/chat_invite (et offres papoter).
  * Un mot / groupe de mots devient un sujet de conversation, pas un clarify livrable.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { isSubstantiveWorkRequest } from "../../utils/genericGreetingGuards.js";
-import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIntentGuards.js";
-import { isGeneralKnowledgeRequest } from "../../utils/generalKnowledgeIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { isSubstantiveWorkRequest } from "../../utils/conversation/genericGreetingGuards.js";
+import { isInformationSeekingWithTarget } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
+import { isGeneralKnowledgeRequest } from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
 import { isExplicitWebSearchRequest } from "../routing/explicitWebSearchRequestPolicy.js";
-import { isConversationMemoryRecallRequest, isAttachedVisionRequest } from "../../utils/conversationGuards.js";
+import { isConversationMemoryRecallRequest, isAttachedVisionRequest } from "../../utils/conversation/conversationGuards.js";
 import {
   classifySocialPattern,
   isGreetingOnlyIntent,
   isPersonalDiscomfortIntent,
   isPhaticSocialCheckinIntent,
   isWellbeingCheckinIntent,
+  isSocialToneRepairIntent,
+  isSocialCheckinConsistencyCritique,
+  isFamilyWriteRequest,
+  isBareFamilyCheckinFollowup,
+  buildSocialPatternReply,
 } from "./socialPatternPolicy.js";
-import { isMetaConversationIntent } from "../../utils/metaConversationIntentGuards.js";
+
+export const LOCAL_SOCIAL_RAIL_FLAGS = Object.freeze({
+  responseMode: "local_social",
+  deferToLlm: false,
+  skipSovereign: true,
+  skipPlanner: true,
+  skipComposer: true,
+  skipWeb: true,
+});
+import { isMetaConversationIntent } from "../../utils/intent-guards/metaConversationIntentGuards.js";
+import { resolveFramingCorrection } from "../conversation/conversationFramingPolicy.js";
 
 export const SOCIAL_CHAT_CONTINUITY_RULE = "social_chat_continuity_g46_2";
 
 const ASSISTANT_CHAT_OPEN_RE =
-  /\b(?:on discute|on peut discuter|sujet en t[eê]te|particulier [àa] faire|passe par la t[eê]te|on peut papoter|papoter de|tu penches vers quoi|qu['']est-ce qui t['']int[eé]resse|simplement continuer [àa] papoter|on part sur ce qui te passe|dis-moi ce qui t['']int[eé]resse|pas (?:un )?m[eé]decin|changer les id[eé]es|plut[oô]t discuter|papoter pour te|avis m[eé]dical|rester dans l['']?absurde|autre sujet en t[eê]te)\b|si oui,?\s*je vois|tu parles de .{2,60}\?/i;
+  /\b(?:on discute|on peut discuter|sujet en t[eê]te|particulier [àa] faire|passe par la t[eê]te|on peut papoter|papoter de|tu penches vers quoi|qu['']est-ce qui t['']int[eé]resse|simplement continuer [àa] papoter|on part sur ce qui te passe|dis-moi ce qui t['']int[eé]resse|pas (?:un )?m[eé]decin|changer les id[eé]es|plut[oô]t discuter|papoter pour te|avis m[eé]dical|rester dans l['']?absurde|autre sujet en t[eê]te|je t['']?[eé]coute|de quel sujet|envie qu['']on parle|on peut papoter)\b|si oui,?\s*je vois|tu parles de .{2,60}\?/i;
+
+/**
+ * Mini-reprises ambiguës en fil social ouvert.
+ * Règle inter-tours : fil papoter ouvert → restent en social, pas general/explain.
+ * Formes nues seulement (« pourquoi ? » OK ; « pourquoi le ciel est bleu » non).
+ */
+const SOCIAL_OPEN_MINI_REPRISE_RE =
+  /^(?:comment|quoi|hein|pardon|ah bon|et|pourquoi|comment (?:ca|ça)|c['']est quoi|tu dis quoi|comment (?:ca|ça) se|s[eé]rieux|s[eé]rieusement|vraiment|ah|oh|euh|heu)\s*[?!.…]*$/i;
 
 const HARD_TASK_BREAK_RE =
   /\b(?:cr[eé]e|creer|g[eé]n[eè]re|genere|impl[eé]mente|forge|analyse le fichier|corrige|debug|recherche sur (?:internet|le web|la toile)|on bosse|au travail|passons au|travaill(?:e|er) sur|fais[- ]moi|code[- ]moi)\b/i;
@@ -166,6 +189,34 @@ export function isSocialChatThreadActive(history = []) {
 }
 
 /**
+ * Mini-reprise ambiguë après ouverture de chat social (« comment ? », « et ? », « pourquoi ? »).
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function isBareSocialClarifier(query = "") {
+  const q = norm(query);
+  if (!q || q.length > 40) return false;
+  // « comment ça va » = check-in, pas mini-reprise.
+  if (isWellbeingCheckinIntent(query)) return false;
+  return SOCIAL_OPEN_MINI_REPRISE_RE.test(q);
+}
+
+/** Alias explicite — préemption inter-tours sur fil social ouvert. */
+export const isSocialOpenThreadMiniReprise = isBareSocialClarifier;
+
+/**
+ * Rappel naturel du fil — pas d'analyse méta.
+ * @returns {string}
+ */
+export function buildBareSocialClarifierReply() {
+  return (
+    "Je te demandais juste un sujet pour papoter — " +
+    "musique, tech, La Citadelle, ce qui te passe par la tête. " +
+    "Tu penches vers quoi ?"
+  );
+}
+
+/**
  * Sujet court / relance conversationnelle (pas une demande métier claire).
  * @param {string} query
  * @returns {boolean}
@@ -175,9 +226,25 @@ export function isSoftSocialChatFollowup(query = "") {
   if (!q || q.length < 2 || q.length > 180) return false;
   // Tours sociaux autonomes — pas un sujet à injecter dans le fil papoter.
   if (isGreetingOnlyIntent(query)) return false;
+  if (isFamilyWriteRequest(query)) return false;
   if (isWellbeingCheckinIntent(query)) return false;
   if (isPhaticSocialCheckinIntent(query)) return false;
+  if (isSocialToneRepairIntent(query)) return false;
+  if (isSocialCheckinConsistencyCritique(query)) return false;
   if (classifySocialPattern(query)) return false;
+  if (isBareSocialClarifier(query)) return false;
+  // Acceptation « on papote / et si on papotait » = invite, pas un thème à explorer en LLM.
+  if (
+    /\b(?:(?:et\s+)?si\s+)?(?:on\s+)?(?:papot(?:e|er|ait|ais|ons|ez|ent|age)|discut(?:e|er|ait|ais|ons|ez|ent)|bavard(?:e|er|ait|ais|ons|ez|ent))\b/i.test(
+      q,
+    ) &&
+    !/\b(?:papot|discut|bavard)\w*\s+(?:de|sur|avec|mon|ma|ton|ta|notre|leur|un|une|le|la|les)\b/i.test(
+      q,
+    )
+  ) {
+    return false;
+  }
+  if (resolveFramingCorrection(query)) return false;
   if (isSubstantiveWorkRequest(query)) return false;
   if (HARD_TASK_BREAK_RE.test(q)) return false;
   if (isExplicitWebSearchRequest(query)) return false;
@@ -205,6 +272,7 @@ export function isSoftSocialChatFollowup(query = "") {
  * @returns {string}
  */
 export function extractSocialChatTopic(query = "") {
+  if (resolveFramingCorrection(query)) return "";
   const raw = norm(query);
   const ligue = raw.match(/\bligue\s+([a-z0-9]{2,20})\b/i);
   if (ligue?.[1]) return `la ligue ${ligue[1]}`;
@@ -305,6 +373,7 @@ export function buildCulturalHypothesisReply(hypothesis = {}) {
  */
 export function resolveSocialChatContinuityShortCircuit(query = "", options = {}) {
   const history = options.history || [];
+  if (resolveFramingCorrection(query)) return null;
   if (isAttachedVisionRequest(query, options.attachments || [])) return null;
   if (
     isGreetingOnlyIntent(query) ||
@@ -314,9 +383,36 @@ export function resolveSocialChatContinuityShortCircuit(query = "", options = {}
   ) {
     return null;
   }
-  if (!isSocialChatThreadActive(history) && !isAssistantChatOpenOffer(lastAssistantText(history))) {
-    return null;
+  const threadOpen =
+    isSocialChatThreadActive(history) ||
+    isAssistantChatOpenOffer(lastAssistantText(history));
+  if (!threadOpen) return null;
+
+  // Fil social ouvert + mini-reprise ambiguë → reste en social (pas general/explain).
+  if (isSocialOpenThreadMiniReprise(query)) {
+    return {
+      path: "social_deterministic",
+      reply: buildBareSocialClarifierReply(),
+      socialChatContinuity: true,
+      socialOpenThreadHold: true,
+      topic: "",
+      ...LOCAL_SOCIAL_RAIL_FLAGS,
+    };
   }
+
+  // Follow-up kin sans possessif (« et la famille… comment vont-ils ? ») → Nexxus, pas sujet à explorer.
+  if (isBareFamilyCheckinFollowup(query)) {
+    return {
+      path: "social_deterministic",
+      reply: buildSocialPatternReply("social/anthropomorphic_checkin", query),
+      socialChatContinuity: true,
+      socialCheckinFollowup: true,
+      socialPatternName: "social/anthropomorphic_checkin",
+      topic: "",
+      ...LOCAL_SOCIAL_RAIL_FLAGS,
+    };
+  }
+
   if (!isSoftSocialChatFollowup(query)) return null;
 
   // Hypothèse culturelle medium → couche épistémique (clarification ciblée)

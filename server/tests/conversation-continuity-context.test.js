@@ -13,7 +13,7 @@ import {
   CONTINUITY_ASSISTANT_OFFERS,
   CONVERSATION_CONTINUITY_RULE,
 } from "../src/agent/micro/continuity/conversationContinuityContext.js";
-import { getFamiliarityDeterministicReply } from "../src/agent/utils/familiarityIntentGuards.js";
+import { getFamiliarityDeterministicReply } from "../src/agent/utils/intent-guards/familiarityIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 
 const PETANQUE_PROPOSAL = getFamiliarityDeterministicReply("Tu connais la pétanque ?");

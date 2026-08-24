@@ -5,7 +5,7 @@
 import {
   isGenericReadyGreeting,
   isSubstantiveWorkRequest,
-} from "../../utils/genericGreetingGuards.js";
+} from "../../utils/conversation/genericGreetingGuards.js";
 
 export const SENTINEL_IDS = Object.freeze({
   MUST_NOT_BE_GREETING: "mustNotBeGreeting",

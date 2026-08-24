@@ -8,12 +8,12 @@ import {
   isLearningRequestForTechnicalDomain,
   suppressesCompareChooseForLearningRequest,
   isPureInformationSeekingNotLearningRequest,
-} from "../src/agent/utils/learningRequestIntentGuards.js";
-import { isCompareChooseRequest } from "../src/agent/utils/compareChooseIntentGuards.js";
-import { isInformationSeekingWithTarget } from "../src/agent/utils/informationSeekingIntentGuards.js";
+} from "../src/agent/utils/intent-guards/learningRequestIntentGuards.js";
+import { isCompareChooseRequest } from "../src/agent/utils/intent-guards/compareChooseIntentGuards.js";
+import { isInformationSeekingWithTarget } from "../src/agent/utils/intent-guards/informationSeekingIntentGuards.js";
 import { analyzeRequestIntentFrame } from "../src/agent/policies/intent/requestIntentFrame.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
-import { isTechnicalLearningPathRequest } from "../src/agent/utils/technicalLearningPathIntentGuards.js";
+import { isTechnicalLearningPathRequest } from "../src/agent/utils/intent-guards/technicalLearningPathIntentGuards.js";
 
 describe("learningRequestIntentGuards", () => {
   it("détecte apprentissage du poker + conseil", () => {

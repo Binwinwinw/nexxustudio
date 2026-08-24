@@ -14,16 +14,16 @@ import {
   isPedagogySoftOverviewRequest,
   parsePedagogySoftOverviewTask,
   PEDAGOGY_SOFT_DOMAINS,
-} from "../src/agent/utils/pedagogySoftOverviewIntentGuards.js";
-import { isTechnicalOverviewRequest } from "../src/agent/utils/technicalOverviewIntentGuards.js";
-import { isPedagogicalOverviewRequest } from "../src/agent/utils/pedagogicalOverviewIntentGuards.js";
+} from "../src/agent/utils/intent-guards/pedagogySoftOverviewIntentGuards.js";
+import { isTechnicalOverviewRequest } from "../src/agent/utils/intent-guards/technicalOverviewIntentGuards.js";
+import { isPedagogicalOverviewRequest } from "../src/agent/utils/intent-guards/pedagogicalOverviewIntentGuards.js";
 import { hasDocumentSynthesisShell } from "../src/agent/policies/document/index.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
 } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { resolvePipelineFallback } from "../src/agent/utils/genericGreetingGuards.js";
+import { resolvePipelineFallback } from "../src/agent/utils/conversation/genericGreetingGuards.js";
 
 describe("pedagogySoftOverviewPolicy — batterie #35", () => {
   it("Révolution française → pedagogy_soft_overview_deterministic", async () => {

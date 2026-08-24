@@ -98,8 +98,12 @@ describe("G46 — conversation turn classifier", () => {
 
     const hit = await runConversationShortCircuit(q, { history: SALUT_HISTORY });
     assert.equal(hit?.path, "social_deterministic");
-    assert.equal(hit?.turnFamily, CONVERSATION_TURN_FAMILIES.SOCIAL_CHECKIN);
-    assert.match(hit?.reply || "", /papoter/i);
+    // G46 family OU social multi-signal chat_invite (composition amont).
+    assert.ok(
+      hit?.turnFamily === CONVERSATION_TURN_FAMILIES.SOCIAL_CHECKIN ||
+        hit?.socialPatternName === "social/chat_invite",
+    );
+    assert.match(hit?.reply || "", /papoter|discut|écoute|sujet/i);
     assert.notEqual(hit?.path, "simple_fast");
   });
 
@@ -108,5 +112,31 @@ describe("G46 — conversation turn classifier", () => {
     const c = classifyConversationTurnFamily(q, { history: SALUT_HISTORY });
     assert.notEqual(c.family, CONVERSATION_TURN_FAMILIES.SOCIAL_CHECKIN);
     assert.ok(!c.signals.includes("social_acceptance_of_offer"));
+  });
+
+  it("G46-T10 et si on papotait après offre + check-in → social_deterministic, pas exploratory LLM", async () => {
+    const q = "et si on papotait?";
+    const history = [
+      { role: "user", content: "bonjour" },
+      {
+        role: "assistant",
+        content:
+          "Bonjour ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
+      },
+      { role: "user", content: "comment ca va ?" },
+      {
+        role: "assistant",
+        content: "Ça va bien de mon côté. Tu veux avancer sur quoi aujourd'hui ?",
+      },
+    ];
+    const c = classifyConversationTurnFamily(q, { history });
+    assert.equal(c.family, CONVERSATION_TURN_FAMILIES.SOCIAL_CHECKIN);
+    assert.ok(c.signals.includes("social_acceptance_of_offer"));
+
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.equal(hit?.path, "social_deterministic");
+    assert.match(hit?.reply || "", /papoter|discut/i);
+    assert.notEqual(hit?.path, "exploratory_conversation_light");
+    assert.notEqual(hit?.deferToLlm, true);
   });
 });

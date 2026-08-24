@@ -1,7 +1,7 @@
 /**
  * Dashboard ops — maturité skills prompt-only vs runtime-backed.
  */
-import { loadSkills } from '../agent/utils/skillRuntimeRegistry.js';
+import { loadSkills } from '../agent/utils/runtime/skillRuntimeRegistry.js';
 
 const WAVE2_CRITICAL = [
   'skill-pdf-extraction',

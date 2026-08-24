@@ -5,8 +5,8 @@
  * Mode : observe — n’altère ni clarification_gate ni rails.
  * Default hors cas connus : promisedValue=null (unknown), pas explanation.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { isSubstantiveWorkRequest } from "../../utils/genericGreetingGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { isSubstantiveWorkRequest } from "../../utils/conversation/genericGreetingGuards.js";
 import {
   classifySocialPattern,
   isKnownSocialPattern,
@@ -57,8 +57,10 @@ const SOCIAL_CONTINUITY_PATTERNS = new Set([
   "social/gratitude",
   "social/whimsical_pivot",
   "social/anthropomorphic_checkin",
+  "social/user_family_clarify",
   "social/papoter_citadelle",
   "social/meta_who_drives",
+  "social/leisure_relance",
 ]);
 
 const EXPLORATION_PATTERNS = new Set(["social/open_prompt"]);
@@ -191,7 +193,7 @@ export function resolveDeliverableContract(query = "", options = {}) {
     null;
 
   // Frame slots prime — même si le bridge social/open_prompt n’est pas encore posé
-  if (isOpenExplorationFrame(query)) {
+  if (isOpenExplorationFrame(query, history)) {
     return buildContract({
       promisedValue: PROMISED_VALUES.EXPLORATION_PROPOSAL,
       clarificationRequired: false,

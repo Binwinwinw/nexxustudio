@@ -27,6 +27,7 @@ describe("sessionWorkMemory — cycle de tour", () => {
     const empty = createEmptySessionWorkMemory(TEST_SESSION);
     assert.equal(empty.lastTurnTimestamp, null);
     assert.equal(empty.turnCount, 0);
+    assert.equal(empty.activeGoal, null);
     assert.deepEqual(empty.filesSeen, []);
   });
 

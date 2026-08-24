@@ -10,6 +10,10 @@
  */
 import { gunzipSync, inflateRawSync } from "node:zlib";
 import path from "node:path";
+import {
+  evaluateArchiveConstraints,
+  isNestedArchiveEntry,
+} from "../../agent/policies/attachment/fileCapabilityPolicy.js";
 
 export const MAX_ARCHIVE_FILES = 80;
 export const MAX_ARCHIVE_SINGLE_FILE_BYTES = 2 * 1024 * 1024;
@@ -132,6 +136,10 @@ function ingestRegularEntry(state, entry, warnings) {
   const { name, data } = entry;
   if (!isSafeEntryPath(name)) {
     warnings.push(`Chemin ignoré (sécurité) : ${name}`);
+    return;
+  }
+  if (isNestedArchiveEntry(name)) {
+    state.fatal = "FILE_CAP_NESTED_ARCHIVE";
     return;
   }
   if (!isAllowedInnerFile(name)) return;
@@ -267,7 +275,21 @@ function processZipEntry(state, entry, warnings) {
   if (!name || name.endsWith("/")) return;
 
   const normalized = normalizeEntryName(name);
+  if (isNestedArchiveEntry(normalized)) {
+    state.fatal = "FILE_CAP_NESTED_ARCHIVE";
+    return;
+  }
   if (!isSafeEntryPath(normalized) || !isAllowedInnerFile(normalized)) return;
+  const bomb = evaluateArchiveConstraints({
+    nestedDepth: 0,
+    uncompressedBytes: uncompSize,
+    compressedBytes: compressed?.length || 0,
+    fileCount: state.fileCount,
+  });
+  if (bomb.status === "reject") {
+    state.fatal = bomb.codes[0] || "FILE_CAP_ZIP_BOMB";
+    return;
+  }
   if (uncompSize > MAX_ARCHIVE_SINGLE_FILE_BYTES) {
     warnings.push(`Entrée ZIP trop volumineuse ignorée : ${normalized}`);
     return;
@@ -386,6 +408,7 @@ function createCollectState() {
     totalBytes: 0,
     textChars: 0,
     limitReached: false,
+    fatal: null,
   };
 }
 
@@ -400,6 +423,9 @@ function extractGzipArchive(buffer, originalName, warnings) {
   }
 
   const fallbackName = lowerName.replace(/\.gz$/i, "") || "document.txt";
+  if (isNestedArchiveEntry(fallbackName)) {
+    throw new Error("Archive imbriquée refusée (FILE_CAP_NESTED_ARCHIVE).");
+  }
   if (!isAllowedInnerFile(fallbackName)) {
     throw new Error("Le fichier GZ décompressé n'est pas un format texte autorisé.");
   }
@@ -439,6 +465,14 @@ export function extractArchiveToText(buffer, originalName = "archive.zip") {
     collected = extractGzipArchive(buffer, originalName, warnings);
   } else {
     throw new Error("Format d'archive non pris en charge.");
+  }
+
+  if (collected.fatal) {
+    throw new Error(
+      collected.fatal === "FILE_CAP_NESTED_ARCHIVE"
+        ? "Archive imbriquée refusée (FILE_CAP_NESTED_ARCHIVE)."
+        : "Archive refusée (zip bomb / amplification) (FILE_CAP_ZIP_BOMB).",
+    );
   }
 
   if (!collected.parts.length) {

@@ -17,7 +17,7 @@ import {
   isDesignAuditIntent,
   isDesignExtractIntent,
   isArchitectureDesignIntent,
-} from "../utils/conversationGuards.js";
+} from "../utils/conversation/conversationGuards.js";
 import {
   RESPONSE_MODES,
   isOpenProjectIdeation,
@@ -29,27 +29,27 @@ import { isCodeReviewRequest } from "../policies/code/codeReviewPolicy.js";
 import { requiresGenerousComposerResponse } from "../policies/routing/practicalAdviceRoutingGuard.js";
 import { isSocialAcceptanceOfOffer } from "../policies/social/index.js";
 import { isMetaCapabilitiesIntent } from "../policies/meta/metaCapabilitiesPolicy.js";
-import { isPresentationOutlineRequest } from "../utils/presentationOutlineIntentGuards.js";
+import { isPresentationOutlineRequest } from "../utils/intent-guards/presentationOutlineIntentGuards.js";
 import { isGuidedProductRecommendationRequest } from "../policies/guided/index.js";
 import { isGuidedDocumentSynthesisRequest } from "../policies/guided/index.js";
 import { isGuidedCreationScopingContractRequest } from "../policies/guided/index.js";
-import { isMetaAssistantBehaviorRequest, isComprehensionDemonstrationRequest } from "../utils/metaAssistantBehaviorGuards.js";
-import { isIdeationIntent } from "../utils/ideationIntentGuards.js";
+import { isMetaAssistantBehaviorRequest, isComprehensionDemonstrationRequest } from "../utils/intent-guards/metaAssistantBehaviorGuards.js";
+import { isIdeationIntent } from "../utils/intent-guards/ideationIntentGuards.js";
 import { isAssistantUtteranceClarifyRequest } from "../policies/qualification/assistantUtteranceClarifyPolicy.js";
-import { isReactAuditRequest } from "../utils/reactAuditIntentGuards.js";
+import { isReactAuditRequest } from "../utils/intent-guards/reactAuditIntentGuards.js";
 import {
   isExplicitWebSearchRequest,
   isFreshFactualCompareWithWebRequest,
   isWebCitationsStructuredReportCluster,
 } from "../policies/routing/explicitWebSearchRequestPolicy.js";
-import { isCompareChooseRequest } from "../utils/compareChooseIntentGuards.js";
 import { isResearchThenSummarizeRequest } from "../policies/routing/researchThenSummarizePolicy.js";
-import { isRepoAnalysisRequest } from "../utils/repoAnalysisIntentGuards.js";
+import { isRepoAnalysisRequest } from "../utils/intent-guards/repoAnalysisIntentGuards.js";
 import {
   extractCodeProjectLightSlots,
   isCodeProjectLightRequest,
 } from "../policies/code/codeProjectLightPolicy.js";
-import { isFormalLetterTemplateRequest } from "../policies/delivery/index.js";
+import { isExplicitNominalDocumentDeliverable } from "../policies/delivery/constructiveDeliveryPolicy.js";
+import { isFormalLetterTemplateRequest } from "../policies/delivery/formalLetterTemplatePolicy.js";
 
 const GUARDS = {
   isIdeationRequest: (query, packet) => isIdeationRequest(query),
@@ -89,7 +89,7 @@ const GUARDS = {
     }
     // Small talk / invitation à discuter (évite GUIDED_* sur normal_conversation)
     if (
-      /\b(?:discuter|parler|ca va|ça va|comment (?:ca |ça )?va|comment vas[- ]?tu)\b/.test(
+      /\b(?:discuter|parler|ca va|ça va|comment (?:ca |ça )?va|comment vas[- ]?tu|comment allez[- ]?vous|comment vous allez|vous allez bien)\b/.test(
         q,
       ) &&
       !/\b(?:smartphone|produit|acheter|budget|conseil|recommand)/.test(q)
@@ -182,7 +182,7 @@ export const INTENT_CONTRACT_REGISTRY = [
     priority: 930,
     routing: {
       bypassSimpleFast: true,
-      skipWebSearch: false,
+      skipWebSearch: true,
       maxActiveExperts: 1,
       orchestratorMode: "OPERATIONAL",
     },
@@ -215,7 +215,7 @@ export const INTENT_CONTRACT_REGISTRY = [
     priority: 928,
     routing: {
       bypassSimpleFast: true,
-      skipWebSearch: false,
+      skipWebSearch: true,
       maxActiveExperts: 1,
       orchestratorMode: "OPERATIONAL",
     },
@@ -274,7 +274,8 @@ export const INTENT_CONTRACT_REGISTRY = [
     label: "Plan présentation slides / scénario pédagogique",
     description:
       "Sommaire titres/sous-titres et découpage modules — pas Forge webapp ni livraison code.",
-    orchestratorIntents: ["strategic", "unknown", "expert_task"],
+    // Guard only — jamais via byIntent (sinon toute EXPERT_TASK tombe en menu de formats).
+    orchestratorIntents: [],
     responseMode: RESPONSE_MODES.OPEN_PROPOSITION,
     priority: 931,
     routing: {
@@ -512,7 +513,8 @@ export const INTENT_CONTRACT_REGISTRY = [
     label: "Revue technique de dépôt",
     description:
       "Analyse structurée d'un dépôt (GitHub ou projects/) — REPO_ANALYSIS_V1, pas DOCUMENT social.",
-    orchestratorIntents: ["expert_task", "technical_diagnostic"],
+    // Guard only — jamais via byIntent (sinon « analyse un fichier » sans PJ → REPO_ANALYSIS + web).
+    orchestratorIntents: [],
     responseMode: RESPONSE_MODES.COMPOSER,
     priority: 790,
     routing: {
@@ -995,6 +997,19 @@ export function resolveIntentContract(query = "", packet = {}) {
     }
   }
 
+  // Livrable nominal explicite (fiche/guide sur X) → rédaction directe, pas menu formats
+  if (isExplicitNominalDocumentDeliverable(query)) {
+    const direct = INTENT_CONTRACT_REGISTRY.find(
+      (c) => c.id === "DIRECT_EXPLANATION",
+    );
+    if (direct) {
+      return {
+        contract: direct,
+        matchedBy: "guard:isExplicitNominalDocumentDeliverable",
+      };
+    }
+  }
+
   const presentationContract = sorted.find((c) => c.id === "PRESENTATION_OUTLINE");
   if (presentationContract?.detection?.guard) {
     if (runGuard(presentationContract.detection.guard, query, packet)) {
@@ -1021,40 +1036,25 @@ export function resolveIntentContract(query = "", packet = {}) {
 
   const userIntent = packet?.user_intent;
   if (userIntent) {
-    const byIntent = sorted.find((c) =>
-      (c.orchestratorIntents || []).includes(userIntent),
+    // Contrats livrable/outline : guard only — jamais via classe expert_task/unknown.
+    const INTENT_CLASS_FALLBACK_BLOCKLIST = new Set([
+      "PRESENTATION_OUTLINE",
+      "CODE_PROJECT_LIGHT",
+      "CODE_DELIVERY_V1",
+      "FORGE_WEBAPP_BUILD",
+      "VIDEO_ANALYSIS",
+      "VISION_ATTACHED",
+      "DOCUMENT_ATTACHED",
+      "DESIGN_EXTRACT",
+      "DESIGN_AUDIT",
+      "DESIGN_CREATE",
+      "REPO_ANALYSIS",
+    ]);
+    const byIntent = sorted.find(
+      (c) =>
+        (c.orchestratorIntents || []).includes(userIntent) &&
+        !INTENT_CLASS_FALLBACK_BLOCKLIST.has(c.id),
     );
-    if (
-      byIntent?.id === "PRESENTATION_OUTLINE" &&
-      (isCompareChooseRequest(query) ||
-        isFreshFactualCompareWithWebRequest(query) ||
-        isWebCitationsStructuredReportCluster(query))
-    ) {
-      if (isWebCitationsStructuredReportCluster(query)) {
-        const factual = INTENT_CONTRACT_REGISTRY.find(
-          (c) => c.id === "FACTUAL_RESEARCH",
-        );
-        if (factual) {
-          return {
-            contract: factual,
-            matchedBy: "web_citations_report_blocks_presentation_outline",
-          };
-        }
-      }
-      const guidedProduct = INTENT_CONTRACT_REGISTRY.find(
-        (c) => c.id === "GUIDED_PRODUCT_RECOMMENDATION",
-      );
-      if (
-        guidedProduct &&
-        isGuidedProductRecommendationRequest(query, packet)
-      ) {
-        return {
-          contract: guidedProduct,
-          matchedBy: "compare_choose_blocks_presentation_outline",
-        };
-      }
-      return { contract: DEFAULT_CONTRACT, matchedBy: "compare_choose_blocks_presentation_outline" };
-    }
     if (byIntent) return { contract: byIntent, matchedBy: `orchestrator:${userIntent}` };
   }
 
@@ -1094,9 +1094,9 @@ export function applyIntentContractToPacket(packet, query = "") {
   packet.meta.intent_contract_version = contract.version;
   packet.meta.expected_response_mode = contract.responseMode;
 
-  if (contract.responseMode === RESPONSE_MODES.OPEN_PROPOSITION) {
-    packet.meta.open_proposition = true;
-  }
+  // Toujours (ré)écrire le flag — évite sticky menu formats après un tour OPEN_PROPOSITION.
+  packet.meta.open_proposition =
+    contract.responseMode === RESPONSE_MODES.OPEN_PROPOSITION;
 
   if (contract.id === "CODE_PROJECT_LIGHT") {
     packet.meta.write_artifact = true;

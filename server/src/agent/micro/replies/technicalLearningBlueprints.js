@@ -5,8 +5,8 @@
 import {
   extractLearningDomain,
   parseTechnicalLearningPath,
-} from "../../utils/technicalLearningPathIntentGuards.js";
-import { isJvmJavaScriptHybridLearningTopic } from "../../utils/technicalLearningPathIntentGuards.js";
+} from "../../utils/intent-guards/technicalLearningPathIntentGuards.js";
+import { isJvmJavaScriptHybridLearningTopic } from "../../utils/intent-guards/technicalLearningPathIntentGuards.js";
 import { OFFICIAL_MODULE_RESOURCES_BY_BLUEPRINT_ID } from "./technicalLearningOfficialResources.js";
 
 export const TECHNICAL_LEARNING_BLUEPRINTS_V1 = "technical_learning_blueprints_v1";
@@ -1268,7 +1268,7 @@ function normalizeTargetToken(raw = "") {
 
 /**
  * @param {string} [query]
- * @param {import("../../utils/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots|null} [slots]
+ * @param {import("../../utils/intent-guards/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots|null} [slots]
  * @returns {string}
  */
 function buildNormalizedLearningTargetText(query = "", slots = null) {
@@ -1281,7 +1281,7 @@ function buildNormalizedLearningTargetText(query = "", slots = null) {
 
 /**
  * @param {string} [query]
- * @param {import("../../utils/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots|null} [slots]
+ * @param {import("../../utils/intent-guards/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots|null} [slots]
  * @returns {string|null}
  */
 export function normalizeTechnicalLearningTarget(query = "", slots = null) {
@@ -1351,7 +1351,7 @@ export function normalizeTechnicalLearningTarget(query = "", slots = null) {
 
 /**
  * @param {string} [query]
- * @param {import("../../utils/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots|null} [slots]
+ * @param {import("../../utils/intent-guards/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots|null} [slots]
  * @returns {TechnicalLearningBlueprint|null}
  */
 export function resolveTechnicalLearningBlueprint(query = "", slots = null) {
@@ -1371,7 +1371,7 @@ export function hasDedicatedTechnicalLearningBlueprint(blueprintId = "") {
 
 /**
  * @param {string} [query]
- * @param {import("../../utils/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots|null} [slots]
+ * @param {import("../../utils/intent-guards/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots|null} [slots]
  * @returns {boolean}
  */
 export function isCssLearningTopic(query = "", slots = null) {

@@ -11,11 +11,17 @@ import {
   isKnownEntityDirectSummaryExecution,
   shouldEnforceKnownEntitySummaryTerminalLock,
   buildKnownEntitySummarySoberFallback,
+  buildKnownEntitySummaryWebQuery,
+  resolveKnownEntityWebEscalation,
+  stampKnownEntityWebEscalation,
+  assessKnownEntityLocalSummary,
+  CULTURAL_WORK_WEB_ON_LOCAL_MISS_RULE,
   resolveKnownEntitySummaryCatchOutcome,
   resolveKnownEntityComposerGateOutcome,
   recordKnownEntitySummaryExecutionTelemetry,
   KNOWN_ENTITY_PIPELINE_PATH,
   KNOWN_ENTITY_FALLBACK_PIPELINE_PATH,
+  KNOWN_ENTITY_WEB_PIPELINE_PATH,
   KNOWN_ENTITY_EXECUTION_PATHS,
   KNOWN_ENTITY_CONTRACT_VIOLATIONS,
   countSummarySentences,
@@ -73,20 +79,22 @@ describe("G38.2 — execution lock", () => {
     });
   }
 
-  it("resolveKnownEntitySummaryCatchOutcome — SIMPLE_FAST throw → fallback borné", () => {
+  it("resolveKnownEntitySummaryCatchOutcome — SIMPLE_FAST throw → escalade web", () => {
     const hit = buildDirectSummaryShortCircuit();
     const outcome = resolveKnownEntitySummaryCatchOutcome(
       new Error("SIMPLE_FAST_FAILED: timeout"),
       hit,
+      IDIOCRACY_QUERY,
     );
     assert.ok(outcome);
-    assert.equal(outcome.pipelinePath, KNOWN_ENTITY_FALLBACK_PIPELINE_PATH);
+    assert.equal(outcome.preferWebResearch, true);
+    assert.equal(outcome.pipelinePath, "cultural_content_summary_web");
     assert.equal(
       outcome.reason,
-      KNOWN_ENTITY_CONTRACT_VIOLATIONS.SIMPLE_FAST_FAILED,
+      KNOWN_ENTITY_CONTRACT_VIOLATIONS.LOCAL_INEFFECTIVE,
     );
-    assert.equal(outcome.executionPath, KNOWN_ENTITY_EXECUTION_PATHS.SIMPLE_FAST_FALLBACK);
-    assert.equal(outcome.composerBypassed, true);
+    assert.equal(outcome.executionPath, KNOWN_ENTITY_EXECUTION_PATHS.WEB_ESCALATION);
+    assert.match(String(outcome.webQuery), /idiocracy/i);
     assert.ok(outcome.validationIssues.includes("simple_fast_execution_failed"));
   });
 
@@ -98,18 +106,16 @@ describe("G38.2 — execution lock", () => {
     assert.equal(outcome, null);
   });
 
-  it("resolveKnownEntityComposerGateOutcome — bloque escalade COMPOSER", () => {
+  it("resolveKnownEntityComposerGateOutcome — miss local → escalade web, pas refus sobre", () => {
     const hit = buildDirectSummaryShortCircuit();
     const telem = { summaryContract: { intent: SUMMARY_INTENTS.KNOWN_ENTITY, contract: SUMMARY_CONTRACTS.DIRECT_SUMMARY } };
-    const outcome = resolveKnownEntityComposerGateOutcome(hit, telem);
+    const outcome = resolveKnownEntityComposerGateOutcome(hit, telem, IDIOCRACY_QUERY);
     assert.ok(outcome);
-    assert.equal(outcome.pipelinePath, KNOWN_ENTITY_FALLBACK_PIPELINE_PATH);
-    assert.equal(
-      outcome.contractViolation,
-      KNOWN_ENTITY_CONTRACT_VIOLATIONS.COMPOSER_ESCALATION_BLOCKED,
-    );
-    assert.equal(outcome.executionPath, KNOWN_ENTITY_EXECUTION_PATHS.COMPOSER_LEAK_BLOCKED);
-    assert.equal(outcome.composerBypassed, true);
+    assert.equal(outcome.escalateWeb, true);
+    assert.equal(outcome.preferWebResearch, true);
+    assert.equal(outcome.pipelinePath, "cultural_content_summary_web");
+    assert.match(String(outcome.webQuery), /idiocracy/i);
+    assert.equal(outcome.executionPath, KNOWN_ENTITY_EXECUTION_PATHS.WEB_ESCALATION);
   });
 
   it("buildKnownEntitySummarySoberFallback — refus sobre, pas invention", () => {
@@ -147,6 +153,68 @@ describe("G38.2 — execution lock", () => {
     assert.equal(metrics.get("summary_execution_path"), "simple_fast_terminal");
     assert.ok(pipelineTelemetryCtx.knownEntitySummaryExecution);
   });
+
+  it("Les Bronzés — miss local → requête web sujet + film/série + synopsis", () => {
+    const q =
+      "quel résumé pourrais tu faire de la série de film les bronzés font du ski ?";
+    const hit = buildDirectSummaryShortCircuit(q);
+    const webQuery = buildKnownEntitySummaryWebQuery(q, {
+      summaryContract: hit.summaryContract,
+    });
+    assert.match(String(webQuery), /bronzes/i);
+    assert.match(String(webQuery), /synopsis/i);
+    assert.match(String(webQuery), /film|serie/i);
+
+    const outcome = resolveKnownEntityWebEscalation(hit, q);
+    assert.equal(outcome.pipelinePath, KNOWN_ENTITY_WEB_PIPELINE_PATH);
+    assert.equal(outcome.preferWebResearch, true);
+    stampKnownEntityWebEscalation(hit, outcome);
+    assert.equal(hit.preferWebResearch, true);
+    assert.equal(hit.deferToFullPipeline, true);
+    assert.equal(shouldEnforceKnownEntitySummaryTerminalLock(hit), false);
+  });
+});
+
+describe("G38.2 — web obligatoire si local absent / faible / non fiable", () => {
+  it("refus « synopsis en local » = miss, pas une réponse", () => {
+    const q =
+      "quel résumé pourrais tu faire de la série de film les bronzés font du ski ?";
+    const refusal =
+      "Je n'ai pas de synopsis fiable en local pour **bronzes font ski** pour ce tour. Reformule ou réessaie dans un instant.";
+    const local = assessKnownEntityLocalSummary(refusal);
+    assert.equal(local.rule, CULTURAL_WORK_WEB_ON_LOCAL_MISS_RULE);
+    assert.equal(local.ineffective, true);
+    assert.ok(local.reasons.includes("local_refusal"));
+
+    const validated = validateKnownEntitySummaryReply(refusal, {
+      query: q,
+      entityLabel: "bronzes font ski",
+    });
+    assert.equal(validated.valid, false);
+    assert.ok(validated.issues.includes("known_entity_local_refusal"));
+  });
+
+  it("synopsis court factuel = local suffisant, pas de miss", () => {
+    const local = assessKnownEntityLocalSummary(IDIOCRACY_GOOD);
+    assert.equal(local.ineffective, false);
+    const validated = validateKnownEntitySummaryReply(IDIOCRACY_GOOD, {
+      query: IDIOCRACY_QUERY,
+      entityLabel: "idiocracy",
+    });
+    assert.equal(validated.valid, true);
+  });
+
+  it("« je ne connais pas ce film » court = confiance trop faible", () => {
+    const local = assessKnownEntityLocalSummary(
+      "Je ne connais pas ce film. Reformule ta question.",
+    );
+    assert.equal(local.ineffective, true);
+    assert.ok(
+      local.reasons.includes("weak_confidence") ||
+        local.reasons.includes("local_refusal") ||
+        local.reasons.includes("absent"),
+    );
+  });
 });
 
 describe("G38.2 — prompt borné", () => {
@@ -157,6 +225,7 @@ describe("G38.2 — prompt borné", () => {
     assert.match(addon, /INTERDIT/i);
     assert.match(addon, /C'est quoi/i);
     assert.match(addon, /casting|acteurs/i);
+    assert.match(addon, /sources web/i);
     assert.doesNotMatch(addon, /4 à 8 phrases/i);
     assert.doesNotMatch(addon, /d'où ça vient, pourquoi c'est connu/i);
   });

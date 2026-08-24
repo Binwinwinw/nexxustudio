@@ -2,7 +2,7 @@
  * Doctrine : livrable clair → mode construction V1, pas clarification défensive.
  * Si sujet + format + intention de création sont compris, Nexxus produit une première version.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import {
   detectCodeDeliveryLanguage,
   hasCodeDeliveryStructure,
@@ -36,6 +36,94 @@ const KNOWN_SUBJECT_PATTERN =
   /\b(?:notion|teams|microsoft|excel|python|javascript|react|php|html|css|wordpress|figma)\b/i;
 
 export const NOTION_WORKSHOP_DEFAULT_MODULES = NOTION_WORKSHOP_MODULES.map((m) => m.title);
+
+/** Fiche / guide / mémo — pas du code, mais besoin d’un budget composer long. */
+const STRUCTURED_CONTENT_RE =
+  /\b(?:fiche(?:\s+(?:d[e']?\s*)?(?:usage|pratique|synth[eè]se|m[eé]mo))?|guide\s+pratique|m[eé]mo\s+d['']?usage|document\s+structur[eé]|cas\s+d['']emploi)\b/i;
+
+const NOMINAL_DELIVERABLE_NOUN_RE =
+  /\b(?:une?\s+)?(?:fiche|guide(?:\s+pratique)?|m[eé]mo(?:\s+d['']?usage)?|synth[eè]se(?:\s+[eé]crite)?|document(?:\s+structur[eé])?)\b/i;
+
+const NOMINAL_PRODUCE_RE =
+  /\b(?:(?:fais|fait|faire|r[eé]dige|r[eé]diger|produis|produire|pr[eé]pare|pr[eé]parer|livre|livrer|cr[eé]e|cr[eé]er|g[eé]n[eè]re|g[eé]n[eé]rer)(?:[- ]moi)?|(?:tu\s+)?(?:pourras|peux|pourrais)\s+(?:me\s+)?(?:faire|r[eé]diger|produire|pr[eé]parer)|me\s+faire)\b/i;
+
+const NOMINAL_SUBJECT_LINK_RE =
+  /\b(?:sur|de|d'|traitant(?:\s+de)?|portant\s+sur|au\s+sujet\s+de|concernant|autour\s+de)\b/i;
+
+const CONTINUE_STRUCTURED_WORK_RE =
+  /\b(?:travaillons|travaille(?:r)?\s+(?:sur|d[eé]j[aà])|mon\s+id[eé]e|continue(?:r)?(?:\s+(?:sur|avec|la|le))?|on\s+avance|fais[- ]la|r[eé]dige[- ]?la|livre[- ]?la|passons?\s+directement)\b/i;
+
+/**
+ * Livrable textuel nominal déjà explicite (« fais-moi une fiche sur X »).
+ * Doit préempter PRESENTATION_OUTLINE / OPEN_PROPOSITION (pas de menu de formats).
+ * @param {string} query
+ */
+export function isExplicitNominalDocumentDeliverable(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || q.length < 18) return false;
+  // Plan slides / atelier pédagogique → autre rail
+  if (
+    /\b(?:slides?|powerpoint|pptx?|diaporama|pitch\s+deck)\b/i.test(q) ||
+    /\b(?:sc[eé]nario\s+p[eé]dagogique|sommaire\s+des\s+titres)\b/i.test(q)
+  ) {
+    return false;
+  }
+  // Parcours « fiches pour maîtriser » → rail learning path
+  if (
+    /\bfiches?\b/i.test(q) &&
+    /\b(?:ma[iî]triser|apprendre|r[eé]vision|connaissance)\b/i.test(q) &&
+    /\b(?:afin|pour)\b/i.test(q)
+  ) {
+    return false;
+  }
+  if (!NOMINAL_DELIVERABLE_NOUN_RE.test(q)) return false;
+  if (!NOMINAL_PRODUCE_RE.test(q)) return false;
+  return NOMINAL_SUBJECT_LINK_RE.test(q);
+}
+
+/**
+ * Sujet extrait d'une demande de fiche/guide nominale.
+ * @param {string} query
+ * @returns {string|null}
+ */
+export function extractNominalDocumentSubject(query = "") {
+  if (!isExplicitNominalDocumentDeliverable(query)) return null;
+  const q = normalizeFamiliarityQuery(query);
+  const patterns = [
+    /\b(?:fiche|guide(?:\s+pratique)?|m[eé]mo|synth[eè]se|document)\s+(?:traitant\s+de|portant\s+sur|au\s+sujet\s+de|concernant|sur|de|d'|autour\s+de)\s+(.+?)(?:\s*[?.!]|$)/i,
+    /\b(?:usage|utilisation)\s+de\s+(.+?)(?:\s*[?.!]|$)/i,
+  ];
+  for (const re of patterns) {
+    const m = q.match(re);
+    const raw = String(m?.[1] || "")
+      .trim()
+      .replace(/\s+/g, " ");
+    if (raw.length >= 3) return raw.slice(0, 120);
+  }
+  return null;
+}
+
+/**
+ * Budget composer long pour fiche/guide (évite troncature mid-liste en mode OPERATIONAL).
+ * Couvre demande explicite + suite sticky (« travaillons mon idée ») si le contexte expert porte encore le sujet.
+ * @param {string} query
+ * @param {Array<{ content?: string }>|string} [expertContext]
+ */
+export function requiresStructuredContentComposerBudget(query = "", expertContext = []) {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q) return false;
+  if (isExplicitNominalDocumentDeliverable(q) || STRUCTURED_CONTENT_RE.test(q)) return true;
+  if (!CONTINUE_STRUCTURED_WORK_RE.test(q)) return false;
+
+  const blob = Array.isArray(expertContext)
+    ? expertContext.map((o) => String(o?.content || "")).join("\n")
+    : String(expertContext || "");
+  const sample = blob.slice(0, 6000);
+  return (
+    STRUCTURED_CONTENT_RE.test(sample) ||
+    /\b(?:copilot|excel|microsoft\s+365)\b/i.test(sample)
+  );
+}
 
 /**
  * Livrable suffisamment cadré pour produire une V1 sans demander plus de contexte.

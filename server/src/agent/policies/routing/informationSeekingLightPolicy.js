@@ -2,7 +2,7 @@
  * G49 — information_seeking_light : factoids culturels / ludiques sans dossier web.
  * Ex. « je cherche un jeu de cartes à paires, tu en connais ? »
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 
 export const INFORMATION_SEEKING_LIGHT_RULE = "information_seeking_light_g49";
 

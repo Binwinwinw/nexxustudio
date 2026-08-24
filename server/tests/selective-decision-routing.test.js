@@ -6,8 +6,8 @@ import {
   requiresFullPipelineForDecision,
   resolveDecisionRouting,
   SELECTIVE_DECISION_TASKS,
-} from "../src/agent/utils/selectiveDecisionIntentGuards.js";
-import { isCulinaryPracticalAdviceQuery } from "../src/agent/utils/culinaryPracticalIntentGuards.js";
+} from "../src/agent/utils/intent-guards/selectiveDecisionIntentGuards.js";
+import { isCulinaryPracticalAdviceQuery } from "../src/agent/utils/intent-guards/culinaryPracticalIntentGuards.js";
 import {
   shouldBypassMultiSegmentShortCircuit,
   shouldDeferShortCircuitToFullPipeline,

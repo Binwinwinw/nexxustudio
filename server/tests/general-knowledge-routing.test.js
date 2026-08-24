@@ -6,8 +6,8 @@ import {
   extractGeneralKnowledgeSubject,
   isCulturalArtifactSubject,
   isPureGeographicFamiliarity,
-} from "../src/agent/utils/generalKnowledgeIntentGuards.js";
-import { isRecipeKnowledgeRequest } from "../src/agent/utils/recipeKnowledgeIntentGuards.js";
+} from "../src/agent/utils/intent-guards/generalKnowledgeIntentGuards.js";
+import { isRecipeKnowledgeRequest } from "../src/agent/utils/intent-guards/recipeKnowledgeIntentGuards.js";
 import {
   requiresGeneralKnowledgeComposerContract,
   resolveLocalGeneralKnowledgeDetail,
@@ -26,7 +26,7 @@ import { runConversationShortCircuit } from "../src/agent/micro/classifiers/inte
 import {
   resolveQueryEntityUnderstanding,
   shouldBypassForgeSubjectClarification,
-} from "../src/agent/utils/queryEntityUnderstanding.js";
+} from "../src/agent/utils/parsing-normalization/queryEntityUnderstanding.js";
 import { resolveGeneralKnowledgeEnrichmentPolicy } from "../src/agent/policies/routing/generalKnowledgeEnrichmentPolicy.js";
 import { buildFamiliarityReply } from "../src/agent/micro/replies/familiarityReplyBuilder.js";
 import { buildSubjectClarificationReply } from "../src/agent/micro/subject/subjectResponseBuilder.js";

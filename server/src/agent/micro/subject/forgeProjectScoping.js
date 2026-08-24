@@ -1,7 +1,7 @@
 /**
  * Cadrage projet Forge suffisant — évite les clarifications install/Steam hors sujet.
  */
-import { normalizeText } from "../../utils/normalizationGuards.js";
+import { normalizeText } from "../../utils/parsing-normalization/normalizationGuards.js";
 
 const FORGE_CONTEXT =
   /\b(forge|handoff|citadelle|nexxus\s+studio|déclench\w*\s+(?:la\s+)?forge|declench\w*\s+(?:la\s+)?forge)\b/i;

@@ -1,0 +1,14 @@
+---
+description: Canon Citadelle — compréhension d’input. Lire le document avant tout changement routing, policies, JUST, entities, SC.
+alwaysApply: true
+---
+
+# Citadelle — compréhension d’input
+
+Source unique : `docs/governance/citadelle-input-invariants.md`
+
+Lire le canon avant tout changement routing, policies, JUST, `entities`, clarify ou SC.
+
+Ne pas recopier le canon ici ni ailleurs.
+
+Divergence (mémoire / protocole / règle IDE vs canon) : le canon gagne. Pointer, ne pas redéfinir.

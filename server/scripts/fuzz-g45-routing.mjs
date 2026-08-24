@@ -5,8 +5,8 @@ import { runConversationShortCircuit } from "../src/agent/micro/classifiers/inte
 import {
   isComprehensionDemonstrationRequest,
   isMetaAssistantBehaviorRequest,
-} from "../src/agent/utils/metaAssistantBehaviorGuards.js";
-import { isIdeationIntent } from "../src/agent/utils/ideationIntentGuards.js";
+} from "../src/agent/utils/intent-guards/metaAssistantBehaviorGuards.js";
+import { isIdeationIntent } from "../src/agent/utils/intent-guards/ideationIntentGuards.js";
 
 const history = [
   { role: "user", content: "salut salut" },

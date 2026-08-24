@@ -13,7 +13,7 @@ import {
 } from "../src/agent/micro/lexicon/lexiconLearningStore.js";
 import { assessLexiconPromotionCandidate, LEXICON_GATE_DECISIONS } from "../src/agent/micro/lexicon/lexiconPromotionGate.js";
 import { observeLexiconLearning } from "../src/agent/micro/lexicon/lexiconLearningOrchestrator.js";
-import { getFamiliarityDeterministicReply, hasStaticLexiconEntry } from "../src/agent/utils/familiarityIntentGuards.js";
+import { getFamiliarityDeterministicReply, hasStaticLexiconEntry } from "../src/agent/utils/intent-guards/familiarityIntentGuards.js";
 import { LEXICON_PROPOSAL_STATUS } from "../src/agent/micro/lexicon/subjectPromotionCandidateBuilder.js";
 
 let tempDir = "";

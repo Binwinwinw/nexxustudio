@@ -2,8 +2,8 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { isCodeReviewRequest } from "../src/agent/policies/code/codeReviewPolicy.js";
 import { isCodeIntentRequest } from "../src/agent/policies/code/codeIntentPolicy.js";
-import { isDocumentAnalysisIntent } from "../src/agent/utils/conversationGuards.js";
-import { isAnalyticalCritiqueIntent } from "../src/agent/utils/analyticalCritiqueIntentGuards.js";
+import { isDocumentAnalysisIntent } from "../src/agent/utils/conversation/conversationGuards.js";
+import { isAnalyticalCritiqueIntent } from "../src/agent/utils/intent-guards/analyticalCritiqueIntentGuards.js";
 import {
   enforceCodeReviewPipelineDelivery,
 } from "../src/agent/policies/code/codeReviewRuntimeGuard.js";

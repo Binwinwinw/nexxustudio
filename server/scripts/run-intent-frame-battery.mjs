@@ -1,12 +1,12 @@
 import { analyzeRequestIntentFrame } from "../src/agent/policies/intent/requestIntentFrame.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 
-import { isTechnicalLearningPathRequest, isTechnicalLearningPathSignal } from "../src/agent/utils/technicalLearningPathIntentGuards.js";
-import { isCareerLearningPathRequest, isCareerLearningPathSignal } from "../src/agent/utils/careerLearningPathIntentGuards.js";
-import { isTechnicalOverviewRequest } from "../src/agent/utils/technicalOverviewIntentGuards.js";
-import { isBeginnerTopicOverviewRequest } from "../src/agent/utils/beginnerTopicOverviewIntentGuards.js";
-import { isPedagogicalOverviewRequest } from "../src/agent/utils/pedagogicalOverviewIntentGuards.js";
-import { isDebugDiagnosticRequest } from "../src/agent/utils/debugDiagnosticIntentGuards.js";
+import { isTechnicalLearningPathRequest, isTechnicalLearningPathSignal } from "../src/agent/utils/intent-guards/technicalLearningPathIntentGuards.js";
+import { isCareerLearningPathRequest, isCareerLearningPathSignal } from "../src/agent/utils/intent-guards/careerLearningPathIntentGuards.js";
+import { isTechnicalOverviewRequest } from "../src/agent/utils/intent-guards/technicalOverviewIntentGuards.js";
+import { isBeginnerTopicOverviewRequest } from "../src/agent/utils/intent-guards/beginnerTopicOverviewIntentGuards.js";
+import { isPedagogicalOverviewRequest } from "../src/agent/utils/intent-guards/pedagogicalOverviewIntentGuards.js";
+import { isDebugDiagnosticRequest } from "../src/agent/utils/intent-guards/debugDiagnosticIntentGuards.js";
 
 const debugQs = [
   "Salut, je veux un plan pour apprendre React pour trouver un job.",

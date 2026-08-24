@@ -1,13 +1,14 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
+import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import {
   isIdeationIntent,
   classifyIdeationSignal,
   getIdeationDeterministicReply,
   IDEATION_FRAMING_REPLY,
-} from "../src/agent/utils/ideationIntentGuards.js";
-import { isIdeationRequest } from "../src/agent/utils/conversationGuards.js";
+} from "../src/agent/utils/intent-guards/ideationIntentGuards.js";
+import { isIdeationRequest } from "../src/agent/utils/conversation/conversationGuards.js";
 import { isOpenProjectIdeation } from "../src/agent/config/modeResponseContracts.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
 import { RESPONSE_MODES } from "../src/agent/config/modeResponseContracts.js";
@@ -45,6 +46,26 @@ describe("contrat idéation — détection", () => {
       isIdeationIntent("corrige ce bug dans mon api endpoint"),
       false,
     );
+  });
+
+  it("exclut un livrable nommé (carte de visite)", () => {
+    const q =
+      "je veux créer une carte de visite avec mes coordonnées et d'autres informations donc comment pourrais je présenter cette carte?";
+    assert.equal(isIdeationIntent(q), false);
+    assert.equal(getIdeationDeterministicReply(q), null);
+  });
+
+  it("carte de visite → named_create_start, pas 3 pistes", async () => {
+    const q =
+      "je veux créer une carte de visite avec mes coordonnées et d'autres informations donc comment pourrais je présenter cette carte?";
+    const hit = await runConversationShortCircuit(q, { history: [] });
+    assert.equal(hit?.path, "named_create_start");
+    assert.match(hit?.reply || "", /carte de visite/i);
+    assert.match(hit?.reply || "", /Recto/i);
+    assert.match(hit?.reply || "", /Verso/i);
+    assert.match(hit?.reply || "", /Support/i);
+    assert.doesNotMatch(hit?.reply || "", /Voici 3 pistes concrètes/);
+    assert.doesNotMatch(hit?.reply || "", /reformule/i);
   });
 });
 

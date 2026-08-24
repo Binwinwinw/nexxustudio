@@ -5,7 +5,7 @@
 import contract from "../../config/codeDeliveryContract.json" with { type: "json" };
 import { isCodeIntentRequest } from "./codeIntentPolicy.js";
 import { suppressesCodeGenerationForConceptExplain } from "./codeConceptExplainPolicy.js";
-import { suppressesCodeGenerationForProgrammingPedagogy } from "../../utils/programmingPedagogyLightIntentGuards.js";
+import { suppressesCodeGenerationForProgrammingPedagogy } from "../../utils/intent-guards/programmingPedagogyLightIntentGuards.js";
 
 export const CODE_DELIVERY_CONTRACT_ID = contract.id;
 export const CODE_DELIVERY_FALLBACK_LANGUAGE = contract.fallback_language || "python";
@@ -163,9 +163,31 @@ export function detectCodeDeliveryLanguage(query = "") {
   if (/\b(php)\b/i.test(q)) return CODE_LANGUAGES.PHP;
   if (/\b(html)\b/i.test(q)) return CODE_LANGUAGES.HTML;
   if (/\b(css)\b/i.test(q)) return CODE_LANGUAGES.CSS;
+  if (isSpreadsheetCreateDelivery(raw)) return CODE_LANGUAGES.PYTHON;
 
   return null;
 }
+
+const SPREADSHEET_CREATE_RE =
+  /\b(?:excel|xlsx|spreadsheet|classeurs?|google\s*sheets?|tableau(?:x)?\s+de\s+bord|dashboards?)\b/i;
+const SPREADSHEET_CREATE_VERB_RE =
+  /\b(?:creer|créer|cree|construis|construire|generer|générer|genere|fais|faire)\b/i;
+
+const SPREADSHEET_DELIVERY_HINT = `
+LIVRABLE TABLEUR (Excel / .xlsx) :
+- UN seul script Python complet, syntaxiquement valide, toutes constantes et fonctions définies avant usage.
+- openpyxl → vrai fichier .xlsx. Sauvegarde : wb.save("dashboard_rdv.xlsx") — jamais with open(..., "wb").
+- Deux feuilles : Calendrier (grille jour × nom) et Tableau de Bord (date, nom, éventuellement heure/statut).
+- Données d'exemple réelles dans le fichier (pas if False, pas extraits, pas variables fantômes).
+- pip install openpyxl + commande python. Pas de préambule « sources récentes ». Pas de cadrage sans code.
+`.trim();
+
+function isSpreadsheetCreateDelivery(query = "") {
+  const q = String(query || "");
+  return SPREADSHEET_CREATE_RE.test(q) && SPREADSHEET_CREATE_VERB_RE.test(q);
+}
+
+export { isSpreadsheetCreateDelivery };
 
 function isGenericCodeFallback(query = "") {
   const q = String(query || "");
@@ -184,6 +206,7 @@ export function isCodeGenerationRequest(query = "") {
   if (!q.trim()) return false;
   if (suppressesCodeGenerationForConceptExplain(q)) return false;
   if (suppressesCodeGenerationForProgrammingPedagogy(q)) return false;
+  if (isSpreadsheetCreateDelivery(q)) return true;
   if (isCodeIntentRequest(q)) return false;
 
   const lang = detectCodeDeliveryLanguage(q);
@@ -248,8 +271,14 @@ export function hasCodeDeliveryStructure(text = "", language = null) {
  */
 export function buildCodeDeliveryAddon(query = "") {
   if (!isCodeGenerationRequest(query)) return "";
-  const lang = resolveCodeDeliveryLanguage(query);
-  return `\n\n${buildCodeDeliveryModule(lang)}`;
+  const lang = isSpreadsheetCreateDelivery(query)
+    ? CODE_LANGUAGES.PYTHON
+    : resolveCodeDeliveryLanguage(query);
+  const module = buildCodeDeliveryModule(lang);
+  if (isSpreadsheetCreateDelivery(query)) {
+    return `\n\n${module}\n\n${SPREADSHEET_DELIVERY_HINT}`;
+  }
+  return `\n\n${module}`;
 }
 
 export function getCodeDeliveryContractMeta() {

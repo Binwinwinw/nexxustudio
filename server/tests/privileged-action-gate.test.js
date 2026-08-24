@@ -10,7 +10,7 @@ import {
   GATE_BLOCK_REASONS,
   PRIVILEGED_ACTION_TYPES,
 } from "../src/hooks/privilegedActionGate.js";
-import toolExecutor from "../src/agent/utils/toolExecutor.js";
+import toolExecutor from "../src/agent/utils/runtime/toolExecutor.js";
 
 describe("privilegedActionGate — P0 enforcement", () => {
   const initialHooks = new Set(securityHooks.activeHooks);

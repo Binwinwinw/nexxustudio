@@ -5,15 +5,19 @@ import {
   stripOrphanTags,
   sanitizeInternalTags,
   stripEpistolaryTemplates,
-} from "./utils/normalizationGuards.js";
-import intentClassifier from "./utils/intentClassifier.js";
+} from "./utils/parsing-normalization/normalizationGuards.js";
+import intentClassifier from "./utils/intent-guards/intentClassifier.js";
 import controlHarness from "./harness/controlHarness.js";
 import { AGENT_ROLES } from "./policies/core/index.js";
+import {
+  getWarmupSessionId,
+  runWithWarmupSession,
+} from "../config/warmupExperimentPlan.js";
 import { getClientForModel } from "../llm/llmFactory.js";
 import turnTelemetry from "./telemetry/turnTelemetry.js";
 import caveman from "../utils/cavemanShrink.js";
-import vramManager from "./utils/vramManager.js";
-import responseThinkingCleaner from "./utils/responseThinkingCleaner.js";
+import vramManager from "./utils/runtime/vramManager.js";
+import responseThinkingCleaner from "./utils/quality-safety/responseThinkingCleaner.js";
 import {
   enforceModeContract,
   RESPONSE_MODES,
@@ -50,7 +54,7 @@ import {
   applyConnectorPhaseCWebKey,
   logConnectorPhaseCApplication,
 } from "./policies/connectors/index.js";
-import { isAnalyticalCritiqueIntent } from "./utils/analyticalCritiqueIntentGuards.js";
+import { isAnalyticalCritiqueIntent } from "./utils/intent-guards/analyticalCritiqueIntentGuards.js";
 import {
   getAnalyticalCritiqueSystemHint,
   buildAnalyticalCritiqueFallback,
@@ -60,7 +64,7 @@ import {
   buildAttachmentPacketMeta,
   hasTextAttachments,
   isConversationMemoryRecallRequest,
-} from "./utils/conversationGuards.js";
+} from "./utils/conversation/conversationGuards.js";
 import {
   resolveDocumentContinuity,
   runDocumentFollowUp,
@@ -71,12 +75,23 @@ import {
   validateDocumentSynthesisReply,
   resolveDocumentSynthesisBypassReply,
   extractPastedSourceText,
+  isDocumentTranscriptionRequest,
+  resolvePdfTextLayerDecision,
+  buildOcrRequiredUnavailableReply,
+  runOcrOnPdfAttachment,
+  injectOcrTextIntoBriefing,
+  buildPdfCoverageSnapshot,
+  shouldDeliverPdfPartialFileAnalysis,
+  formatPdfPartialFileAnalysisReply,
+  evaluatePdfPartialAnalysisSufficiency,
 } from "./policies/document/index.js";
-import { synthesizeConversationRecall } from "./utils/conversationRecallSynthesizer.js";
-import { resolvePipelineFallback, resolveLocalDeterministicFallback } from "./utils/genericGreetingGuards.js";
+import { compressComposerFinalPass } from "./utils/quality-safety/qualityGuards.js";
+import { requiresStructuredContentComposerBudget } from "./policies/delivery/constructiveDeliveryPolicy.js";
+import { synthesizeConversationRecall } from "./utils/conversation/conversationRecallSynthesizer.js";
+import { resolvePipelineFallback, resolveLocalDeterministicFallback } from "./utils/conversation/genericGreetingGuards.js";
 import {
   buildLlmUnreachableUserMessage,
-} from "./utils/llmConnectionErrors.js";
+} from "./utils/quality-safety/llmConnectionErrors.js";
 import {
   assessConversationTopicShift,
   resolveHistoryAfterTopicShift,
@@ -111,7 +126,21 @@ import {
   buildAttachmentInterpretationSystemAddon,
   resolveHtmlAnalyzerFactsFromAttachments,
   buildHtmlAnalyzerFactsSystemAddon,
+  resolveFileAnalysisDepth,
+  formatFileAnalysisReply,
+  evaluateFileAnalysisSufficiency,
+  shouldApplyFileAnalysisSourceRail,
+  mapHtmlViewsToFileAnalysisReport,
+  buildFileAnalysisPromptAddon,
+  FILE_ANALYSIS_DEPTHS,
+  tryFileAnalysisAwaitingSource,
 } from "./policies/attachment/index.js";
+import {
+  buildHtmlDocumentAnalysisReply,
+  evaluateHtmlDocumentCriticChecks,
+  shouldUseAnchoredHtmlDocumentReply,
+} from "./analysis/analyzers/htmlDocumentExtract.js";
+import { analyzeSourceFileContent } from "./analysis/analyzers/index.js";
 import {
   evaluateJustIntent,
   resolveIntentComposition,
@@ -135,6 +164,14 @@ import {
   verifyMoveContract,
   classifyTurnForPipeline,
   resolveConversationTurnFamilyShortCircuit,
+  gateSocialFinalize,
+  observePilotRail,
+  assessCurrentTurnEntityPivot,
+  enforceCurrentTurnAnchoring,
+  resolveActiveGoal,
+  preserveExistenceInEffectiveQuery,
+  evaluateInputCompleteness,
+  buildExistenceScopedWebQuery,
 } from "./policies/conversation/index.js";
 import {
   runAgentUnderstandingPhase,
@@ -155,7 +192,12 @@ import {
   recordGuidedCreationScopingTelemetry,
   resolveGuidedCreationIntentContractId,
 } from "./telemetry/guidedCreationScopingTelemetry.js";
-import { resolveSocialPatternShortCircuit } from "./policies/social/index.js";
+import {
+  resolveSocialPatternShortCircuit,
+  containsInternalPromptLeak,
+  listInternalPromptLeakMarkers,
+  resolveInternalLeakFallback,
+} from "./policies/social/index.js";
 import { recordSocialPatternTelemetry } from "./telemetry/socialPatternTelemetry.js";
 import {
   classifySummaryContract,
@@ -166,7 +208,9 @@ import {
   recordKnownEntitySummaryExecutionTelemetry,
   resolveKnownEntityComposerGateOutcome,
   resolveKnownEntitySummaryCatchOutcome,
+  stampKnownEntityWebEscalation,
   KNOWN_ENTITY_EXECUTION_PATHS,
+  KNOWN_ENTITY_ESCALATE_WEB_CODE,
   validateKnownEntitySummaryReply,
 } from "./policies/summary/index.js";
 import { recordSummaryContractTelemetry } from "./telemetry/summaryContractTelemetry.js";
@@ -195,9 +239,9 @@ import {
   isTranslationShell,
   isTranslationDerivedRequest,
   isTranslationPipelineReady,
-} from "./utils/translationIntentGuards.js";
-import { isContextReferenceRequest } from "./utils/contextReferenceIntentGuards.js";
-import { resolveSessionContextReference } from "./utils/sessionContextReferenceResolver.js";
+} from "./utils/intent-guards/translationIntentGuards.js";
+import { isContextReferenceRequest } from "./utils/intent-guards/contextReferenceIntentGuards.js";
+import { resolveSessionContextReference } from "./utils/context/sessionContextReferenceResolver.js";
 import { recordRequestDecompositionTelemetry } from "./telemetry/requestDecompositionTelemetry.js";
 import { resolveStrategyExecution } from "./telemetry/strategyExecutionTelemetry.js";
 import {
@@ -207,11 +251,15 @@ import {
 import {
   shouldEscalateSimpleFactualToFullPipeline,
   isInformationSeekingWithTarget,
-} from "./utils/informationSeekingIntentGuards.js";
+} from "./utils/intent-guards/informationSeekingIntentGuards.js";
 import { formatJustIntentSummary } from "../../../shared/justIntentCatalog.js";
 import { runConversationShortCircuit } from "./micro/classifiers/intentShortCircuit.js";
+import {
+  shouldFinalizeArchitectureDesignRail,
+  applyArchitectureDepthMetrics,
+} from "./utils/intent-guards/architectureDesignIntentGuards.js";
 import { resolveSemanticIntent, shouldUseSemanticResolution } from "./micro/classifiers/semanticIntentResolver.js";
-import { isMetaAssistantBehaviorRequest, isComprehensionDemonstrationRequest } from "./utils/metaAssistantBehaviorGuards.js";
+import { isMetaAssistantBehaviorRequest, isComprehensionDemonstrationRequest } from "./utils/intent-guards/metaAssistantBehaviorGuards.js";
 import {
   classifyConversationTurnFamily,
   shouldSuppressTurnFamilyPath,
@@ -228,6 +276,8 @@ import {
   buildVoiceContinuityPromptAddon,
   formatVoiceContinuitySummary,
   shouldBlockGenericInsufficientRefusal,
+  resolveOutputLanguagePolicy,
+  enforceOutputLanguage,
 } from "./policies/posture/index.js";
 import {
   composeCapabilityContext,
@@ -278,7 +328,7 @@ import { extractUrlContent } from "../utils/urlExtractor.js";
 // Orchestrateur Souverain v5.0
 import { SovereignOrchestrator } from "./orchestrator/SovereignOrchestrator.js";
 import { evaluateEpistemicRefusal, isGreetingOrIntroduction } from "./config/modeResponseContracts.js";
-import { emitOnContent } from "./utils/streamTextChunks.js";
+import { emitOnContent } from "./utils/runtime/streamTextChunks.js";
 import { finalRendererAgent } from "./agents/finalRendererAgent.js";
 import {
   buildStructuredRequestPromptAddon,
@@ -446,6 +496,8 @@ class AgentPipeline {
       attachments = [],
       attachmentTask = null,
       sourceBacked = null,
+      ingestedText = "",
+      htmlViews = null,
     } = {},
   ) {
     let text = String(output || "");
@@ -457,6 +509,8 @@ class AgentPipeline {
       attachments,
       attachmentTask,
       sourceBacked,
+      ingestedText,
+      htmlViews,
     });
     if (fileGuard.blocked) {
       console.warn(
@@ -525,6 +579,21 @@ class AgentPipeline {
       ...options
     } = {},
   ) {
+    const warmupSessionId = options.sessionId || projectState?.sessionId;
+    if (warmupSessionId && !getWarmupSessionId()) {
+      return runWithWarmupSession(warmupSessionId, () =>
+        this.run(query, history, {
+          onStep,
+          onContent,
+          onThought,
+          forcedExpertKey,
+          projectState,
+          disableRecentMemory,
+          cavemanLevel,
+          ...options,
+        }),
+      );
+    }
     clearCapabilityToolsForTurn();
     const pipelineTelemetryCtx = createPipelineTelemetryContext(query);
     let sessionWorkCtx = null;
@@ -535,20 +604,56 @@ class AgentPipeline {
     let effectiveForcedExpertKey = forcedExpertKey;
     let pipelineQuery = query;
     const topicShiftAssessment = assessConversationTopicShift(query, history);
+    const entityPivot = assessCurrentTurnEntityPivot(query, history);
+    const contextResetAssessment =
+      topicShiftAssessment.detected || entityPivot.detected
+        ? { detected: true }
+        : topicShiftAssessment;
     let orchestrationHistory = resolveHistoryAfterTopicShift(
       history,
-      topicShiftAssessment,
+      contextResetAssessment,
     );
     let effectiveDisableRecentMemory =
-      disableRecentMemory || topicShiftAssessment.detected;
+      disableRecentMemory || contextResetAssessment.detected;
 
     if (topicShiftAssessment.detected) {
       console.log(
         `[PIPELINE] ${CONVERSATION_TOPIC_SHIFT_RULE} reset ${topicShiftAssessment.previousDomain} → ${topicShiftAssessment.currentDomain} (${topicShiftAssessment.reason})`,
       );
     }
+    if (entityPivot.detected) {
+      console.log(
+        `[PIPELINE] ${entityPivot.rule} pivot ${entityPivot.reason} tokens=${entityPivot.currentTokens.join("|")}`,
+      );
+    }
 
     try {
+    attachedFiles = options.images || options.attachments || [];
+    const awaitingSource = tryFileAnalysisAwaitingSource(query, {
+      attachments: attachedFiles,
+      forgeProduction: options.forgeProduction,
+    });
+    if (awaitingSource) {
+      turnTelemetry.beginTurn(query, {
+        sessionId: options.sessionId,
+        traceId: options.traceId,
+      });
+      turnTelemetry.recordPipelinePath?.(awaitingSource.pipelinePath);
+      turnTelemetry.setMetric?.("file_analysis_route", awaitingSource.route);
+      console.log(
+        `[PIPELINE] ${awaitingSource.route} pipelinePath=${awaitingSource.pipelinePath} contract=null — stop simple_fast/expert_task/REPO_ANALYSIS`,
+      );
+      if (onStep) {
+        onStep("📎 Analyse de fichier — en attente de la pièce...", {
+          pipelinePath: awaitingSource.pipelinePath,
+          route: awaitingSource.route,
+          intentContractId: null,
+        });
+      }
+      if (onContent) onContent(awaitingSource.reply);
+      return awaitingSource.reply;
+    }
+
     console.log(
       ">>> [BOOT] NEXXUS PIPELINE V5.0 — ORCHESTRATEUR SOUVERAIN <<<",
     );
@@ -628,9 +733,22 @@ class AgentPipeline {
       `[PIPELINE] voice_continuity ${formatVoiceContinuitySummary(voiceContinuity)}`,
     );
 
+    const languagePolicy = resolveOutputLanguagePolicy(pipelineQuery, {
+      history: orchestrationHistory,
+    });
+    if (pipelineTelemetryCtx) {
+      pipelineTelemetryCtx.languagePolicy = languagePolicy;
+    }
+    console.log(
+      `[PIPELINE] output_language lang=${languagePolicy.outputLanguage} explicit=${languagePolicy.explicitOverride}`,
+    );
+
     this._turnDeliveryCtx = {
       getQuery: () => pipelineQuery,
       getHistory: () => orchestrationHistory,
+      getAttachments: () => attachedFiles,
+      getLanguagePolicy: () =>
+        pipelineTelemetryCtx?.languagePolicy || languagePolicy,
     };
 
     attachedFiles = options.images || [];
@@ -661,6 +779,12 @@ class AgentPipeline {
         `[PIPELINE] context_ref ${contextRefResolution.referenceType} → ${pipelineQuery.slice(0, 120)}`,
       );
     }
+
+    pipelineQuery = preserveExistenceInEffectiveQuery(
+      pipelineQuery,
+      pipelineQuery,
+      { history: orchestrationHistory },
+    );
 
     const pendingClarificationResume = resumePendingClarification(
       query,
@@ -703,11 +827,25 @@ class AgentPipeline {
     );
     recordRequestDecompositionTelemetry(pipelineQuery, requestDecomposition);
 
-    const { understanding: queryUnderstanding, cognitiveCycle: requestWorkup } =
-      runAgentUnderstandingPhase(pipelineQuery, orchestrationHistory, {
-        attachments: attachedFiles,
-        forgeProduction: options.forgeProduction === true,
-      });
+    const {
+      understanding: queryUnderstanding,
+      cognitiveCycle: requestWorkup,
+      turnComprehension,
+      turnLoop,
+    } = runAgentUnderstandingPhase(pipelineQuery, orchestrationHistory, {
+      attachments: attachedFiles,
+      forgeProduction: options.forgeProduction === true,
+    });
+    if (pipelineTelemetryCtx) {
+      pipelineTelemetryCtx.turn_comprehension = {
+        primaryKind: turnComprehension?.primaryGoal?.kind,
+        workPresent: turnComprehension?.dominance?.workPresent,
+        mayFinalizeSocial:
+          turnComprehension?.responseExpectations?.mayFinalizeSocial,
+        domainHints: turnComprehension?.domainHints,
+      };
+      pipelineTelemetryCtx.turn_loop = turnLoop;
+    }
     const queryExecutionPlan = buildExecutionPlan(queryUnderstanding);
     const guidedIntentContractId =
       resolveFormalLetterTemplateIntentContractId(queryUnderstanding, pipelineQuery) ||
@@ -771,7 +909,10 @@ class AgentPipeline {
     }
 
     // Frame conversationnelle (slots) avant JUST — pas un intent lexical
-    const openExplorationFrame = resolveOpenExplorationFrame(pipelineQuery);
+    const openExplorationFrame = resolveOpenExplorationFrame(
+      pipelineQuery,
+      orchestrationHistory,
+    );
     if (pipelineTelemetryCtx) {
       pipelineTelemetryCtx.openExplorationFrame =
         openExplorationFrame.telemetry;
@@ -822,7 +963,11 @@ class AgentPipeline {
         : null,
     ];
     const interpreterLock = resolveInterpreterLock(structuredRequest);
-    recordJustIntentTelemetry(query);
+    // P1 shadow : observe frame ↔ JUST. justIntent servi au gate/SC reste l'objet ci-dessus.
+    recordJustIntentTelemetry(query, {
+      justIntent,
+      requestFrame: queryUnderstanding.requestFrame,
+    });
     recordRequestIntentFrameTelemetry(query, { pipelinePath: "just_intent_detection" });
 
     if (onStep) {
@@ -933,6 +1078,7 @@ class AgentPipeline {
       intentTriage,
       history: orchestrationHistory,
       attachments: attachedFiles,
+      turnComprehension,
     });
 
     const moveAuthority = applyConversationMoveAuthority({
@@ -987,32 +1133,45 @@ class AgentPipeline {
     }
 
     if (effectiveClarificationGate.shouldClarify) {
-      const socialPatternHit = resolveSocialPatternShortCircuit(pipelineQuery);
+      const socialPatternHit = resolveSocialPatternShortCircuit(pipelineQuery, {
+        history: orchestrationHistory,
+        turnComprehension,
+        onSocialGateDenied: (meta) => {
+          gateSocialFinalize(turnComprehension, turnLoop, meta);
+        },
+      });
       if (socialPatternHit?.reply) {
-        recordSocialPatternTelemetry({
-          query: pipelineQuery,
-          patternName: socialPatternHit.patternName,
-          blockedPaths: socialPatternHit.blockedPaths,
-          phase: "clarification_bypass",
-          pipelinePath: socialPatternHit.path,
-          pipelineTelemetryCtx,
-          turnTelemetry,
+        const gated = gateSocialFinalize(turnComprehension, turnLoop, {
+          action: "finalize_social",
+          rail: "social_deterministic",
+          source: `clarification_bypass:${socialPatternHit.patternName}`,
         });
-        if (onStep) {
-          onStep(`⚡ Pattern social G35 — ${socialPatternHit.patternName}...`, {
+        if (gated.allow) {
+          recordSocialPatternTelemetry({
+            query: pipelineQuery,
+            patternName: socialPatternHit.patternName,
+            blockedPaths: socialPatternHit.blockedPaths,
+            phase: "clarification_bypass",
             pipelinePath: socialPatternHit.path,
+            pipelineTelemetryCtx,
+            turnTelemetry,
+          });
+          if (onStep) {
+            onStep(`⚡ Pattern social G35 — ${socialPatternHit.patternName}...`, {
+              pipelinePath: socialPatternHit.path,
+            });
+          }
+          return this._finalizePipelineTurn({
+            text: socialPatternHit.reply,
+            pipelinePath: socialPatternHit.path,
+            status: true,
+            deliveryMode: DELIVERY_MODES.BUFFERED_FINAL,
+            pipelineTelemetryCtx,
+            turnTelemetry,
+            onContent,
+            onStep,
           });
         }
-        return this._finalizePipelineTurn({
-          text: socialPatternHit.reply,
-          pipelinePath: socialPatternHit.path,
-          status: true,
-          deliveryMode: DELIVERY_MODES.BUFFERED_FINAL,
-          pipelineTelemetryCtx,
-          turnTelemetry,
-          onContent,
-          onStep,
-        });
       }
 
       const queryCompositeHit = resolveQueryCompositeShortCircuit(
@@ -1471,21 +1630,29 @@ class AgentPipeline {
     if (wantsAnalysis) {
       // Pas de cache INSTANT pour ces requêtes
     } else if (INSTANT_RESPONSES[lowerQuery]) {
-      if (onStep) onStep('⚡ Réponse instantanée...');
-      const instantOut = enforceModeContract(
-        RESPONSE_MODES.INSTANT,
-        INSTANT_RESPONSES[lowerQuery],
-      );
-      return this._finalizePipelineTurn({
-        text: instantOut,
-        pipelinePath: "instant",
-        status: true,
-        deliveryMode: DELIVERY_MODES.BUFFERED_FINAL,
-        pipelineTelemetryCtx,
-        turnTelemetry,
-        onContent,
-        onStep,
+      const gatedInstant = gateSocialFinalize(turnComprehension, turnLoop, {
+        action: "instant_social",
+        rail: "instant",
+        source: "INSTANT_RESPONSES",
       });
+      if (gatedInstant.allow) {
+        if (onStep) onStep('⚡ Réponse instantanée...');
+        const instantOut = enforceModeContract(
+          RESPONSE_MODES.INSTANT,
+          INSTANT_RESPONSES[lowerQuery],
+        );
+        return this._finalizePipelineTurn({
+          text: instantOut,
+          pipelinePath: "instant",
+          status: true,
+          deliveryMode: DELIVERY_MODES.BUFFERED_FINAL,
+          pipelineTelemetryCtx,
+          turnTelemetry,
+          onContent,
+          onStep,
+        });
+      }
+      // workPresent — skip INSTANT, continuer pipeline
     }
 
     const isForgeProductionRun = options.forgeProduction === true;
@@ -1557,12 +1724,16 @@ class AgentPipeline {
         turnTimestamp: sessionWorkCtx?.turnTimestamp,
         priorState: sessionWorkCtx?.priorState,
         intentTriage: intentTriageResult,
+        justIntent,
         attachments: attachedFiles,
         getDeterministicSocialResponse: this.getDeterministicSocialResponse,
         requestDecomposition,
         queryUnderstanding,
         queryExecutionPlan,
         summaryContract,
+        turnComprehension,
+        turnLoop,
+        languagePolicy: pipelineTelemetryCtx?.languagePolicy || null,
       });
 
       // WorkloadSignal + WorkUnitCountAndPlan — count→reconcile→normalize→plan (verrou avant exécution)
@@ -1647,6 +1818,28 @@ class AgentPipeline {
           telemetry: intentComposition.telemetry,
         };
       }
+      const inputCompleteness = evaluateInputCompleteness({
+        rawQuery: query,
+        effectiveQuery: pipelineQuery,
+        composition: intentComposition,
+        responsePlan: requestWorkup?.response_commitment,
+        webQuery:
+          buildExistenceScopedWebQuery(pipelineQuery, {
+            history: orchestrationHistory,
+          }) ||
+          requestWorkup?.retrieval_decision?.webQuery ||
+          "",
+        history: orchestrationHistory,
+      });
+      if (pipelineTelemetryCtx) {
+        pipelineTelemetryCtx.inputCompleteness = inputCompleteness;
+      }
+      if (inputCompleteness.applicable && inputCompleteness.compression_invalid) {
+        console.log(
+          `[PIPELINE] input_completeness INVALID ${inputCompleteness.failures.join(",")}`,
+        );
+      }
+
       console.log(
         `[PIPELINE] intent_composition ${formatIntentCompositionSummary(intentComposition)}`,
       );
@@ -1702,6 +1895,15 @@ class AgentPipeline {
       }
 
       if (shortCircuit) {
+        if (shouldFinalizeArchitectureDesignRail(shortCircuit)) {
+          shortCircuit.deferToLlm = false;
+          shortCircuit.deferToFullPipeline = false;
+          applyArchitectureDepthMetrics(
+            turnTelemetry,
+            shortCircuit,
+            turnTelemetry?.startedAt,
+          );
+        }
         shortCircuit.requestDecomposition = requestDecomposition;
         if (shortCircuit.summaryContract) {
           recordSummaryContractTelemetry({
@@ -1759,7 +1961,11 @@ class AgentPipeline {
           wantsAnalysis,
         });
 
-        if (shortCircuit.continuityEffectiveQuery) {
+        if (
+          shortCircuit.continuityEffectiveQuery &&
+          !shortCircuit.blockWebUntilFramingStable &&
+          !shortCircuit.framingCorrection
+        ) {
           pipelineQuery = String(shortCircuit.continuityEffectiveQuery);
           console.log(
             `[PIPELINE] continuity rewrite → ${pipelineQuery.slice(0, 120)}`,
@@ -1781,11 +1987,14 @@ class AgentPipeline {
               shortCircuitPath: shortCircuit.path,
               informationSeekingEscalation:
                 shortCircuit.path === "information_seeking_escalation",
+              history: orchestrationHistory,
             },
           });
           let proposedWebKey = effectiveForcedExpertKey;
           if (
             !proposedWebKey &&
+            !shortCircuit.blockWebUntilFramingStable &&
+            !shortCircuit.framingCorrection &&
             (enrichment.preferWebResearch || shortCircuit.preferWebResearch)
           ) {
             proposedWebKey = "expert_web_search";
@@ -1926,6 +2135,31 @@ class AgentPipeline {
               "[PIPELINE] Méta réflexive SIMPLE_FAST échouée:",
               error.message,
             );
+            if (
+              shortCircuit?.skipSovereign ||
+              shortCircuit?.path === "conversational_light"
+            ) {
+              const { buildShortGeneralFallbackReply } = await import(
+                "./policies/conversation/shortGeneralAnswerPolicy.js"
+              );
+              return this._finalizePipelineTurn({
+                text: applySurfaceMicroContract(
+                  pipelineQuery,
+                  shortCircuit.reply ||
+                    buildShortGeneralFallbackReply(pipelineQuery),
+                ),
+                pipelinePath: shortCircuit.path || "conversational_light",
+                status: true,
+                reason: "conversational_light_no_escalate",
+                deliveryMode: DELIVERY_MODES.BUFFERED_FINAL,
+                pipelineTelemetryCtx,
+                turnTelemetry,
+                onContent,
+                onStep,
+                query: pipelineQuery,
+                history: orchestrationHistory,
+              });
+            }
             const isPresentationOutlineRefError =
               /presentationOutline is not defined/i.test(
                 String(error?.message || ""),
@@ -2037,8 +2271,26 @@ class AgentPipeline {
             const knownEntityCatch = resolveKnownEntitySummaryCatchOutcome(
               error,
               shortCircuit,
+              pipelineQuery,
             );
-            if (knownEntityCatch) {
+            if (knownEntityCatch?.preferWebResearch) {
+              stampKnownEntityWebEscalation(shortCircuit, knownEntityCatch);
+              shortCircuitDeferredFull = true;
+              effectiveForcedExpertKey =
+                effectiveForcedExpertKey || "expert_web_search";
+              recordKnownEntitySummaryExecutionTelemetry({
+                pipelineTelemetryCtx,
+                turnTelemetry,
+                executionPath: knownEntityCatch.executionPath,
+                composerBypassed: knownEntityCatch.composerBypassed,
+                validationIssues: knownEntityCatch.validationIssues,
+                contractViolation: knownEntityCatch.reason,
+                errorMessage: knownEntityCatch.errorMessage,
+              });
+              console.log(
+                "[PIPELINE] known_entity local miss → escalade web (synopsis œuvre)",
+              );
+            } else if (knownEntityCatch) {
               recordKnownEntitySummaryExecutionTelemetry({
                 pipelineTelemetryCtx,
                 turnTelemetry,
@@ -2180,6 +2432,16 @@ class AgentPipeline {
             }
           }
         } else if (shortCircuit.reply) {
+          if (
+            shortCircuit.path === "simple_factual_lookup" &&
+            turnLoop?.stop?.reason == null
+          ) {
+            observePilotRail(turnLoop, {
+              action: "simple_factual_lookup",
+              rail: "simple_factual_lookup",
+              source: shortCircuit.step || "short_circuit",
+            });
+          }
           if (shortCircuit.cognitive_cycle && pipelineTelemetryCtx) {
             const mergedCycle = mergeAgentCycleWithShortCircuit(
               pipelineTelemetryCtx.requestWorkup,
@@ -2199,6 +2461,8 @@ class AgentPipeline {
           if (onStep) {
             onStep(shortCircuit.step, {
               pipelinePath: shortCircuit.path,
+              route: shortCircuit.route || null,
+              contract: shortCircuit.forcedIntentContractId || null,
               metaSubKind: shortCircuit.metaSubKind,
             });
           }
@@ -2394,13 +2658,27 @@ class AgentPipeline {
         if (pipelineTelemetryCtx) {
           pipelineTelemetryCtx.attachmentTask = attachmentTaskClass.task;
           pipelineTelemetryCtx.attachmentFileKind = attachmentTaskClass.fileKind;
+          if (attachmentTaskClass.outputContract) {
+            pipelineTelemetryCtx.outputContract = attachmentTaskClass.outputContract;
+          }
+          if (attachmentTaskClass.fileAnalysisDepth) {
+            pipelineTelemetryCtx.fileAnalysisDepth = attachmentTaskClass.fileAnalysisDepth;
+          }
         }
         if (onStep) {
+          const contractBit = attachmentTaskClass.outputContract
+            ? ` · ${attachmentTaskClass.outputContract}`
+            : "";
+          const depthBit = attachmentTaskClass.fileAnalysisDepth
+            ? ` · ${attachmentTaskClass.fileAnalysisDepth}`
+            : "";
           onStep(
-            `📎 Tâche PJ : ${attachmentTaskClass.task} · ${attachmentTaskClass.fileKind}`,
+            `📎 Tâche PJ : ${attachmentTaskClass.task} · ${attachmentTaskClass.fileKind}${contractBit}${depthBit}`,
             {
               attachmentTask: attachmentTaskClass.task,
               fileKind: attachmentTaskClass.fileKind,
+              outputContract: attachmentTaskClass.outputContract || null,
+              fileAnalysisDepth: attachmentTaskClass.fileAnalysisDepth || null,
             },
           );
         }
@@ -2441,13 +2719,27 @@ class AgentPipeline {
           console.log('[PIPELINE] Document Analysis détectée → documentAnalysis');
           try {
             const startTime = performance.now();
+            const extractStarted = performance.now();
             let attachedBriefing = null;
             let ingestedPrimaryDoc = null;
+            let pdfDecision = { decision: "not_pdf" };
+            let pdfOcrRun = null;
             if (hasAttachedDocs) {
-              const contextAgent = (await import("./utils/contextAgent.js")).default;
+              const contextAgent = (await import("./utils/agents/contextAgent.js")).default;
               const ingested = await contextAgent.ingest(attachedFiles);
               attachedBriefing = ingested?.briefing || null;
               ingestedPrimaryDoc = ingested?.documents?.[0] || null;
+              if (ingestedPrimaryDoc?.htmlViews && onStep) {
+                const flags = ingestedPrimaryDoc.htmlViews.flags || [];
+                onStep("HTML structuré extrait", {
+                  htmlDocumentAvailability: ingestedPrimaryDoc.htmlViews.availability,
+                  htmlDocumentFlags: flags,
+                });
+                if (flags.includes("metadata_available")) onStep("metadata_available");
+                if (flags.includes("image_reference_available")) {
+                  onStep("image_reference_available");
+                }
+              }
               if (attachedBriefing && onStep) {
                 onStep("📚 Document(s) joint(s) ingéré(s) pour analyse.");
               } else if (onStep) {
@@ -2457,9 +2749,292 @@ class AgentPipeline {
                   attachedFiles.map((f) => f.originalname || f.name),
                 );
               }
+
+              // Décision PDF explicite : couche texte vs OCR (surtout si transcription demandée).
+              const pdfDecisionResolved = resolvePdfTextLayerDecision(
+                ingested?.documents || [],
+              );
+              pdfDecision = pdfDecisionResolved;
+              if (pipelineTelemetryCtx) {
+                pipelineTelemetryCtx.pdfTextLayerDecision = pdfDecision.decision;
+                pipelineTelemetryCtx.pdfExtractionRoute = pdfDecision.extractionRoute;
+              }
+              if (onStep && pdfDecision.decision !== "not_pdf") {
+                onStep(
+                  pdfDecision.decision === "text_layer_present"
+                    ? `📄 PDF : couche texte présente (${pdfDecision.nativeTextChars} car.)`
+                    : pdfDecision.decision === "ocr_required"
+                      ? `📄 PDF : couche texte absente — OCR requis (${pdfDecision.pageCount ?? "?"} p.)`
+                      : `📄 PDF : décision extraction ${pdfDecision.decision}`,
+                  { pdfTextLayerDecision: pdfDecision.decision },
+                );
+              }
+
+              if (
+                pdfDecision.decision === "ocr_required" &&
+                attachedBriefing
+              ) {
+                attachedBriefing +=
+                  "\nPDF_DECISION: text_layer=absent; route=ocr_pipeline; " +
+                  "ne pas demander confirmation pour lancer l'OCR — décider et exécuter ou déclarer l'échec.\n";
+              }
+
+              const wantsTranscription = isDocumentTranscriptionRequest(query);
+              if (
+                wantsTranscription &&
+                pdfDecision.decision === "ocr_required"
+              ) {
+                if (onStep) {
+                  onStep("🔍 OCR — transcription du PDF scanné avant analyse...");
+                }
+                const ocrRun = await runOcrOnPdfAttachment(attachedFiles[0], {
+                  maxPages: pdfDecision.pageCount || 20,
+                });
+                pdfOcrRun = ocrRun;
+                if (pipelineTelemetryCtx) {
+                  pipelineTelemetryCtx.pdfOcrAttempted = true;
+                  pipelineTelemetryCtx.pdfOcrOk = Boolean(ocrRun.ok);
+                  if (ocrRun.error) pipelineTelemetryCtx.pdfOcrError = ocrRun.error;
+                  if (ocrRun.pageCount != null) {
+                    pipelineTelemetryCtx.pdfOcrPagesProcessed = ocrRun.pageCount;
+                  }
+                }
+                if (ocrRun.ok && ocrRun.text) {
+                  attachedBriefing = injectOcrTextIntoBriefing(attachedBriefing, {
+                    fileName: pdfDecision.fileName || attachedFiles[0]?.originalname,
+                    ocrText: ocrRun.text,
+                    pageCount: ocrRun.pageCount ?? pdfDecision.pageCount,
+                  });
+                  if (ingestedPrimaryDoc) {
+                    ingestedPrimaryDoc.content = ocrRun.text;
+                  }
+                  if (onStep) {
+                    onStep(
+                      `✅ Transcription OCR injectée (${ocrRun.text.length} car.).`,
+                    );
+                  }
+                } else {
+                  const refuse = buildOcrRequiredUnavailableReply(pdfDecision, {
+                    ocrError: ocrRun.error,
+                  });
+                  if (onContent) onContent(refuse);
+                  return this._finalizePipelineTurn({
+                    text: refuse,
+                    pipelinePath: "DOCUMENT_OCR_REQUIRED",
+                    status: false,
+                    reason: ocrRun.error || "ocr_required_unavailable",
+                    deliveryMode: "already_streamed",
+                    pipelineTelemetryCtx,
+                    turnTelemetry,
+                    onContent,
+                    onStep,
+                  });
+                }
+              }
             }
+            const document_extract_ms = Math.round(performance.now() - extractStarted);
             const attachedFileName =
               attachedFiles[0]?.originalname || attachedFiles[0]?.name || null;
+            const htmlViews = ingestedPrimaryDoc?.htmlViews || null;
+            const fileAnalysisDepth =
+              attachmentTaskClass?.fileAnalysisDepth ||
+              resolveFileAnalysisDepth(query);
+            if (
+              htmlViews &&
+              attachmentTaskClass?.task === "doc_analyze" &&
+              shouldUseAnchoredHtmlDocumentReply(htmlViews)
+            ) {
+              const deepHtml =
+                fileAnalysisDepth === FILE_ANALYSIS_DEPTHS.COMPLETE ||
+                fileAnalysisDepth === FILE_ANALYSIS_DEPTHS.CRITIQUE;
+              const anchored = deepHtml
+                ? formatFileAnalysisReply(
+                    mapHtmlViewsToFileAnalysisReport(htmlViews),
+                    fileAnalysisDepth,
+                    query,
+                  )
+                : buildHtmlDocumentAnalysisReply(htmlViews, query);
+              const htmlCritic = evaluateHtmlDocumentCriticChecks({
+                query,
+                task: attachmentTaskClass.task,
+                fileKind: attachmentTaskClass.fileKind,
+                views: htmlViews,
+                reply: anchored,
+              });
+              const fileCritic = deepHtml
+                ? evaluateFileAnalysisSufficiency({
+                    query,
+                    reply: anchored,
+                    depth: fileAnalysisDepth,
+                    fileName: htmlViews.fileName || attachedFileName,
+                    artifactsPresent: true,
+                  })
+                : { ok: true, reasons: [] };
+              if (onStep) {
+                onStep(
+                  htmlCritic.ok && fileCritic.ok
+                    ? "Agent Critique : OK"
+                    : `Agent Critique : ancrage HTML (${[...htmlCritic.reasons, ...fileCritic.reasons].join(",")})`,
+                );
+              }
+              const htmlOut =
+                htmlCritic.ok && fileCritic.ok
+                  ? anchored
+                  : deepHtml
+                    ? formatFileAnalysisReply(
+                        mapHtmlViewsToFileAnalysisReport(htmlViews),
+                        fileAnalysisDepth,
+                        query,
+                      )
+                    : buildHtmlDocumentAnalysisReply(htmlViews, query);
+              const htmlDelivery = this._deliverWithCodeReviewGuard(query, htmlOut, {
+                onContent,
+                attachmentRefs,
+                attachments: attachedFiles,
+                attachmentTask: attachmentTaskClass.task,
+                sourceBacked: true,
+                ingestedText: attachedBriefing || htmlOut,
+                htmlViews,
+              });
+              return this._finalizePipelineTurn({
+                text: htmlDelivery.text,
+                pipelinePath: "DOCUMENT",
+                status: !htmlDelivery.blocked,
+                deliveryMode: DELIVERY_MODES.BUFFERED_FINAL,
+                pipelineTelemetryCtx,
+                turnTelemetry,
+                onContent,
+                onStep,
+              });
+            }
+
+            const sourceContent = ingestedPrimaryDoc?.content || "";
+            if (
+              shouldApplyFileAnalysisSourceRail({
+                task: attachmentTaskClass?.task,
+                fileName: attachedFileName,
+                mime: attachedFiles[0]?.mimetype || ingestedPrimaryDoc?.mimetype,
+                content: sourceContent,
+              })
+            ) {
+              const { report } = analyzeSourceFileContent(sourceContent, {
+                path: attachedFileName,
+              });
+              let fileOut = formatFileAnalysisReply(
+                report,
+                fileAnalysisDepth,
+                query,
+              );
+              const fileCritic = evaluateFileAnalysisSufficiency({
+                query,
+                reply: fileOut,
+                depth: fileAnalysisDepth,
+                fileName: attachedFileName,
+                artifactsPresent: true,
+                sourceKind: report.sourceKind || "",
+              });
+              if (!fileCritic.ok) {
+                fileOut = formatFileAnalysisReply(
+                  report,
+                  fileAnalysisDepth === FILE_ANALYSIS_DEPTHS.SIMPLE
+                    ? FILE_ANALYSIS_DEPTHS.COMPLETE
+                    : fileAnalysisDepth,
+                  query,
+                );
+              }
+              if (onStep) {
+                onStep(
+                  fileCritic.ok
+                    ? "Agent Critique : OK"
+                    : `Agent Critique : FILE_ANALYSIS (${fileCritic.reasons.join(",")})`,
+                );
+              }
+              const sourceDelivery = this._deliverWithCodeReviewGuard(
+                query,
+                fileOut,
+                {
+                  onContent,
+                  attachmentRefs,
+                  attachments: attachedFiles,
+                  attachmentTask: attachmentTaskClass.task,
+                  sourceBacked: true,
+                  ingestedText: attachedBriefing || sourceContent,
+                },
+              );
+              return this._finalizePipelineTurn({
+                text: sourceDelivery.text,
+                pipelinePath: "DOCUMENT",
+                status: !sourceDelivery.blocked,
+                deliveryMode: DELIVERY_MODES.BUFFERED_FINAL,
+                pipelineTelemetryCtx,
+                turnTelemetry,
+                onContent,
+                onStep,
+              });
+            }
+
+            const pdfCoverage = buildPdfCoverageSnapshot({
+              fileName: attachedFileName,
+              ingestedDoc: ingestedPrimaryDoc,
+              pdfDecision,
+              ocrAttempted: Boolean(pdfOcrRun) || pipelineTelemetryCtx?.pdfOcrAttempted === true,
+              ocrOk: Boolean(pdfOcrRun?.ok) || pipelineTelemetryCtx?.pdfOcrOk === true,
+              ocrError: pdfOcrRun?.error || pipelineTelemetryCtx?.pdfOcrError || null,
+              ocrPagesProcessed:
+                pdfOcrRun?.pageCount ?? pipelineTelemetryCtx?.pdfOcrPagesProcessed ?? null,
+              ocrText: pdfOcrRun?.ok ? pdfOcrRun.text : "",
+            });
+            if (
+              attachmentTaskClass?.task === "doc_analyze" &&
+              shouldDeliverPdfPartialFileAnalysis(pdfCoverage)
+            ) {
+              const pdfPartialOut = formatPdfPartialFileAnalysisReply(pdfCoverage, {
+                query,
+                depth: fileAnalysisDepth,
+              });
+              const pdfPartialCritic = evaluatePdfPartialAnalysisSufficiency({
+                reply: pdfPartialOut,
+                snapshot: pdfCoverage,
+                fileName: attachedFileName,
+              });
+              if (onStep) {
+                onStep(
+                  pdfPartialCritic.ok
+                    ? "Agent Critique : OK (PDF partial)"
+                    : `Agent Critique : PDF partial (${pdfPartialCritic.reasons.join(",")})`,
+                  {
+                    pipelinePath: "DOCUMENT",
+                    analysisStatus: "partial",
+                    pdfPartialChecks: pdfPartialCritic.checks,
+                  },
+                );
+              }
+              console.log(
+                `[PIPELINE] PDF partial FILE_ANALYSIS analysisStatus=partial code=${pdfCoverage.pdfCode || "none"} ocr=${pdfCoverage.ocrLabel}`,
+              );
+              const pdfPartialDelivery = this._deliverWithCodeReviewGuard(
+                query,
+                pdfPartialOut,
+                {
+                  onContent,
+                  attachmentRefs,
+                  attachments: attachedFiles,
+                  attachmentTask: attachmentTaskClass.task,
+                  sourceBacked: true,
+                  ingestedText: attachedBriefing || pdfCoverage.observedText,
+                },
+              );
+              return this._finalizePipelineTurn({
+                text: pdfPartialDelivery.text,
+                pipelinePath: "DOCUMENT",
+                status: !pdfPartialDelivery.blocked,
+                deliveryMode: DELIVERY_MODES.BUFFERED_FINAL,
+                pipelineTelemetryCtx,
+                turnTelemetry,
+                onContent,
+                onStep,
+              });
+            }
 
             const docContext = await prepareDocumentAnalysisContext(query, {
               fileName: attachedFileName,
@@ -2472,7 +3047,15 @@ class AgentPipeline {
             
             const docQuery =
               extractDocumentAnalysisQuery(queryUnderstanding) || query;
-            const enhancedQuery = docQuery + buildMicroContractDirective(docQuery);
+            const pdfName = String(attachedFileName || "");
+            const pdfAddon =
+              attachmentTaskClass?.task === "doc_analyze" &&
+              /\.pdf$/i.test(pdfName) &&
+              fileAnalysisDepth !== FILE_ANALYSIS_DEPTHS.SIMPLE
+                ? `\n${buildFileAnalysisPromptAddon(fileAnalysisDepth)}`
+                : "";
+            const enhancedQuery =
+              docQuery + buildMicroContractDirective(docQuery) + pdfAddon;
             
             const analysisResult = await documentAnalysis(
               enhancedQuery,
@@ -2486,8 +3069,13 @@ class AgentPipeline {
                 onContent,
                 hasAttachedDocument: Boolean(hasAttachedDocs && attachedBriefing),
                 fileName: attachedFileName,
+                document_extract_ms,
+                turnTelemetry,
               },
             );
+            if (pipelineTelemetryCtx) {
+              pipelineTelemetryCtx.documentLatency = analysisResult.metadata?.latency || null;
+            }
             const ttft = performance.now() - startTime;
             const docOut = enforceModeContract(
               RESPONSE_MODES.DOCUMENT,
@@ -2527,6 +3115,7 @@ class AgentPipeline {
               attachments: attachedFiles,
               attachmentTask: attachmentTaskClass?.task || null,
               sourceBacked: Boolean(attachedBriefing) || hasAttachedDocs,
+              ingestedText: attachedBriefing || ingestedPrimaryDoc?.content || "",
             });
             
             return this._finalizePipelineTurn({
@@ -2627,8 +3216,25 @@ class AgentPipeline {
       const knownEntityGate = resolveKnownEntityComposerGateOutcome(
         shortCircuit,
         pipelineTelemetryCtx,
+        pipelineQuery,
       );
-      if (knownEntityGate) {
+      if (knownEntityGate?.escalateWeb && knownEntityGate.preferWebResearch) {
+        stampKnownEntityWebEscalation(shortCircuit, knownEntityGate);
+        shortCircuitDeferredFull = true;
+        effectiveForcedExpertKey =
+          effectiveForcedExpertKey || "expert_web_search";
+        recordKnownEntitySummaryExecutionTelemetry({
+          pipelineTelemetryCtx,
+          turnTelemetry,
+          executionPath: knownEntityGate.executionPath,
+          composerBypassed: knownEntityGate.composerBypassed,
+          validationIssues: knownEntityGate.validationIssues,
+          contractViolation: knownEntityGate.contractViolation,
+        });
+        console.log(
+          "[PIPELINE] known_entity composer gate → escalade web (synopsis œuvre)",
+        );
+      } else if (knownEntityGate) {
         recordKnownEntitySummaryExecutionTelemetry({
           pipelineTelemetryCtx,
           turnTelemetry,
@@ -2727,6 +3333,10 @@ class AgentPipeline {
           queryUnderstanding,
           { guidedIntentContractId },
         );
+        if (packet && pipelineTelemetryCtx?.languagePolicy) {
+          packet.meta = packet.meta || {};
+          packet.meta.languagePolicy = pipelineTelemetryCtx.languagePolicy;
+        }
       } else {
       // ── Délégation à l'Orchestrateur Souverain ─────────────────────────────
       // L'orchestrateur consulte les experts en silence et produit un OrchestratorPacket.
@@ -2741,6 +3351,7 @@ class AgentPipeline {
               shortCircuitPath: shortCircuit?.path ?? null,
               informationSeekingEscalation:
                 shortCircuit?.path === "information_seeking_escalation",
+              history: orchestrationHistory,
             },
             { pipelinePath: shortCircuit?.path ?? null },
           )
@@ -2754,11 +3365,15 @@ class AgentPipeline {
             shortCircuitPath: shortCircuit?.path ?? null,
             informationSeekingEscalation:
               shortCircuit?.path === "information_seeking_escalation",
+            history: orchestrationHistory,
           },
         },
       );
       let proposedOrchestratorWebKey = effectiveForcedExpertKey;
-      if (!proposedOrchestratorWebKey && orchestratorEnrichment.preferWebResearch) {
+      if (shortCircuit?.skipWeb) {
+        proposedOrchestratorWebKey = null;
+      }
+      if (!proposedOrchestratorWebKey && orchestratorEnrichment.preferWebResearch && !shortCircuit?.skipWeb) {
         proposedOrchestratorWebKey = "expert_web_search";
         console.log(
           `[PIPELINE] enrichissement web (${orchestratorEnrichment.reason}, domain=${orchestratorEnrichment.domain}, freshness=${orchestratorEnrichment.freshness?.riskScore ?? 0})`,
@@ -2775,6 +3390,9 @@ class AgentPipeline {
           `[PIPELINE] cognitive_cycle retrieval (orchestrator) → web (${requestWorkup.retrieval_decision.why})`,
         );
       } else if (workupGateOrchestrator.source === "cognitive_cycle_skip") {
+        proposedOrchestratorWebKey = null;
+      }
+      if (shortCircuit?.skipWeb) {
         proposedOrchestratorWebKey = null;
       }
       const phaseCOrchestrator = applyConnectorPhaseCWebKey({
@@ -2828,8 +3446,10 @@ class AgentPipeline {
           cavemanLevel,
           forcedExpertKey: effectiveForcedExpertKey,
           disableRecentMemory: effectiveDisableRecentMemory,
-          topicShiftReset: topicShiftAssessment.detected,
-          topicShiftMeta: topicShiftAssessment,
+          topicShiftReset: contextResetAssessment.detected,
+          topicShiftMeta: entityPivot.detected
+            ? { ...topicShiftAssessment, entityPivot }
+            : topicShiftAssessment,
           forgeProduction: options.forgeProduction === true,
           intentContractId:
             options.intentContractId ||
@@ -2868,6 +3488,7 @@ class AgentPipeline {
           onContent: null, // Buffered
           attachmentRefs,
           attachments: attachedFiles,
+          ingestedText: packet?.meta?.document_briefing || "",
         });
 
         return this._finalizePipelineTurn({
@@ -2912,6 +3533,7 @@ class AgentPipeline {
           onContent: null, // Buffered
           attachmentRefs,
           attachments: attachedFiles,
+          ingestedText: packet?.meta?.document_briefing || "",
         });
 
         return this._finalizePipelineTurn({
@@ -2977,6 +3599,10 @@ class AgentPipeline {
           mayExecute: postureDecision.mayExecute,
         };
       }
+      if (packet && pipelineTelemetryCtx?.languagePolicy) {
+        packet.meta = packet.meta || {};
+        packet.meta.languagePolicy = pipelineTelemetryCtx.languagePolicy;
+      }
 
       try {
         const executionBriefResult = await resolveExecutionBriefStage({
@@ -2998,9 +3624,16 @@ class AgentPipeline {
         turnTelemetry.setMetric?.("execution_brief_fail_open", true);
       }
 
+      // Bloquer onContent avant compose quand compression finale obligatoire.
+      const mustBufferComposer =
+        packet?.meta?.intent_contract_id === "DIRECT_EXPLANATION" ||
+        requiresStructuredContentComposerBudget(
+          pipelineQuery || query,
+          packet?.expert_outputs || [],
+        );
       const composedResponse = await finalRendererAgent.compose(
         packet,
-        onContent,
+        mustBufferComposer ? null : onContent,
       );
 
       // Post-processing ultra-strict (jamais de <think> ni de réflexion interne visible)
@@ -3015,6 +3648,9 @@ class AgentPipeline {
 
       // Étape 2: Nettoyage ultra-strict avec responseThinkingCleaner
       let safeOutput = responseThinkingCleaner.clean(afterBasicClean);
+      // Filet anti-doublon : compression même si le composer a déjà compressé.
+      const recompressed = compressComposerFinalPass(safeOutput);
+      safeOutput = recompressed.text;
 
       // G31.4 — validation post-compose reco produit (récence, cohérence budget)
       if (packet?.meta?.intent_contract_id === "GUIDED_PRODUCT_RECOMMENDATION") {
@@ -3165,6 +3801,8 @@ class AgentPipeline {
         sourceBacked:
           attachmentRefs.length > 0 ||
           (Array.isArray(attachedFiles) && attachedFiles.length > 0),
+        ingestedText: packet?.meta?.document_briefing || "",
+        htmlViews: packet?.meta?.html_document_views || null,
       });
       if (composedDelivery.blocked) {
         return this._finalizePipelineTurn({
@@ -3207,7 +3845,9 @@ class AgentPipeline {
         pipelinePath: packet?.meta?.chat_light_path ? "CHAT_LIGHT" : "COMPOSER",
         status: true,
         reason: null,
-        deliveryMode: "already_streamed",
+        deliveryMode: packet?.meta?.composer_streamed_to_ui
+          ? "already_streamed"
+          : "buffered_final",
         pipelineTelemetryCtx,
         turnTelemetry,
         onContent,
@@ -3249,6 +3889,11 @@ class AgentPipeline {
           attachmentRefs,
           attachments: attachedFiles,
           sessionMode: postureDecision?.nextState || null,
+          activeGoal: resolveActiveGoal({
+            query,
+            history: orchestrationHistory,
+            priorState: sessionWorkCtx.priorState,
+          }),
         });
       }
       await flushPipelineTelemetry(pipelineTelemetryCtx);
@@ -3281,6 +3926,8 @@ class AgentPipeline {
       } else if (shortCircuit?.step) {
         onStep(shortCircuit.step, {
           pipelinePath: shortCircuit.path,
+          route: shortCircuit.route || null,
+          contract: shortCircuit.forcedIntentContractId || null,
           metaSubKind: shortCircuit.metaSubKind,
         });
       }
@@ -3336,14 +3983,9 @@ class AgentPipeline {
         sentenceCount: knownEntityValidation.sentenceCount,
       });
       if (!knownEntityValidation.valid) {
-        finalText = knownEntityValidation.sanitized;
-        if (pipelineTelemetryCtx) {
-          pipelineTelemetryCtx.knownEntitySummaryValidation = {
-            valid: knownEntityValidation.valid,
-            issues: knownEntityValidation.issues,
-            sentenceCount: knownEntityValidation.sentenceCount,
-          };
-        }
+        const err = new Error("known_entity_escalate_web");
+        err.code = KNOWN_ENTITY_ESCALATE_WEB_CODE;
+        throw err;
       }
     } else if (isCodeConceptExplainExecution(shortCircuit)) {
       recordCodeConceptExplainExecutionTelemetry({
@@ -3430,8 +4072,33 @@ class AgentPipeline {
     const effectiveHistory =
       history ?? this._turnDeliveryCtx?.getHistory?.() ?? [];
 
+    const leakSocialish = /social|exploratory_conversation/i.test(
+      String(pipelinePath || ""),
+    );
+    if (
+      containsInternalPromptLeak(finalText, {
+        allowLowConfidence: leakSocialish,
+      })
+    ) {
+      const markers = listInternalPromptLeakMarkers(finalText);
+      console.warn(
+        `[PIPELINE] internal_marker_leak path=${pipelinePath} markers=${markers.join(",")}`,
+      );
+      turnTelemetry?.setMetric?.("internal_marker_leak", true);
+      finalText = resolveInternalLeakFallback(pipelinePath);
+    }
+
     // Garde anti-surpromesse lexicale
-    const guardResult = validateDeliverablePromise(finalText, pipelinePath);
+    const contractId = String(pipelineTelemetryCtx?.intent_contract_id || "");
+    const guardPath =
+      contractId === "CODE_DELIVERY_V1" || contractId === "CODE_PROJECT_LIGHT"
+        ? "CODE_DELIVERY"
+        : pipelinePath;
+    const guardResult = validateDeliverablePromise(
+      finalText,
+      guardPath,
+      effectiveQuery,
+    );
     if (!guardResult.ok) {
       if (guardResult.severity === "sanitize") {
         if (onStep) {
@@ -3497,6 +4164,57 @@ class AgentPipeline {
         move_contract_signals: contractResult.signals,
         move_contract_violation: true,
       });
+    }
+
+    const anchoring = enforceCurrentTurnAnchoring({
+      query: effectiveQuery,
+      reply: finalText,
+      history: effectiveHistory,
+      pipelinePath,
+      intentContractId: pipelineTelemetryCtx?.intent_contract_id || "",
+      attachments: this._turnDeliveryCtx?.getAttachments?.() || [],
+      visionFailed: pipelineTelemetryCtx?.vision_failed === true,
+    });
+    if (!anchoring.ok) {
+      finalText = anchoring.text;
+      turnTelemetry?.setMetric?.("current_turn_anchoring_violation", true);
+      turnTelemetry?.setMetric?.(
+        "current_turn_anchoring_signals",
+        anchoring.signals.join(","),
+      );
+      if (onStep) {
+        onStep(
+          `🛡️ Ancrage tour courant — ${anchoring.signals.join(", ")}`,
+        );
+      }
+      console.warn(
+        `[CurrentTurnAnchoring] signals=${anchoring.signals.join(",")} path=${pipelinePath}`,
+      );
+    }
+
+    const languagePolicy =
+      pipelineTelemetryCtx?.languagePolicy ||
+      this._turnDeliveryCtx?.getLanguagePolicy?.() ||
+      null;
+    if (languagePolicy) {
+      const langGate = enforceOutputLanguage(finalText, languagePolicy, {
+        pipelinePath,
+      });
+      turnTelemetry?.setMetric?.(
+        "output_language",
+        languagePolicy.outputLanguage,
+      );
+      turnTelemetry?.setMetric?.(
+        "output_language_ok",
+        langGate.ok,
+      );
+      if (!langGate.ok) {
+        finalText = langGate.text;
+        turnTelemetry?.setMetric?.("output_language_blocked", true);
+        console.warn(
+          `[OutputLanguage] expected=${languagePolicy.outputLanguage} path=${pipelinePath} blocked=true`,
+        );
+      }
     }
 
     runConversationMoveShadowServed(pipelineTelemetryCtx, pipelinePath, {

@@ -10,7 +10,7 @@ import {
   isHardwareRepairDiagnosticSignal,
   needsHardwareDiagnosticClarify,
   buildHardwareDiagnosticClarifyReply,
-} from "../src/agent/utils/debugDiagnosticIntentGuards.js";
+} from "../src/agent/utils/intent-guards/debugDiagnosticIntentGuards.js";
 import {
   evaluateJustIntent,
   resolveIntentAction,
@@ -27,13 +27,13 @@ import {
   isDebugDiagnosticOverRefusal,
 } from "../src/agent/micro/replies/debugDiagnosticComposer.js";
 import { getDebugDiagnosticSystemPrompt } from "../src/agent/config/modeResponseContracts.js";
-import { resolvePipelineFallback } from "../src/agent/utils/genericGreetingGuards.js";
+import { resolvePipelineFallback } from "../src/agent/utils/conversation/genericGreetingGuards.js";
 import { detectDebugDiagnosticDirectnessViolation } from "../src/agent/telemetry/conversationMoveShadowTelemetry.js";
 import { evaluateConversationMove } from "../src/agent/policies/conversation/conversationMovePolicy.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseContracts.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
-import { isTechnicalOverviewRequest } from "../src/agent/utils/technicalOverviewIntentGuards.js";
+import { isTechnicalOverviewRequest } from "../src/agent/utils/intent-guards/technicalOverviewIntentGuards.js";
 import { isCodeReviewRequest } from "../src/agent/policies/code/codeReviewPolicy.js";
 
 describe("debugDiagnostic — lot 8", () => {

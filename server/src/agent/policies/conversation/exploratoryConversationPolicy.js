@@ -4,8 +4,8 @@
 import {
   extractExploratoryTopic,
   isExploratoryTopicIntent,
-} from "../../utils/exploratoryConversationGuards.js";
-import { isAttachedVisionRequest } from "../../utils/conversationGuards.js";
+} from "../../utils/conversation/exploratoryConversationGuards.js";
+import { isAttachedVisionRequest } from "../../utils/conversation/conversationGuards.js";
 
 export const EXPLORATORY_CONVERSATION_RULE = "exploratory_conversation_light_v1";
 
@@ -44,6 +44,9 @@ export function resolveExploratoryConversationShortCircuit(
   options = {},
 ) {
   if (isAttachedVisionRequest(query, options.attachments || [])) return null;
+  // Engage social (jeu / blague) : pas d'exploratory générique qui vole le but.
+  const tc = options.turnComprehension;
+  if (tc?.dominance?.engagePresent) return null;
   if (!isExploratoryTopicIntent(query)) return null;
   return {
     path: "exploratory_conversation_light",

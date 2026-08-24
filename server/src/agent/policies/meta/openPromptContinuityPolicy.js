@@ -1,8 +1,8 @@
 /**
  * G42 — open prompt / idéation vs compare_choose (suppression + continuité « non merci »).
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
-import { isIdeationIntent, getIdeationDeterministicReply } from "../../utils/ideationIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { isIdeationIntent, getIdeationDeterministicReply } from "../../utils/intent-guards/ideationIntentGuards.js";
 import { classifySocialPattern } from "../social/index.js";
 import {
   composeMannerReply,

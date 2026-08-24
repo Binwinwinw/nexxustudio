@@ -1,4 +1,4 @@
-import { hasTextAttachments } from "../../utils/conversationGuards.js";
+import { hasTextAttachments } from "../../utils/conversation/conversationGuards.js";
 import { readRecentTurns } from "./conversationContinuityContext.js";
 import {
   buildDocumentBriefingFromAnalysisOnly,

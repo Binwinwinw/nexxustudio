@@ -3,7 +3,7 @@
  * Une requête = plan (social + primary + secondaires + contraintes), pas multi-rail naïf.
  */
 import { INTENT_ACTIONS } from "../../../../../shared/justIntentCatalog.js";
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import {
   DROP_REASONS,
   filterSecondaryActions,
@@ -18,6 +18,7 @@ import {
 } from "../pedagogical/index.js";
 import { resolveRequestWorkloadSignal } from "../workload/index.js";
 import { shouldDeferSocialRouting } from "../posture/index.js";
+import { attachExistenceScopeGuard } from "../conversation/existenceScopeGuardPolicy.js";
 
 export const INTENT_COMPOSITION_CONTRACT = "INTENT_COMPOSITION_V1";
 export const INTENT_COMPOSITION_RULE = "intent_composition_policy_p0_observe";
@@ -25,7 +26,7 @@ export const INTENT_COMPOSITION_RULE = "intent_composition_policy_p0_observe";
 const GREETING_RE =
   /^(?:bonjour|salut|hello|coucou|hey|bonsoir|yo|yop)\b/i;
 const THANKS_RE = /\b(?:merci|thanks|thx)\b/i;
-const TABLE_RE = /\btableau(?:x)?\b/i;
+const TABLE_RE = /\btableau(?:x)?\b(?!\s+de\s+bord)/i;
 const SCHEMA_RE = /\b(?:schema|schéma|diagramme)\b/i;
 const SUMMARIZE_RE =
   /\b(?:resume|résume|resume[- ]?moi|résume[- ]?moi|en\s+3\s+lignes|en\s+trois\s+lignes|mini[- ]?resume|mini[- ]?résumé|synthese|synthèse)\b/i;
@@ -399,7 +400,7 @@ export function resolveIntentComposition(query = "", options = {}) {
     },
   };
 
-  return composition;
+  return attachExistenceScopeGuard(composition, query);
 }
 
 /**

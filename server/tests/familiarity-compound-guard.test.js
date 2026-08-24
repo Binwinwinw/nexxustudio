@@ -6,7 +6,7 @@ import {
   isPureSubjectFamiliarityQuery,
   hasCompoundIntentBeyondSubject,
   resolveFamiliaritySubject,
-} from "../src/agent/utils/familiarityIntentGuards.js";
+} from "../src/agent/utils/intent-guards/familiarityIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 
 describe("familiarité compound — garde sujet pur", () => {

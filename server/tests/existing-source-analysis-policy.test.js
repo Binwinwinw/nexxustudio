@@ -13,10 +13,10 @@ import {
   extractLocalFileReference,
   isExistingSourceAnalysisRequest,
   isLocalFileReference,
-} from "../src/agent/utils/localFileUriIntentGuards.js";
+} from "../src/agent/utils/intent-guards/localFileUriIntentGuards.js";
 import {
   resolveFileTarget,
-} from "../src/agent/utils/fileTargetResolver.js";
+} from "../src/agent/utils/context/fileTargetResolver.js";
 import { isHtmlProjectDeliverable } from "../src/agent/policies/delivery/index.js";
 import { isGuidedCreationScopingRequest } from "../src/agent/policies/guided/index.js";
 import {

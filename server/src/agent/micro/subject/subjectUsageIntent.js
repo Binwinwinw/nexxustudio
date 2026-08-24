@@ -1,4 +1,5 @@
 import { isForgeProjectScopingQuery } from "./forgeProjectScoping.js";
+import { isCreateMandateRequest } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import {
   classifyInstallUsage,
   mapInstallKindToUsageIntent,
@@ -35,6 +36,9 @@ export function inferImplicitUsage(query = "", resolution = {}) {
   if (isForgeProjectScopingQuery(query)) {
     return USAGE_INTENTS.INTERNAL_HANDOFF;
   }
+  if (isCreateMandateRequest(query)) {
+    return USAGE_INTENTS.UNKNOWN;
+  }
 
   const installKind = resolution.installKind ?? classifyInstallUsage(query);
   const fromInstall = mapInstallKindToUsageIntent(installKind);
@@ -67,7 +71,12 @@ export function inferImplicitUsage(query = "", resolution = {}) {
   if (/\bse lancer dans\b/.test(q)) {
     return USAGE_INTENTS.LEARN_ABOUT;
   }
-  if (/\b(lancer|demarrer|démarrer|ouvrir|declench|déclench|jouer|demarrer|demarrer)\b/.test(q)) {
+  const launchProbe = q.replace(/\bmenu d[eé]marrer\b/g, " ");
+  if (
+    /\b(lancer|demarrer|démarrer|ouvrir|declench|déclench|jouer|demarrer|demarrer)\b/.test(
+      launchProbe,
+    )
+  ) {
     return USAGE_INTENTS.EXECUTE_LAUNCH;
   }
 

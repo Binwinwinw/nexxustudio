@@ -4,7 +4,7 @@
 import {
   isTechnicalOverviewRequest,
   parseTechnicalOverview,
-} from "../../utils/technicalOverviewIntentGuards.js";
+} from "../../utils/intent-guards/technicalOverviewIntentGuards.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../../config/modeResponseContracts.js";
 
 export const TECHNICAL_OVERVIEW_COMPOSER_RULE =
@@ -24,7 +24,7 @@ const AUDIENCE_LABELS = {
 };
 
 /**
- * @param {import("../../utils/technicalOverviewIntentGuards.js").TechnicalOverviewSlots} slots
+ * @param {import("../../utils/intent-guards/technicalOverviewIntentGuards.js").TechnicalOverviewSlots} slots
  * @returns {string}
  */
 export function buildTechnicalOverviewSystemAddonFromSlots(slots) {
@@ -69,7 +69,7 @@ export function buildTechnicalOverviewSystemAddon(query = "") {
 
 /**
  * @param {string} query
- * @returns {{ path: string, deferToLlm: boolean, reflectiveHint: string, technicalOverview: boolean, slots?: import("../../utils/technicalOverviewIntentGuards.js").TechnicalOverviewSlots }|null}
+ * @returns {{ path: string, deferToLlm: boolean, reflectiveHint: string, technicalOverview: boolean, slots?: import("../../utils/intent-guards/technicalOverviewIntentGuards.js").TechnicalOverviewSlots }|null}
  */
 export function resolveTechnicalOverviewShortCircuit(query = "") {
   if (!isTechnicalOverviewRequest(query)) return null;

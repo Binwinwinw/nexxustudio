@@ -4,8 +4,9 @@
 |-------|--------|
 | **Périmètre** | `agent.js`, `agentPipeline.js`, `orchestrator/runPipeline.js`, `nexxusAgentCycle.js`, `paths/simpleFastPath.js` |
 | **Chemin racine** | `server/src/agent/` |
-| **Date de mise à jour** | 2026-08-05 |
+| **Date de mise à jour** | 2026-08-17 |
 | **Mode** | Lecture seule — cartographie structurelle (pas de refactor) |
+| **Lecture** | Inventaire, pas cible — [`METHODE.md`](./METHODE.md) |
 | **Lots suivants** | Lot 1 = décision amont (`micro/classifiers`, `config`, `policies/routing` + `intent`) — voir §7 |
 
 Document de **référence**. Les lots suivants s’y rattachent ; toute évolution des portes d’entrée doit mettre à jour ce fichier (date + section touchée).
@@ -267,10 +268,12 @@ Ordre de prudence : **documenter / extraire sans changer le comportement**.
 
 | Lot | Périmètre suggéré | Dépend de |
 |-----|-------------------|-----------|
-| **1** | `micro/classifiers` (`intentShortCircuit`), `config/`, `policies/routing` + `intent` | Lot 0 (ce doc) |
-| **2** | `policies/conversation`, qualification, social, epistemic | Lot 1 |
-| **3** | `utils/*IntentGuards`, `genericGreetingGuards` | Lots 1–2 |
-| **4+** | micro replies, domain policies, exécution, feuilles | Voir canvas / audit global |
+| **1** | `micro/classifiers` (`intentShortCircuit`), `config/`, `policies/routing` + `intent` | Lot 0 (ce doc) — **écrit** |
+| **4** | Exécution / livraison : `SovereignOrchestrator`, COMPOSER, `finalRendererAgent`, preuves web | **Écrit** — [`agent-execution-delivery.md`](./agent-execution-delivery.md) |
+| **2** | `policies/conversation`, qualification, social, epistemic | **Écrit** — [`agent-comprehension-conversation.md`](./agent-comprehension-conversation.md) |
+| **3** | `utils/*IntentGuards`, `genericGreetingGuards` | **Écrit** — [`agent-intent-guards.md`](./agent-intent-guards.md) |
+
+**Lecture validée 2026-08-17 (soir) :** plateforme écrite (entrée, amont, livraison, compréhension, guards). Policies domaine : [`agent-domain-policies.md`](./agent-domain-policies.md) — vue séparée, pas fusionnée. Lots fermés non retravaillés. Pas de parser. Pas de 3e doc amont.
 
 Référence audit global : canvas `agent-structure-map` + `server/ARCHITECTURE_RULES.md` §4 (policies).
 
@@ -294,3 +297,8 @@ Référence audit global : canvas `agent-structure-map` + `server/ARCHITECTURE_R
 | Date | Changement |
 |------|------------|
 | 2026-08-05 | Création lot 0 — cartographie front doors (référence initiale) |
+| 2026-08-17 | Verdict : amont seulement ; trou prioritaire = vue exécution / livraison (lot 4) |
+| 2026-08-17 | Colonne 0+1+4 complète jusqu’au visible ; plateforme incomplète (lots 2–3, policies domaine) |
+| 2026-08-17 | Lots 0–4 écrits ; reste uniquement policies domaine (registre, vue séparée) |
+| 2026-08-17 | Pointeur : policies domaine écrite — [`agent-domain-policies.md`](./agent-domain-policies.md) |
+| 2026-08-18 | Lecture : inventaire pour décider — [`METHODE.md`](./METHODE.md) |

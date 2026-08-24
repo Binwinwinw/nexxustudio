@@ -9,36 +9,36 @@ import {
   isTechnicalLearningPathSignal,
   parseTechnicalLearningPath,
   extractLearningDomain,
-} from "../../utils/technicalLearningPathIntentGuards.js";
+} from "../../utils/intent-guards/technicalLearningPathIntentGuards.js";
 import {
   isTechnicalOverviewRequest,
   parseTechnicalOverview,
   extractTechnicalSubject,
-} from "../../utils/technicalOverviewIntentGuards.js";
+} from "../../utils/intent-guards/technicalOverviewIntentGuards.js";
 import {
   isCareerLearningPathRequest,
   isCareerLearningPathSignal,
   isSecondaryCareerMotivation,
   parseCareerLearningPath,
   extractTargetRole,
-} from "../../utils/careerLearningPathIntentGuards.js";
+} from "../../utils/intent-guards/careerLearningPathIntentGuards.js";
 import {
   extractInformationSeekingTarget,
   isInformationSeekingWithTarget,
-} from "../../utils/informationSeekingIntentGuards.js";
+} from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import {
   extractLearningRequestTarget,
   isLearningRequestForTechnicalDomain,
   isLearningRequestWithTarget,
-} from "../../utils/learningRequestIntentGuards.js";
+} from "../../utils/intent-guards/learningRequestIntentGuards.js";
 import {
   extractTargetLanguage,
   extractTargetLanguages,
   extractTranslationPayload,
   extractTranslationStyle,
   isTranslationRequest,
-} from "../../utils/translationIntentGuards.js";
-import { buildTranslationRequestPlan } from "../../utils/translationRequestPlan.js";
+} from "../../utils/intent-guards/translationIntentGuards.js";
+import { buildTranslationRequestPlan } from "../../utils/parsing-normalization/translationRequestPlan.js";
 
 export const REQUEST_INTENT_FRAME_VERSION = "1.1";
 
@@ -294,4 +294,88 @@ export function projectFrameToJustIntentHints(frame) {
     familyId: frame.familyHint?.id || null,
     preemptFamily: frame.familyHint?.confidence === "high" ? frame.familyHint.id : null,
   };
+}
+
+const TECHNICAL_JUST_DOMAINS = new Set(["code", "web_html", "analysis", "data"]);
+const GENERAL_JUST_DOMAINS = new Set(["general", "writing", "document"]);
+const SOCIAL_JUST_DOMAINS = new Set(["social"]);
+const SOCIAL_JUST_ACTIONS = new Set(["social_checkin"]);
+
+function isJustSocial(justIntent = {}) {
+  return (
+    SOCIAL_JUST_DOMAINS.has(justIntent.domain) ||
+    SOCIAL_JUST_ACTIONS.has(justIntent.action)
+  );
+}
+
+function domainRelation(hintDomain, justDomain) {
+  if (!hintDomain || !justDomain) return "none";
+  if (hintDomain === justDomain) return "exact";
+  if (
+    hintDomain === "technical" &&
+    (TECHNICAL_JUST_DOMAINS.has(justDomain) || justDomain === "general")
+  ) {
+    return "vocab";
+  }
+  if (hintDomain === "pedagogical" && justDomain === "general") return "compat";
+  if (hintDomain === "general" && GENERAL_JUST_DOMAINS.has(justDomain)) {
+    return hintDomain === justDomain ? "exact" : "compat";
+  }
+  return "none";
+}
+
+/**
+ * Compatibilité shadow frame ↔ JUST. Observe only. Ne mute rien.
+ * Pas d'égalité brute : `technical` vs `code` = vocab_mismatch, pas un échec.
+ *
+ * @param {object|null} justIntent
+ * @param {ReturnType<typeof projectFrameToJustIntentHints>} hints
+ * @param {ReturnType<typeof analyzeRequestIntentFrame>|null} [frame]
+ * @returns {{
+ *   compatible: boolean|null,
+ *   reason: 'match'|'compatible'|'vocab_mismatch'|'social_vs_work'|'action_mismatch'|'no_hint',
+ * }}
+ */
+export function compareJustIntentToFrameHints(
+  justIntent = null,
+  hints = null,
+  frame = null,
+) {
+  const socialOnly = Boolean(frame?.conversation?.socialOnly);
+  const justSocial = isJustSocial(justIntent || {});
+
+  if (!hints) {
+    if (socialOnly && justSocial) {
+      return { compatible: true, reason: "compatible" };
+    }
+    if (socialOnly && !justSocial) {
+      return { compatible: false, reason: "social_vs_work" };
+    }
+    if (!socialOnly && justSocial && frame?.task?.kind) {
+      return { compatible: false, reason: "social_vs_work" };
+    }
+    return { compatible: null, reason: "no_hint" };
+  }
+
+  if (justSocial) {
+    return { compatible: false, reason: "social_vs_work" };
+  }
+
+  const hintAction = hints.action || null;
+  const justAction = justIntent?.action || null;
+  if (hintAction && justAction && hintAction !== justAction) {
+    return { compatible: false, reason: "action_mismatch" };
+  }
+
+  const rel = domainRelation(hints.domain, justIntent?.domain);
+  if (rel === "none") {
+    return { compatible: false, reason: "action_mismatch" };
+  }
+  if (rel === "exact" && (!hintAction || hintAction === justAction)) {
+    return { compatible: true, reason: "match" };
+  }
+  if (rel === "vocab") {
+    return { compatible: true, reason: "vocab_mismatch" };
+  }
+  return { compatible: true, reason: "compatible" };
 }

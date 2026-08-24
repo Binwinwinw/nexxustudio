@@ -2,8 +2,8 @@ import { SUBJECT_NATURES } from "./subjectIntelligenceLayer.js";
 import { resolveDeterministicRouteHint, DETERMINISTIC_ROUTES } from "./subjectRoutingHints.js";
 import { assertDirectAnswerAllowed } from "./subjectAmbiguityContract.js";
 import { isForgeProjectScopingQuery } from "./forgeProjectScoping.js";
-import { shouldBypassForgeSubjectClarification } from "../../utils/queryEntityUnderstanding.js";
-import { isGeneralKnowledgeRequest } from "../../utils/generalKnowledgeIntentGuards.js";
+import { shouldBypassForgeSubjectClarification } from "../../utils/parsing-normalization/queryEntityUnderstanding.js";
+import { isGeneralKnowledgeRequest } from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
 
 export const SUBJECT_ROUTER_ACTIONS = {
   SKIP: "skip",

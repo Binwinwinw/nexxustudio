@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+import { getActiveTier1ChatModel } from "../../config/models.js";
 import caveman from "../../utils/cavemanShrink.js";
 
 /**
@@ -36,7 +37,7 @@ export function normalizeRawExpertManifest(raw, fileDivision, filePath) {
     } else if (key.includes("vision") || key.includes("vl")) {
       assignedModel = "gemma4:12b";
     } else {
-      assignedModel = "ornith:9b";
+      assignedModel = getActiveTier1ChatModel();
     }
   }
 

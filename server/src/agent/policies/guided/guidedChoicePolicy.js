@@ -2,7 +2,7 @@
  * Guided choice après panel exploration_proposal (open_prompt).
  * Mappe 1–5 / mots d’option → aide au choix (pas inventer un livrable UX/UI).
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import {
   isExplorationPanelOffer,
   isGuidedChoiceSurface,

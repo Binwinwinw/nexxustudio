@@ -9,7 +9,7 @@ import {
   SUBJECT_REFERENCE_CANONICAL_REVIENS_ITALIE_QUERY,
   resolveSubjectReferenceResumeShortCircuit,
 } from "../src/agent/policies/familiarity/index.js";
-import { isConversationMemoryRecallRequest } from "../src/agent/utils/conversationGuards.js";
+import { isConversationMemoryRecallRequest } from "../src/agent/utils/conversation/conversationGuards.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
@@ -25,7 +25,7 @@ import {
   applyVirginSessionResumeGuard,
 } from "../src/agent/micro/continuity/sessionSubjectReferenceGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { resolvePipelineFallback } from "../src/agent/utils/genericGreetingGuards.js";
+import { resolvePipelineFallback } from "../src/agent/utils/conversation/genericGreetingGuards.js";
 import { FAMILIARITY_DOMAIN_CANONICAL_POLITIQUE_QUERY } from "../src/agent/policies/familiarity/index.js";
 
 const DIOR_HISTORY = [
@@ -212,6 +212,40 @@ describe("subjectReferenceResumePolicy — batterie #34b", () => {
     assert.equal(hit?.path, "familiarity_domain_overview_deterministic");
     assert.match(hit?.reply, /Oui, je peux t'aider/i);
     assert.doesNotMatch(hit?.reply, /On peut reprendre/i);
+  });
+
+  it("aide projet Excel / horloge — PAS familiarity_domain_overview", async () => {
+    const excel =
+      'aide moi à propos de ce projet : sur excel, je veux créer "un tableau de bord" qui va afficher des calendriers permettant : 1 - de noter des rendez-vous 2 - de noter des congés';
+    const clock =
+      "aide moi à propos de ce projet : sur une horloge qui fait calculatrice scientifique et analogique";
+
+    for (const q of [excel, clock]) {
+      assert.equal(
+        resolveSubjectReferenceResumeShortCircuit(q),
+        null,
+        `subject_reference ne doit pas capturer: ${q.slice(0, 48)}…`,
+      );
+      const hit = await runConversationShortCircuit(q);
+      assert.ok(
+        !String(hit?.path || "").startsWith("familiarity_domain_overview"),
+        `ne doit pas router familiarity overview: ${hit?.path}`,
+      );
+      assert.ok(
+        !String(hit?.path || "").startsWith("lexicon_science_format_table"),
+        `ne doit pas router lexicon sciences: ${hit?.path}`,
+      );
+      assert.doesNotMatch(
+        String(hit?.reply || ""),
+        /Dis-moi ce que tu veux creuser|Tu veux un aperçu général/i,
+      );
+    }
+
+    // Non-régression : vrai shell « à propos de » domaine.
+    const domaine = "sinon, à propos de PHP";
+    const domaineHit = await runConversationShortCircuit(domaine);
+    assert.equal(domaineHit?.path, "familiarity_domain_overview_deterministic");
+    assert.match(domaineHit?.reply || "", /PHP/i);
   });
 
   it("ICHIGO — introduction entité, pas conversation_recall", async () => {

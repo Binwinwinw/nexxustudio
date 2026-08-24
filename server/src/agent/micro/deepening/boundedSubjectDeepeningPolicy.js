@@ -14,7 +14,7 @@ import {
 import {
   buildFamiliarityFollowupApercuReply,
   resolveSubjectFromLabel,
-} from "../../utils/familiarityIntentGuards.js";
+} from "../../utils/intent-guards/familiarityIntentGuards.js";
 
 export const SUBJECT_DEEPENING_RULE = "generic_topic_deepening_only";
 

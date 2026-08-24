@@ -2,27 +2,28 @@
  * Frame conversationnel minimal — axes social / tâche / composite.
  * Découpe structurelle (slots), pas une liste de formulations.
  */
-import { normalizeText } from "../../utils/normalizationGuards.js";
+import { normalizeText } from "../../utils/parsing-normalization/normalizationGuards.js";
 import {
   isStrongTechnicalLearningShell,
   isTechnicalLearningPathSignal,
-} from "../../utils/technicalLearningPathIntentGuards.js";
-import { isPrimaryCareerLearningSignal } from "../../utils/careerLearningPathIntentGuards.js";
-import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIntentGuards.js";
-import { isLearningRequestWithTarget } from "../../utils/learningRequestIntentGuards.js";
-import { isTranslationRequest, isTranslationDerivedRequest } from "../../utils/translationIntentGuards.js";
-import { isContextReferenceRequest } from "../../utils/contextReferenceIntentGuards.js";
-import { isExploratoryTopicIntent } from "../../utils/exploratoryConversationGuards.js";
-import { isMetaAssistantBehaviorRequest } from "../../utils/metaAssistantBehaviorGuards.js";
-import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/externalCalendarLookupIntentGuards.js";
+} from "../../utils/intent-guards/technicalLearningPathIntentGuards.js";
+import { isPrimaryCareerLearningSignal } from "../../utils/intent-guards/careerLearningPathIntentGuards.js";
+import { isInformationSeekingWithTarget } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
+import { isLearningRequestWithTarget } from "../../utils/intent-guards/learningRequestIntentGuards.js";
+import { isTranslationRequest, isTranslationDerivedRequest } from "../../utils/intent-guards/translationIntentGuards.js";
+import { isContextReferenceRequest } from "../../utils/intent-guards/contextReferenceIntentGuards.js";
+import { isExploratoryTopicIntent } from "../../utils/conversation/exploratoryConversationGuards.js";
+import { isMetaAssistantBehaviorRequest } from "../../utils/intent-guards/metaAssistantBehaviorGuards.js";
+import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/intent-guards/externalCalendarLookupIntentGuards.js";
 import {
   extractTemporalTarget,
   TEMPORAL_TARGET_KIND,
 } from "../conversation/conversationSubjectExtraction.js";
 import {
   classifySocialPattern,
-  isPhaticSocialCheckinIntent,
   isGratitudeClosureIntent,
+  isPhaticSocialCheckinIntent,
+  isWellbeingCheckinIntent,
 } from "../social/socialPatternPolicy.js";
 
 function isSubstantiveWorkRequest(query = "") {
@@ -64,17 +65,8 @@ const SOCIAL_RETRACTION_RE =
 const SOCIAL_APOLOGY_MARKER_RE =
   /(?:^|\s)(?:desole|désolé|désolée|pardon|excuse[- ]?moi|sorry|my bad|oups|oops)(?:\s*[!.?]|$|\s)/i;
 
-const WELLBEING_CHECKIN_RE =
-  /(?:comment\s+(?:(?:ça|ca)\s+)?(?:va|se\s+passe|roule)|comment\s+(?:tu\s+)?vas|comment\s+vas[- ]?tu|(?:^|\s)(?:ça|ca)\s+va|tu\s+vas\s+bien|(?:^|\s)tout\s+roule|(?:^|\s)ça\s+roule|(?:^|\s)ca\s+roule)/i;
-
-const ASSISTANT_LOCATIVE_RE =
-  /(?:l[àa]\s+dedans|chez\s+(?:toi|vous)|de\s+ton\s+c[ôo]t[ée]|de\s+votre\s+c[ôo]t[ée]|ici\b)/i;
-
 const CHECKIN_ACTION_BOUND_RE =
   /\b(?:va|vas|passe|roule)\s+(?:bien\s+)?(?:g[ée]rer|gerer|faire|r[ée]gler|se\s+passer\s+pour|marcher|aider|r[ée]parer|corriger|voir|r[ée]soudre|fonctionner|impacter|casser)\b/i;
-
-const EXPLANATORY_COMMENT_RE =
-  /\bcomment\s+(?:fonctionne|marche|cr[ée]er|creer|faire|utiliser|impl[ée]menter|configurer|d[ée]boguer|deboguer|installer|d[ée]ployer|deployer)\b/i;
 
 const TASK_HELP_RE =
   /\b(tu\s+peux|peux[- ]?tu|aide[- ]?moi|m['’]?aider|m['’]?aide|explique[- ]?moi|m['’]?expliquer|mexpliquer|montre[- ]?moi|peux\s+tu\s+m['’]?aider|(?:ton|ta)\s+aide)\b/i;
@@ -98,16 +90,11 @@ const DATE_RE =
   /\b(quelle\s+date|quel\s+est\s+la\s+date|quelle\s+est\s+la\s+date|date\s+du\s+jour|date\s+sommes\s+nous|date\s+sommes-nous|quel\s+jour|jour\s+sommes\s+nous|jour\s+sommes-nous)\b/i;
 
 function detectWellbeingCheckin(q) {
-  if (!q || CHECKIN_ACTION_BOUND_RE.test(q)) return false;
-  if (EXPLANATORY_COMMENT_RE.test(q)) return false;
-  if (CONDITIONAL_PROCESS_QUESTION_RE.test(q)) return false;
+  if (!q) return false;
+  // Source unique — typo « cava », exclusions méta / action-bound.
   if (END_TO_END_PROJECT_ASSISTANCE_RE.test(q)) return false;
-  if (isPhaticSocialCheckinIntent(q)) return true;
-  if (WELLBEING_CHECKIN_RE.test(q)) return true;
-  if (ASSISTANT_LOCATIVE_RE.test(q) && /\b(?:se\s+passe|roule|va\b)\b/i.test(q)) {
-    return true;
-  }
-  return false;
+  if (CONDITIONAL_PROCESS_QUESTION_RE.test(q)) return false;
+  return isWellbeingCheckinIntent(q);
 }
 
 function detectTaskAxis(q) {
@@ -264,8 +251,9 @@ export function analyzeConversationIntentFrame(query = "") {
     normalized.length < 3;
 
   const knownSocialPattern = classifySocialPattern(normalized);
+  // Lot 3 — un pattern social ne force plus socialOnly si une tâche est présente.
   const socialOnly =
-    Boolean(knownSocialPattern) ||
+    (Boolean(knownSocialPattern) && !task.present) ||
     (hasSocialSurface &&
       !task.present &&
       !social.actionBoundCheckin &&
@@ -280,7 +268,6 @@ export function analyzeConversationIntentFrame(query = "") {
         normalized.length < 3));
 
   const composite =
-    !knownSocialPattern &&
     hasSocialSurface &&
     task.present &&
     (social.greeting || social.checkin) &&
@@ -314,12 +301,18 @@ export function resolveSimpleDeterministicFromFrame(query = "") {
 
   if (frame.composite) return null;
 
+  const knownSocialPattern = classifySocialPattern(query);
+  // Pattern social classifié (phatic, invite, discomfort…) prime sur le menu salut générique.
+
   const asksIdentity = social.identity;
   const asksTime = social.asksTime;
   const asksDate = social.asksDate;
   const asksStateOfHealth = social.checkin && !task.present;
   const isGreeting =
-    (social.greeting || social.shortSocial) && !task.present && !asksStateOfHealth;
+    (social.greeting || social.shortSocial) &&
+    !task.present &&
+    !asksStateOfHealth &&
+    !knownSocialPattern;
   const isSocialRetraction = social.socialRetraction && !task.present;
 
   if (
@@ -349,7 +342,11 @@ export function resolveSimpleDeterministicFromFrame(query = "") {
  * @param {string} query
  * @returns {boolean}
  */
-export function isConversationSocialOnlyQuery(query = "") {
+export function isConversationSocialOnlyQuery(query = "", options = {}) {
+  if (options.turnComprehension?.dominance?.workPresent) return false;
+  if (options.turnComprehension && !options.turnComprehension.responseExpectations?.mayFinalizeSocial) {
+    return false;
+  }
   const frame = analyzeConversationIntentFrame(query);
   if (frame.normalized.length > 120) return false;
   if (frame.composite) return false;

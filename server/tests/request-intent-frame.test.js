@@ -6,9 +6,11 @@ import {
   detectTaskKind,
   resolveFamilyHint,
   projectFrameToJustIntentHints,
+  compareJustIntentToFrameHints,
   REQUEST_INTENT_FRAME_VERSION,
 } from "../src/agent/policies/intent/requestIntentFrame.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 
 describe("requestIntentFrame — axes métier v1.1", () => {
   it("expose la version du contrat", () => {
@@ -116,6 +118,119 @@ describe("requestIntentFrame — axes métier v1.1", () => {
       const hit = await runConversationShortCircuit(query);
       assert.equal(frame.familyHint?.id, path, query);
       assert.equal(hit?.path, path, query);
+    }
+  });
+});
+
+describe("compareJustIntentToFrameHints — shadow P1", () => {
+  it("technical vs general + explain = vocab_mismatch (JUST n'a pas technical)", () => {
+    const cmp = compareJustIntentToFrameHints(
+      { domain: "general", action: "explain" },
+      { domain: "technical", action: "explain" },
+    );
+    assert.equal(cmp.compatible, true);
+    assert.equal(cmp.reason, "vocab_mismatch");
+  });
+
+  it("technical vs code + plan = vocab_mismatch (compatible)", () => {
+    const cmp = compareJustIntentToFrameHints(
+      { domain: "code", action: "plan" },
+      { domain: "technical", action: "plan" },
+    );
+    assert.equal(cmp.compatible, true);
+    assert.equal(cmp.reason, "vocab_mismatch");
+  });
+
+  it("explain exact = match", () => {
+    const cmp = compareJustIntentToFrameHints(
+      { domain: "general", action: "explain" },
+      { domain: "general", action: "explain" },
+    );
+    assert.equal(cmp.compatible, true);
+    assert.equal(cmp.reason, "match");
+  });
+
+  it("general vs writing + plan = compatible", () => {
+    const cmp = compareJustIntentToFrameHints(
+      { domain: "writing", action: "plan" },
+      { domain: "general", action: "plan" },
+    );
+    assert.equal(cmp.compatible, true);
+    assert.equal(cmp.reason, "compatible");
+  });
+
+  it("pas de hint = no_hint, pas une divergence", () => {
+    const cmp = compareJustIntentToFrameHints({ domain: "code", action: "review" }, null);
+    assert.equal(cmp.compatible, null);
+    assert.equal(cmp.reason, "no_hint");
+  });
+
+  it("social pur + JUST social = compatible", () => {
+    const frame = analyzeRequestIntentFrame("yop comment ça va là dedans ?");
+    const hints = projectFrameToJustIntentHints(frame);
+    assert.equal(hints, null);
+    const cmp = compareJustIntentToFrameHints(
+      { domain: "social", action: "social_checkin" },
+      hints,
+      frame,
+    );
+    assert.equal(cmp.compatible, true);
+    assert.equal(cmp.reason, "compatible");
+  });
+
+  it("frame work + JUST social = social_vs_work", () => {
+    const frame = analyzeRequestIntentFrame("explique Redis");
+    const hints = projectFrameToJustIntentHints(frame);
+    const cmp = compareJustIntentToFrameHints(
+      { domain: "social", action: "social_checkin" },
+      hints,
+      frame,
+    );
+    assert.equal(cmp.compatible, false);
+    assert.equal(cmp.reason, "social_vs_work");
+  });
+
+  it("plan vs create = action_mismatch", () => {
+    const cmp = compareJustIntentToFrameHints(
+      { domain: "code", action: "create" },
+      { domain: "technical", action: "plan" },
+    );
+    assert.equal(cmp.compatible, false);
+    assert.equal(cmp.reason, "action_mismatch");
+  });
+
+  it("jeu canonique frame : zéro social_vs_work", () => {
+    const queries = [
+      "creer des fiches de revisions afin maitriser react",
+      "explique Redis",
+      "comment devenir développeur web en reconversion",
+      "yop comment ça va là dedans ?",
+      "salut, tu peux m'aider sur React ?",
+    ];
+    for (const query of queries) {
+      const frame = analyzeRequestIntentFrame(query);
+      const hints = projectFrameToJustIntentHints(frame);
+      const just = hints
+        ? { domain: hints.domain === "technical" ? "code" : "general", action: hints.action }
+        : { domain: "social", action: "social_checkin" };
+      const cmp = compareJustIntentToFrameHints(just, hints, frame);
+      assert.notEqual(cmp.reason, "social_vs_work", query);
+    }
+  });
+
+  it("jeu canonique + JUST réel : zéro social_vs_work (garde consume)", () => {
+    const queries = [
+      "creer des fiches de revisions afin maitriser react",
+      "explique Redis",
+      "comment devenir développeur web en reconversion",
+      "yop comment ça va là dedans ?",
+    ];
+    for (const query of queries) {
+      const frame = analyzeRequestIntentFrame(query);
+      const hints = projectFrameToJustIntentHints(frame);
+      const just = evaluateJustIntent(query);
+      const cmp = compareJustIntentToFrameHints(just, hints, frame);
+      assert.notEqual(cmp.reason, "social_vs_work", `${query} → ${just.domain}/${just.action}`);
     }
   });
 });

@@ -2,7 +2,7 @@
  * G44 — clarification référentielle sur la dernière phrase de l'assistant.
  * Ex. « de quel projet tu parles ? » après une formule d'accueil générique.
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 
 export const ASSISTANT_UTTERANCE_CLARIFY_RULE = "assistant_utterance_clarify_g44";
 

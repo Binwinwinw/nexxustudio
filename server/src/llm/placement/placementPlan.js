@@ -9,20 +9,14 @@
  * - keep_alive critique → voie REST Ollama (pas SDK OpenAI)
  */
 import fs from "fs-extra";
-import path from "path";
-import { fileURLToPath } from "url";
 import {
   getBootProfile,
   getActiveTier1ChatModel,
   isTier2Enabled,
+  getTier2Model,
   MODEL_CONFIG,
 } from "../../config/models.js";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DEFAULT_MATRIX_PATH = path.resolve(
-  __dirname,
-  "../../../config/warmup.matrix.json",
-);
+import { resolveWarmupMatrixPath } from "../../config/warmupExperimentPlan.js";
 
 export const PLACEMENT_PLAN_VERSION = "1.0.0";
 
@@ -68,7 +62,7 @@ const NEVER_MODELS = Object.freeze([
  * @param {object} [matrix]
  * @returns {Promise<object>}
  */
-export async function loadWarmupMatrix(matrixPath = DEFAULT_MATRIX_PATH) {
+export async function loadWarmupMatrix(matrixPath = resolveWarmupMatrixPath()) {
   return fs.readJson(matrixPath);
 }
 
@@ -289,16 +283,17 @@ export function buildPlacementPlan(opts = {}) {
     }
   } else {
     // Fallback sans matrice : Tier2/3 depuis models.js
-    if (isTier2Enabled() && MODEL_CONFIG.TIER_2.model) {
+    const tier2Model = getTier2Model();
+    if (isTier2Enabled() && tier2Model) {
       upsert({
-        modelId: MODEL_CONFIG.TIER_2.model,
+        modelId: tier2Model,
         class:
           profile === "aggressive"
             ? PLACEMENT_CLASSES.PREFETCH
             : PLACEMENT_CLASSES.LAZY,
         tier: 2,
         role: "reasoner",
-        vramGb: MODEL_CONFIG.TIER_2.vram_gb,
+        vramGb: MODEL_CONFIG.TIER_2.vram_gb || 5.3,
         priority: 2,
         sticky: false,
         keepAlive: "15m",

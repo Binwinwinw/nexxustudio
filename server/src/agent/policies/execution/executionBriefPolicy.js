@@ -8,12 +8,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getValidator } from '../../validators/compileSchemas.js';
 import { analyzeRequestIntentFrame } from '../intent/requestIntentFrame.js';
-import { isContextReferenceRequest } from '../../utils/contextReferenceIntentGuards.js';
+import { isContextReferenceRequest } from '../../utils/intent-guards/contextReferenceIntentGuards.js';
 import {
   isMetaAssistantBehaviorRequest,
-} from '../../utils/metaAssistantBehaviorGuards.js';
+} from '../../utils/intent-guards/metaAssistantBehaviorGuards.js';
 import { classifySocialPattern } from "../social/index.js";
-import { isWarmToneSemiSocialQuery, matchesWarmToneSemiSocialShell } from '../../utils/warmToneSemiSocialGuards.js';
+import { isWarmToneSemiSocialQuery, matchesWarmToneSemiSocialShell } from '../../utils/conversation/warmToneSemiSocialGuards.js';
 
 export const EXECUTION_BRIEF_VERSION = '1.0.0';
 

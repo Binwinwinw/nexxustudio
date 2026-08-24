@@ -27,28 +27,33 @@ import {
   hasRichHowToLocalTemplate,
   HOW_TO_QUALIFICATIONS,
 } from "../qualification/howToQualificationPolicy.js";
-import { isHowToRequestShell } from "../../utils/howToRequestIntentGuards.js";
+import { isHowToRequestShell } from "../../utils/intent-guards/howToRequestIntentGuards.js";
 import {
   isRecipeKnowledgeRequest,
   extractRecipeSubject,
-} from "../../utils/recipeKnowledgeIntentGuards.js";
-import { isGeneralKnowledgeRequest } from "../../utils/generalKnowledgeIntentGuards.js";
+} from "../../utils/intent-guards/recipeKnowledgeIntentGuards.js";
+import { isGeneralKnowledgeRequest } from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
 import {
   isExplicitWebToolInvocationRequest,
   shouldBypassLocalDatetimeShortCircuit,
-} from "../../utils/externalCalendarLookupIntentGuards.js";
-import { isInformationSeekingWithTarget } from "../../utils/informationSeekingIntentGuards.js";
+} from "../../utils/intent-guards/externalCalendarLookupIntentGuards.js";
+import { isInformationSeekingWithTarget } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import {
   isCompareChooseRequest,
   extractCompareDomain,
-} from "../../utils/compareChooseIntentGuards.js";
+} from "../../utils/intent-guards/compareChooseIntentGuards.js";
 import {
   classifyKnowledgeDomain,
   KNOWLEDGE_DOMAINS,
-} from "../../utils/queryEntityUnderstanding.js";
-import { shouldAllowClarifyThenBuild } from "../../utils/deliverableMandateGuards.js";
-import { classifyWebProjectScopingRequest } from "../../utils/webProjectScopingGuards.js";
+} from "../../utils/parsing-normalization/queryEntityUnderstanding.js";
+import { shouldAllowClarifyThenBuild } from "../../utils/context/deliverableMandateGuards.js";
+import { classifyWebProjectScopingRequest } from "../../utils/intent-guards/webProjectScopingGuards.js";
 import { classifyDebugDiagnosticMove } from "../../micro/replies/debugDiagnosticComposer.js";
+import {
+  hasPostRepairSocialClose,
+  hasEmotionResolvedSignal,
+  hasIssueResolvedSignal,
+} from "../social/postRepairSocialClosePolicy.js";
 import { shouldRouteAttachmentTaskToFullPipeline } from "../attachment/attachmentTaskPolicy.js";
 import { EXECUTION_STRATEGIES } from "../../../../../shared/justIntentCatalog.js";
 import { normalizeForParse } from "../../micro/parsing/requestSegmentParser.js";
@@ -458,7 +463,15 @@ export function evaluateConversationMove(
 
   // Étape 5c — diagnostic incident technique (symptôme / erreur)
   // PJ code/sécurité : ne pas clarifier « quel composant ? » — le fichier EST le contexte
-  const debugDiag = classifyDebugDiagnosticMove(query);
+  // Clôture post-repair (peur/gêne/issue retombée) : jamais debug_diagnostic_clarify.
+  if (hasPostRepairSocialClose(query)) {
+    move.signals.push("post_repair_social_close");
+    if (hasEmotionResolvedSignal(query)) move.signals.push("emotion_resolved_signal");
+    if (hasIssueResolvedSignal(query)) move.signals.push("issue_resolved_signal");
+  }
+  const debugDiag = hasPostRepairSocialClose(query)
+    ? null
+    : classifyDebugDiagnosticMove(query);
   if (debugDiag && !hasAttachmentFileTask) {
     move.signals.push("debug_diagnostic");
     move.topic =

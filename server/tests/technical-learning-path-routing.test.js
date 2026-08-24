@@ -7,7 +7,7 @@ import {
   parseTechnicalLearningPath,
   extractLearningDomain,
   extractTargetStack,
-} from "../src/agent/utils/technicalLearningPathIntentGuards.js";
+} from "../src/agent/utils/intent-guards/technicalLearningPathIntentGuards.js";
 import {
   resolveTechnicalLearningPathShortCircuit,
   resolveTechnicalLearningPathLocalFallback,
@@ -15,7 +15,7 @@ import {
   isCssLearningTopic,
 } from "../src/agent/micro/replies/technicalLearningPathComposer.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { isTechnicalOverviewRequest } from "../src/agent/utils/technicalOverviewIntentGuards.js";
+import { isTechnicalOverviewRequest } from "../src/agent/utils/intent-guards/technicalOverviewIntentGuards.js";
 import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
 
 describe("technicalLearningPath — lot 12 / regression JVM", () => {

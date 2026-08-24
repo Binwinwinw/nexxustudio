@@ -10,7 +10,7 @@ import syncVaultToSkillsHub, {
   renderSkillsHubMarkdown,
 } from '../src/ops/sync-vault-skills.js';
 import { generateSkillsDashboard } from '../src/ops/dashboard-skills.js';
-import { loadSkills } from '../src/agent/utils/skillRuntimeRegistry.js';
+import { loadSkills } from '../src/agent/utils/runtime/skillRuntimeRegistry.js';
 
 describe('export-dashboard-to-vault', () => {
   let tmpDir;

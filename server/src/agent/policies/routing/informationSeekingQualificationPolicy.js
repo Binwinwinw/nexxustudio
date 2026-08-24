@@ -10,9 +10,9 @@ import {
   isInformationSeekingRecoveryResponse,
   isInformationSeekingWithTarget,
   buildInformationSeekingWebQuery,
-} from "../../utils/informationSeekingIntentGuards.js";
+} from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import { isGeneralKnowledgeContractViolation } from "../../micro/replies/generalKnowledgeComposerContract.js";
-import { isGeneralKnowledgeRequest } from "../../utils/generalKnowledgeIntentGuards.js";
+import { isGeneralKnowledgeRequest } from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
 import { isInsufficientSignalRefusal } from "../../config/modeResponseContracts.js";
 
 const PSEUDO_CLARIFY_RE =

@@ -12,7 +12,7 @@ import {
   resolveTechnicalLearningPathLocalFallback,
   buildTechnicalLearningPathSystemAddonFromSlots,
 } from "../src/agent/micro/replies/technicalLearningPathComposer.js";
-import { parseTechnicalLearningPath } from "../src/agent/utils/technicalLearningPathIntentGuards.js";
+import { parseTechnicalLearningPath } from "../src/agent/utils/intent-guards/technicalLearningPathIntentGuards.js";
 
 const GENERIC_MARKER = /Mécanismes clés/i;
 

@@ -7,6 +7,7 @@ import {
   buildWeatherCurrentWebQuery,
   parseWeatherCurrentTask,
   buildWeatherCurrentRecoveryMessage,
+  buildWeatherCurrentFactualReply,
   resolveWeatherCurrentShortCircuit,
 } from "./weatherCurrentRequestPolicy.js";
 import {
@@ -16,7 +17,7 @@ import {
   buildTrafficCurrentRecoveryMessage,
   resolveTrafficCurrentShortCircuit,
 } from "./trafficCurrentRequestPolicy.js";
-import { CURRENT_WEB_FACT_TYPES } from "../../utils/currentWebFactIntentGuards.js";
+import { CURRENT_WEB_FACT_TYPES } from "../../utils/intent-guards/currentWebFactIntentGuards.js";
 
 export const CURRENT_WEB_FACT_POLICY = "current_web_fact_policy_v1";
 
@@ -79,6 +80,24 @@ export function buildCurrentWebFactRecoveryMessage(
 }
 
 /**
+ * Réponse factuelle immédiate si preuves web présentes (évite liste d'options LLM).
+ * @param {string} query
+ * @param {Array<object>} [sources]
+ * @param {{ history?: Array<{ role?: string, content?: string }> }} [options]
+ * @returns {string|null}
+ */
+export function buildCurrentWebFactFactualReply(
+  query = "",
+  sources = [],
+  options = {},
+) {
+  if (isWeatherCurrentRequest(query, options)) {
+    return buildWeatherCurrentFactualReply(query, sources, options);
+  }
+  return null;
+}
+
+/**
  * @param {string} query
  * @param {{ history?: Array<{ role?: string, content?: string }> }} [options]
  * @returns {object|null}
@@ -100,17 +119,20 @@ export function resolveCurrentWebFactShortCircuit(query = "", options = {}) {
   const weatherHit = resolveWeatherCurrentShortCircuit(query, options);
   if (weatherHit) {
     const webQuery = weatherHit.weatherWebQuery;
+    const outOfScope = Boolean(weatherHit.reply) && weatherHit.deferToFullPipeline === false;
     return {
       ...weatherHit,
       factType: CURRENT_WEB_FACT_TYPES.WEATHER,
       currentWebFactWebQuery: webQuery,
       weatherCurrent: true,
-      preferWebResearch: true,
+      preferWebResearch: !outOfScope,
       simpleFactual: true,
-      deferToLlm: true,
-      deferToFullPipeline: true,
-      step:
-        weatherHit.task?.locationSource === "carryover"
+      deferToLlm: !outOfScope,
+      deferToFullPipeline: outOfScope ? false : true,
+      reply: weatherHit.reply || null,
+      step: outOfScope
+        ? "🌤️ Météo — lieu hors périmètre terrestre (réponse bornée)..."
+        : weatherHit.task?.locationSource === "carryover"
           ? "🌤️ Météo actuelle — lieu repris du fil (recherche web)..."
           : "🌤️ Météo actuelle — recherche web prioritaire...",
     };

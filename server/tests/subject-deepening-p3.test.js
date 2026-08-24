@@ -11,7 +11,7 @@ import {
   SUBJECT_RESOLUTION_MODES,
   SUBJECT_SHAPES,
 } from "../src/agent/micro/classifiers/subjectUnderstanding.js";
-import { getFamiliarityDeterministicReply } from "../src/agent/utils/familiarityIntentGuards.js";
+import { getFamiliarityDeterministicReply } from "../src/agent/utils/intent-guards/familiarityIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 
 function genericSubject(label = "Zorbulax") {

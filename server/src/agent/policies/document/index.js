@@ -5,3 +5,6 @@ export * from "./documentAnalysisCompositePolicy.js";
 export * from "./documentSynthesisCompositePolicy.js";
 export * from "./documentWebComparePolicy.js";
 export * from "./documentCapabilityContract.js";
+export * from "./pdfTextLayerDecisionPolicy.js";
+export * from "./pdfOcrEnrichment.js";
+export * from "./pdfPartialAnalysisPolicy.js";

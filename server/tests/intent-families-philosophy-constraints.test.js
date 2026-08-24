@@ -21,7 +21,7 @@ import {
 import {
   parseTechnicalLearningPath,
   suppressesBuildIntentForTechnicalLearning,
-} from "../src/agent/utils/technicalLearningPathIntentGuards.js";
+} from "../src/agent/utils/intent-guards/technicalLearningPathIntentGuards.js";
 import {
   buildTechnicalLearningPathOutlineFallback,
   resolveTechnicalLearningPathLocalFallback,

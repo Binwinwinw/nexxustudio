@@ -6,7 +6,7 @@ import {
   INSUFFICIENT_SIGNAL_REFUSAL,
 } from "../src/agent/config/modeResponseContracts.js";
 import { evaluateRefusalSufficiency } from "../src/agent/micro/parsing/refusalSufficiencyEvaluator.js";
-import { isExploitableProcedureIntent } from "../src/agent/utils/procedureIntentGuards.js";
+import { isExploitableProcedureIntent } from "../src/agent/utils/intent-guards/procedureIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import applyRagConfidenceGate from "../src/retrieval/ragResponseGate.js";
 

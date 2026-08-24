@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import {
   isSelfModificationQuery,
   classifyIntentGuard,
-} from "../src/agent/utils/intentGuards.js";
+} from "../src/agent/utils/intent-guards/intentGuards.js";
 import {
   resolveSelfModificationRoute,
   buildSelfModificationReply,

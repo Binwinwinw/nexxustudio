@@ -6,7 +6,7 @@ import {
   canProvideSafeGenericProcedure,
   isExploitableProcedureIntent,
   isGloballyUnanswerableIntent,
-} from "../../utils/procedureIntentGuards.js";
+} from "../../utils/intent-guards/procedureIntentGuards.js";
 import { buildProcedureDeterministicReply } from "../replies/procedureReplyBuilder.js";
 
 /**

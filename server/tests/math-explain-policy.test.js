@@ -18,7 +18,7 @@ import {
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolveSimpleFastLocalCatchFallback } from "../src/agent/paths/simpleFastPath.js";
-import { resolvePipelineFallback } from "../src/agent/utils/genericGreetingGuards.js";
+import { resolvePipelineFallback } from "../src/agent/utils/conversation/genericGreetingGuards.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseContracts.js";
 
 const CANONICAL_QUERY = MATH_EXPLAIN_CANONICAL_NEGATIVE_DISCRIMINANT_QUERY;

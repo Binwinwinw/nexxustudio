@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import skillLoader from '../src/agent/utils/skillLoader.js';
+import skillLoader from '../src/agent/utils/runtime/skillLoader.js';
 
 describe('skillLoader', () => {
   it('priorise intentIds sur les triggers fallback larges', async () => {

@@ -6,7 +6,7 @@ import {
   getFamiliarityDeterministicReply,
   isFamiliarityDomainOverviewRequest,
   parseFamiliarityQuery,
-} from "../../utils/familiarityIntentGuards.js";
+} from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { isMetaCapabilitiesIntent } from "../meta/metaCapabilitiesPolicy.js";
 
 export const FAMILIARITY_DOMAIN_OVERVIEW_RULE =

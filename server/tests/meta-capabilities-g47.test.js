@@ -17,10 +17,10 @@ import {
 import {
   classifyMetaConversationIntent,
   isMetaDeliverableTypesIntent,
-} from "../src/agent/utils/metaConversationIntentGuards.js";
+} from "../src/agent/utils/intent-guards/metaConversationIntentGuards.js";
 import { resolveMetaConversationRoute } from "../src/agent/micro/replies/metaConversationReplyBuilder.js";
-import { isDocumentAnalysisIntent } from "../src/agent/utils/conversationGuards.js";
-import { isConversationMemoryRecallRequest } from "../src/agent/utils/conversationGuards.js";
+import { isDocumentAnalysisIntent } from "../src/agent/utils/conversation/conversationGuards.js";
+import { isConversationMemoryRecallRequest } from "../src/agent/utils/conversation/conversationGuards.js";
 import { resolveAssistantUtteranceClarifyShortCircuit } from "../src/agent/policies/qualification/assistantUtteranceClarifyPolicy.js";
 import { resolveWantsAnalysisFromTriage } from "../src/agent/classifiers/intentTriageClassifier.js";
 

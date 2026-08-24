@@ -4,11 +4,11 @@
 import {
   extractBeginnerTopicSubject,
   isBeginnerTopicOverviewRequest,
-} from "../../utils/beginnerTopicOverviewIntentGuards.js";
+} from "../../utils/intent-guards/beginnerTopicOverviewIntentGuards.js";
 import {
   isProgrammingPedagogyLightRequest,
   extractProgrammingPedagogySubject,
-} from "../../utils/programmingPedagogyLightIntentGuards.js";
+} from "../../utils/intent-guards/programmingPedagogyLightIntentGuards.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../../config/modeResponseContracts.js";
 
 export const BEGINNER_TOPIC_OVERVIEW_COMPOSER_RULE =

@@ -3,9 +3,9 @@
  * Une procédure détectée n'est pas automatiquement satisfiable localement.
  */
 import { normalizeForParse } from "../../micro/parsing/requestSegmentParser.js";
-import { isRecipeKnowledgeRequest } from "../../utils/recipeKnowledgeIntentGuards.js";
+import { isRecipeKnowledgeRequest } from "../../utils/intent-guards/recipeKnowledgeIntentGuards.js";
 import { resolveLocalGeneralKnowledgeDetail } from "../../micro/replies/generalKnowledgeComposerContract.js";
-import { HOW_TO_SHELL_RE, isHowToRequestShell } from "../../utils/howToRequestIntentGuards.js";
+import { HOW_TO_SHELL_RE, isHowToRequestShell } from "../../utils/intent-guards/howToRequestIntentGuards.js";
 import {
   INSUFFICIENT_SIGNAL_REFUSAL,
   isInsufficientSignalRefusal,

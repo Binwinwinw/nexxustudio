@@ -4,13 +4,13 @@ import {
   isAttachedDocumentAnalysisRequest,
   hasImageAttachments,
   hasTextAttachments,
-} from "../utils/conversationGuards.js";
-import { isRepoAnalysisRequest } from "../utils/repoAnalysisIntentGuards.js";
+} from "../utils/conversation/conversationGuards.js";
+import { isRepoAnalysisRequest } from "../utils/intent-guards/repoAnalysisIntentGuards.js";
 import {
   classifyAttachmentTask,
   isDocumentAttachmentTask,
 } from "../policies/attachment/index.js";
-import { isUiNavigationRestructureFeedback } from "../utils/uiNavigationFeedbackGuards.js";
+import { isUiNavigationRestructureFeedback } from "../utils/conversation/uiNavigationFeedbackGuards.js";
 
 /** Contrats où Caveman instruction est interdit (P0). */
 export const PEDAGOGICAL_OR_SUPPORT_CONTRACT_IDS = new Set([

@@ -17,8 +17,8 @@ import {
 import { resolveGuidedProductIntentContractId } from "../src/agent/policies/guided/index.js";
 import { resolveClarificationGate } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
-import { classifySelectiveDecisionIntent } from "../src/agent/utils/selectiveDecisionIntentGuards.js";
-import { isCompareChooseRequest } from "../src/agent/utils/compareChooseIntentGuards.js";
+import { classifySelectiveDecisionIntent } from "../src/agent/utils/intent-guards/selectiveDecisionIntentGuards.js";
+import { isCompareChooseRequest } from "../src/agent/utils/intent-guards/compareChooseIntentGuards.js";
 import { resolveStrategyExecution } from "../src/agent/telemetry/strategyExecutionTelemetry.js";
 
 describe("compareChooseCompositePolicy — G31.1 patterns", () => {

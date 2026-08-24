@@ -3,7 +3,7 @@
  * Une réponse factuelle simple = une phrase complète, naturelle, sans fragment nu.
  */
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../../config/modeResponseContracts.js";
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { formatSubjectSurfaceForm } from "../normalization/surfaceFormNormalizer.js";
 import {
   extractTemporalTarget,
@@ -16,6 +16,9 @@ import {
 const LOCAL_SIMPLE_FACTUAL_FICHES = Object.freeze({
   "parc asterix": "Le Parc Astérix se trouve à Plailly, dans l'Oise, au nord de Paris.",
 });
+
+const MOON_DISTANCE_FALLBACK =
+  "La Lune s'est formée plus près de la Terre ; les marées freinent la rotation terrestre et l'éloignent peu à peu, d'environ 3,8 cm par an.";
 
 const CLARIFICATION_LEAK_RE =
   /\b(objectif en une phrase|il faudrait que tu arrives a preciser|je vois la piste, mais pas encore|precise ce que tu veux|ton objectif principal|precise l angle|précise l angle|geographie, histoire, contexte|géographie, histoire, contexte|je n ai pas pu finaliser|je n'ai pas pu finaliser|reessaie ou precise|réessaie ou précise)\b/i;
@@ -355,6 +358,13 @@ export function resolveLocalSimpleFactualAnswer(query = "") {
 
   for (const [key, answer] of Object.entries(LOCAL_SIMPLE_FACTUAL_FICHES)) {
     if (q.includes(key)) return answer;
+  }
+  if (
+    /\blune\b/.test(q) &&
+    /\bterre\b/.test(q) &&
+    /\b(?:loin|distance|eloign)/.test(q)
+  ) {
+    return MOON_DISTANCE_FALLBACK;
   }
   return null;
 }

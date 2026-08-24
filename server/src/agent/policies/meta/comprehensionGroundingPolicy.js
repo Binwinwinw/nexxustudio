@@ -2,8 +2,8 @@
  * G45 — grounding explicite : preuve de compréhension conversationnelle.
  * Distinct du social_checkin (« comment ça va ») et du meta_feedback routage.
  */
-import { isComprehensionDemonstrationRequest } from "../../utils/metaAssistantBehaviorGuards.js";
-import { isIdeationIntent } from "../../utils/ideationIntentGuards.js";
+import { isComprehensionDemonstrationRequest } from "../../utils/intent-guards/metaAssistantBehaviorGuards.js";
+import { isIdeationIntent } from "../../utils/intent-guards/ideationIntentGuards.js";
 
 export const COMPREHENSION_GROUNDING_RULE = "comprehension_grounding_g45";
 

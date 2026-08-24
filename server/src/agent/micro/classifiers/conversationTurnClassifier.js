@@ -2,19 +2,20 @@
  * G46 — classifieur de tour conversationnel (famille fonctionnelle + contexte fil).
  * Doctrine : famille -> rail ; regex = filet, pas décision principale.
  */
-import { normalizeText } from "../../utils/normalizationGuards.js";
-import { isIdeationIntent } from "../../utils/ideationIntentGuards.js";
-import { isAssistantRepairIntent } from "../../utils/assistantRepairGuards.js";
+import { normalizeText } from "../../utils/parsing-normalization/normalizationGuards.js";
+import { isIdeationIntent } from "../../utils/intent-guards/ideationIntentGuards.js";
+import { isAssistantRepairIntent } from "../../utils/quality-safety/assistantRepairGuards.js";
 import {
   isMetaAssistantBehaviorRequest,
   isComprehensionDemonstrationRequest,
-} from "../../utils/metaAssistantBehaviorGuards.js";
+} from "../../utils/intent-guards/metaAssistantBehaviorGuards.js";
 import {
   isAssistantSocialMenuOffer,
   isSocialAcceptanceOfOffer,
   isSocialChatThreadActive,
   isSoftSocialChatFollowup,
   isKnownSocialPattern,
+  isSocialCheckinConsistencyCritique,
 } from "../../policies/social/index.js";
 import {
   classifyMetaCapabilitiesSubKind,
@@ -84,7 +85,7 @@ export const FAMILY_SUPPRESSIONS = Object.freeze({
 });
 
 const SOCIAL_HEALTH_RE =
-  /\b(?:comment (?:ca|ça) va|comment vas[- ]?tu|comment allez[- ]?vous|tu vas bien|ca va\b|ça va\b|comment tu te sens)\b/i;
+  /\b(?:comment (?:ca|ça) va|comment vas[- ]?tu|comment allez[- ]?vous|comment vous allez|tu vas bien|vous allez bien|ca va\b|ça va\b|comment tu te sens)\b/i;
 const SOCIAL_GREETING_RE =
   /^(?:salut|bonjour|coucou|hello|hey|bonsoir)(?:\s+[!?.…]*)?$/i;
 
@@ -206,7 +207,7 @@ export function classifyConversationTurnFamily(query = "", options = {}) {
     [CONVERSATION_TURN_FAMILIES.OTHER]: 0,
   };
 
-  if (SOCIAL_HEALTH_RE.test(q)) {
+  if (SOCIAL_HEALTH_RE.test(q) && !isSocialCheckinConsistencyCritique(query)) {
     scores[CONVERSATION_TURN_FAMILIES.SOCIAL_CHECKIN] += 0.72;
     signals.push("surface_health_checkin");
   }
@@ -232,7 +233,9 @@ export function classifyConversationTurnFamily(query = "", options = {}) {
     scores[CONVERSATION_TURN_FAMILIES.TASK_REQUEST] = 0;
   } else if (
     ctx.afterSocialOffer &&
-    /\b(?:papoter|discut(?:e|er)|bavarder)\b/i.test(q)
+    /\b(?:papot(?:e|er|ait|ais|ons|ez|ent|age)|discut(?:e|er|ait|ais|ons|ez|ent)|bavard(?:e|er|ait|ais|ons|ez|ent))\b/i.test(
+      q,
+    )
   ) {
     scores[CONVERSATION_TURN_FAMILIES.SOCIAL_CHECKIN] += 0.38;
     signals.push("social_offer_thread");

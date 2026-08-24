@@ -3,10 +3,10 @@
  * Extension transverse : familiarité, info-seeking, reprise slot filling.
  */
 import { sanitizeQuery } from "../../micro/normalization/querySanitizer.js";
-import { SUBJECT_CATEGORIES } from "../../utils/familiarityIntentGuards.js";
-import { parseFamiliarityQuery, isFamiliarityDomainOverviewRequest } from "../../utils/familiarityIntentGuards.js";
+import { SUBJECT_CATEGORIES } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { parseFamiliarityQuery, isFamiliarityDomainOverviewRequest } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { isSubjectReferenceAvailabilityRequest } from "../../micro/continuity/sessionSubjectReferenceGuards.js";
-import { extractInformationSeekingTarget } from "../../utils/informationSeekingIntentGuards.js";
+import { extractInformationSeekingTarget } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import { resolveSubject } from "../../micro/subject/subjectGraph.js";
 
 export const SUBJECT_TYPING_RULE = "subject_typing_policy_v1";

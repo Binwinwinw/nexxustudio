@@ -1,4 +1,4 @@
-import { normalizeQueryText } from "../../utils/normalizationUtils.js";
+import { normalizeQueryText } from "../../utils/parsing-normalization/normalizationUtils.js";
 
 export const RESPONSE_MODES = Object.freeze({
   CONVERSATION: "conversation",

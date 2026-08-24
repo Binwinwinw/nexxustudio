@@ -20,7 +20,7 @@ import { ContextStage } from "../stages/ContextStage.js";
 import { RoutingStage } from "../stages/RoutingStage.js";
 import { PromptStage } from "../stages/PromptStage.js";
 import { ExecutionStage } from "../stages/ExecutionStage.js";
-import intentClassifier from "../utils/intentClassifier.js";
+import intentClassifier from "../utils/intent-guards/intentClassifier.js";
 import knowledgeService from "../knowledge/knowledgeService.js";
 import {
   isIdeationRequest,
@@ -29,10 +29,15 @@ import {
   hasTextAttachments,
   isAttachedDocumentAnalysisRequest,
   isAttachedVisionRequest,
-} from "../utils/conversationGuards.js";
-import { sanitizeHistory } from "../utils/safetyGuards.js";
-import { isLongOutputTask } from "../utils/qualityGuards.js";
-import criticAgent from "../utils/criticAgent.js";
+} from "../utils/conversation/conversationGuards.js";
+import { sanitizeHistory } from "../utils/quality-safety/safetyGuards.js";
+import { isLongOutputTask } from "../utils/quality-safety/qualityGuards.js";
+import criticAgent from "../utils/agents/criticAgent.js";
+import { classifyAttachmentTask } from "../policies/attachment/attachmentTaskPolicy.js";
+import {
+  buildHtmlDocumentAnalysisReply,
+  evaluateHtmlDocumentCriticChecks,
+} from "../analysis/analyzers/htmlDocumentExtract.js";
 import { AGENT_ROLES } from "../policies/core/index.js";
 import { validateOrchestratorPacket } from "../validators/pipelineValidators.js";
 import {
@@ -40,13 +45,14 @@ import {
   isIdeationIntentContract,
   shouldSkipWebSearchForIntent,
 } from "../config/intentContractRegistry.js";
+import { isWebSearchExpertAuthorized } from "../policies/routing/webSearchExpertAuthorization.js";
 import {
   isGeneratorFirstIntent,
   stripHttpUrlSpans,
 } from "../../../../shared/generatorFirstPolicy.js";
 import {
   extractLocalFileReference,
-} from "../utils/localFileUriIntentGuards.js";
+} from "../utils/intent-guards/localFileUriIntentGuards.js";
 import { resolveWorkspaceReadablePath } from "../policies/analysis/index.js";
 import {
   deriveFactualResearchWebQuery,
@@ -71,9 +77,16 @@ import {
   sourcesHaveHardSector,
 } from "../policies/web/factualResearchSourceRankPolicy.js";
 import {
+  assessFactualSourcesTopicMatch,
+  deriveFactualResearchTopicRetryWebQuery,
+  isStreamingFactualBrief,
+} from "../policies/web/factualResearchTopicMatchPolicy.js";
+import { buildFactualResearchDeterministicReport } from "../policies/web/factualResearchDeterministicBuilder.js";
+import {
   runOrchestratorMakersCheckerValidation,
 } from "../verification/makersCheckerBridge.js";
 import {
+  buildCurrentWebFactFactualReply,
   buildCurrentWebFactRecoveryMessage,
   findLastExplicitWebSearchUserMessage,
   isCurrentWebFactRequest,
@@ -85,7 +98,7 @@ import {
   deriveGuidedProductWebSearchQuery,
 } from "../policies/guided/index.js";
 import { deriveResearchThenSummarizeWebQuery } from "../policies/routing/researchThenSummarizePolicy.js";
-import { deriveRepoAnalysisWebQuery } from "../utils/repoAnalysisIntentGuards.js";
+import { deriveRepoAnalysisWebQuery } from "../utils/intent-guards/repoAnalysisIntentGuards.js";
 import {
   applyProductRecoValidationToWebPacket,
   assessProductRecoWebSources,
@@ -398,6 +411,24 @@ export class SovereignOrchestrator {
         name: f.originalname || f.name || "document",
         mimetype: f.mimetype || "",
       }));
+      try {
+        const { resolveHtmlAnalyzerFactsFromAttachments } = await import(
+          "../policies/attachment/attachmentInterpretationPolicy.js"
+        );
+        const htmlFacts = resolveHtmlAnalyzerFactsFromAttachments(images);
+        if (htmlFacts) {
+          packet.meta.html_analyzer_facts = htmlFacts;
+          packet.meta.attachment_interpretation = true;
+          console.log(
+            `[SovereignOrchestrator] html_analyzer_facts title=${htmlFacts.hasTitle} viewport=${htmlFacts.hasViewport} charset=${htmlFacts.hasCharset} a11yGaps=${htmlFacts.accessibleNameGaps}`,
+          );
+        }
+      } catch (htmlFactsErr) {
+        console.warn(
+          "[SovereignOrchestrator] html_analyzer_facts:",
+          htmlFactsErr.message,
+        );
+      }
     }
 
     const { contract: intentContract, matchedBy: intentContractMatch } =
@@ -409,6 +440,27 @@ export class SovereignOrchestrator {
       onStep(
         `📋 Contrat d'intention : ${intentContract.id} (${intentContract.label})`,
       );
+    }
+
+    // Livraison code : OPERATIONAL, pas planner/PM/web — le composer produit le livrable.
+    if (
+      intentContract.id === "CODE_DELIVERY_V1" ||
+      intentContract.id === "CODE_PROJECT_LIGHT"
+    ) {
+      plan = {
+        mode: intentContract.routing?.orchestratorMode || "OPERATIONAL",
+        stages: ["prompt", "execution"],
+        budgets: { prompt: 1_000, execution: 40_000 },
+        totalMs: 45_000,
+        plannerEnabled: false,
+        lexicalAnalysisEnabled: false,
+      };
+      packet.mode = plan.mode;
+      if (onStep) {
+        onStep(
+          `🎯 Intent recalibré : ${userIntent} | Mode : ${plan.mode} | Budget : ${plan.totalMs / 1000}s`,
+        );
+      }
     }
 
     // Contrat VISION_ATTACHED → plan vision (contexte d'abord, pas routing web).
@@ -473,6 +525,12 @@ export class SovereignOrchestrator {
 
       visionData = ctx.visionData;
       contextData = ctx.contextData;
+      if (contextData?.briefing) {
+        packet.meta.document_briefing = contextData.briefing;
+      }
+      if (contextData?.documents?.[0]?.htmlViews) {
+        packet.meta.html_document_views = contextData.documents[0].htmlViews;
+      }
       memoryContext = ctx.memoryContext;
       projectSotBrief = ctx.projectSotBrief;
       governedContext = ctx.governedContext;
@@ -577,6 +635,7 @@ export class SovereignOrchestrator {
         reasoningBudget: plan.budgets.execution || 30_000,
         isDiscussion: query.includes("discussion:"),
         excludeExpertKeys: skipWeb ? ["expert_web_search"] : [],
+        packet,
       });
       expertBudget.checkpoint("routing");
       expertMatches = routing.expertMatches;
@@ -588,11 +647,21 @@ export class SovereignOrchestrator {
     // ── 6.5 Exécution active des Experts (Citadelle V5.2) ─────────────────────
     let currentWebFactAttempted = false;
     let currentWebFactSucceeded = false;
+    let currentWebFactSources = [];
+    const currentWebFactOpts = { history };
 
     if (expertMatches && expertMatches.length > 0) {
       for (const match of expertMatches) {
         const key = match.expert?.key;
         if (key === "expert_web_search") {
+          if (!isWebSearchExpertAuthorized(query, packet, { forcedExpertKey })) {
+            if (onStep) {
+              onStep(
+                "🚫 Web Search non autorisé (BM25/embeddings seuls insuffisants).",
+              );
+            }
+            continue;
+          }
           if (shouldSkipWebSearchForIntent(query, packet)) {
             if (isExplicitWebSearchRequest(query)) {
               packet.meta.web_failure_mode = "web_search_skipped_by_contract";
@@ -653,7 +722,7 @@ export class SovereignOrchestrator {
               : factualNeedsDerivedQuery
                 ? factualWebQuery
               : trimmedOptsWebQuery || query;
-          if (isCurrentWebFactRequest(query)) {
+          if (isCurrentWebFactRequest(query, currentWebFactOpts)) {
             currentWebFactAttempted = true;
           }
           try {
@@ -764,6 +833,46 @@ export class SovereignOrchestrator {
               hasSources = true;
             };
 
+            const streamingBrief = isStreamingFactualBrief(query);
+
+            // P7.1 — topic match faible → 1 retry query thématique (+ PDF / institutions)
+            if (
+              factualPath &&
+              hasSources &&
+              !packet.meta.factual_research_topic_retry
+            ) {
+              const topicAssess = assessFactualSourcesTopicMatch(
+                query,
+                validatedPacket.sources || [],
+              );
+              packet.meta.sources_topic_match = topicAssess.matchCount;
+              packet.meta.factual_research_topic_keywords = topicAssess.keywords;
+              if (topicAssess.weak) {
+                const topicQuery =
+                  deriveFactualResearchTopicRetryWebQuery(query);
+                if (topicQuery) {
+                  console.log(
+                    `[SovereignOrchestrator] Web query topic retry: "${topicQuery}" (match=${topicAssess.matchCount})`,
+                  );
+                  if (onStep) {
+                    onStep(`🔁 Retry topic brief : ${topicQuery}`);
+                  }
+                  const topicPacket = await runWebSearch(topicQuery);
+                  packet.meta.factual_research_topic_retry = true;
+                  packet.meta.factual_research_topic_query = topicQuery;
+                  await applyMergedSources(
+                    topicQuery,
+                    topicPacket?.sources || [],
+                  );
+                  const after = assessFactualSourcesTopicMatch(
+                    query,
+                    validatedPacket.sources || [],
+                  );
+                  packet.meta.sources_topic_match = after.matchCount;
+                }
+              }
+            }
+
             // P4 — preuves sans chiffres clés → retry query métriques (1 fois)
             if (
               factualPath &&
@@ -795,9 +904,10 @@ export class SovereignOrchestrator {
               }
             }
 
-            // P5 — majorité blogs légers → retry sites sectoriels (+ PDF)
+            // P5 — streaming only : majorité blogs légers → retry sites sectoriels (+ PDF)
             if (
               factualPath &&
+              streamingBrief &&
               hasSources &&
               sourcesAreMajorityLight(validatedPacket.sources) &&
               !packet.meta.factual_research_sector_sites_retry
@@ -818,9 +928,10 @@ export class SovereignOrchestrator {
               );
             }
 
-            // P7 — majorité paywalls → retry open-access / PDF
+            // P7 — streaming only : majorité paywalls → retry open-access / PDF
             if (
               factualPath &&
+              streamingBrief &&
               hasSources &&
               sourcesAreMajorityPaywall(validatedPacket.sources) &&
               !packet.meta.factual_research_open_access_retry
@@ -838,9 +949,10 @@ export class SovereignOrchestrator {
               await applyMergedSources(openQuery, openPacket?.sources || []);
             }
 
-            // P5 — 0 chiffre + 0 hard sector → retry market size EN
+            // P5 — streaming only : 0 chiffre + 0 hard sector → retry market size EN
             if (
               factualPath &&
+              streamingBrief &&
               hasSources &&
               !evidenceHasKeyFigures(validatedPacket.sources) &&
               !sourcesHaveHardSector(validatedPacket.sources) &&
@@ -862,6 +974,27 @@ export class SovereignOrchestrator {
               );
             }
 
+            if (factualPath) {
+              const finalTopic = assessFactualSourcesTopicMatch(
+                query,
+                validatedPacket?.sources || [],
+              );
+              packet.meta.sources_topic_match = finalTopic.matchCount;
+              packet.meta.factual_research_topic_keywords = finalTopic.keywords;
+              packet.meta.factual_research_streaming_brief = streamingBrief;
+              packet.meta.retry_count = [
+                "factual_research_en_retry",
+                "factual_research_topic_retry",
+                "factual_research_metrics_retry",
+                "factual_research_sector_sites_retry",
+                "factual_research_open_access_retry",
+                "factual_research_market_size_retry",
+              ].filter((k) => Boolean(packet.meta[k])).length;
+              console.log(
+                `[SovereignOrchestrator] FACTUAL topic_match=${packet.meta.sources_topic_match} retry_count=${packet.meta.retry_count} streaming=${streamingBrief}`,
+              );
+            }
+
             packet.meta.factual_research_evidence_has_figures = evidenceHasKeyFigures(
               validatedPacket?.sources || [],
             );
@@ -879,6 +1012,7 @@ export class SovereignOrchestrator {
             ) {
               if (currentWebFactAttempted) {
                 currentWebFactSucceeded = true;
+                currentWebFactSources = validatedPacket.sources;
               }
               packet.meta.resolution_path = "web_fallback";
               packet.meta.web_consulted_at = new Date().toISOString();
@@ -946,27 +1080,88 @@ export class SovereignOrchestrator {
       }
     }
 
+    if (currentWebFactAttempted && currentWebFactSucceeded) {
+      const factual = buildCurrentWebFactFactualReply(
+        query,
+        currentWebFactSources,
+        currentWebFactOpts,
+      );
+      if (factual) {
+        packet.quick_answer = factual;
+        packet.meta.current_web_fact_fast_answer = true;
+        packet.meta.weather_web_fast_answer =
+          parseCurrentWebFactTask(query, currentWebFactOpts).factType ===
+          "weather";
+        packet.budget = budget.summary();
+        if (onStep) {
+          onStep(
+            "✅ Fait actuel — réponse factuelle immédiate (sources web, sans détour LLM).",
+          );
+        }
+        if (onContent) onContent(factual);
+        return factual;
+      }
+      // Preuves web présentes mais non exploitables (marketing / hors-lieu) → recovery bornée, pas LLM.
+      const weakEvidenceRecovery = buildCurrentWebFactRecoveryMessage(
+        query,
+        "weak_web_evidence",
+        currentWebFactOpts,
+      );
+      packet.quick_answer = weakEvidenceRecovery;
+      packet.meta.current_web_fact_fast_fallback = true;
+      packet.meta.current_web_fact_weak_evidence = true;
+      packet.meta.weather_web_fast_fallback =
+        parseCurrentWebFactTask(query, currentWebFactOpts).factType ===
+        "weather";
+      packet.budget = budget.summary();
+      if (onStep) {
+        onStep(
+          "⚠️ Fait actuel — sources web insuffisantes pour un relevé fiable (réponse bornée).",
+        );
+      }
+      if (onContent) onContent(weakEvidenceRecovery);
+      return weakEvidenceRecovery;
+    }
+
     if (currentWebFactAttempted && !currentWebFactSucceeded) {
       const recovery = buildCurrentWebFactRecoveryMessage(
         query,
         packet.meta.web_failure_mode || "web_search_unavailable",
+        currentWebFactOpts,
       );
       packet.quick_answer = recovery;
       packet.meta.current_web_fact_fast_fallback = true;
       packet.meta.weather_web_fast_fallback =
-        parseCurrentWebFactTask(query).factType === "weather";
+        parseCurrentWebFactTask(query, currentWebFactOpts).factType ===
+        "weather";
       packet.budget = budget.summary();
       if (onStep) {
         onStep(
-          "⚠️ Fait actuel — recherche web indisponible, réponse honnête (pas de raisonneur lourd).",
+          "⚠️ Fait actuel — recherche web indisponible, réponse bornée (pas de raisonneur lourd).",
         );
       }
       if (onContent) onContent(recovery);
       return recovery;
     }
 
-    // P2 — FACTUAL_RESEARCH / cluster : 0 source après retries → refus déterministe
+    // P7.1 — 0 source après retries → squelette builder (Limites), pas contenu vide
     if (shouldRefuseFactualResearchWithoutSources(query, packet)) {
+      const built = buildFactualResearchDeterministicReport(query, packet);
+      if (built.ok && built.text) {
+        packet.quick_answer = built.text;
+        packet.meta.factual_research_no_sources = true;
+        packet.meta.builder_triggered = true;
+        packet.meta.factual_research_builder_path = built.path;
+        packet.meta.sources_topic_match = built.sources_topic_match ?? 0;
+        packet.budget = budget.summary();
+        if (onStep) {
+          onStep(
+            "⚠️ FACTUAL_RESEARCH — 0 source web : squelette Limites (builder fallback).",
+          );
+        }
+        if (onContent) onContent(built.text);
+        return built.text;
+      }
       const refuse = buildFactualResearchNoSourcesReply(
         query,
         packet.meta.web_failure_mode || null,
@@ -1144,13 +1339,50 @@ export class SovereignOrchestrator {
              if (onStep) onStep(`✅ [Self-Check] Critique passée avec succès (0 fail).`);
           }
         } else {
-          critique = await criticAgent.evaluateReflexionContract({
-            user_query: query,
-            execution_contract: fileIntent?.executionContract || "",
-            forbidden_flags: packet.meta.forbiddenFlags || [],
-            tools_used: tools_used,
-            raw_answer: rawResponse
-          });
+          const htmlViews = packet.meta.html_document_views || null;
+          if (htmlViews) {
+            const taskHit = classifyAttachmentTask(query, images);
+            const htmlCritic = evaluateHtmlDocumentCriticChecks({
+              query,
+              task: taskHit.task,
+              fileKind: taskHit.fileKind,
+              views: htmlViews,
+              reply: rawResponse,
+            });
+            if (htmlCritic.ok) {
+              critique = { verdict: "ok", reasons: [] };
+            } else if (
+              htmlCritic.repair === "anchored_html_reply" ||
+              htmlCritic.repair === "reclassify_doc_analyze"
+            ) {
+              rawResponse = buildHtmlDocumentAnalysisReply(htmlViews, query);
+              critique = {
+                verdict: "ok",
+                reasons: [],
+                analysis: htmlCritic.reasons.join(","),
+              };
+            } else {
+              critique = await criticAgent.evaluateReflexionContract({
+                user_query: query,
+                execution_contract: fileIntent?.executionContract || "",
+                forbidden_flags: packet.meta.forbiddenFlags || [],
+                tools_used: tools_used,
+                raw_answer: rawResponse,
+                document_briefing:
+                  packet.meta.document_briefing || contextData?.briefing || "",
+              });
+            }
+          } else {
+            critique = await criticAgent.evaluateReflexionContract({
+              user_query: query,
+              execution_contract: fileIntent?.executionContract || "",
+              forbidden_flags: packet.meta.forbiddenFlags || [],
+              tools_used: tools_used,
+              raw_answer: rawResponse,
+              document_briefing:
+                packet.meta.document_briefing || contextData?.briefing || "",
+            });
+          }
         }
 
         if (critique.verdict === "ok") {

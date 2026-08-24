@@ -5,4 +5,4 @@ export {
   isFamiliarityIntent,
   parseFamiliarityQuery,
   SUBJECT_CATEGORIES,
-} from "../../utils/familiarityIntentGuards.js";
+} from "../../utils/intent-guards/familiarityIntentGuards.js";

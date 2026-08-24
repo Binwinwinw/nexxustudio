@@ -1,4 +1,4 @@
-import criticAgent from '../../src/agent/utils/criticAgent.js';
+import criticAgent from '../../src/agent/utils/agents/criticAgent.js';
 
 const prompt = "analyse le fichier : file:///C:/projets/atelier-teams-365.html";
 const contract = {

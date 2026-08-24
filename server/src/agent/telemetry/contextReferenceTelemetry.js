@@ -1,7 +1,7 @@
 /**
  * Telemetry — résolution de références au contexte de session.
  */
-import { resolveSessionContextReference } from "../utils/sessionContextReferenceResolver.js";
+import { resolveSessionContextReference } from "../utils/context/sessionContextReferenceResolver.js";
 
 export const CONTEXT_REFERENCE_EVENT = "context_reference_resolution";
 

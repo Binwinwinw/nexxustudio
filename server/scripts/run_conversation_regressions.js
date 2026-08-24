@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
 import agent from '../src/agent/agent.js';
-import OllamaStreamProcessor from '../src/agent/utils/ollamaStreamProcessor.js';
+import OllamaStreamProcessor from '../src/agent/utils/runtime/ollamaStreamProcessor.js';
 
 function includesAll(text, patterns = []) {
   const lower = text.toLowerCase();

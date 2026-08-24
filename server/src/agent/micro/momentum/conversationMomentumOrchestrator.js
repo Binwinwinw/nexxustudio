@@ -1,7 +1,7 @@
 /**
  * P5 — Orchestrateur élan conversationnel (déterministe, sans LLM).
  */
-import { classifyArchitectureDesignSignal } from "../../utils/architectureDesignIntentGuards.js";
+import { classifyArchitectureDesignSignal } from "../../utils/intent-guards/architectureDesignIntentGuards.js";
 import {
   buildDefaultRecommendation,
   enrichArchitectureOptionsReply,

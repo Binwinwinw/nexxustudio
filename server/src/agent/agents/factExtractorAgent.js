@@ -103,7 +103,7 @@ export const factExtractorAgent = {
       })),
     };
 
-    const model = AGENT_ROLES.CHAT || "ornith:9b";
+    const model = AGENT_ROLES.CHAT;
     const client = getClientForModel(model);
 
     // Read the system prompt inline for now to avoid fs.readFileSync issues if path differs

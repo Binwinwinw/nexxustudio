@@ -6,7 +6,7 @@ import {
   isExplicitWebToolInvocationRequest,
   isExternalCalendarLookupRequest,
   isExternalDateLookupRequest,
-} from "../../utils/externalCalendarLookupIntentGuards.js";
+} from "../../utils/intent-guards/externalCalendarLookupIntentGuards.js";
 
 export const EXTERNAL_CALENDAR_LOOKUP_RULE = "external_calendar_lookup_v1";
 

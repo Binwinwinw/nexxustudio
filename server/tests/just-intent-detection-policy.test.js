@@ -128,6 +128,36 @@ describe("justIntentDetectionPolicy", () => {
     assert.equal(event.domain, INTENT_DOMAINS.CODE);
     assert.equal(event.action, INTENT_ACTIONS.REVIEW);
     assert.ok(event.thresholds);
+    assert.equal(event.just_domain, INTENT_DOMAINS.CODE);
+    assert.equal(event.just_action, INTENT_ACTIONS.REVIEW);
+    assert.equal(event.shadow_compatible, null);
+    assert.equal(event.shadow_reason, "no_hint");
+    assert.equal(event.hint_domain, null);
+  });
+
+  it("shadow réutilise justIntent + requestFrame, sans muter JUST", () => {
+    const ev = evaluateJustIntent("explique Redis");
+    const frozen = Object.freeze({ ...ev, signals: Object.freeze([...(ev.signals || [])]) });
+    const frame = {
+      task: { kind: "explain" },
+      domain: { kind: "technical" },
+      familyHint: { id: "technical_overview", confidence: "high" },
+      conversation: { socialOnly: false },
+    };
+    const event = buildJustIntentTelemetryEvent("explique Redis", {
+      justIntent: frozen,
+      requestFrame: frame,
+    });
+    assert.equal(event.domain, frozen.domain);
+    assert.equal(event.action, frozen.action);
+    assert.equal(event.strategy, frozen.strategy);
+    assert.equal(event.frame_task_kind, "explain");
+    assert.equal(event.hint_action, "explain");
+    assert.equal(event.hint_domain, "technical");
+    assert.equal(typeof event.shadow_compatible, "boolean");
+    assert.ok(event.shadow_reason);
+    assert.equal(frozen.domain, ev.domain);
+    assert.equal(frozen.action, ev.action);
   });
 });
 

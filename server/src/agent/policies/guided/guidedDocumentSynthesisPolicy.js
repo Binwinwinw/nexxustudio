@@ -9,7 +9,7 @@ import {
 import { hasDocumentSynthesisShell } from "../document/index.js";
 import { isMetaCapabilitiesIntent } from "../meta/metaCapabilitiesPolicy.js";
 import { stripHttpUrlSpans } from "../../../../../shared/generatorFirstPolicy.js";
-import { extractLocalFileReference } from "../../utils/localFileUriIntentGuards.js";
+import { extractLocalFileReference } from "../../utils/intent-guards/localFileUriIntentGuards.js";
 import { extractSummaryUrl } from "../summary/index.js";
 
 export const GUIDED_DOCUMENT_SYNTHESIS_RULE = "guided_document_synthesis_g32_3";

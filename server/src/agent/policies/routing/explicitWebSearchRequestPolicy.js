@@ -3,12 +3,12 @@
  * Doctrine : web réel OU refus honnête, jamais faux « je n'ai pas pu vérifier ».
  * Aussi : offre d'aide « je veux faire une recherche sur internet » (clarify sujet).
  */
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import {
   isCompareChooseRequest,
   extractCompareDomain,
-} from "../../utils/compareChooseIntentGuards.js";
-import { isMetaDeliverableTypesIntent } from "../../utils/metaConversationIntentGuards.js";
+} from "../../utils/intent-guards/compareChooseIntentGuards.js";
+import { isMetaDeliverableTypesIntent } from "../../utils/intent-guards/metaConversationIntentGuards.js";
 import { resolveWebSearchThreadMaintenanceShortCircuit } from "../web/index.js";
 
 export const EXPLICIT_WEB_SEARCH_REQUEST_RULE = "explicit_web_search_request_v1";

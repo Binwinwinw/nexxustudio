@@ -5,7 +5,7 @@ import {
   isTechnicalLearningPathRequest,
   isJvmJavaScriptHybridLearningTopic,
   parseTechnicalLearningPath,
-} from "../../utils/technicalLearningPathIntentGuards.js";
+} from "../../utils/intent-guards/technicalLearningPathIntentGuards.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../../config/modeResponseContracts.js";
 import {
   isCssLearningTopic,
@@ -111,7 +111,7 @@ export function meetsTechnicalLearningPathPresentationContract(text = "") {
 }
 
 /**
- * @param {import("../../utils/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots|null} slots
+ * @param {import("../../utils/intent-guards/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots|null} slots
  * @param {string} domainLabel
  * @param {number} moduleCount
  * @returns {string}
@@ -176,7 +176,7 @@ function formatTechnicalLearningModuleBlock(mod, index) {
 /**
  * Présentation canonique — lisible humain, alignée doc § forme de réponse.
  * @param {{
- *   slots?: import("../../utils/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots|null,
+ *   slots?: import("../../utils/intent-guards/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots|null,
  *   domainLabel: string,
  *   modules: import("./technicalLearningBlueprints.js").LearningModule[],
  *   reframeNote?: string|null,
@@ -256,7 +256,7 @@ const GENERIC_LEARNING_MODULES = (domainLabel = "le domaine visé") => [
 
 /**
  * @param {string} query
- * @param {import("../../utils/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots|null} [slots]
+ * @param {import("../../utils/intent-guards/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots|null} [slots]
  * @returns {string}
  */
 function resolveTechnicalLearningDisplayLabel(query = "", slots = null) {
@@ -273,7 +273,7 @@ function resolveTechnicalLearningDisplayLabel(query = "", slots = null) {
 /**
  * Fallback local structuré — plan de fiches si le LLM simpleFast échoue ou répond vide.
  * @param {string} query
- * @param {import("../../utils/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots|null} [slots]
+ * @param {import("../../utils/intent-guards/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots|null} [slots]
  * @returns {string|null}
  */
 export function buildTechnicalLearningPathOutlineFallback(query = "", slots = null) {
@@ -313,7 +313,7 @@ export function resolveCssLearningPathLocalFallback(query = "") {
 }
 
 /**
- * @param {import("../../utils/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots} slots
+ * @param {import("../../utils/intent-guards/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots} slots
  * @returns {string}
  */
 export function buildTechnicalLearningPathSystemAddonFromSlots(slots) {
@@ -391,7 +391,7 @@ export function buildTechnicalLearningPathSystemAddon(query = "") {
 
 /**
  * @param {string} query
- * @returns {{ path: string, reply?: string, deferToLlm?: boolean, reflectiveHint?: string, technicalLearningPath: boolean, slots?: import("../../utils/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots }|null}
+ * @returns {{ path: string, reply?: string, deferToLlm?: boolean, reflectiveHint?: string, technicalLearningPath: boolean, slots?: import("../../utils/intent-guards/technicalLearningPathIntentGuards.js").TechnicalLearningPathSlots }|null}
  */
 export function resolveTechnicalLearningPathShortCircuit(query = "") {
   if (!isTechnicalLearningPathRequest(query)) return null;

@@ -1,11 +1,11 @@
 /**
  * Composer — revue de dépôt distant (REPO_ANALYSIS_V1).
  */
-import responseThinkingCleaner from "../../utils/responseThinkingCleaner.js";
+import responseThinkingCleaner from "../../utils/quality-safety/responseThinkingCleaner.js";
 import {
   isRepoAnalysisRequest,
   extractRepoTarget,
-} from "../../utils/repoAnalysisIntentGuards.js";
+} from "../../utils/intent-guards/repoAnalysisIntentGuards.js";
 import {
   REPO_ANALYSIS_CONTRACT_ID,
   getRepoAnalysisSystemPrompt,

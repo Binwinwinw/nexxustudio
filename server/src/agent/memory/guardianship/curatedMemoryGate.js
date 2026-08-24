@@ -1,4 +1,4 @@
-import responseThinkingCleaner from "../../utils/responseThinkingCleaner.js";
+import responseThinkingCleaner from "../../utils/quality-safety/responseThinkingCleaner.js";
 import {
   INSUFFICIENT_SIGNAL_REFUSAL,
   RESPONSE_MODES,

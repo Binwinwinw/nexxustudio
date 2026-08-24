@@ -8,7 +8,7 @@ import {
   HTML_PROJECT_PROFILES,
 } from "../policies/delivery/index.js";
 import { HTML_PROJECT_THRESHOLDS } from "../policies/delivery/index.js";
-import { normalizeFamiliarityQuery } from "../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../utils/intent-guards/familiarityIntentGuards.js";
 
 export const HTML_PROJECT_TELEMETRY_EVENT = "html_project_delivery";
 

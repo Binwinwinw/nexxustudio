@@ -2,7 +2,7 @@
  * Gate RAG — confiance insuffisante → fallback épistémique canonique.
  */
 import { INSUFFICIENT_SIGNAL_REFUSAL } from '../agent/config/modeResponseContracts.js';
-import { isExploitableProcedureIntent } from '../agent/utils/procedureIntentGuards.js';
+import { isExploitableProcedureIntent } from '../agent/utils/intent-guards/procedureIntentGuards.js';
 import { buildProcedureDeterministicReply } from '../agent/micro/replies/procedureReplyBuilder.js';
 import {
   CONFIDENCE_THRESHOLDS,

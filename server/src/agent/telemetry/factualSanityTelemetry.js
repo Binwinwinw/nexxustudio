@@ -1,7 +1,7 @@
 /**
  * Télémétrie discrète — factualSanityGate (observation terrain).
  */
-import { normalizeFamiliarityQuery } from "../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../utils/intent-guards/familiarityIntentGuards.js";
 
 export const FACTUAL_SANITY_TELEMETRY_EVENT = "factual_sanity_gate";
 

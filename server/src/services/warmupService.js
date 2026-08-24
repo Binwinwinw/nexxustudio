@@ -1,7 +1,4 @@
 import fs from 'fs-extra';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import process from 'process';
 import ollama from '../llm/ollama.js';
 import { recordBootstrapEvent } from './bootstrapDiagnostics.js';
 import {
@@ -10,17 +7,12 @@ import {
   shouldWarmTier2AtBoot,
   isTier2Enabled,
   getReasonerModel,
-  MODEL_CONFIG,
+  getTier2Model,
   listTier3ExpertModels,
 } from '../config/models.js';
+import { resolveWarmupExperimentPlan } from '../config/warmupExperimentPlan.js';
 import { buildPlacementPlan } from '../llm/placement/placementPlan.js';
-import vramManager from '../agent/utils/vramManager.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const MATRIX_PATH = path.resolve(__dirname, '../../config/warmup.matrix.json');
-
-const TIER2_MODEL = MODEL_CONFIG.TIER_2.model;
+import vramManager from '../agent/utils/runtime/vramManager.js';
 
 /**
  * warmupStatus - État global du préchauffage (v3.7 réactif)
@@ -161,15 +153,18 @@ function markTier2Deferred(config) {
     warmupStatus.tier2_deferred = false;
     return;
   }
-  if (TIER2_MODEL) {
-    warmupStatus.models[TIER2_MODEL] = 'deferred';
+  const tier2Model = getTier2Model();
+  if (tier2Model) {
+    warmupStatus.models[tier2Model] = 'deferred';
   }
   warmupStatus.tier2_deferred = true;
 }
 
 async function loadMatrixConfig() {
-  if (matrixConfig) return matrixConfig;
-  matrixConfig = await fs.readJson(MATRIX_PATH);
+  const { matrixPath, experimentId } = resolveWarmupExperimentPlan();
+  if (matrixConfig?._experimentId === experimentId) return matrixConfig;
+  matrixConfig = await fs.readJson(matrixPath);
+  matrixConfig._experimentId = experimentId;
   return matrixConfig;
 }
 
@@ -188,10 +183,11 @@ export async function ensureTier2Warmup(reason = 'on_demand') {
     return { ok: true, status: 'disabled', reason };
   }
 
-  if (TIER2_MODEL && warmupStatus.models[TIER2_MODEL] === 'ready') {
+  const tier2Model = getTier2Model();
+  if (tier2Model && warmupStatus.models[tier2Model] === 'ready') {
     return { ok: true, status: 'ready', reason };
   }
-  if (TIER2_MODEL && warmupStatus.models[TIER2_MODEL] === 'warming' && tier2WarmupPromise) {
+  if (tier2Model && warmupStatus.models[tier2Model] === 'warming' && tier2WarmupPromise) {
     return tier2WarmupPromise;
   }
 
@@ -199,8 +195,8 @@ export async function ensureTier2Warmup(reason = 'on_demand') {
 
   tier2WarmupPromise = (async () => {
     warmupStatus.phase = 'tier2_warming';
-    warmupStatus.models[TIER2_MODEL] = 'warming';
-    console.log(`[Warmup][TIER-2] 🧠 Priming différé (${TIER2_MODEL}) — reason=${reason}`);
+    warmupStatus.models[tier2Model] = 'warming';
+    console.log(`[Warmup][TIER-2] 🧠 Priming différé (${tier2Model}) — reason=${reason}`);
     recordBootstrapEvent('warmup.tier2.deferred.start', {
       status: 'ok',
       phase: 'tier2_warming',
@@ -208,7 +204,7 @@ export async function ensureTier2Warmup(reason = 'on_demand') {
     });
 
     const results = await runTier('tier2', config.tiers.tier2, config.settings, profile);
-    const ready = results.some((entry) => entry.model === TIER2_MODEL && entry.status === 'ready');
+    const ready = results.some((entry) => entry.model === tier2Model && entry.status === 'ready');
 
     if (ready) {
       warmupStatus.tier2_deferred = false;
@@ -218,12 +214,12 @@ export async function ensureTier2Warmup(reason = 'on_demand') {
         phase: 'ready',
         message: reason,
       });
-      console.log(`[Warmup][TIER-2] ✅ ${TIER2_MODEL} prêt (${warmupStatus.latency.tiers.tier2 || '?'}ms).`);
+      console.log(`[Warmup][TIER-2] ✅ ${tier2Model} prêt (${warmupStatus.latency.tiers.tier2 || '?'}ms).`);
       return { ok: true, status: 'ready', reason };
     }
 
     warmupStatus.phase = 'ready';
-    return { ok: false, status: warmupStatus.models[TIER2_MODEL], reason };
+    return { ok: false, status: warmupStatus.models[tier2Model], reason };
   })().finally(() => {
     tier2WarmupPromise = null;
   });
@@ -238,7 +234,8 @@ export async function ensureTier2Warmup(reason = 'on_demand') {
 export function scheduleTier2Warmup(reason = 'first_traffic') {
   if (!isTier2Enabled()) return;
   if (shouldWarmTier2AtBoot()) return;
-  if (TIER2_MODEL && warmupStatus.models[TIER2_MODEL] === 'ready') return;
+  const tier2Model = getTier2Model();
+  if (tier2Model && warmupStatus.models[tier2Model] === 'ready') return;
   if (tier2TrafficScheduled) return;
   tier2TrafficScheduled = true;
 
@@ -258,7 +255,7 @@ export async function warmupModels() {
   try {
     config = await loadMatrixConfig();
   } catch (err) {
-    console.error(`[Warmup] ❌ Impossible de charger warmup.matrix.json. Mode dégradé. ${err.message}`);
+    console.error(`[Warmup] ❌ Impossible de charger la matrice warmup. Mode dégradé. ${err.message}`);
     warmupStatus.phase = 'partial_ready';
     recordBootstrapEvent('warmup.config.error', {
       status: 'error',
@@ -268,13 +265,17 @@ export async function warmupModels() {
     return;
   }
 
+  const experiment = resolveWarmupExperimentPlan();
   recordBootstrapEvent('warmup.start', {
     status: 'ok',
     phase: 'tier1_loading',
-    message: `Profile ${profile}`,
+    message: `Profile ${profile} experiment=${experiment.experiment}`,
   });
+  const tier2Label = isTier2Enabled()
+    ? `Tier2 deferred (${getTier2Model()})`
+    : 'Tier2 off';
   console.log(
-    `[Warmup] ⚡ Neural Matrix — profil ${profile.toUpperCase()} (Tier1 boot, Tier2 off, Tier3 lazy)`,
+    `[Warmup] ⚡ Neural Matrix — profil ${profile.toUpperCase()} experiment=${experiment.experiment} owner=${experiment.ownership.owner} cleanup_by=${experiment.ownership.cleanupBy} (Tier1 boot, ${tier2Label}, Tier3 lazy)`,
   );
 
   for (const tier of Object.values(config.tiers)) {
@@ -336,12 +337,15 @@ export async function warmupModels() {
   recordBootstrapEvent('warmup.ready', {
     status: 'ok',
     phase: 'ready',
-    message: `Essentiel Tier-1 terminé en ${warmupStatus.latency.total}ms — Tier2 désactivé`,
+    message: `Essentiel Tier-1 terminé en ${warmupStatus.latency.total}ms — experiment=${experiment.experiment}`,
   });
 
   const reasoner = getReasonerModel(profile);
+  const tier2ReadyMsg = isTier2Enabled()
+    ? `Tier 2 deferred (${getTier2Model()}) — reasoner=${reasoner}`
+    : `Tier 2 désactivé — reasoner = Tier 1 (${reasoner})`;
   console.log(
-    `[Warmup] ✅ Ready for traffic (${warmupStatus.latency.total}ms) — Tier 2 désactivé — reasoner = Tier 1 (${reasoner}).`,
+    `[Warmup] ✅ Ready for traffic (${warmupStatus.latency.total}ms) — experiment=${experiment.experiment} — ${tier2ReadyMsg}.`,
   );
   console.log(
     `[Warmup][TIER-3] ❄️ Experts lazy: ${listTier3ExpertModels().join(', ')}`,

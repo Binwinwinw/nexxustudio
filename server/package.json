@@ -8,6 +8,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test:conversation": "node scripts/run_conversation_regressions.js",
+    "test:social-rail": "node --test --test-timeout=20000 tests/social-checkin-followup.test.js tests/social-chat-continuity.test.js tests/social-pattern-hardening.test.js tests/social-checkin-priority.test.js tests/social-composite-g41-1.test.js tests/citadelle-input-invariants.test.js tests/project-build-architecture-routing.test.js tests/project-build-response-depth-control.test.js",
     "test:code-delivery": "node --test tests/code-delivery-conversation-regression.test.js tests/code-delivery-policy.test.js tests/code-delivery-sentinel.test.js tests/code-review-regression.test.js tests/code-review-runtime-guard.test.js tests/code-review-routing-guard.test.js tests/code-review-pipeline-routing.test.js tests/code-intent-policy.test.js tests/code-error-priority-policy.test.js tests/code-diagnostic-contract.test.js tests/intent-triage-classifier.test.js tests/intent-triage-llm-tiebreak.test.js tests/intent-triage-golden.test.js tests/intent-triage-ambiguous-analyzer.test.js tests/intent-triage-dashboard.test.js tests/intent-triage-golden-promotion.test.js tests/file-context-guard.test.js",
     "triage:export-golden": "node scripts/export-intent-triage-golden.js",
     "triage:analyze-ambiguous": "node scripts/triage-analyze-ambiguous.js",

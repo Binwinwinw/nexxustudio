@@ -2,14 +2,14 @@
  * document_synthesis — synthèse / commentaire mono-doc ancré au texte fourni.
  * Patron #30–#32 : détection → can_answer_now → short-circuit → gabarit local.
  */
-import { hasTextAttachments } from "../../utils/conversationGuards.js";
-import { isAnalyticalCritiqueIntent } from "../../utils/analyticalCritiqueIntentGuards.js";
+import { hasTextAttachments } from "../../utils/conversation/conversationGuards.js";
+import { isAnalyticalCritiqueIntent } from "../../utils/intent-guards/analyticalCritiqueIntentGuards.js";
 import { isMetaCapabilitiesIntent } from "../meta/metaCapabilitiesPolicy.js";
 import { isCodeIntentRequest } from "../code/codeIntentPolicy.js";
 import { inferDocumentStateFromHistory } from "../../micro/continuity/documentContinuityContext.js";
 import { hasReusableDocumentBriefing } from "../../micro/continuity/documentBriefingEncoder.js";
-import { isExistingSourceAnalysisRequest } from "../../utils/localFileUriIntentGuards.js";
-import { isRepoAnalysisRequest } from "../../utils/repoAnalysisIntentGuards.js";
+import { isExistingSourceAnalysisRequest } from "../../utils/intent-guards/localFileUriIntentGuards.js";
+import { isRepoAnalysisRequest } from "../../utils/intent-guards/repoAnalysisIntentGuards.js";
 import { suppressesDocumentSynthesisForCulturalSummary } from "../summary/index.js";
 import { isCodeConceptExplainRequest } from "../code/codeConceptExplainPolicy.js";
 import { isResearchThenSummarizeRequest } from "../routing/researchThenSummarizePolicy.js";

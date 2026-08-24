@@ -12,14 +12,14 @@ import {
 import {
   isPromptForArtifactRequest,
   parsePromptForArtifactTask,
-} from "../src/agent/utils/promptForArtifactIntentGuards.js";
+} from "../src/agent/utils/intent-guards/promptForArtifactIntentGuards.js";
 import { isHtmlProjectDeliverable } from "../src/agent/policies/delivery/index.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
 } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { resolvePipelineFallback } from "../src/agent/utils/genericGreetingGuards.js";
+import { resolvePipelineFallback } from "../src/agent/utils/conversation/genericGreetingGuards.js";
 
 describe("promptForArtifactPolicy — batterie #37", () => {
   it("landing page + concept créatif → prompt_for_artifact_deterministic", async () => {

@@ -6,8 +6,8 @@ import {
   isPureSocial,
   isAnalyticalTechnicalRequest,
   isTechnicalStatusReport,
-} from "../../src/agent/utils/conversationGuards.js";
-import intentClassifier from "../../src/agent/utils/intentClassifier.js";
+} from "../../src/agent/utils/conversation/conversationGuards.js";
+import intentClassifier from "../../src/agent/utils/intent-guards/intentClassifier.js";
 import emergencyReplyRegistry from "../../src/agent/harness/emergencyReplyRegistry.js";
 
 function pass(name) {

@@ -69,9 +69,9 @@ export function resolveMultiUnitSurfaceStyle(decomposition) {
 function buildSocialLead(units = []) {
   const hasGreeting = units.some((u) => u.unitType === "social_greeting");
   const hasCheckin = units.some((u) => u.unitType === "social_checkin");
-  if (hasGreeting && hasCheckin) return "Salut ! Ça va bien de mon côté.";
+  if (hasGreeting && hasCheckin) return "Salut ! Ça va bien, merci.";
   if (hasGreeting) return "Salut !";
-  if (hasCheckin) return "Ça va bien de mon côté.";
+  if (hasCheckin) return "Ça va bien, merci.";
   return "";
 }
 

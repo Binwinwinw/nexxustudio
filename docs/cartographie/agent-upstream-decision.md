@@ -4,8 +4,9 @@
 |-------|--------|
 | **Périmètre** | `micro/classifiers/` (focus `intentShortCircuit.js`), `config/`, `policies/routing/`, `policies/intent/` |
 | **Chemin racine** | `server/src/agent/` |
-| **Date de mise à jour** | 2026-08-05 |
+| **Date de mise à jour** | 2026-08-17 |
 | **Mode** | Lecture seule — cartographie structurelle (pas de refactor) |
+| **Lecture** | Inventaire, pas cible — [`METHODE.md`](./METHODE.md) |
 | **Référence amont** | [`agent-front-doors.md`](./agent-front-doors.md) (lot 0) |
 | **Lots suivants** | Lot 2 = conversation / qualification / social / epistemic — voir §8 |
 
@@ -229,9 +230,11 @@ Chaque hit passe par `emit` = **sufficiency gate** + **`annotateShortCircuitCogn
 
 | Lot | Périmètre | Dépend de |
 |-----|-----------|-----------|
-| **2** | `policies/conversation`, qualification, social, epistemic | Ce doc + lot 0 |
-| **3** | `utils/*IntentGuards`, `genericGreetingGuards` | Lots 1–2 (beaucoup de guards appelés par SC) |
-| **4+** | micro/replies, domain policies, exécution | Après stabilisation des rails |
+| **4** | Exécution / livraison : `SovereignOrchestrator`, COMPOSER, `finalRendererAgent`, preuves web | **Écrit** — [`agent-execution-delivery.md`](./agent-execution-delivery.md) |
+| **2** | `policies/conversation`, qualification, social, epistemic | **Écrit** — [`agent-comprehension-conversation.md`](./agent-comprehension-conversation.md) |
+| **3** | `utils/*IntentGuards`, `genericGreetingGuards` | **Écrit** — [`agent-intent-guards.md`](./agent-intent-guards.md) |
+
+**Lecture validée 2026-08-17 (soir) :** lots 0–4 écrits (lot 3 = [`agent-intent-guards.md`](./agent-intent-guards.md)). Policies domaine : [`agent-domain-policies.md`](./agent-domain-policies.md) — registre, pas cette topologie.
 
 ---
 
@@ -255,3 +258,7 @@ Smoke ciblés (comportement, pas refactor) : social check-in ; factoid G49 ; cla
 | Date | Changement |
 |------|------------|
 | 2026-08-05 | Création lot 1 — cartographie décision amont |
+| 2026-08-17 | Verdict : amont seulement ; trou prioritaire = vue exécution / livraison (lot 4) |
+| 2026-08-17 | Colonne 0+1+4 complète jusqu’au visible ; plateforme incomplète (lots 2–3, policies domaine) |
+| 2026-08-17 | Pointeur : policies domaine écrite — [`agent-domain-policies.md`](./agent-domain-policies.md) |
+| 2026-08-18 | Lecture : inventaire pour décider — [`METHODE.md`](./METHODE.md) |

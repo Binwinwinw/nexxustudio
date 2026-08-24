@@ -37,6 +37,10 @@ import {
 } from "../guided/index.js";
 import { extractProductRecommendationSlots } from "../routing/compareChooseCompositePolicy.js";
 import { assessKnowledgeFreshnessRisk } from "../web/index.js";
+import {
+  applyExistenceToResponsePlan,
+  buildExistenceScopedWebQuery,
+} from "./existenceScopeGuardPolicy.js";
 import { resolveActionDecision } from "../orchestration/index.js";
 import { isLightCulturalRecognitionRequest } from "../pedagogical/index.js";
 import {
@@ -84,7 +88,7 @@ const SOCIAL_GREETING_RE =
   /(?:^|\s)(?:salut|bonjour|hello|coucou|hey|bonsoir|yo|yop)\b/i;
 
 const SOCIAL_CHECKIN_RE =
-  /(?:comment\s+(?:(?:ça|ca)\s+)?(?:va|se\s+passe|roule)|comment\s+(?:tu\s+)?vas|comment\s+vas[- ]?tu|(?:^|\s)(?:ça|ca)\s+va|tu\s+vas\s+bien)/i;
+  /(?:comment\s+(?:(?:ça|ca)\s+)?(?:va|se\s+passe|roule)|comment\s+(?:tu\s+)?vas|comment\s+vas[- ]?tu|comment\s+allez[- ]?vous|comment\s+vous\s+allez|(?:^|\s)(?:ça|ca)\s+va|tu\s+vas\s+bien|vous\s+allez\s+bien)/i;
 
 /**
  * @param {string} raw
@@ -721,7 +725,9 @@ function resolveEvidenceRequirement(query, understanding, intentAssessment) {
  * @param {ReturnType<typeof understandQuery>} understanding
  * @param {ReturnType<typeof resolveIntentAssessment>} intentAssessment
  */
-function deriveRetrievalWebQuery(query, understanding, intentAssessment) {
+function deriveRetrievalWebQuery(query, understanding, intentAssessment, options = {}) {
+  const scoped = buildExistenceScopedWebQuery(query, { history: options.history });
+  if (scoped) return scoped;
   const { intentContractId, primaryDomain, responseStrategy } = intentAssessment;
   if (
     intentAssessment.constraints.researchThenSummarize ||
@@ -753,6 +759,7 @@ function resolveRetrievalDecision(
   intentAssessment,
   evidenceRequirement,
   actionDecision,
+  options = {},
 ) {
   if (actionDecision?.capabilities?.web) {
     return {
@@ -761,7 +768,7 @@ function resolveRetrievalDecision(
       why: actionDecision.why.filter((w) => w.includes("web") || w.includes("evidence")).join("+") || "action_web",
       webQuery:
         actionDecision.webQuery ||
-        deriveRetrievalWebQuery(query, understanding, intentAssessment),
+        deriveRetrievalWebQuery(query, understanding, intentAssessment, options),
       riskIfSkipped:
         evidenceRequirement.level === "high"
           ? "high"
@@ -789,7 +796,7 @@ function resolveRetrievalDecision(
       needsExternalInfo: true,
       sourceKind: "web",
       why: evidenceRequirement.why.join("+"),
-      webQuery: deriveRetrievalWebQuery(query, understanding, intentAssessment),
+      webQuery: deriveRetrievalWebQuery(query, understanding, intentAssessment, options),
       riskIfSkipped: evidenceRequirement.level === "high" ? "high" : "medium",
     };
   }
@@ -932,11 +939,15 @@ export function buildRequestWorkup(query = "", understanding, options = {}) {
     intent_assessment,
     evidence_requirement,
     action_decision,
+    options,
   );
-  const response_commitment = resolveResponseCommitment(
-    understanding,
-    intent_assessment,
-    evidence_requirement,
+  const response_commitment = applyExistenceToResponsePlan(
+    resolveResponseCommitment(
+      understanding,
+      intent_assessment,
+      evidence_requirement,
+    ),
+    query,
   );
 
   return {

@@ -10,9 +10,12 @@ import {
   isInstallClarificationDraft,
 } from "./forgeProjectScoping.js";
 
-const DEFAULT_MINI_MODEL =
-  process.env.OLLAMA_MINI_DELIBERATION_MODEL || "zephyr";
-/** Opt-in : MINI_DELIBERATION_OLLAMA=1 pour Zephyr (sinon heuristique sync). */
+import { resolveLightJsonModel } from "../../policies/core/agentRolePolicy.js";
+
+function resolveMiniDeliberationModel() {
+  return resolveLightJsonModel(process.env.OLLAMA_MINI_DELIBERATION_MODEL);
+}
+/** Opt-in : MINI_DELIBERATION_OLLAMA=1 pour JSON léger T1 (sinon heuristique sync). */
 const MINI_DELIBERATION_ENABLED = process.env.MINI_DELIBERATION_OLLAMA === "1";
 const MINI_TIMEOUT_MS = parseInt(process.env.MINI_DELIBERATION_TIMEOUT_MS || "4500", 10);
 
@@ -118,7 +121,7 @@ export async function runMiniDeliberation(input = {}) {
       enrichedReply: materializeDeliberationReply(llmResult, heuristic.answerDraft),
       usedLlm: true,
       source: "ollama",
-      model: DEFAULT_MINI_MODEL,
+      model: resolveMiniDeliberationModel(),
     };
   }
 
@@ -159,7 +162,7 @@ async function tryOllamaDeliberation({ query, state, policy, heuristic, llmClien
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: userPayload },
       ],
-      DEFAULT_MINI_MODEL,
+      resolveMiniDeliberationModel(),
       {
         temperature: 0.15,
         num_predict: 280,

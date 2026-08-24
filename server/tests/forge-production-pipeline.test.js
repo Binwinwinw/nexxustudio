@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { buildForgePhasePrompt } from "../src/forge/forgePhasePrompt.js";
 import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
-import { isDesignCreateIntent } from "../src/agent/utils/conversationGuards.js";
+import { isDesignCreateIntent } from "../src/agent/utils/conversation/conversationGuards.js";
 
 const FORGE_BRIEF = `Cadrage projet pour la Forge :
 Objectif : webapp React/Vite calculatrice scientifique graphique.

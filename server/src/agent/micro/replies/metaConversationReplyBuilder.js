@@ -5,7 +5,7 @@ import {
   classifyMetaConversationIntent,
   extractRecentThreadTopicHint,
   threadHasReliableInvestorFactualContext,
-} from "../../utils/metaConversationIntentGuards.js";
+} from "../../utils/intent-guards/metaConversationIntentGuards.js";
 import { buildTemporalAwarenessReply } from "../../memory/sessionWorkMemory.js";
 import {
   composeMannerReply,

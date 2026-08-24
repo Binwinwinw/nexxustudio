@@ -7,11 +7,11 @@ import {
   INTENT_DOMAINS,
   INTENT_ACTIONS,
 } from "../../../../../shared/justIntentCatalog.js";
-import { normalizeFamiliarityQuery } from "../../utils/familiarityIntentGuards.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { isCodeConceptExplainRequest } from "../code/codeConceptExplainPolicy.js";
-import { isExistingSourceAnalysisRequest } from "../../utils/localFileUriIntentGuards.js";
+import { isExistingSourceAnalysisRequest } from "../../utils/intent-guards/localFileUriIntentGuards.js";
 import { isExistingFilePathAnalysisRequest } from "../../../../../shared/generatorFirstPolicy.js";
-import { isLearningRequestWithTarget } from "../../utils/learningRequestIntentGuards.js";
+import { isLearningRequestWithTarget } from "../../utils/intent-guards/learningRequestIntentGuards.js";
 
 export const GUIDED_CREATION_SCOPING_RULE = "guided_creation_scoping_v1";
 export const GUIDED_CREATION_SCOPING_CONTRACT_ID = "GUIDED_CREATION_SCOPING";

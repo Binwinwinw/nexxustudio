@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import {
   suppressesBuildIntentForTechnicalLearning,
   isTechnicalLearningPathRequest,
-} from "../src/agent/utils/technicalLearningPathIntentGuards.js";
+} from "../src/agent/utils/intent-guards/technicalLearningPathIntentGuards.js";
 import { isHtmlProjectDeliverable } from "../src/agent/policies/delivery/index.js";
 import {
   evaluateJustIntent,

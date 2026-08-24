@@ -67,8 +67,20 @@ Cette boucle s'applique à :
 
 - refactor routing / policies (`intentShortCircuit`, policies domaine) ;
 - lots chantier B (familiarity, connector-registry, clarification-decision, repo-analysis, etc.) ;
+- chantier compréhension d’input — canon : [`docs/governance/citadelle-input-invariants.md`](governance/citadelle-input-invariants.md) ; mémoire : [`docs/agents/input-comprehension-chantier.md`](agents/input-comprehension-chantier.md) ;
 - migrations phase 2 (move-only : imports → suppression wrappers → tests → commit atomique) ;
 - tout changement impactant routing, policies ou tests.
+
+## Chantier compréhension d’input
+
+Comportement, interdits, rouges gelés : [`docs/governance/citadelle-input-invariants.md`](governance/citadelle-input-invariants.md).  
+Historique des lots : la mémoire ci-dessus.
+
+Cette page ne redit pas les invariants. Elle impose seulement la boucle **plan → preuve → bouclage**.
+
+Anti-divergence : voir le canon § Anti-divergence. Ne pas recopier ici.
+
+**Chantier fermé.** P0–P2 faits. P3–P5 non ouverts sans besoin explicite.
 
 ## Commits
 

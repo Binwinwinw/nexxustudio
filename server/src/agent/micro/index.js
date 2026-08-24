@@ -107,7 +107,7 @@ export {
   LEXICON_PROPOSAL_STATUS,
   buildPromotionCandidateFromObservation,
 } from "./lexicon/subjectPromotionCandidateBuilder.js";
-export { hasStaticLexiconEntry } from "../utils/familiarityIntentGuards.js";
+export { hasStaticLexiconEntry } from "../utils/intent-guards/familiarityIntentGuards.js";
 
 export {
   interpretRequest,

@@ -2,8 +2,8 @@ import { SUBJECT_NATURES } from "./subjectIntelligenceLayer.js";
 import { shouldAffirmResolution } from "./subjectConfidence.js";
 import { usageGuidanceLine } from "./subjectUsageIntent.js";
 import { DETERMINISTIC_ROUTES } from "./subjectRoutingHints.js";
-import { shouldBypassForgeSubjectClarification } from "../../utils/queryEntityUnderstanding.js";
-import { isGeneralKnowledgeRequest } from "../../utils/generalKnowledgeIntentGuards.js";
+import { shouldBypassForgeSubjectClarification } from "../../utils/parsing-normalization/queryEntityUnderstanding.js";
+import { isGeneralKnowledgeRequest } from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
 
 /**
  * Response Builder — texte utilisateur à partir de l'état interprété (pas de résolution ici).

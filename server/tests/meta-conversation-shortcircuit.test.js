@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL, RESPONSE_MODES } from "../src/agent/config/modeResponseContracts.js";
 import { resolveMetaConversationRoute } from "../src/agent/micro/replies/metaConversationReplyBuilder.js";
-import { classifyMetaConversationIntent } from "../src/agent/utils/metaConversationIntentGuards.js";
+import { classifyMetaConversationIntent } from "../src/agent/utils/intent-guards/metaConversationIntentGuards.js";
 import {
   beginSessionWorkTurn,
   commitSessionWorkTurn,
@@ -126,5 +126,22 @@ describe("meta — intentShortCircuit", () => {
     assert.match(hit.reply, /23:57:00/);
 
     clearSessionWorkMemoryForTests(sessionId);
+  });
+
+  it("qu'st ce qu'on fait après check-in → project_about, pas Sovereign", async () => {
+    const q =
+      "ok ok c'est cool alors qu'st ce qu'on fait ??";
+    const history = [
+      { role: "user", content: "yela comment ca va ??" },
+      { role: "assistant", content: "Tout va bien ici." },
+    ];
+    assert.equal(classifyMetaConversationIntent(q)?.kind, "project_about");
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.equal(hit?.path, "meta_conversation_deterministic");
+    assert.equal(hit?.metaSubKind, "project_about");
+    assert.equal(hit?.skipSovereign, true);
+    assert.equal(hit?.skipPlanner, true);
+    assert.equal(hit?.skipComposer, true);
+    assert.doesNotMatch(hit?.reply || "", /preuves ancr[eé]es/i);
   });
 });

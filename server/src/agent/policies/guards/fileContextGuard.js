@@ -15,6 +15,8 @@ import {
   classifyAttachmentTask,
   isCodeAttachmentTask,
   isDocumentAttachmentTask,
+  evaluateAttachmentReadMandate,
+  buildAttachmentMandateRepairReply,
 } from "../attachment/index.js";
 
 export const INLINE_CONTEXT_LABEL = "snippet fourni dans la requête";
@@ -372,9 +374,49 @@ export function evaluateFileContextGuard(input = {}) {
     enabled = true,
     attachmentTask = null,
     sourceBacked = null,
+    ingestedText = "",
+    htmlViews = null,
   } = input;
 
-  if (!enabled || !response?.trim()) {
+  if (!enabled) {
+    return {
+      ok: true,
+      action: "pass",
+      guardMode: GUARD_MODES.PASS,
+      violations: [],
+      inventory: null,
+      responseState: null,
+    };
+  }
+
+  const mandate = evaluateAttachmentReadMandate({
+    query,
+    attachments: attachments.length ? attachments : attachmentRefs,
+    ingestedText,
+    reply: response,
+    task: attachmentTask,
+    htmlViews,
+  });
+  if (mandate.applies && !mandate.ok) {
+    return {
+      ok: false,
+      action: "blocked",
+      guardMode: GUARD_MODES.REPLACE,
+      violations: mandate.defects.map((d) => ({ file: d, reason: mandate.rule })),
+      inventory: null,
+      responseState: null,
+      mandate,
+      blockedMessage: buildAttachmentMandateRepairReply({
+        query,
+        attachments: attachments.length ? attachments : attachmentRefs,
+        ingestedText,
+        defects: mandate.defects,
+        htmlViews,
+      }),
+    };
+  }
+
+  if (!response?.trim()) {
     return {
       ok: true,
       action: "pass",

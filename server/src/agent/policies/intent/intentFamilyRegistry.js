@@ -6,14 +6,14 @@
  * Ce registre documente et teste les familles lots 6–12 ; il ne remplace pas
  * les guards/composers existants, il les référence et les ordonne.
  */
-import { isBeginnerTopicOverviewRequest } from "../../utils/beginnerTopicOverviewIntentGuards.js";
-import { isCareerLearningPathRequest } from "../../utils/careerLearningPathIntentGuards.js";
-import { isTechnicalLearningPathRequest } from "../../utils/technicalLearningPathIntentGuards.js";
-import { isTechnicalOverviewRequest } from "../../utils/technicalOverviewIntentGuards.js";
-import { isDebugDiagnosticRequest } from "../../utils/debugDiagnosticIntentGuards.js";
-import { isCompareChooseRequest } from "../../utils/compareChooseIntentGuards.js";
-import { isAdminProcedureRequest } from "../../utils/adminProcedureIntentGuards.js";
-import { isPedagogicalOverviewRequest } from "../../utils/pedagogicalOverviewIntentGuards.js";
+import { isBeginnerTopicOverviewRequest } from "../../utils/intent-guards/beginnerTopicOverviewIntentGuards.js";
+import { isCareerLearningPathRequest } from "../../utils/intent-guards/careerLearningPathIntentGuards.js";
+import { isTechnicalLearningPathRequest } from "../../utils/intent-guards/technicalLearningPathIntentGuards.js";
+import { isTechnicalOverviewRequest } from "../../utils/intent-guards/technicalOverviewIntentGuards.js";
+import { isDebugDiagnosticRequest } from "../../utils/intent-guards/debugDiagnosticIntentGuards.js";
+import { isCompareChooseRequest } from "../../utils/intent-guards/compareChooseIntentGuards.js";
+import { isAdminProcedureRequest } from "../../utils/intent-guards/adminProcedureIntentGuards.js";
+import { isPedagogicalOverviewRequest } from "../../utils/intent-guards/pedagogicalOverviewIntentGuards.js";
 
 export const INTENT_FAMILY_REGISTRY_V1 = "intent_family_registry_v1";
 
@@ -88,7 +88,7 @@ export const INTENT_FAMILIES_V1 = [
     deferToFullPipeline: false,
     preferWebResearch: false,
     detect: isBeginnerTopicOverviewRequest,
-    guardModule: "utils/beginnerTopicOverviewIntentGuards.js",
+    guardModule: "utils/intent-guards/beginnerTopicOverviewIntentGuards.js",
     composerModule: "micro/replies/beginnerTopicOverviewComposer.js",
     canonicalQueries: [
       {
@@ -120,7 +120,7 @@ export const INTENT_FAMILIES_V1 = [
     deferToFullPipeline: false,
     preferWebResearch: false,
     detect: isCareerLearningPathRequest,
-    guardModule: "utils/careerLearningPathIntentGuards.js",
+    guardModule: "utils/intent-guards/careerLearningPathIntentGuards.js",
     composerModule: "micro/replies/careerLearningPathComposer.js",
     canonicalQueries: [
       {
@@ -158,7 +158,7 @@ export const INTENT_FAMILIES_V1 = [
     deferToFullPipeline: false,
     preferWebResearch: false,
     detect: isTechnicalLearningPathRequest,
-    guardModule: "utils/technicalLearningPathIntentGuards.js",
+    guardModule: "utils/intent-guards/technicalLearningPathIntentGuards.js",
     composerModule: "micro/replies/technicalLearningPathComposer.js",
     canonicalQueries: [
       {
@@ -267,7 +267,7 @@ export const INTENT_FAMILIES_V1 = [
     deferToFullPipeline: false,
     preferWebResearch: false,
     detect: isTechnicalOverviewRequest,
-    guardModule: "utils/technicalOverviewIntentGuards.js",
+    guardModule: "utils/intent-guards/technicalOverviewIntentGuards.js",
     composerModule: "micro/replies/technicalOverviewComposer.js",
     canonicalQueries: [
       {
@@ -298,7 +298,7 @@ export const INTENT_FAMILIES_V1 = [
     deferToFullPipeline: false,
     preferWebResearch: false,
     detect: isDebugDiagnosticRequest,
-    guardModule: "utils/debugDiagnosticIntentGuards.js",
+    guardModule: "utils/intent-guards/debugDiagnosticIntentGuards.js",
     composerModule: "micro/replies/debugDiagnosticComposer.js",
     canonicalQueries: [
       {
@@ -329,7 +329,7 @@ export const INTENT_FAMILIES_V1 = [
     deferToFullPipeline: true,
     preferWebResearch: false,
     detect: isCompareChooseRequest,
-    guardModule: "utils/compareChooseIntentGuards.js",
+    guardModule: "utils/intent-guards/compareChooseIntentGuards.js",
     composerModule: "micro/replies/compareChooseComposer.js",
     canonicalQueries: [
       {
@@ -360,7 +360,7 @@ export const INTENT_FAMILIES_V1 = [
     deferToFullPipeline: true,
     preferWebResearch: true,
     detect: isAdminProcedureRequest,
-    guardModule: "utils/adminProcedureIntentGuards.js",
+    guardModule: "utils/intent-guards/adminProcedureIntentGuards.js",
     composerModule: "micro/replies/adminProcedureComposer.js",
     canonicalQueries: [
       {
@@ -397,7 +397,7 @@ export const INTENT_FAMILIES_V1 = [
     deferToFullPipeline: false,
     preferWebResearch: false,
     detect: isPedagogicalOverviewRequest,
-    guardModule: "utils/pedagogicalOverviewIntentGuards.js",
+    guardModule: "utils/intent-guards/pedagogicalOverviewIntentGuards.js",
     composerModule: "micro/replies/pedagogicalOverviewComposer.js",
     canonicalQueries: [
       {

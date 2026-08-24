@@ -1,11 +1,12 @@
 import axios from "axios";
 import dotenv from "dotenv";
-import { looksLooping } from "../agent/utils/qualityGuards.js";
+import { looksLooping } from "../agent/utils/quality-safety/qualityGuards.js";
 
 dotenv.config();
 
 export const NEXXUS_MODELS = [
-  "ornith:9b",
+  "qwen3.5:2b",
+  "granite4.1:8b",
   "qwen3.5:9b",
   "qwen2.5-coder:7b",
   "deepseek-r1:7b",
@@ -17,7 +18,6 @@ export const NEXXUS_MODELS = [
   "mistral-nemo:latest",
   "nemotron3:33b",
   "granite4.1:30b",
-  "zephyr:latest",
   "qwen3-vl:4b",
   "qwen3-vl:8b",
 ];

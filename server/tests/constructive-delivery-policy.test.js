@@ -10,10 +10,15 @@ import {
   isDefensiveDeliveryRefusal,
   isNotionWorkshopDeliverable,
   NOTION_WORKSHOP_DEFAULT_MODULES,
+  extractNominalDocumentSubject,
+  isExplicitNominalDocumentDeliverable,
+  requiresStructuredContentComposerBudget,
   resolveConstructiveDeliveryModules,
 } from "../src/agent/policies/delivery/index.js";
 import { enforceModeContract } from "../src/agent/config/modeResponseContracts.js";
 import { isCodeGenerationRequest } from "../src/agent/policies/code/codeDeliveryPolicy.js";
+import { resolveIntentContract } from "../src/agent/config/intentContractRegistry.js";
+import { isPresentationOutlineRequest } from "../src/agent/utils/intent-guards/presentationOutlineIntentGuards.js";
 
 const NOTION_WORKSHOP_QUERY =
   "sais tu créer un atelier d'initiation à l'application NOTION sous forme de fichier html avec header sidebar sur les différents thèmes comme menus?";
@@ -55,6 +60,51 @@ describe("constructiveDeliveryPolicy", () => {
 
   it("ignore une salutation sans livrable", () => {
     assert.equal(isClearConstructiveDeliverable("Salut, ça va ?"), false);
+  });
+
+  it("détecte une fiche explicite pour budget composer long", () => {
+    assert.equal(
+      requiresStructuredContentComposerBudget(
+        "tu pourras me faire une fiche traitant de l'usage de copilot dans excel ?",
+      ),
+      true,
+    );
+  });
+
+  it("livrable nominal fiche Copilot Excel → DIRECT_EXPLANATION, pas PRESENTATION_OUTLINE", () => {
+    const query =
+      "j'ai trouver l'utilisation de excel se voit améliorée avec l'intégration de l'IA copilot dans ses fonctionnalités, tu pourras me faire une fiche traitant de l'usage de copilot dans excel ?";
+    assert.equal(isExplicitNominalDocumentDeliverable(query), true);
+    assert.equal(isPresentationOutlineRequest(query), false);
+    const subject = extractNominalDocumentSubject(query);
+    assert.match(String(subject || ""), /copilot/i);
+    assert.match(String(subject || ""), /excel/i);
+
+    for (const userIntent of ["expert_task", "unknown", "strategic"]) {
+      const { contract, matchedBy } = resolveIntentContract(query, {
+        user_intent: userIntent,
+      });
+      assert.equal(contract.id, "DIRECT_EXPLANATION", `intent=${userIntent}`);
+      assert.match(matchedBy, /isExplicitNominalDocumentDeliverable/);
+      assert.notEqual(contract.responseMode, "OPEN_PROPOSITION");
+    }
+  });
+
+  it("détecte une suite sticky fiche via contexte expert", () => {
+    assert.equal(
+      requiresStructuredContentComposerBudget(
+        "là tu me montres des choix alors que ceux-ci m'embrouillent, j'ai déjà une idée, travaillons déjà mon idée",
+        [{ content: "Fiche d'usage rapide — Copilot dans Excel" }],
+      ),
+      true,
+    );
+    assert.equal(
+      requiresStructuredContentComposerBudget(
+        "travaillons déjà mon idée ensuite nous verrons",
+        [{ content: "bonjour général sans sujet" }],
+      ),
+      false,
+    );
   });
 
   it("détecte un refus défensif sur livrable clair", () => {

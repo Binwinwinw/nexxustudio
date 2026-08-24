@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {
   assessOpenExplorationSlots,
   isOpenExplorationFrame,
+  isSocialLeisureRelance,
   resolveOpenExplorationFrame,
   SURFACE_FRAME_OPEN_EXPLORATION,
 } from "../src/agent/policies/conversation/openExplorationFramePolicy.js";
@@ -38,6 +39,11 @@ const FRAME_NO = [
   ["crée un agent python", "mandat"],
   ["c'est quoi la photosynthèse", "factuel"],
   ["ben on va papoter", "chat_invite"],
+  ["qu'est ce qu'on pourrait faire ce soir ???", "loisir ce soir"],
+  [
+    "okéy sympa, bon qu'est ce qu'on pourrait faire ce soir ???",
+    "relance après filler",
+  ],
 ];
 
 describe("OpenExplorationFrame P0 — slots / forme", () => {
@@ -111,6 +117,95 @@ describe("OpenExplorationFrame P0 — slots / forme", () => {
     assert.equal(
       classifySocialPattern("ben on va papoter")?.patternName,
       "social/chat_invite",
+    );
+  });
+
+  it("et si on papotait → chat_invite (conditionnel imparfait)", () => {
+    assert.equal(
+      classifySocialPattern("et si on papotait?")?.patternName,
+      "social/chat_invite",
+    );
+  });
+});
+
+describe("salut + papoter — situation chat_invite, pas menu d'accueil", () => {
+  it("short-circuit → chat_invite, reply écoute, pas menu cadrage projet", async () => {
+    const { runConversationShortCircuit } = await import(
+      "../src/agent/micro/classifiers/intentShortCircuit.js"
+    );
+    const q = "salut et si on papotait ?";
+    assert.equal(classifySocialPattern(q)?.patternName, "social/chat_invite");
+    const hit = await runConversationShortCircuit(q, { history: [] });
+    assert.equal(hit?.path, "social_deterministic");
+    assert.equal(hit?.socialPatternName, "social/chat_invite");
+    assert.match(hit?.reply || "", /écoute|sujet/i);
+    assert.doesNotMatch(
+      hit?.reply || "",
+      /cadrer un projet|structurer des livrables/i,
+    );
+  });
+});
+
+describe("relance sociale loisir — pas open_exploration", () => {
+  const CE_SOIR =
+    "okéy sympa, bon qu'est ce qu'on pourrait faire ce soir ???";
+
+  it("ce soir + filler → leisure_relance, pas menu exploration", async () => {
+    assert.equal(isSocialLeisureRelance(CE_SOIR), true);
+    assert.equal(isOpenExplorationFrame(CE_SOIR), false);
+    assert.equal(
+      classifySocialPattern(CE_SOIR)?.patternName,
+      "social/leisure_relance",
+    );
+    assert.equal(
+      resolveDeliverableContract(CE_SOIR).promisedValue,
+      PROMISED_VALUES.SOCIAL_CONTINUITY,
+    );
+
+    const { runConversationShortCircuit } = await import(
+      "../src/agent/micro/classifiers/intentShortCircuit.js"
+    );
+    const hit = await runConversationShortCircuit(CE_SOIR, { history: [] });
+    assert.equal(hit?.path, "social_deterministic");
+    assert.equal(hit?.socialPatternName, "social/leisure_relance");
+    assert.match(hit?.reply || "", /discuter|jouer|truc léger/i);
+    assert.doesNotMatch(
+      hit?.reply || "",
+      /1\.|RAG|server\/src|Obsidian|Impeccable|track audio/i,
+    );
+  });
+
+  it("après check-in, « qu'est-ce qu'on pourrait faire » reste social", () => {
+    const q = "qu'est-ce qu'on pourrait faire??";
+    const history = [
+      { role: "user", content: "yop yop comment ça ça va, ça roule ???" },
+      { role: "assistant", content: "Tout va bien ici." },
+    ];
+    assert.equal(isOpenExplorationFrame(q, history), false);
+    assert.equal(isSocialLeisureRelance(q, history), true);
+    assert.equal(
+      classifySocialPattern(q, history)?.patternName,
+      "social/leisure_relance",
+    );
+  });
+
+  it("sans historique, « qu'est-ce qu'on pourrait faire?? » reste exploration", () => {
+    const q = "qu'est-ce qu'on pourrait faire??";
+    assert.equal(isOpenExplorationFrame(q), true);
+    assert.equal(isSocialLeisureRelance(q), false);
+  });
+
+  it("« qu'st ce qu'on fait » après filler ≠ loisir / exploration", () => {
+    const q = "ok ok c'est cool alors qu'st ce qu'on fait ??";
+    const history = [
+      { role: "user", content: "yela comment ca va ??" },
+      { role: "assistant", content: "Tout va bien ici." },
+    ];
+    assert.equal(isSocialLeisureRelance(q, history), false);
+    assert.equal(isOpenExplorationFrame(q, history), false);
+    assert.notEqual(
+      classifySocialPattern(q, history)?.patternName,
+      "social/leisure_relance",
     );
   });
 });

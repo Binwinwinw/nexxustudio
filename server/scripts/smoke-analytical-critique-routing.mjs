@@ -3,8 +3,8 @@
  * Vérifie le routage analytical_critique vs document analysis (sans LLM).
  * Usage: node server/scripts/smoke-analytical-critique-routing.mjs
  */
-import { isAnalyticalCritiqueIntent } from "../src/agent/utils/analyticalCritiqueIntentGuards.js";
-import { isDocumentAnalysisIntent } from "../src/agent/utils/conversationGuards.js";
+import { isAnalyticalCritiqueIntent } from "../src/agent/utils/intent-guards/analyticalCritiqueIntentGuards.js";
+import { isDocumentAnalysisIntent } from "../src/agent/utils/conversation/conversationGuards.js";
 
 const PASTE = `
 Verdict technique — synthèse terrain La Citadelle.

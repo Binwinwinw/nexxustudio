@@ -4,7 +4,7 @@
 import {
   isPedagogySoftOverviewRequest,
   parsePedagogySoftOverviewTask,
-} from "../../utils/pedagogySoftOverviewIntentGuards.js";
+} from "../../utils/intent-guards/pedagogySoftOverviewIntentGuards.js";
 import {
   buildPedagogySoftOverviewSystemAddon,
   resolvePedagogySoftCanonicalReply,

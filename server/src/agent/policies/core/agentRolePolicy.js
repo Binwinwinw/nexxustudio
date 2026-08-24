@@ -2,14 +2,20 @@
  * NEXXUS AGENT ROLE POLICY
  * Centralized mapping of specialized models to agentic roles.
  *
- * RÈGLE FONDAMENTALE DE SÉPARATION :
- * - MODE CHAT  : ornith:9b (chat social, synthèse légère, raisonnement runtime).
- * - MODE FORGE : reasoner = Tier 1 chat ; BUILDER selon l'expert.
+ * T1/T2 : uniquement via resolveWarmupExperimentPlan() (getters models.js).
+ * T3 : IDs figés — hors chantier experiment.
+ *
+ * T1 = warmup, social, tri léger, synthèse courte.
+ * T2 = reasoner différé, jamais résident au boot.
+ * Timeout ≠ escalade qualité (voir getFallbackModel vs getEscalationModel).
  */
 
-import { MODEL_CONFIG } from "../../../config/models.js";
+import {
+  getActiveTier1ChatModel,
+  getReasonerModel,
+  isTier2Enabled,
+} from "../../../config/models.js";
 
-const REASONER_MODEL = MODEL_CONFIG.TIER_1.model;
 export const MODEL_NATURE = Object.freeze({
   THINKER: "thinking", // Modèles avec raisonnement interne (<think>)
   ACTOR: "acting", // Modèles directs, orientés exécution/code
@@ -36,35 +42,66 @@ export function getModelNature(modelName) {
 }
 
 export const AGENT_ROLES = Object.freeze({
-  // TIER 1 — TOUR DE CONTRÔLE (Persona & Rapid Chat)
-  CHAT: "ornith:9b",
-  SOCIAL: "ornith:9b",
+  get CHAT() {
+    return getActiveTier1ChatModel();
+  },
+  get SOCIAL() {
+    return getActiveTier1ChatModel();
+  },
   VOX: "nexxus-vox:latest",
 
-  // REASONER — aligné Tier 1 (plus de couloir Tier 2 R1)
-  ORCHESTRATOR: REASONER_MODEL,
-  PLANNER: REASONER_MODEL,
-  CHAT_REASONER: REASONER_MODEL,
+  get ORCHESTRATOR() {
+    return getReasonerModel();
+  },
+  get PLANNER() {
+    return getReasonerModel();
+  },
+  get CHAT_REASONER() {
+    return getReasonerModel();
+  },
   TRANSLATOR: "qwen3.5:9b",
 
-  // TIER 3 — LA FORGE (Expert Coder)
   BUILDER: "qwen2.5-coder:7b",
   ELITE_CODER: "qwen2.5-coder:7b",
-  FORGE_REASONER: REASONER_MODEL,
-  MASTER_ARCHITECT: REASONER_MODEL,
-  SECURITY_AUDITOR: REASONER_MODEL,
+  get FORGE_REASONER() {
+    return getReasonerModel();
+  },
+  get MASTER_ARCHITECT() {
+    return getReasonerModel();
+  },
+  get SECURITY_AUDITOR() {
+    return getReasonerModel();
+  },
 
-  // SPÉCIALISTES
   VISION: "gemma4:12b",
   OCR: "glm-ocr:q8_0",
-  ZEPHYR: "zephyr:latest",
+  get ZEPHYR() {
+    return getActiveTier1ChatModel();
+  },
 
-  // WEB RESEARCH (V1 — duck-duck-scrape, sans LLM dédié)
-  WEB_SEARCHER: "ornith:9b", // Synthèse légère des sources web
+  get WEB_SEARCHER() {
+    return getActiveTier1ChatModel();
+  },
 
-  // SEMANTIC ROUTER (JSON)
-  SEMANTIC_ROUTER: "zephyr:latest",
+  get SEMANTIC_ROUTER() {
+    return getActiveTier1ChatModel();
+  },
 });
+
+/** Alias historique : ZEPHYR n'est plus un modèle servi. */
+const OBSOLETE_LIGHT_JSON_MODEL_RE = /^zephyr(?::|$)/i;
+
+/**
+ * JSON léger T1 (préprocesseur, tri, mini-délibération).
+ * Ignore un override env/call-site encore collé sur zephyr.
+ */
+export function resolveLightJsonModel(envOverride) {
+  const override = String(envOverride || "").trim();
+  if (override && !OBSOLETE_LIGHT_JSON_MODEL_RE.test(override)) {
+    return override;
+  }
+  return getActiveTier1ChatModel();
+}
 
 const HEAVY_MODELS = [
   "gemma4:26b",
@@ -96,14 +133,12 @@ export function getModelForRole(roleOrKey, phase = "DISCOVERY") {
     "FORGE_DONE",
   ].includes(phase);
 
-  // 1. PM / Mentor / Assistant -> Raisonnement agile en DISCOVERY (9b), Analytique ensuite (8b)
   if (r.includes("pm") || r.includes("mentor") || r.includes("assistant")) {
     return phase === "DISCOVERY"
       ? AGENT_ROLES.SOCIAL
       : AGENT_ROLES.CHAT_REASONER;
   }
 
-  // 2. Gestion du raisonnement par zone technique profonde
   if (r.includes("security") || r.includes("souveraineté")) {
     return AGENT_ROLES.SECURITY_AUDITOR;
   }
@@ -116,7 +151,6 @@ export function getModelForRole(roleOrKey, phase = "DISCOVERY") {
     return isForgeMode ? AGENT_ROLES.FORGE_REASONER : AGENT_ROLES.CHAT_REASONER;
   }
 
-  // Web Search Expert
   if (
     r.includes("web_search") ||
     r.includes("web search") ||
@@ -125,7 +159,6 @@ export function getModelForRole(roleOrKey, phase = "DISCOVERY") {
     return AGENT_ROLES.WEB_SEARCHER;
   }
 
-  // 3. Experts techniques -> Gamme Builder / Elite
   if (r.includes("developer")) {
     return isForgeMode ? AGENT_ROLES.ELITE_CODER : AGENT_ROLES.BUILDER;
   }
@@ -134,20 +167,41 @@ export function getModelForRole(roleOrKey, phase = "DISCOVERY") {
     return AGENT_ROLES.BUILDER;
   }
 
-  // 4. Par défaut par phase
   if (isForgeMode) return AGENT_ROLES.BUILDER;
 
   return AGENT_ROLES.SOCIAL;
 }
 
 /**
- * Returns a lighter fallback model if the primary one fails.
+ * Fallback échec (timeout / indispo) — jamais une escalade qualité.
+ * T2 fail → T1. T1 fail → null (G4, pas de swap silencieux).
  */
 export function getFallbackModel(primaryModel) {
-  const fallbacks = {
-    [AGENT_ROLES.FORGE_REASONER]: AGENT_ROLES.CHAT_REASONER,
-    [AGENT_ROLES.CHAT_REASONER]: AGENT_ROLES.SOCIAL,
-    [AGENT_ROLES.ORCHESTRATOR]: AGENT_ROLES.CHAT,
-  };
-  return fallbacks[primaryModel] || null;
+  const t1 = getActiveTier1ChatModel();
+  const t2 = getReasonerModel();
+  if (!primaryModel || t2 === t1) return null;
+  if (primaryModel === t2) return t1;
+  return null;
+}
+
+/**
+ * Escalade capacité T1 → T2. Distinct du fallback.
+ * Timeout n'est PAS une escalade. Ne pas appeler depuis le catch d'échec.
+ */
+export function getEscalationModel(currentModel) {
+  if (!isTier2Enabled()) return null;
+  const t1 = getActiveTier1ChatModel();
+  const t2 = getReasonerModel();
+  if (!t2 || t2 === t1) return null;
+  if (currentModel === t1) return t2;
+  return null;
+}
+
+/**
+ * Budget discret 3–10 = reasoner T2 différé.
+ * Les valeurs >> 10 (ex. budgets.execution en ms) ne sont PAS une escalade.
+ */
+export function shouldUseDeferredReasoner(reasoningBudget) {
+  const budget = Number(reasoningBudget);
+  return Number.isFinite(budget) && budget >= 3 && budget <= 10;
 }

@@ -6,8 +6,8 @@ import {
   CONVERSATION_TURN_FAMILIES,
 } from "../src/agent/micro/classifiers/conversationTurnClassifier.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { isMetaAssistantBehaviorRequest } from "../src/agent/utils/metaAssistantBehaviorGuards.js";
-import { isDebugDiagnosticRequest } from "../src/agent/utils/debugDiagnosticIntentGuards.js";
+import { isMetaAssistantBehaviorRequest } from "../src/agent/utils/intent-guards/metaAssistantBehaviorGuards.js";
+import { isDebugDiagnosticRequest } from "../src/agent/utils/intent-guards/debugDiagnosticIntentGuards.js";
 
 const CRITIQUE_HISTORY = [
   { role: "user", content: "salut" },
@@ -49,21 +49,21 @@ describe("G47.x / G44.x / G46.x — extensions routage", () => {
     const c = classifyConversationTurnFamily(q, { history: CRITIQUE_HISTORY });
     assert.equal(c.family, CONVERSATION_TURN_FAMILIES.META_CRITIQUE_ASSISTANT);
     const hit = await runConversationShortCircuit(q, { history: CRITIQUE_HISTORY });
-    assert.equal(hit?.path, "meta_assistant_behavior_deterministic");
+    assert.equal(hit?.path, "meta_conversation_feedback");
   });
 
   it("G44.x mauvais rail → meta_assistant_behavior", async () => {
     const q = "tu as l'air de prendre un mauvais rail là, tu en es conscient ?";
     assert.equal(isMetaAssistantBehaviorRequest(q), true);
     const hit = await runConversationShortCircuit(q, { history: CRITIQUE_HISTORY });
-    assert.equal(hit?.path, "meta_assistant_behavior_deterministic");
+    assert.equal(hit?.path, "meta_conversation_feedback");
   });
 
   it("G44.x trop COMPOSER → meta_assistant_behavior", async () => {
     const q = "je trouve que tu pars trop vite sur COMPOSER pour des petites questions";
     assert.equal(isMetaAssistantBehaviorRequest(q), true);
     const hit = await runConversationShortCircuit(q, { history: CRITIQUE_HISTORY });
-    assert.equal(hit?.path, "meta_assistant_behavior_deterministic");
+    assert.equal(hit?.path, "meta_conversation_feedback");
   });
 
   it("G47.x vue honnête bloque debug_diagnostic guard", () => {

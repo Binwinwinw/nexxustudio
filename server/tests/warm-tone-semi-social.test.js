@@ -5,7 +5,7 @@ import {
   matchesWarmToneSemiSocialShell,
   isCoveredByDeterministicSocialRail,
   isWarmToneBusinessOrFactualExcluded,
-} from '../src/agent/utils/warmToneSemiSocialGuards.js';
+} from '../src/agent/utils/conversation/warmToneSemiSocialGuards.js';
 import {
   buildZephyrTriggerSignals,
   resolveExecutionBriefTrigger,
