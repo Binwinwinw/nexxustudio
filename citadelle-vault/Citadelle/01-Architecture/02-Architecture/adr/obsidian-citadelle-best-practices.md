@@ -1,6 +1,8 @@
 # Obsidian Citadelle : Best Practices v1.0 (The Nexxus Touch)
 
-> Ce document définit la gouvernance du Knowledge Hub de la Citadelle. Il combine les protocoles ADR-004/005 avec un workflow Obsidian optimisé.
+> **Obsolète pour les chemins.** `00-ADRs/` et `01-Modules/` ne sont plus le canon (racine absente). ADR actifs : `01-Architecture/02-Architecture/adr/`. Archive figée : `99-Zone-Exclue/07-Archive/legacy-v4/00-ADRs/`. Carte des chemins : [[00-Gouvernance/00-Foundation/VAULT-GOVERNANCE|VAULT-GOVERNANCE]]. Le corps ci-dessous est un snapshot historique ; ne pas s’en servir pour créer des dossiers.
+
+> Ce document définissait la gouvernance du Knowledge Hub. Il combine les protocoles ADR-004/005 avec un workflow Obsidian (état à la rédaction).
 
 ## 🏗️ 1. Structure du Vault (SOTA)
 L'organisation repose sur la séparation stricte entre le savoir immuable et l'espace de création.

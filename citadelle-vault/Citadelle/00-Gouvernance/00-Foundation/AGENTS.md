@@ -18,27 +18,28 @@ Contrairement aux architectures multi-agents denses et parallèles (qui, selon l
 
 ## 📂 2. Structure & Taxonomie Souveraine v4.5
 
-Le coffre de connaissances Obsidian (**citadelle-vault/Citadelle**) respecte strictement l'arborescence fonctionnelle v4.5 suivante. Ne créez jamais de dossiers en dehors de cette taxonomie :
+Le coffre Obsidian (**citadelle-vault/Citadelle**) utilise des **piliers racine** (`00-Gouvernance/`, `01-Architecture/`, `02-Operations/`, `03-Connaissances/`, `99-Zone-Exclue/`). Les noms v4.5 ci-dessous sont des **segments**, pas des dossiers à la racine. Ne pas créer `02-Architecture/`, `00-ADRs/` ni `01-Modules/` à la racine.
 
-- **`00-Foundation/`** : Fondations épistémiques et socles documentaires généraux.
-- **`01-Strategy/`** : Objectifs à long terme, gouvernance et scorecards de performance.
-- **`02-Architecture/`** :
-  - `adr/` : Décisions d'architecture (Architecture Decision Records). Source unique de vérité pour les choix techniques.
-  - `modules/` : Spécifications et documentations de composants logiciels de l'écosystème.
-  - `diagrams/` : Représentations graphiques et fichiers JSON de télémétrie du Knowledge Graph.
-- **`03-Forge/`** : Espace de prototypage rapide et de maturation de code.
-- **`04-Operations/`** :
-  - `audits/` : Rapports d'intégrité, de sécurité et diagnostics système.
-  - `reports/` : Comptes-rendus opérationnels.
-  - `procedures/` : Guides pas-à-pas et playbooks d'exécution techniques.
-- **`05-Knowledge/`** :
-  - `heritage/` : Base de connaissances historiques et fiches d'actifs consolidées.
-- **`06-Experiments/`** : Sandbox pour les tests de concepts, de scripts et d'hypothèses.
-- **`07-Archive/`** :
-  - `legacy-v4/` : Zone de préservation historique des structures précédentes du Vault.
-- **`99-Inbox/`** : Point d'entrée temporaire pour les notes et réflexions non catégorisées.
-- **`_assets/`** : Dossier centralisé unique pour toutes les pièces jointes, images et ressources statiques.
-- **`_templates/`** : Modèles Obsidian standardisés pour les notes, ADRs ou revues de code.
+- **ADR actifs** : `01-Architecture/02-Architecture/adr/` — source vault des décisions d'architecture (pas le graphe Graphify, pas `docs/`).
+- **`00-Foundation/`** (disque : `00-Gouvernance/00-Foundation/`) : fondations épistémiques et gouvernance vault.
+- **`01-Strategy/`** (disque : `02-Operations/01-Strategy/`) : objectifs à long terme, gouvernance et scorecards.
+- **`02-Architecture/`** (disque : `01-Architecture/02-Architecture/`) :
+  - `adr/` : ADR actifs.
+  - `modules/` : spécifications de composants.
+  - `diagrams/` : représentations graphiques.
+- **`03-Forge/`** (disque : `01-Architecture/03-Forge/`) : prototypage et maturation de code.
+- **`04-Operations/`** (disque : `02-Operations/04-Operations/`) :
+  - `audits/` : rapports d'intégrité et diagnostics.
+  - `reports/` : comptes-rendus opérationnels.
+  - `procedures/` : playbooks.
+- **`05-Knowledge/`** (disque : `03-Connaissances/05-Knowledge/`) :
+  - `heritage/` : patrimoine consolidé.
+- **`06-Experiments/`** (disque : `99-Zone-Exclue/06-Experiments/`) : sandbox.
+- **`07-Archive/`** (disque : `99-Zone-Exclue/07-Archive/legacy-v4/`) : miroir v4 figé — ne pas éditer.
+- WikiLinks `[[02-Architecture/adr/Note]]` : suffixe unique, pas un chemin racine.
+- **`_assets/`**, **`_templates/`** : pièces jointes et modèles — ne pas déplacer dans ce lot.
+
+Carte des chemins : [[00-Foundation/VAULT-GOVERNANCE|VAULT-GOVERNANCE]].
 
 ---
 
