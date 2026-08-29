@@ -8,6 +8,28 @@ Dernière mise à jour : 2026-08-29 — `D5_TEXT_CREATION_TESTS` **clos**. File 
 
 ---
 
+## Clôture file GO1→GO6 (2026-08-29)
+
+Statut : **terminée**. Aucun lot technique ouvert.
+
+Commits (branche `wip/checkpoint-20260824-0117`, hors WIP working tree) :
+- `86e8d8f` feat(agent): PDF finalization + wellbeing/info composite — GO1 + GO2
+- `ea49d42` feat(agent): text_creation format, allowRefusal, subject continuity — D3 + D1 + D2 + D5 + PLAN
+
+Preuves avant commit :
+- Commit 1 : `document-finalization-guard` + `social-checkin-priority` → 14 pass / 0 fail
+- Commit 2 : `text-creation-direct` + `information-seeking-intent-guards` + `social-chat-continuity` → 65 pass / 0 fail
+- Batterie transversale revue : 79 pass / 0 fail
+
+Risques résiduels (acceptés, pas des lots) :
+- pas d'assert d'intégration `onContent:null` dans `agentPipeline`
+- pas de smoke LLM live
+
+Gels inchangés : C2 / `npm ci`, consume JUST, export PDF fichier, SQL déjà livré, D4 skip.
+Ne pas rouvrir GO1–GO6 / D0.
+
+---
+
 ## Clos / lecture seule
 
 ### D5_TEXT_CREATION_TESTS
@@ -147,7 +169,7 @@ Dernière mise à jour : 2026-08-29 — `D5_TEXT_CREATION_TESTS` **clos**. File 
 
 ---
 
-## File prioritaire (attente feu vert)
+## File prioritaire (close)
 
 | # | GO | Statut |
 |---|---|---|
@@ -158,12 +180,7 @@ Dernière mise à jour : 2026-08-29 — `D5_TEXT_CREATION_TESTS` **clos**. File 
 | 5 | `D2_TEXT_CREATION_SUBJECT_CONTINUITY` | **clos** |
 | 6 | `D5_TEXT_CREATION_TESTS` | **clos** |
 
-D4 skip (déjà couvert D0) sauf preuve web restante.
-| 4 | `D1_TEXT_CREATION_NO_CLARIFY` | non ouvert |
-| 5 | `D2_TEXT_CREATION_SUBJECT_CONTINUITY` | non ouvert |
-| 6 | `D5_TEXT_CREATION_TESTS` | non ouvert |
-
-D4 skip (déjà couvert D0) sauf preuve web restante.
+D4 skip (déjà couvert D0). Ne pas rouvrir.
 
 ---
 
@@ -224,4 +241,4 @@ Runtime ~23:00 (historique) : tour 1 social ; tour 2 exploratory « sujet court 
 **File prioritaire 1→6 terminée.** Aucun lot technique ouvert.
 
 Pas d’écriture dans `docs/Journal_de_bord.md` ni `docs/Journal_des_ameliorations.md` sans GO « entrée de version ».
-Pas de commit tant que non demandé.
+2 commits posés ; PR texte prête ; pas de push tant que non demandé.
