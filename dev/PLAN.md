@@ -15,6 +15,9 @@ Statut : **terminée**. Aucun lot technique ouvert.
 Commits (branche `wip/checkpoint-20260824-0117`, hors WIP working tree) :
 - `86e8d8f` feat(agent): PDF finalization + wellbeing/info composite — GO1 + GO2
 - `ea49d42` feat(agent): text_creation format, allowRefusal, subject continuity — D3 + D1 + D2 + D5 + PLAN
+- `038cbf3` docs(plan): clôture file GO1→GO6
+
+Audit snapshot (pas un GO) : [`dev/AUDIT-2026-08-29.md`](AUDIT-2026-08-29.md).
 
 Preuves avant commit :
 - Commit 1 : `document-finalization-guard` + `social-checkin-priority` → 14 pass / 0 fail
@@ -184,9 +187,9 @@ D4 skip (déjà couvert D0). Ne pas rouvrir.
 
 ---
 
-## Non ouverts (D1–D5)
+## D1–D5 (clos / skip)
 
-Pas des lots en cours. Préparés avant D0. D0 couvre déjà une partie. Peuvent attendre. Voir file prioritaire ci-dessus pour l’ordre d’ouverture.
+Pas des lots en cours. Détail dans les fiches close ci-dessus. Ne pas rouvrir.
 
 | Nom | Statut | Périmètre court | Prochain pas |
 |---|---|---|---|
@@ -236,9 +239,10 @@ Runtime ~23:00 (historique) : tour 1 social ; tour 2 exploratory « sujet court 
 
 ---
 
-## Prochain pas
+## État
 
 **File prioritaire 1→6 terminée.** Aucun lot technique ouvert.
 
 Pas d’écriture dans `docs/Journal_de_bord.md` ni `docs/Journal_des_ameliorations.md` sans GO « entrée de version ».
-2 commits posés ; PR texte prête ; pas de push tant que non demandé.
+3 commits posés ; PR texte prête ; pas de push tant que non demandé.
+Candidats d’audit A–E : [`dev/AUDIT-2026-08-29.md`](AUDIT-2026-08-29.md) seulement — **pas ouverts**, hors backlog registre.
