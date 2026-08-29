@@ -64,3 +64,61 @@ test('rappel: « de quoi on discute avant » reste un vrai recall', () => {
     true,
   );
 });
+
+test('rappel: page HTML collée (discuter CTA + avant tout) ≠ conversation_recall', () => {
+  const query = [
+    "voici mon portfolio une page html qu'il faut améliorer :",
+    "<!DOCTYPE html><html lang=\"fr\"><body>",
+    "<a href=\"#contact\">Discuter d'un projet</a>",
+    "<p>".repeat(40) + "padding</p>".repeat(40),
+    "<h2>Une approche produit avant tout</h2>",
+    "</body></html>",
+  ].join("\n");
+  assert.equal(isConversationMemoryRecallRequest(query), false);
+});
+
+test('rappel: fence html à améliorer ≠ conversation_recall', () => {
+  const query =
+    "améliore ce bloc :\n```html\n<a>Discuter d'un projet</a>\n<p>avant tout</p>\n```";
+  assert.equal(isConversationMemoryRecallRequest(query), false);
+});
+
+test('rappel: fence js / css collé ≠ conversation_recall', () => {
+  assert.equal(
+    isConversationMemoryRecallRequest(
+      "revue ce script :\n```js\nconsole.log('Discuter');\n```\n" +
+        "padding ".repeat(80) +
+        "\n// avant tout",
+    ),
+    false,
+  );
+  assert.equal(
+    isConversationMemoryRecallRequest(
+      "améliore :\n```css\n.cta { content: 'Discuter'; }\n```\n" +
+        "x ".repeat(80) +
+        "\n/* avant tout */",
+    ),
+    false,
+  );
+});
+
+test('rappel: marketing long discuter / avant éloignés ≠ conversation_recall', () => {
+  const query =
+    "améliore ce texte : Discuter d'un projet. " +
+    "lorem ".repeat(200) +
+    "Une approche produit avant tout.";
+  assert.equal(isConversationMemoryRecallRequest(query), false);
+});
+
+test('rappel: portefeuille HTML inline → pas conversation_recall', () => {
+  const query = [
+    "voici mon portfolio une page html qu'il faut améliorer :",
+    "<!DOCTYPE html>",
+    '<html lang="fr"><head></head><body>',
+    '<a class="btn">Discuter d’un projet</a>',
+    "<style>.hero{}</style>",
+    "<section id=\"about\"><h2>Une approche produit avant tout</h2></section>",
+    "</body></html>",
+  ].join("\n");
+  assert.equal(isConversationMemoryRecallRequest(query), false);
+});

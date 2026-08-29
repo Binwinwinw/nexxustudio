@@ -131,26 +131,68 @@ export function buildRecentMemoryBuffer(history = [], limit = 2) {
   }).join("\n");
 }
 
+/**
+ * Document / code collé : le payload n'est pas un rappel de fil.
+ * CTA « Discuter » + « avant tout » dans une page ne doivent pas matcher.
+ */
+function isPastedMarkupOrCodeDocument(raw = "") {
+  const s = String(raw || "");
+  if (/<!DOCTYPE\s+html\b/i.test(s)) return true;
+  if (/<html[\s>]/i.test(s) && /<\/html>/i.test(s)) return true;
+  if (
+    /<(?:head|body|style|section|header|nav|article|footer|main)[\s>]/i.test(s) &&
+    /<\/(?:head|body|style|section|header|nav|article|footer|main)>/i.test(s)
+  ) {
+    return true;
+  }
+  if (/```(?:html|css|js|javascript|tsx?|jsx|php|vue|json)\b/i.test(s)) return true;
+  return false;
+}
+
+/** ponytail: recall = consigne courte. Fenêtres séparées : ne jamais joindre prefix+suffix. */
+const RECALL_WINDOW = 400;
+
+function recallScanWindows(normalized = "", maxChunk = RECALL_WINDOW) {
+  if (normalized.length <= maxChunk * 2) return [normalized];
+  return [normalized.slice(0, maxChunk), normalized.slice(-maxChunk)];
+}
+
+function anyRecallWindow(windows, testFn) {
+  return windows.some((w) => testFn(w));
+}
+
+/** Distance max entre tokens de rappel dans une même fenêtre. */
+const RECALL_SPAN = ".{0,120}";
+
 /** Demande de rappel / mémoire conversationnelle (hier, fil précédent, etc.). */
 export function isConversationMemoryRecallRequest(query = "") {
   const q = normalizeText(query).toLowerCase();
   if (!q) return false;
+  if (isPastedMarkupOrCodeDocument(query)) return false;
 
-  if (/\bde quoi tu parles\b/i.test(q) && q.length <= 48) return false;
-  if (/\bde quoi (?:c'est|est ce que tu parles)\b/i.test(q)) return false;
+  const windows = recallScanWindows(q);
+
+  if (q.length <= 48 && /\bde quoi tu parles\b/i.test(q)) return false;
+  if (anyRecallWindow(windows, (w) => /\bde quoi (?:c'est|est ce que tu parles)\b/i.test(w))) {
+    return false;
+  }
 
   // Introduction de sujet / entité — pas un rappel du fil
-  if (/\bsi\s+je\s+te\s+dis\b/i.test(q)) return false;
+  if (anyRecallWindow(windows, (w) => /\bsi\s+je\s+te\s+dis\b/i.test(w))) {
+    return false;
+  }
   if (
-    /\bde\s+quoi\s+(?:je|j[''])\s+(?:veux|voudrais|aimerais)\s+parler\b/i.test(
-      q,
+    anyRecallWindow(windows, (w) =>
+      /\bde\s+quoi\s+(?:je|j[''])\s+(?:veux|voudrais|aimerais)\s+parler\b/i.test(w),
     )
   ) {
     return false;
   }
   if (
-    /\best[- ]ce\s+que\s+tu\s+(?:trouves?|sais|comprends?)\s+(?:de\s+quoi|sur\s+quoi)\b/i.test(
-      q,
+    anyRecallWindow(windows, (w) =>
+      /\best[- ]ce\s+que\s+tu\s+(?:trouves?|sais|comprends?)\s+(?:de\s+quoi|sur\s+quoi)\b/i.test(
+        w,
+      ),
     )
   ) {
     return false;
@@ -158,17 +200,23 @@ export function isConversationMemoryRecallRequest(query = "") {
 
   // Invitation à papoter (« on discute un peu avant si tu veux ») ≠ rappel du fil.
   // Ne pas exclure les vrais rappels (« de quoi on discute avant », « rappelle… »).
-  const isSocialChatInviteSurface =
-    /\b(?:on\s+(?:peut\s+)?(?:discut(?:e|er)|papoter|bavarder)|(?:discut(?:e|er)|papoter|bavarder)\s+un peu)\b/i.test(
-      q,
-    ) &&
-    /\b(?:un peu|avant(?:\s+(?:de|si|di))?|si tu veux|tu veux bien)\b/i.test(q);
-  const isRecallShell =
-    /\b(?:de quoi|ce qu.?on|qu.?est[- ]ce qu.?on|rappel|souviens|souvenir|retrouver|r[eé]capitul|r[eé]sum)\b/i.test(
-      q,
-    ) ||
-    /\b(?:discut(?:é|ait|ions)|parl(?:é|ait|ions)|on a|nous avons)\b/i.test(q) ||
-    /\b(?:hier|pr[eé]c[eé]demment|precedemment|dernier|fil|session)\b/i.test(q);
+  const isSocialChatInviteSurface = anyRecallWindow(
+    windows,
+    (w) =>
+      /\b(?:on\s+(?:peut\s+)?(?:discut(?:e|er)|papoter|bavarder)|(?:discut(?:e|er)|papoter|bavarder)\s+un peu)\b/i.test(
+        w,
+      ) &&
+      /\b(?:un peu|avant(?:\s+(?:de|si|di))?|si tu veux|tu veux bien)\b/i.test(w),
+  );
+  const isRecallShell = anyRecallWindow(
+    windows,
+    (w) =>
+      /\b(?:de quoi|ce qu.?on|qu.?est[- ]ce qu.?on|rappel|souviens|souvenir|retrouver|r[eé]capitul|r[eé]sum)\b/i.test(
+        w,
+      ) ||
+      /\b(?:discut(?:é|ait|ions)|parl(?:é|ait|ions)|on a|nous avons)\b/i.test(w) ||
+      /\b(?:hier|pr[eé]c[eé]demment|precedemment|dernier|fil|session)\b/i.test(w),
+  );
   if (isSocialChatInviteSurface && !isRecallShell) {
     return false;
   }
@@ -177,27 +225,59 @@ export function isConversationMemoryRecallRequest(query = "") {
     /\b(?:parl(?:é|ait|aient|ions)|discut(?:é|ait|ions)|échang(?:é|e|eaient)?|dit)\b/;
 
   const recallPatterns = [
-    /\b(?:rappel(?:e|-moi)?|r[eé]capitule|r[eé]sum(?:e|-moi)?|refais\s+le\s+point)\b.*\b(?:fil|conversation|discussion|message|[eé]change|tour|session|ce\s+qu.?on|de\s+quoi)\b/,
-    /\b(?:rappel|souviens|souvenir)\b.*\b(fil|conversation|discussion|message|échange|dit|parlé|avant|hier|pr[eé]c[eé]demment)\b/,
-    /\b(retrouv|retrouver)\b.*\b(de quoi|ce qu.?on|conversation|discussion|fil|message|échange|dit|parlé|avant|hier|pr[eé]c[eé]demment)\b/,
+    new RegExp(
+      `\\b(?:rappel(?:e|-moi)?|r[eé]capitule|r[eé]sum(?:e|-moi)?|refais\\s+le\\s+point)\\b${RECALL_SPAN}\\b(?:fil|conversation|discussion|message|[eé]change|tour|session|ce\\s+qu.?on|de\\s+quoi)\\b`,
+      "i",
+    ),
+    new RegExp(
+      `\\b(?:rappel|souviens|souvenir)\\b${RECALL_SPAN}\\b(fil|conversation|discussion|message|échange|dit|parlé|avant|hier|pr[eé]c[eé]demment)\\b`,
+      "i",
+    ),
+    new RegExp(
+      `\\b(retrouv|retrouver)\\b${RECALL_SPAN}\\b(de quoi|ce qu.?on|conversation|discussion|fil|message|échange|dit|parlé|avant|hier|pr[eé]c[eé]demment)\\b`,
+      "i",
+    ),
     /\b(derni[eè]r|pr[eé]c[eé]dent)\s+(message|tour|échange)\b/,
     // « discute/parle » (présent) inclus — `\bdiscut\b` rate « discute »
-    /\b(de quoi|ce qu.?on|qu.?est-ce qu.?on)\b.*\b(?:parl\w*|discut\w*|[eé]chang\w*|dit)\b.*\b(?:hier|avant|derni|pr[eé]c[eé]dent|fil|session|tour|[eé]change)\b/,
     new RegExp(
-      `\\b(de quoi|ce qu.?on|qu.?est-ce qu.?on)\\b.*${recallPastSpeechRe.source}`,
+      `\\b(de quoi|ce qu.?on|qu.?est-ce qu.?on)\\b${RECALL_SPAN}\\b(?:parl\\w*|discut\\w*|[eé]chang\\w*|dit)\\b${RECALL_SPAN}\\b(?:hier|avant|derni|pr[eé]c[eé]dent|fil|session|tour|[eé]change)\\b`,
+      "i",
+    ),
+    new RegExp(
+      `\\b(de quoi|ce qu.?on|qu.?est-ce qu.?on)\\b${RECALL_SPAN}${recallPastSpeechRe.source}`,
       "i",
     ),
     // Ancres temporelles fortes — « avant » seul (avant de travailler) est trop ambigu
-    /\b(parl\w*|discut\w*|échang\w*).*\b(hier|derni[eè]re|pr[eé]c[eé]dent|pass[eé]|precedemment|auparavant)\b/,
-    /\b(?:parl(?:é|ait|aient|ions|e|er)|discut(?:é|ait|ions|e|er)|échang(?:é|eait|ions|e|er))\b.*\bavant\b/,
-    /\b(hier|precedemment|auparavant)\b.*\b(parl\w*|discut\w*|dit|échang\w*)/,
-    /\bavant\b.*\b(?:(?:on|nous)\s+(?:a|avons)\s+)?(?:parl\w*|discut\w*|dit|échang\w*)/,
-    /\bm[eé]moire\b.*\b(conversation|discussion|fil|échange)\b/,
-    /\b(fil|conversation|discussion)\b.*\b(pr[eé]c[eé]dent|d.?hier|pass[eé]|avant)\b/,
+    new RegExp(
+      `\\b(parl\\w*|discut\\w*|échang\\w*)${RECALL_SPAN}\\b(hier|derni[eè]re|pr[eé]c[eé]dent|pass[eé]|precedemment|auparavant)\\b`,
+      "i",
+    ),
+    new RegExp(
+      `\\b(?:parl(?:é|ait|aient|ions|e|er)|discut(?:é|ait|ions|e|er)|échang(?:é|eait|ions|e|er))\\b${RECALL_SPAN}\\bavant\\b`,
+      "i",
+    ),
+    new RegExp(
+      `\\b(hier|precedemment|auparavant)\\b${RECALL_SPAN}\\b(parl\\w*|discut\\w*|dit|échang\\w*)`,
+      "i",
+    ),
+    new RegExp(
+      `\\bavant\\b${RECALL_SPAN}\\b(?:(?:on|nous)\\s+(?:a|avons)\\s+)?(?:parl\\w*|discut\\w*|dit|échang\\w*)`,
+      "i",
+    ),
+    new RegExp(
+      `\\bm[eé]moire\\b${RECALL_SPAN}\\b(conversation|discussion|fil|échange)\\b`,
+      "i",
+    ),
+    new RegExp(
+      `\\b(fil|conversation|discussion)\\b${RECALL_SPAN}\\b(pr[eé]c[eé]dent|d.?hier|pass[eé]|avant)\\b`,
+      "i",
+    ),
     /\bon\s+a\s+(?:parl|discut|[eé]chang)/,
   ];
 
-  return recallPatterns.some((pattern) => pattern.test(q));
+  return recallPatterns.some((pattern) =>
+    anyRecallWindow(windows, (w) => pattern.test(w)),
+  );
 }
 
 const RECALL_REFUSAL_MARKER = "éléments fiables pour répondre";
