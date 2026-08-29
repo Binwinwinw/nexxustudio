@@ -8,3 +8,4 @@ export * from "./documentCapabilityContract.js";
 export * from "./pdfTextLayerDecisionPolicy.js";
 export * from "./pdfOcrEnrichment.js";
 export * from "./pdfPartialAnalysisPolicy.js";
+export * from "./documentFinalizationGuard.js";

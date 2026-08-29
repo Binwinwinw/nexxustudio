@@ -112,11 +112,23 @@ Nom de colonne ≠ FK. Nom de table ≠ rôle métier. `documentAnalysis` n'est 
 PDF accepté mais trop long (`PDF_TOO_MANY_PAGES`) ou OCR requis **non exécuté** : même rail `DOCUMENT`, sortie déterministe FILE_ANALYSIS. Distinguer `extracted_from_attachment` / non vérifié / capacité non exécutée.  
 `vision_eligible` et `document_analysis_fallback` ne sont pas des étapes faites. Un PDF texte native court reste sur le composeur documentaire actuel.
 
+## PDF finalisation (LLM FILE_ANALYSIS)
+
+Sur le chemin `doc_analyze` + PDF qui passe par `documentAnalysis` :
+
+1. **Buffer** — pas de stream live des chunks LLM.
+2. **Garde** `documentFinalizationGuard` — collapse répétitions, coupe à phrase complète, statut `complete` | `partial_explicit` | `rejected_incomplete`.
+3. **Critique** — `repetition_absent` + `final_output_complete` (complete **ou** partial_explicit avec marqueur `Analyse partielle — génération interrompue.`).
+
+Pas de 2e passe LLM. OCR / `PDF_SCANNED_NO_TEXT` / sortie partial déterministe inchangés.
+
 ## Preuve
 
 - `server/src/agent/policies/attachment/fileAnalysisContract.js`
+- `server/src/agent/policies/document/documentFinalizationGuard.js`
 - `server/src/agent/analysis/analyzers/sqlAnalyzer.js`
 - `server/tests/file-analysis-contract.test.js`
 - `server/tests/sql-source-analysis.test.js`
 - `server/tests/attachment-task-policy.test.js`
 - `server/tests/pdf-partial-analysis.test.js`
+- `server/tests/document-finalization-guard.test.js`

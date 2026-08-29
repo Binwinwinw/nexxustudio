@@ -84,6 +84,8 @@ import {
   shouldDeliverPdfPartialFileAnalysis,
   formatPdfPartialFileAnalysisReply,
   evaluatePdfPartialAnalysisSufficiency,
+  finalizeDocumentAnalysisText,
+  PARTIAL_INTERRUPT_MARKER,
 } from "./policies/document/index.js";
 import { compressComposerFinalPass } from "./utils/quality-safety/qualityGuards.js";
 import { requiresStructuredContentComposerBudget } from "./policies/delivery/constructiveDeliveryPolicy.js";
@@ -3048,15 +3050,20 @@ class AgentPipeline {
             const docQuery =
               extractDocumentAnalysisQuery(queryUnderstanding) || query;
             const pdfName = String(attachedFileName || "");
-            const pdfAddon =
+            const pdfMime =
+              attachedFiles[0]?.mimetype || ingestedPrimaryDoc?.mimetype || "";
+            const isPdfFileAnalysis =
               attachmentTaskClass?.task === "doc_analyze" &&
-              /\.pdf$/i.test(pdfName) &&
+              (/\.pdf$/i.test(pdfName) || /pdf/i.test(String(pdfMime)));
+            const pdfAddon =
+              isPdfFileAnalysis &&
               fileAnalysisDepth !== FILE_ANALYSIS_DEPTHS.SIMPLE
                 ? `\n${buildFileAnalysisPromptAddon(fileAnalysisDepth)}`
                 : "";
             const enhancedQuery =
               docQuery + buildMicroContractDirective(docQuery) + pdfAddon;
-            
+
+            // PDF FILE_ANALYSIS : buffer (pas de stream live) → garde → un emit.
             const analysisResult = await documentAnalysis(
               enhancedQuery,
               {
@@ -3066,7 +3073,7 @@ class AgentPipeline {
               },
               {
                 onStep,
-                onContent,
+                onContent: isPdfFileAnalysis ? null : onContent,
                 hasAttachedDocument: Boolean(hasAttachedDocs && attachedBriefing),
                 fileName: attachedFileName,
                 document_extract_ms,
@@ -3077,7 +3084,7 @@ class AgentPipeline {
               pipelineTelemetryCtx.documentLatency = analysisResult.metadata?.latency || null;
             }
             const ttft = performance.now() - startTime;
-            const docOut = enforceModeContract(
+            let docOut = enforceModeContract(
               RESPONSE_MODES.DOCUMENT,
               analysisResult.result,
               {
@@ -3085,7 +3092,7 @@ class AgentPipeline {
                 attachedDocument: Boolean(attachedBriefing),
               },
             );
-            const docOutWithDatetime = shouldAppendDatetimeToDocumentWork(
+            let docOutWithDatetime = shouldAppendDatetimeToDocumentWork(
               queryUnderstanding,
             )
               ? mergeDocumentAnalysisWithDatetimeSections(docOut, queryUnderstanding)
@@ -3096,7 +3103,50 @@ class AgentPipeline {
                   `domains=${queryUnderstanding.domains.join(",")}`,
               );
             }
-            if (onContent && !analysisResult.metadata?.streamed && docOutWithDatetime) {
+
+            let pdfFinalization = null;
+            if (isPdfFileAnalysis) {
+              pdfFinalization = finalizeDocumentAnalysisText(docOutWithDatetime, {
+                query,
+                sectionsExpected:
+                  fileAnalysisDepth === FILE_ANALYSIS_DEPTHS.SIMPLE
+                    ? 3
+                    : 8,
+              });
+              docOutWithDatetime = pdfFinalization.text;
+              const pdfFileCritic = evaluateFileAnalysisSufficiency({
+                query,
+                reply: docOutWithDatetime,
+                depth: fileAnalysisDepth,
+                fileName: attachedFileName,
+                artifactsPresent: Boolean(attachedBriefing),
+                sourceKind: "pdf",
+                finalization: pdfFinalization,
+              });
+              if (onStep) {
+                onStep(
+                  pdfFileCritic.ok
+                    ? "Agent Critique : OK"
+                    : `Agent Critique : FILE_ANALYSIS (${pdfFileCritic.reasons.join(",")})`,
+                  {
+                    pipelinePath: "DOCUMENT",
+                    finalization_status: pdfFinalization.finalization_status,
+                    fileAnalysisChecks: pdfFileCritic.checks,
+                  },
+                );
+              }
+              if (
+                !pdfFileCritic.ok &&
+                !String(docOutWithDatetime).includes(PARTIAL_INTERRUPT_MARKER)
+              ) {
+                docOutWithDatetime = `${String(docOutWithDatetime).trimEnd()}\n\n${PARTIAL_INTERRUPT_MARKER}`;
+                pdfFinalization = {
+                  ...pdfFinalization,
+                  text: docOutWithDatetime,
+                  finalization_status: "partial_explicit",
+                };
+              }
+            } else if (onContent && !analysisResult.metadata?.streamed && docOutWithDatetime) {
               onContent(docOutWithDatetime);
             }
             recordActiveDocumentAnalysis({
@@ -3110,7 +3160,11 @@ class AgentPipeline {
               analysisKind: "document_analysis",
             });
             const docDelivery = this._deliverWithCodeReviewGuard(query, docOutWithDatetime, {
-              onContent: analysisResult.metadata?.streamed ? null : onContent,
+              onContent: isPdfFileAnalysis
+                ? null
+                : analysisResult.metadata?.streamed
+                  ? null
+                  : onContent,
               attachmentRefs,
               attachments: attachedFiles,
               attachmentTask: attachmentTaskClass?.task || null,
@@ -3125,7 +3179,11 @@ class AgentPipeline {
                 : "DOCUMENT",
               status: !docDelivery.blocked,
               reason: docDelivery.blocked ? "code_review_contract_violation" : null,
-              deliveryMode: analysisResult.metadata?.streamed ? "already_streamed" : "buffered_final",
+              deliveryMode: isPdfFileAnalysis
+                ? DELIVERY_MODES.BUFFERED_FINAL
+                : analysisResult.metadata?.streamed
+                  ? "already_streamed"
+                  : "buffered_final",
               pipelineTelemetryCtx,
               turnTelemetry,
               onContent,

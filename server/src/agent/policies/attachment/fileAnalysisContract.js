@@ -404,6 +404,7 @@ export function evaluateFileAnalysisSufficiency(input = {}) {
     fileName = "",
     artifactsPresent = false,
     sourceKind = "",
+    finalization = null,
   } = input;
   const text = String(reply || "");
   const required = requiredFileAnalysisSections(depth);
@@ -441,13 +442,34 @@ export function evaluateFileAnalysisSufficiency(input = {}) {
     reasons.push("critique_without_limits");
   }
 
+  // PDF finalisation : mesures fournies par documentFinalizationGuard. Sinon stubs (JS/SQL/HTML).
+  let repetitionAbsent = true;
+  let finalOutputComplete = true;
+  if (finalization && typeof finalization === "object") {
+    const status = String(finalization.finalization_status || "");
+    const measures = finalization.measures || {};
+    repetitionAbsent =
+      measures.repetition_remaining !== true &&
+      (status === "complete" ||
+        status === "partial_explicit" ||
+        /Analyse partielle — g[eé]n[eé]ration interrompue/i.test(text));
+    finalOutputComplete =
+      status === "complete" || status === "partial_explicit";
+    if (!status) {
+      reasons.push("missing_finalization_status");
+      finalOutputComplete = false;
+    }
+    if (!repetitionAbsent) reasons.push("repetition_present");
+    if (!finalOutputComplete) reasons.push("finalization_incomplete");
+  }
+
   const checks = {
     attachment_used: mentionsFile,
     factual_anchoring: mentionsFile && !generic,
     source_inventory_sufficient: isSql ? /Inventaire SQL/i.test(text) && /#### Tables/i.test(text) : null,
     inferred_claims_marked: isSql ? !inferredAsFact : null,
-    repetition_absent: true,
-    final_output_complete: true,
+    repetition_absent: repetitionAbsent,
+    final_output_complete: finalOutputComplete,
   };
 
   if (isSql && !checks.source_inventory_sufficient) {
