@@ -57,6 +57,8 @@ describe("informationSeekingIntentGuards", () => {
 
     const hit = await runConversationShortCircuit(q);
     assert.notEqual(hit?.path, "social_deterministic");
+    assert.equal(hit?.path, "information_seeking_full_pipeline");
+    assert.equal(hit?.deferToFullPipeline, true);
   });
 
   it("cible explicite — pas clarify_then_build prématuré", () => {

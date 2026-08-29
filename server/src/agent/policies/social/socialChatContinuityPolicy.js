@@ -4,7 +4,8 @@
  */
 import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { isSubstantiveWorkRequest } from "../../utils/conversation/genericGreetingGuards.js";
-import { isInformationSeekingWithTarget } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
+import { isExplicitInformationOrDefinitionRequest, isExplicitTextCreationRequest } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
+import { isMetaAssistantBehaviorRequest } from "../../utils/intent-guards/metaAssistantBehaviorGuards.js";
 import { isGeneralKnowledgeRequest } from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
 import { isExplicitWebSearchRequest } from "../routing/explicitWebSearchRequestPolicy.js";
 import { isConversationMemoryRecallRequest, isAttachedVisionRequest } from "../../utils/conversation/conversationGuards.js";
@@ -219,9 +220,10 @@ export function buildBareSocialClarifierReply() {
 /**
  * Sujet court / relance conversationnelle (pas une demande métier claire).
  * @param {string} query
+ * @param {{ history?: object[] }} [options]
  * @returns {boolean}
  */
-export function isSoftSocialChatFollowup(query = "") {
+export function isSoftSocialChatFollowup(query = "", options = {}) {
   const q = norm(query);
   if (!q || q.length < 2 || q.length > 180) return false;
   // Tours sociaux autonomes — pas un sujet à injecter dans le fil papoter.
@@ -233,6 +235,10 @@ export function isSoftSocialChatFollowup(query = "") {
   if (isSocialCheckinConsistencyCritique(query)) return false;
   if (classifySocialPattern(query)) return false;
   if (isBareSocialClarifier(query)) return false;
+  // D2 — création textuelle (sujet éventuellement dans le fil) prime sur soft topic.
+  if (isExplicitTextCreationRequest(query, { history: options.history || [] })) {
+    return false;
+  }
   // Acceptation « on papote / et si on papotait » = invite, pas un thème à explorer en LLM.
   if (
     /\b(?:(?:et\s+)?si\s+)?(?:on\s+)?(?:papot(?:e|er|ait|ais|ons|ez|ent|age)|discut(?:e|er|ait|ais|ons|ez|ent)|bavard(?:e|er|ait|ais|ons|ez|ent))\b/i.test(
@@ -250,7 +256,8 @@ export function isSoftSocialChatFollowup(query = "") {
   if (isExplicitWebSearchRequest(query)) return false;
   if (isConversationMemoryRecallRequest(query)) return false;
   // Fil papoter ouvert ≠ rail factuel / culture générale / info-seeking / corporel
-  if (isInformationSeekingWithTarget(query)) return false;
+  if (isExplicitInformationOrDefinitionRequest(query)) return false;
+  if (isMetaAssistantBehaviorRequest(query)) return false;
   if (isGeneralKnowledgeRequest(query)) return false;
   if (isPersonalDiscomfortIntent(query)) return false;
   if (isMetaConversationIntent(query)) return false;
@@ -413,7 +420,7 @@ export function resolveSocialChatContinuityShortCircuit(query = "", options = {}
     };
   }
 
-  if (!isSoftSocialChatFollowup(query)) return null;
+  if (!isSoftSocialChatFollowup(query, { history })) return null;
 
   // Hypothèse culturelle medium → couche épistémique (clarification ciblée)
   const cultural = resolveCulturalReferenceHypothesis(query);

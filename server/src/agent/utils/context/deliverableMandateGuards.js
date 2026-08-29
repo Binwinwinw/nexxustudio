@@ -6,6 +6,7 @@ import { isExploratoryTopicIntent } from "../conversation/exploratoryConversatio
 import { isMetaAssistantBehaviorRequest } from "../intent-guards/metaAssistantBehaviorGuards.js";
 import { isMetaConversationIntent } from "../intent-guards/metaConversationIntentGuards.js";
 import { isHowToRequestShell } from "../intent-guards/howToRequestIntentGuards.js";
+import { isExplicitTextCreationRequest } from "../intent-guards/informationSeekingIntentGuards.js";
 import { isKnownSocialPattern } from "../../policies/social/index.js";
 
 const DELIVERABLE_ACTION_RE =
@@ -37,6 +38,13 @@ export function hasDeliverableFormatHint(query = "") {
  */
 export function shouldAllowClarifyThenBuild(query = "", evaluation = {}) {
   if (isKnownSocialPattern(query)) return false;
+  if (
+    isExplicitTextCreationRequest(query, {
+      history: evaluation.history || evaluation.conversationHistory || [],
+    })
+  ) {
+    return false;
+  }
   if (isMetaAssistantBehaviorRequest(query)) return false;
   if (isMetaConversationIntent(query)) return false;
   if (isExploratoryTopicIntent(query)) return false;

@@ -149,7 +149,15 @@ import {
   shouldRunFactualSanityGate,
 } from "../replies/factualSanityGate.js";
 import { recordFactualSanityTelemetry } from "../../telemetry/factualSanityTelemetry.js";
-import { isInformationSeekingWithTarget } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
+import {
+  extractTextCreationRenderFormat,
+  buildTextCreationRenderFormatHint,
+  buildTextCreationContinuityEffectiveQuery,
+  isExplicitTextCreationRequest,
+  isInformationSeekingWithTarget,
+  isNamedDefinitionRequest,
+  isExplicitInformationOrDefinitionRequest,
+} from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import {
   resolveSubjectTypingFromQuery,
   buildSubjectTypeClarifyReply,
@@ -394,6 +402,9 @@ function buildSocialDeterministicShortCircuit(
   getDeterministicSocialResponse,
   options = {},
 ) {
+  if (isExplicitInformationOrDefinitionRequest(effectiveQuery)) {
+    return null;
+  }
   if (shouldBypassLocalDatetimeShortCircuit(effectiveQuery)) {
     return null;
   }
@@ -795,6 +806,38 @@ export async function runConversationShortCircuit(query, options = {}) {
     history,
   );
   if (currentWebFactEarly) return currentWebFactEarly;
+
+  if (isExplicitTextCreationRequest(effectiveQuery, { history })) {
+    const outputFormat = extractTextCreationRenderFormat(effectiveQuery, {
+      history,
+    });
+    const continuityQuery = buildTextCreationContinuityEffectiveQuery(
+      effectiveQuery,
+      history,
+    );
+    const formatHint = buildTextCreationRenderFormatHint(outputFormat);
+    const subjectFromHistory = continuityQuery !== String(effectiveQuery || "").trim();
+    const subjectHint = subjectFromHistory
+      ? [
+          "[Création textuelle — sujet du fil]",
+          `Mandat complet : « ${continuityQuery} ».`,
+          "Livre le texte demandé sur ce sujet. Pas de recherche web. Pas de clarification d'objectif.",
+        ].join("\n")
+      : null;
+    return emit({
+      path: "text_creation_direct",
+      mode: RESPONSE_MODES.OPEN_PROPOSITION,
+      reply: null,
+      deferToLlm: true,
+      preferWebResearch: false,
+      textCreation: true,
+      outputFormat,
+      continuityEffectiveQuery: subjectFromHistory ? continuityQuery : null,
+      reflectiveHint: [formatHint, subjectHint].filter(Boolean).join("\n\n") || null,
+      step: "✍️ Création textuelle — génération directe (sans web)...",
+      enforce: { allowRefusal: false },
+    });
+  }
 
   // Multi-unit inventorié (smoothie, etc.) prime sur query_composite générique.
   const decompositionForPreempt =
@@ -1968,6 +2011,7 @@ export async function runConversationShortCircuit(query, options = {}) {
 
   const familiarityReply =
     isInformationSeekingWithTarget(effectiveQuery) ||
+    isNamedDefinitionRequest(effectiveQuery) ||
     hasJokePerformSignal(effectiveQuery) ||
     hasJokeMetaSignal(effectiveQuery) ||
     hasSocialPlayInviteSignal(effectiveQuery) ||
@@ -2789,7 +2833,7 @@ export async function runConversationShortCircuit(query, options = {}) {
     });
   }
 
-  if (isInformationSeekingWithTarget(effectiveQuery)) {
+  if (isInformationSeekingWithTarget(effectiveQuery) || isNamedDefinitionRequest(effectiveQuery)) {
     const subjectTyping = resolveSubjectTypingFromQuery(effectiveQuery);
     if (subjectTyping?.requires_subject_disambiguation) {
       const clarifyReply = buildSubjectTypeClarifyReply(subjectTyping);

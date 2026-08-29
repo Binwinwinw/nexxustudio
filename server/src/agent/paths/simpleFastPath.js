@@ -124,8 +124,12 @@ export function resolveSimpleFastAllowRefusal({
   metaAssistantTrust = false,
   documentSynthesis = false,
   culturalContentSummary = false,
+  /** Honore le hit SC `enforce.allowRefusal` (ex. text_creation_direct). */
+  scAllowRefusal,
   query = "",
 } = {}) {
+  // SC deferToLlm : le hit a déjà tranché — ne pas réautoriser le refus « piste ».
+  if (scAllowRefusal === false) return false;
   if (metaAssistantTrust) return false;
   if (documentSynthesis || culturalContentSummary) return false;
   // Définition / « tu connais X ? » déjà ancré → jamais le refus « piste/destination »
@@ -242,6 +246,7 @@ export async function applySimpleFastDeliveryPipeline({
   metaAssistantTrust = false,
   documentSynthesis = false,
   culturalContentSummary = false,
+  scAllowRefusal,
   fallbackReason = "empty_simple_fast",
 } = {}) {
   const overviewMode =
@@ -292,6 +297,7 @@ export async function applySimpleFastDeliveryPipeline({
     culturalContentSummary,
     query,
     metaAssistantTrust,
+    scAllowRefusal,
   });
   let fastOut = enforceModeContract(responseMode, rawResult, {
     allowRefusal,
@@ -488,12 +494,22 @@ export async function applySimpleFastDeliveryPipeline({
       resolveMathPercentShortCircuit(query)?.reply ||
       resolveLocalDeterministicFallback(query) ||
       buildFamiliarityReply(query) ||
-      resolvePipelineFallback({
-        query,
-        history,
-        rawResponse: rawResult,
-        reason: fallbackReason,
-      });
+      "";
+
+    if (!String(fastOut || "").trim()) {
+      if (scAllowRefusal === false) {
+        // SC a interdit le refus « piste » — ne pas le réintroduire via fallback générique.
+        fastOut =
+          "Je n'ai pas pu finaliser ce texte dans ce tour. Réessaie avec le même genre et sujet, ou précise le ton.";
+      } else {
+        fastOut = resolvePipelineFallback({
+          query,
+          history,
+          rawResponse: rawResult,
+          reason: fallbackReason,
+        });
+      }
+    }
     return {
       text: applySurfaceMicroContract(query, fastOut),
       usedRecoveryFallback: true,
@@ -577,6 +593,7 @@ export async function invokeSimpleFastLlm({
   const pipelineQuery =
     translationPlan?.effectiveQuery ||
     shortCircuit?.translationEffectiveQuery ||
+    (shortCircuit?.textCreation && shortCircuit?.continuityEffectiveQuery) ||
     query;
 
   const { simpleFast } = await import(
@@ -640,6 +657,7 @@ export async function invokeSimpleFastLlm({
     metaAssistantTrust: shortCircuit?.metaSubKind === "assistant_trust",
     documentSynthesis: Boolean(shortCircuit?.documentSynthesis),
     culturalContentSummary: Boolean(shortCircuit?.culturalContentSummary),
+    scAllowRefusal: shortCircuit?.enforce?.allowRefusal,
     fallbackReason,
   });
 
