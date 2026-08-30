@@ -84,6 +84,41 @@ const SHORT_ATTACHMENT_CODE_VERB_RE =
   /\b(corrige(?:r)?|fix(?:e|er)?|r[eé]pare(?:r)?|refactor(?:ise|iser|ing)?|restructur(?:e|er)|revue|review|audit(?:er)?|debug|analys(?:e|er)|erreurs?\s+bloquantes?|am[eé]lior(?:e|er)\s+(?:le\s+)?code)\b/i;
 
 /**
+ * HTML / fence collé : le payload n'est pas la consigne.
+ * ponytail: miroir local de conversationGuards (recall 4437777). Pas d'import : gel du patch recall.
+ */
+export function hasInlineMarkupOrFencedCodeDocument(raw = "") {
+  const s = String(raw || "");
+  if (/<!DOCTYPE\s+html\b/i.test(s)) return true;
+  if (/<html[\s>]/i.test(s) && /<\/html>/i.test(s)) return true;
+  if (
+    /<(?:head|body|style|section|header|nav|article|footer|main)[\s>]/i.test(s) &&
+    /<\/(?:head|body|style|section|header|nav|article|footer|main)>/i.test(s)
+  ) {
+    return true;
+  }
+  if (/```(?:html|css|js|javascript|tsx?|jsx|php|vue|json)\b/i.test(s)) return true;
+  return false;
+}
+
+/** Consigne avant le premier marqueur de document collé ; query entière sinon. */
+function codeIntentMandateText(query = "") {
+  const s = String(query || "");
+  if (!hasInlineMarkupOrFencedCodeDocument(s)) return s;
+  const starts = [];
+  const push = (re) => {
+    const i = s.search(re);
+    if (i >= 0) starts.push(i);
+  };
+  push(/<!DOCTYPE\s+html\b/i);
+  push(/<html[\s>]/i);
+  push(/```(?:html|css|js|javascript|tsx?|jsx|php|vue|json)\b/i);
+  push(/<(?:head|body|style|section|header|nav|article|footer|main)[\s>]/i);
+  if (!starts.length) return "";
+  return s.slice(0, Math.min(...starts));
+}
+
+/**
  * @param {unknown[]} attachments
  */
 function hasCodeAttachmentFiles(attachments = []) {
@@ -146,26 +181,28 @@ export function classifyCodeIntent(query = "", options = {}) {
     if (!hasCodeContext(q)) return null;
   }
 
-  if (isCodeConceptExplainRequest(q)) {
+  const intentScan = codeIntentMandateText(q);
+
+  if (isCodeConceptExplainRequest(intentScan)) {
     return { kind: CODE_INTENT_KINDS.EXPLAIN, confidence: "explicit", query: q };
   }
 
-  if (
-    !hasExecutableSnippet(q) &&
-    !GENERIC_REVIEW_SIGNAL_RE.test(q) &&
-    !shortAttachmentCode
-  ) {
-    return null;
-  }
-
   for (const rule of EXPLICIT_INTENT_RULES) {
-    if (rule.pattern.test(q)) {
+    if (rule.pattern.test(intentScan)) {
       return {
         kind: rule.kind,
         confidence: shortAttachmentCode ? "attachment_explicit" : "explicit",
         query: q,
       };
     }
+  }
+
+  if (
+    !hasExecutableSnippet(q) &&
+    !GENERIC_REVIEW_SIGNAL_RE.test(intentScan) &&
+    !shortAttachmentCode
+  ) {
+    return null;
   }
 
   // PJ code + verbe court (corrige / refactor / revue le fichier joint)
@@ -195,8 +232,11 @@ export function classifyCodeIntent(query = "", options = {}) {
     };
   }
 
-  if (GENERIC_REVIEW_SIGNAL_RE.test(q) && hasExecutableSnippet(q)) {
-    if (DOCUMENT_TRAP_RE.test(q) && !/\b(code|python|script|snippet)\b/i.test(q)) {
+  if (GENERIC_REVIEW_SIGNAL_RE.test(intentScan) && hasExecutableSnippet(q)) {
+    if (
+      DOCUMENT_TRAP_RE.test(intentScan) &&
+      !/\b(code|python|script|snippet)\b/i.test(intentScan)
+    ) {
       return null;
     }
     return { kind: CODE_INTENT_KINDS.REVIEW, confidence: "inferred", query: q };

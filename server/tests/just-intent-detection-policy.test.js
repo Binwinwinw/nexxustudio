@@ -89,6 +89,21 @@ describe("justIntentDetectionPolicy", () => {
     assert.doesNotMatch(ev.signals.join(" "), /preempt:technical_learning_path/);
   });
 
+  it("portfolio HTML à améliorer reste web_html / HTML / build_v1 (pas explain)", () => {
+    const q = [
+      "voici mon portfolio une page html qu'il faut améliorer :",
+      '<!DOCTYPE html><html lang="fr"><body>',
+      "<p>Plateforme pédagogique pensée pour accompagner les élèves</p>",
+      "</body></html>",
+    ].join("\n");
+    const ev = evaluateJustIntent(q);
+    assert.equal(ev.domain, INTENT_DOMAINS.WEB_HTML);
+    assert.notEqual(ev.action, INTENT_ACTIONS.EXPLAIN);
+    assert.equal(ev.deliverable, DELIVERABLE_TYPES.HTML);
+    assert.equal(ev.strategy, EXECUTION_STRATEGIES.BUILD_V1);
+    assert.equal(ev.confidence, "high");
+  });
+
   it("n'applique pas clarification sur salutation courte", () => {
     const ev = evaluateJustIntent("salut");
     assert.equal(

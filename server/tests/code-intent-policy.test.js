@@ -20,6 +20,10 @@ import { resolveIntentContract } from "../src/agent/config/intentContractRegistr
 import {
   CODE_REVIEW_PRODUCTION_BUG_QUERIES,
 } from "./fixtures/codeReviewGoldenQueries.js";
+import {
+  triageUserIntent,
+  TRIAGE_INTENTS,
+} from "../src/agent/classifiers/intentTriageClassifier.js";
 
 describe("codeIntentPolicy — taxonomie", () => {
   const scenario = CODE_REVIEW_PRODUCTION_BUG_QUERIES[0];
@@ -97,6 +101,58 @@ describe("codeIntentPolicy — taxonomie", () => {
     const addon = buildCodeIntentAddon(explainQ);
     assert.match(addon, new RegExp(CODE_EXPLAIN_CONTRACT_ID));
     assert.match(addon, /CODE_ERROR_PRIORITY_V1/);
+  });
+});
+
+function portfolioImproveHtml(body = "") {
+  return [
+    "voici mon portfolio une page html qu'il faut améliorer :",
+    '<!DOCTYPE html><html lang="fr"><body>',
+    body,
+    "</body></html>",
+  ].join("\n");
+}
+
+describe("codeIntentPolicy — consigne vs payload collé", () => {
+  it("HTML collé + pédagogique dans le copy ≠ code_explain", () => {
+    const q = portfolioImproveHtml(
+      "<p>Plateforme pédagogique pensée pour accompagner les élèves</p>",
+    );
+    assert.equal(classifyCodeIntent(q), null);
+  });
+
+  it("fence html + pédagogique dans le copy ≠ code_explain", () => {
+    const q =
+      "améliore cette page :\n```html\n<p>Plateforme pédagogique pour les élèves</p>\n```";
+    assert.equal(classifyCodeIntent(q), null);
+  });
+
+  it("explique ce code + snippet court reste code_explain", () => {
+    const q =
+      "Explique ce code :\n```js\nfunction add(a, b) { return a + b; }\n```";
+    assert.equal(classifyCodeIntent(q)?.kind, CODE_INTENT_KINDS.EXPLAIN);
+  });
+
+  it("explique ce code + HTML collé reste code_explain (consigne prefix)", () => {
+    const q = [
+      "explique ce code :",
+      '<!DOCTYPE html><html><body><p>Plateforme pédagogique</p></body></html>',
+    ].join("\n");
+    assert.equal(classifyCodeIntent(q)?.kind, CODE_INTENT_KINDS.EXPLAIN);
+  });
+
+  it("HTML collé + pédagogique ≠ triage code_explain", () => {
+    const q = portfolioImproveHtml(
+      "<p>Plateforme pédagogique pensée pour accompagner les élèves</p>",
+    );
+    const triage = triageUserIntent(q);
+    assert.notEqual(triage.top_intent, TRIAGE_INTENTS.CODE_EXPLAIN);
+    assert.notEqual(triage.runner_up, TRIAGE_INTENTS.CODE_EXPLAIN);
+    assert.equal(
+      String(triage.top_intent || "").startsWith("code_"),
+      false,
+      `top_intent code survivant: ${triage.top_intent}`,
+    );
   });
 });
 

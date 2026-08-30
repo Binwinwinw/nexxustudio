@@ -4,7 +4,28 @@ Registre de lots. Pas un GO d’exécution. Pas un changelog de version. Pas le 
 
 Un lot technique ne s’ouvre que sur GO qui le **nomme** + fiche (objectif, périmètre, preuve, invariants, risques).
 
-Dernière mise à jour : 2026-08-29 — `D5_TEXT_CREATION_TESTS` **clos**. File prioritaire 1→6 **terminée**.
+Dernière mise à jour : 2026-08-29 — `CODE_EXPLAIN_PASTED_PAYLOAD` **clos**. File prioritaire 1→6 **terminée**.
+
+---
+
+## CODE_EXPLAIN_PASTED_PAYLOAD
+
+- Statut : **clos**, validation close
+- Objectif : `classifyCodeIntent` / triage ne classent plus `code_explain` parce qu’un HTML (ou fence) collé contient un mot EXPLAIN (`pédagogique`) alors que la consigne est un build HTML.
+- Périmètre :
+  - `server/src/agent/policies/code/codeIntentPolicy.js` — règles lexicales (EXPLAIN + `EXPLICIT_INTENT_RULES` + revue générique) sur la **consigne** (prefix avant document/fence), pas le payload
+  - `server/src/agent/classifiers/intentTriageClassifier.js` — si document collé et `classifyCodeIntent === null`, ne pas bumper snippet / génération / G40 depuis le payload
+- Hors périmètre : JUST (non modifié) ; recall `4437777` / `conversationGuards.js` ; masquage d’affichage pipeline
+- Preuve :
+  - `code-intent-policy` **17/17** (suite consigne vs payload)
+  - `just-intent-detection-policy` — portfolio → `web_html` + HTML + `build_v1` + pas `explain` + `high`
+  - G40 `code-concept-explain-g40` vert
+  - recall `conversation-recall-pipeline-order` inchangé
+  - `file-analysis-contract` + `attachment-task-policy` + `code-review-runtime-guard` verts
+- Invariants : consume JUST gelé ; une chaîne amont ; pas de 2e NLU ; recall inchangé
+- Risques résiduels : détecteur HTML/fence dupliqué (pas d’import recall) ; lexique G40/`résume` dans un copy HTML hors marqueurs collés ; `intent-triage-classifier.test.js` seul : cycle ESM `pythonDeliveryPolicy` **préexistant** (WIP) — preuve triage dans `code-intent-policy`
+- Rollback : retirer `codeIntentMandateText` / skip triage payload + tests suite collée
+- Prochain pas : commit path-by-path **sur demande** (working tree sale) ; pas de push
 
 ---
 
@@ -241,7 +262,7 @@ Runtime ~23:00 (historique) : tour 1 social ; tour 2 exploratory « sujet court 
 
 ## État
 
-**File prioritaire 1→6 terminée.** Aucun lot technique ouvert.
+**File prioritaire 1→6 terminée.** `CODE_EXPLAIN_PASTED_PAYLOAD` **clos**. Aucun lot technique ouvert.
 
 Pas d’écriture dans `docs/Journal_de_bord.md` ni `docs/Journal_des_ameliorations.md` sans GO « entrée de version ».
 3 commits posés ; PR texte prête ; pas de push tant que non demandé.

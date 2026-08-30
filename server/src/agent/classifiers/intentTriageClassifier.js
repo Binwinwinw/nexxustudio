@@ -8,6 +8,7 @@ import {
   hasExecutableSnippet,
   classifyCodeIntent,
   getCodeIntentLabel,
+  hasInlineMarkupOrFencedCodeDocument,
 } from "../policies/code/codeIntentPolicy.js";
 import { isDocumentAnalysisIntent } from "../utils/conversation/conversationGuards.js";
 import { isCodeIntentRequest } from "../policies/code/codeIntentPolicy.js";
@@ -151,7 +152,10 @@ export function scoreIntentCandidates(query = "", attachments = [], options = {}
     bump(scores, codeIntent.kind, 0.62, signals, `code_intent:${codeIntent.confidence}`);
   }
 
-  if (isCodeConceptExplainTriageSignal(q)) {
+  const skipPastedPayloadCodeHints =
+    hasInlineMarkupOrFencedCodeDocument(q) && !codeIntent;
+
+  if (!skipPastedPayloadCodeHints && isCodeConceptExplainTriageSignal(q)) {
     bump(scores, TRIAGE_INTENTS.CODE_EXPLAIN, 0.72, signals, "code_concept_explain_g40");
     scores[TRIAGE_INTENTS.CODE_GENERATION] = 0;
     scores[TRIAGE_INTENTS.DOCUMENT_ANALYSIS] = Math.max(
@@ -164,7 +168,7 @@ export function scoreIntentCandidates(query = "", attachments = [], options = {}
     );
   }
 
-  if (suppressesCodeGenerationForProgrammingPedagogy(q)) {
+  if (!skipPastedPayloadCodeHints && suppressesCodeGenerationForProgrammingPedagogy(q)) {
     scores[TRIAGE_INTENTS.CODE_GENERATION] = 0;
     scores[TRIAGE_INTENTS.CODE_REVIEW] = Math.max(
       0,
@@ -173,12 +177,16 @@ export function scoreIntentCandidates(query = "", attachments = [], options = {}
     bump(scores, TRIAGE_INTENTS.GENERAL, 0.42, signals, "programming_pedagogy_light");
   }
 
-  if (hasExecutableSnippet(q) && !isCodeConceptExplainTriageSignal(q)) {
+  if (
+    !skipPastedPayloadCodeHints &&
+    hasExecutableSnippet(q) &&
+    !isCodeConceptExplainTriageSignal(q)
+  ) {
     bump(scores, TRIAGE_INTENTS.CODE_REVIEW, 0.28, signals, "executable_snippet");
     bump(scores, TRIAGE_INTENTS.CODE_DEBUG, 0.12, signals, "snippet_debug_hint");
   }
 
-  if (hasCodeContext(q)) {
+  if (!skipPastedPayloadCodeHints && hasCodeContext(q)) {
     bump(scores, TRIAGE_INTENTS.CODE_REVIEW, 0.1, signals, "code_context");
     scores[TRIAGE_INTENTS.DOCUMENT_ANALYSIS] = Math.max(
       0,
@@ -186,7 +194,11 @@ export function scoreIntentCandidates(query = "", attachments = [], options = {}
     );
   }
 
-  if (/\b(analyse|analyser)\b/i.test(q) && hasExecutableSnippet(q)) {
+  if (
+    !skipPastedPayloadCodeHints &&
+    /\b(analyse|analyser)\b/i.test(q) &&
+    hasExecutableSnippet(q)
+  ) {
     bump(scores, TRIAGE_INTENTS.CODE_REVIEW, 0.22, signals, "analyse_plus_snippet");
     scores[TRIAGE_INTENTS.DOCUMENT_ANALYSIS] = Math.max(
       0,
@@ -202,7 +214,11 @@ export function scoreIntentCandidates(query = "", attachments = [], options = {}
     );
   }
 
-  if (/\b(debug|déboguer|deboguer|ne s'exécute pas|ne marche pas)\b/i.test(q) && hasCodeContext(q)) {
+  if (
+    !skipPastedPayloadCodeHints &&
+    /\b(debug|déboguer|deboguer|ne s'exécute pas|ne marche pas)\b/i.test(q) &&
+    hasCodeContext(q)
+  ) {
     bump(scores, TRIAGE_INTENTS.CODE_DEBUG, 0.2, signals, "debug_execution_phrase");
   }
 
@@ -223,11 +239,18 @@ export function scoreIntentCandidates(query = "", attachments = [], options = {}
     }
   }
 
-  if (isCodeGenerationRequest(q) && !isCodeConceptExplainTriageSignal(q)) {
+  if (
+    !skipPastedPayloadCodeHints &&
+    isCodeGenerationRequest(q) &&
+    !isCodeConceptExplainTriageSignal(q)
+  ) {
     bump(scores, TRIAGE_INTENTS.CODE_GENERATION, 0.62, signals, "code_generation");
   }
 
-  if (/\b(génère|genere|crée|cree|écris|ecris|développe|developpe|implémente|implemente)\b/i.test(q)) {
+  if (
+    !skipPastedPayloadCodeHints &&
+    /\b(génère|genere|crée|cree|écris|ecris|développe|developpe|implémente|implemente)\b/i.test(q)
+  ) {
     if (!hasExecutableSnippet(q)) {
       bump(scores, TRIAGE_INTENTS.CODE_GENERATION, 0.25, signals, "generation_verbs");
     }
