@@ -97,6 +97,31 @@ export function buildWebProjectScopingDirectReply(query = "") {
 }
 
 /**
+ * Améliorer un portfolio / une présentation HTML existante ≠ cadrage CMS
+ * (vitrine / intranet / SharePoint).
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function isExistingHtmlPresentationImproveRequest(query = "") {
+  const q = normalizeArchitectureDesignQuery(query);
+  if (!q) return false;
+  if (/\b(?:sharepoint|wordpress|wix|webflow|intranet|extranet)\b/i.test(q)) {
+    return false;
+  }
+  if (
+    /\b(?:cr[eé]er|creer|cree|construis|construire|mettre en place)\s+(?:un|une|le|la|l['']?)?\s*(?:site|intranet|page html|landing)\b/i.test(
+      q,
+    )
+  ) {
+    return false;
+  }
+  const hasArtefact = /\b(?:html|portfolio|portefolio)\b/i.test(q);
+  const hasImprove =
+    /\b(?:am[eé]lior(?:er|e|ation)|modifi(?:er|e)|pr[eé]sentation)\b/i.test(q);
+  return hasArtefact && hasImprove;
+}
+
+/**
  * @param {string} query
  * @returns {{
  *   topic: string,
@@ -107,6 +132,7 @@ export function buildWebProjectScopingDirectReply(query = "") {
  * }|null}
  */
 export function classifyWebProjectScopingRequest(query = "") {
+  if (isExistingHtmlPresentationImproveRequest(query)) return null;
   if (!isWebProjectScopingRequest(query)) return null;
 
   const platform = extractWebProjectPlatform(query);

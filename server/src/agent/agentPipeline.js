@@ -196,6 +196,8 @@ import {
 } from "./telemetry/guidedCreationScopingTelemetry.js";
 import {
   resolveSocialPatternShortCircuit,
+  resolveSocialChatContinuityShortCircuit,
+  isShortDevWorkOfferFollowup,
   containsInternalPromptLeak,
   listInternalPromptLeakMarkers,
   resolveInternalLeakFallback,
@@ -607,8 +609,10 @@ class AgentPipeline {
     let pipelineQuery = query;
     const topicShiftAssessment = assessConversationTopicShift(query, history);
     const entityPivot = assessCurrentTurnEntityPivot(query, history);
+    const keepHistoryForHtmlNudge = isShortDevWorkOfferFollowup(query);
     const contextResetAssessment =
-      topicShiftAssessment.detected || entityPivot.detected
+      topicShiftAssessment.detected ||
+      (entityPivot.detected && !keepHistoryForHtmlNudge)
         ? { detected: true }
         : topicShiftAssessment;
     let orchestrationHistory = resolveHistoryAfterTopicShift(
@@ -1114,16 +1118,25 @@ class AgentPipeline {
     });
 
     if (moveAuthority.earlyTurn?.text) {
-      return this._finalizePipelineTurn({
-        text: moveAuthority.earlyTurn.text,
-        pipelinePath: moveAuthority.earlyTurn.pipelinePath,
-        status: true,
-        deliveryMode: DELIVERY_MODES.BUFFERED_FINAL,
-        pipelineTelemetryCtx,
-        turnTelemetry,
-        onContent,
-        onStep,
-      });
+      const socialNudgeHit = resolveSocialChatContinuityShortCircuit(
+        pipelineQuery,
+        {
+          history: orchestrationHistory,
+          attachments: attachedFiles,
+        },
+      );
+      if (!socialNudgeHit?.devTechnicalNudge) {
+        return this._finalizePipelineTurn({
+          text: moveAuthority.earlyTurn.text,
+          pipelinePath: moveAuthority.earlyTurn.pipelinePath,
+          status: true,
+          deliveryMode: DELIVERY_MODES.BUFFERED_FINAL,
+          pipelineTelemetryCtx,
+          turnTelemetry,
+          onContent,
+          onStep,
+        });
+      }
     }
 
     if (effectiveClarificationGate.triageSuppressed) {

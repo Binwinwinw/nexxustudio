@@ -119,8 +119,12 @@ export function resolveMoveContractProfile(
   ) {
     return null;
   }
-  // Création nommée / architecture : pas de rewrite « preuves ancrées / recherche web ».
-  if (path === "named_create_start" || path.startsWith("architecture_design")) {
+  // Création nommée / architecture / relance technique HTML : pas de rewrite « preuves ancrées / recherche web ».
+  if (
+    path === "named_create_start" ||
+    path.startsWith("architecture_design") ||
+    path === "exploratory_conversation_light"
+  ) {
     return null;
   }
 

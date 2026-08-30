@@ -1470,7 +1470,9 @@ export async function runConversationShortCircuit(query, options = {}) {
       path: socialChatHit.path,
       mode: RESPONSE_MODES.INSTANT,
       reply: socialChatHit.reply,
-      step: socialChatHit.socialCheckinFollowup
+      step: socialChatHit.devTechnicalNudge
+        ? "💬 Relance technique — artefact (fil papoter)..."
+        : socialChatHit.socialCheckinFollowup
         ? "💬 Fil social — check-in kin (rail local)..."
         : socialChatHit.socialOpenThreadHold
           ? "💬 Fil social ouvert — mini-reprise (reste en chat)..."
@@ -1481,6 +1483,7 @@ export async function runConversationShortCircuit(query, options = {}) {
       socialPatternName: socialChatHit.socialPatternName,
       socialOpenThreadHold: Boolean(socialChatHit.socialOpenThreadHold),
       culturalHypothesis: Boolean(socialChatHit.culturalHypothesis),
+      devTechnicalNudge: Boolean(socialChatHit.devTechnicalNudge),
       ...LOCAL_SOCIAL_RAIL_FLAGS,
     });
   }

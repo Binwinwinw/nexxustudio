@@ -8,8 +8,19 @@ import {
   isPhaticSocialCheckinIntent,
   resolveCulturalReferenceHypothesis,
   resolveSocialChatContinuityShortCircuit,
+  isShortDevWorkOfferFollowup,
+  hasPostRepairSocialClose,
+  hasEmotionResolvedSignal,
 } from "../src/agent/policies/social/index.js";
+import {
+  isDebugDiagnosticRequest,
+  isDebugDiagnosticSignal,
+} from "../src/agent/utils/intent-guards/debugDiagnosticIntentGuards.js";
+import { evaluateConversationMove } from "../src/agent/policies/conversation/conversationMovePolicy.js";
+import { classifyDebugDiagnosticMove } from "../src/agent/micro/replies/debugDiagnosticComposer.js";
+import { isGeneralKnowledgeRequest } from "../src/agent/utils/intent-guards/generalKnowledgeIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
@@ -55,6 +66,125 @@ describe("social chat continuity — sujet court après chat_invite", () => {
       ),
       null,
     );
+  });
+
+  it("aide HTML courte après papoter → relance technique locale, pas guided", async () => {
+    const q = "tu peux m'aider à modifier du code html ?";
+    const liveHistory = [
+      { role: "user", content: "yélélé'y, salut" },
+      {
+        role: "assistant",
+        content:
+          "Salut ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
+      },
+      { role: "user", content: "tu vas bien ??" },
+      { role: "assistant", content: "Tout va bien ici." },
+    ];
+    assert.equal(isSoftSocialChatFollowup(q), true);
+    assert.equal(isShortDevWorkOfferFollowup(q), true);
+    const policyHit = resolveSocialChatContinuityShortCircuit(q, {
+      history: liveHistory,
+    });
+    assert.equal(policyHit?.path, "exploratory_conversation_light");
+    assert.equal(policyHit?.deferToLlm, false);
+    assert.equal(policyHit?.skipComposer, true);
+    assert.equal(policyHit?.devTechnicalNudge, true);
+    assert.match(policyHit?.reply || "", /HTML/i);
+    assert.match(policyHit?.reply || "", /design|structure|responsive|bug/i);
+
+    const sc = await runConversationShortCircuit(q, { history: liveHistory });
+    assert.equal(sc?.path, "exploratory_conversation_light");
+    assert.notEqual(sc?.path, "guided_creation_scoping");
+    assert.equal(sc?.deferToLlm, false);
+    assert.equal(sc?.skipComposer, true);
+    assert.ok(sc?.reply);
+    assert.doesNotMatch(sc?.reply || "", /GUIDED_CREATION|Forge/i);
+  });
+
+  it("améliore présentation portfolio HTML après papoter+work_ready ≠ SharePoint", async () => {
+    const q =
+      "et bien on va directement attaquer du lourd, as tu des connaissances en html car je voudrais que tu proposes une amélioration de la présentation de mon portefolio. Pourrais tu m'aider??";
+    const liveHistory = [
+      { role: "user", content: "salut" },
+      {
+        role: "assistant",
+        content:
+          "Salut ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
+      },
+      { role: "user", content: "comment vas tu ?" },
+      { role: "assistant", content: "Tout va bien ici." },
+      {
+        role: "user",
+        content: "tous tes programmes sont prêt à travailler ?",
+      },
+      { role: "assistant", content: "Prêt — on lance quoi ?" },
+    ];
+    assert.equal(isShortDevWorkOfferFollowup(q), true);
+    const sc = await runConversationShortCircuit(q, { history: liveHistory });
+    assert.notEqual(sc?.path, "web_project_scoping_clarify");
+    assert.notEqual(sc?.path, "guided_creation_scoping");
+    assert.equal(sc?.path, "exploratory_conversation_light");
+    assert.equal(sc?.deferToLlm, false);
+    assert.equal(sc?.skipComposer, true);
+    assert.match(sc?.reply || "", /présentation|design|structure|responsive/i);
+    assert.doesNotMatch(sc?.reply || "", /SharePoint|intranet|WordPress/i);
+  });
+
+  it("même phrase HTML portfolio sans historique → relance technique (HTTP entity pivot)", async () => {
+    const q =
+      "et bien on va directement attaquer du lourd, as tu des connaissances en html car je voudrais que tu proposes une amélioration de la présentation de mon portefolio. Pourrais tu m'aider??";
+    const hit = resolveSocialChatContinuityShortCircuit(q, { history: [] });
+    assert.equal(hit?.devTechnicalNudge, true);
+    assert.equal(hit?.path, "exploratory_conversation_light");
+    const sc = await runConversationShortCircuit(q, { history: [] });
+    assert.equal(sc?.path, "exploratory_conversation_light");
+    assert.equal(sc?.deferToLlm, false);
+    assert.equal(sc?.skipComposer, true);
+    assert.notEqual(sc?.path, "information_seeking_full_pipeline");
+  });
+
+  it("aide CSS courte après papoter → relance technique locale", async () => {
+    const q = "tu peux m'aider à corriger cette page css ?";
+    assert.equal(isSoftSocialChatFollowup(q), true);
+    assert.equal(isShortDevWorkOfferFollowup(q), true);
+    const sc = await runConversationShortCircuit(q, { history: CHAT_HISTORY });
+    assert.equal(sc?.path, "exploratory_conversation_light");
+    assert.notEqual(sc?.path, "guided_creation_scoping");
+    assert.equal(sc?.deferToLlm, false);
+    assert.equal(sc?.skipComposer, true);
+    assert.match(sc?.reply || "", /CSS/i);
+  });
+
+  it("sujet court non dev après papoter → exploratory LLM inchangé", async () => {
+    const hit = await runConversationShortCircuit("musique", {
+      history: CHAT_HISTORY,
+    });
+    assert.equal(hit?.path, "exploratory_conversation_light");
+    assert.equal(hit?.deferToLlm, true);
+    assert.equal(hit?.skipComposer, undefined);
+    assert.equal(hit?.reply, null);
+  });
+
+  it("demande vague projet longue après papoter → guided_creation inchangé", async () => {
+    const q =
+      "j'aimerais créer un agent IA en langage python tu pourrais m'aider à le faire ?";
+    assert.equal(isShortDevWorkOfferFollowup(q), false);
+    const sc = await runConversationShortCircuit(q, { history: CHAT_HISTORY });
+    assert.equal(sc?.path, "guided_creation_scoping");
+    assert.notEqual(sc?.devTechnicalNudge, true);
+  });
+
+  it("HTML collé après papoter ≠ relance technique courte", () => {
+    const q = [
+      "voici mon portfolio une page html qu'il faut améliorer :",
+      '<!DOCTYPE html><html lang="fr"><body><p>ok</p></body></html>',
+    ].join("\n");
+    assert.equal(isShortDevWorkOfferFollowup(q), false);
+    const hit = resolveSocialChatContinuityShortCircuit(q, {
+      history: CHAT_HISTORY,
+    });
+    assert.notEqual(hit?.devTechnicalNudge, true);
+    assert.notEqual(Boolean(hit?.reply && hit?.devTechnicalNudge), true);
   });
 
   it("refuse les questions factuelles / info-seeking (pas exploratory chat)", async () => {
@@ -158,6 +288,76 @@ describe("social chat continuity — sujet court après chat_invite", () => {
     assert.ok(!hit?.reply);
   });
 
+  it("mini-reprises après chat_invite → restent en social, pas general/explain", async () => {
+    const history = [
+      { role: "user", content: "salut et si on papotait ?" },
+      {
+        role: "assistant",
+        content:
+          "Salut ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
+      },
+      { role: "user", content: "salut et si on papotait ?" },
+      {
+        role: "assistant",
+        content: "Salut — ok, je t'écoute. De quel sujet tu as envie qu'on parle ?",
+      },
+    ];
+
+    for (const q of ["comment ?", "hein ?", "et ?", "pourquoi ?"]) {
+      assert.equal(isSoftSocialChatFollowup(q), false, q);
+      const cont = resolveSocialChatContinuityShortCircuit(q, { history });
+      assert.equal(cont?.path, "social_deterministic", q);
+      assert.equal(cont?.socialOpenThreadHold, true, q);
+      assert.equal(cont?.deferToLlm, false, q);
+
+      const hit = await runConversationShortCircuit(q, { history });
+      assert.equal(hit?.path, "social_deterministic", q);
+      assert.notEqual(hit?.path, "exploratory_conversation_light", q);
+      assert.notEqual(hit?.deferToLlm, true, q);
+      assert.match(hit?.reply || "", /sujet|papoter|penches/i, q);
+      assert.doesNotMatch(hit?.reply || "", /synthèse experte|Pas de titres/i, q);
+    }
+  });
+
+  it("pourquoi le ciel est bleu hors mini-reprise nue (pas hold social)", () => {
+    const history = [
+      {
+        role: "assistant",
+        content: "Salut — ok, je t'écoute. De quel sujet tu as envie qu'on parle ?",
+      },
+    ];
+    const q = "pourquoi le ciel est bleu ?";
+    const cont = resolveSocialChatContinuityShortCircuit(q, { history });
+    assert.notEqual(cont?.socialOpenThreadHold, true);
+    assert.notEqual(cont?.path, "social_deterministic");
+  });
+
+  it("vouvoiement « comment allez vous monsieur ou madame » = check-in, pas composer", async () => {
+    const history = [
+      { role: "user", content: "bonsoir" },
+      {
+        role: "assistant",
+        content:
+          "Salut ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
+      },
+    ];
+    const q = "comment allez vous monsieur ou madame ??";
+    assert.equal(isWellbeingCheckinIntent(q), true);
+    assert.equal(isSoftSocialChatFollowup(q), false);
+    assert.equal(resolveSocialChatContinuityShortCircuit(q, { history }), null);
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.equal(hit?.path, "social_deterministic");
+    assert.notEqual(hit?.path, "exploratory_conversation_light");
+    assert.ok(hit?.reply);
+    assert.match(hit?.reply || "", /je vais bien, merci/i);
+    assert.match(hit?.reply || "", /\bvous\b/i);
+    assert.doesNotMatch(hit?.reply || "", /\b(?:tu|te|ton|ta|tes)\b/i);
+    assert.doesNotMatch(hit?.reply || "", /Je vois la piste/i);
+    const just = evaluateJustIntent(q);
+    assert.equal(just?.domain, "social");
+    assert.equal(just?.action, "social_checkin");
+  });
+
   it("check-in wellbeing après offre papoter → social_deterministic, pas exploratory", async () => {
     const history = [
       { role: "user", content: "salut salut" },
@@ -176,6 +376,94 @@ describe("social chat continuity — sujet court après chat_invite", () => {
     assert.notEqual(hit?.path, "exploratory_conversation_light");
     assert.ok(hit?.reply);
     assert.doesNotMatch(hit?.reply || "", /on discute de quoi/i);
+  });
+
+  it("typo « comment cava » = même check-in santé déterministe", async () => {
+    const replies = new Set();
+    for (const q of ["comment cava ?", "comment ca va ???", "comment vas tu ?"]) {
+      assert.equal(isWellbeingCheckinIntent(q), true, q);
+      const hit = await runConversationShortCircuit(q);
+      assert.equal(hit?.path, "social_deterministic", q);
+      assert.ok(hit?.reply, q);
+      assert.ok(
+        (hit?.reply || "").length <= 28,
+        `réponse trop longue (${(hit?.reply || "").length}): ${q} → ${hit?.reply}`,
+      );
+      assert.match(
+        hit?.reply || "",
+        /^(?:Ça va bien, merci\.|Tout va bien ici\.|Ça va, merci\.)$/,
+      );
+      assert.doesNotMatch(
+        hit?.reply || "",
+        /avancer|discut|papoter|aujourd'?hui|étymolog|parce que/i,
+      );
+      replies.add(hit?.reply);
+    }
+    // Même intention canonique → une seule formulation (pas de divergence).
+    assert.equal(replies.size, 1);
+  });
+
+  it("critique méta check-in incohérent → pattern court, pas culture générale", async () => {
+    const q =
+      'sais tu que " comment ca va " et "comment vas tu" peuvent être considéré comme de la même valeur mais alors pourquoi as tu répondu de deux façons complètement différente et surtout l\'une complètement à l\'ouest ????';
+    assert.equal(isWellbeingCheckinIntent(q), false);
+    assert.equal(isGeneralKnowledgeRequest(q), false);
+    const hit = await runConversationShortCircuit(q);
+    assert.equal(hit?.path, "social_deterministic");
+    assert.equal(hit?.socialPatternName, "social/checkin_consistency");
+    assert.ok((hit?.reply || "").length < 120);
+    assert.match(hit?.reply || "", /même check-in|même réponse courte/i);
+    assert.doesNotMatch(
+      hit?.reply || "",
+      /ancien français|micro-délestage|étymolog|routing|exposé|token/i,
+    );
+
+    const gated = await runConversationShortCircuit(q, {
+      turnComprehension: {
+        responseExpectations: { mayFinalizeSocial: false },
+        dominance: { workPresent: true },
+      },
+    });
+    assert.equal(gated?.path, "social_deterministic");
+    assert.equal(gated?.socialPatternName, "social/checkin_consistency");
+    assert.notEqual(gated?.path, "general_knowledge_full_pipeline");
+  });
+
+  it("réponse bizarre / peur → tone_repair court, pas exploratory ni web", async () => {
+    const history = [
+      { role: "user", content: "hello c'est cool pour toi ca va bien ??" },
+      { role: "assistant", content: "Ça va, merci." },
+    ];
+    const q = "okok tu m'as fais peur avec ta réponse bizarre là";
+    assert.equal(isSoftSocialChatFollowup(q), false);
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.equal(hit?.path, "social_deterministic");
+    assert.equal(hit?.socialPatternName, "social/tone_repair");
+    assert.ok((hit?.reply || "").length < 100);
+    assert.doesNotMatch(hit?.reply || "", /anxiété|sources web|peur\b.{0,20}gérer/i);
+  });
+
+  it("peur disparue / induit en erreur → tone_repair, pas debug_diagnostic", async () => {
+    const q =
+      "ton comportement m'as induit en erreur et ma peur n'est pas justifée elle a disparu";
+    assert.equal(isSoftSocialChatFollowup(q), false);
+    assert.equal(hasEmotionResolvedSignal(q), true);
+    assert.equal(hasPostRepairSocialClose(q), true);
+    assert.equal(isDebugDiagnosticSignal(q), false);
+    assert.equal(isDebugDiagnosticRequest(q), false);
+    assert.equal(classifyDebugDiagnosticMove(q), null);
+    const move = evaluateConversationMove(q);
+    assert.notEqual(move?.pipelinePath, "debug_diagnostic_clarify");
+    assert.notEqual(move?.family, "debug_diagnostic");
+    const hit = await runConversationShortCircuit(q);
+    assert.equal(hit?.path, "social_deterministic");
+    assert.equal(hit?.socialPatternName, "social/tone_repair");
+    assert.ok((hit?.reply || "").length < 100);
+    assert.match(hit?.reply || "", /retomb|laisse ça|tant mieux/i);
+    assert.doesNotMatch(
+      hit?.reply || "",
+      /composant|symptôme|log|diagnostic|outil|version/i,
+    );
   });
 
   it("re-salutation dans fil papoter → social_deterministic, pas exploratory", async () => {

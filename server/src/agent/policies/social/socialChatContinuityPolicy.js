@@ -21,6 +21,10 @@ import {
   isBareFamilyCheckinFollowup,
   buildSocialPatternReply,
 } from "./socialPatternPolicy.js";
+import { isMetaConversationIntent } from "../../utils/intent-guards/metaConversationIntentGuards.js";
+import { resolveFramingCorrection } from "../conversation/conversationFramingPolicy.js";
+import { hasInlineMarkupOrFencedCodeDocument } from "../code/codeIntentPolicy.js";
+import { isExistingHtmlPresentationImproveRequest } from "../../utils/intent-guards/webProjectScopingGuards.js";
 
 export const LOCAL_SOCIAL_RAIL_FLAGS = Object.freeze({
   responseMode: "local_social",
@@ -30,8 +34,6 @@ export const LOCAL_SOCIAL_RAIL_FLAGS = Object.freeze({
   skipComposer: true,
   skipWeb: true,
 });
-import { isMetaConversationIntent } from "../../utils/intent-guards/metaConversationIntentGuards.js";
-import { resolveFramingCorrection } from "../conversation/conversationFramingPolicy.js";
 
 export const SOCIAL_CHAT_CONTINUITY_RULE = "social_chat_continuity_g46_2";
 
@@ -303,6 +305,45 @@ export function extractSocialChatTopic(query = "") {
   return (q || raw).slice(0, 80);
 }
 
+const DEV_ARTEFACT_RE =
+  /\b(?:html|css|javascript|js|tsx?|jsx|code|page|site|portfolio|portefolio)\b/i;
+
+const DEV_WORK_VERB_RE =
+  /\b(?:modifi(?:er|e)|am[eé]lior(?:er|e)|aid(?:er|e)|corrig(?:er|e)|refactor(?:er|ise)|debug)\b/i;
+
+/**
+ * Demande dev courte en fil papoter — pas un document collé, pas une tâche déjà cadré.
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function isShortDevWorkOfferFollowup(query = "") {
+  if (hasInlineMarkupOrFencedCodeDocument(query)) return false;
+  const q = norm(query);
+  if (!q || q.length > 420) return false;
+  const words = q.split(/\s+/).filter(Boolean);
+  if (words.length > 48) return false;
+  return DEV_ARTEFACT_RE.test(q) && DEV_WORK_VERB_RE.test(q);
+}
+
+/**
+ * Relance unique, technique, sans cadrage GUIDED_CREATION.
+ * @param {string} query
+ * @returns {string}
+ */
+export function buildShortDevWorkNudgeReply(query = "") {
+  const q = norm(query);
+  if (/\b(?:portfolio|portefolio|pr[eé]sentation)\b/.test(q)) {
+    return "Oui. Tu veux améliorer quoi dans la présentation : le design, la structure, le responsive ou un point précis ?";
+  }
+  if (/\bcss\b/.test(q)) {
+    return "Oui. Tu veux corriger quoi dans ton CSS : un layout, le responsive, un sélecteur, ou un bug précis ?";
+  }
+  if (/\bjavascript\b|\bjs\b/.test(q)) {
+    return "Oui. Tu veux modifier quoi dans ton JS : un comportement, un bug, ou une petite feature ?";
+  }
+  return "Oui. Tu veux modifier quoi dans ton HTML : le design, la structure, le responsive ou un bug précis ?";
+}
+
 /**
  * @param {string} topic
  * @returns {string}
@@ -390,9 +431,27 @@ export function resolveSocialChatContinuityShortCircuit(query = "", options = {}
   ) {
     return null;
   }
+
   const threadOpen =
     isSocialChatThreadActive(history) ||
     isAssistantChatOpenOffer(lastAssistantText(history));
+
+  // Nudge artefact: fil papoter, ou amélioration portfolio HTML (HTTP peut
+  // vider l'historique). Pas « créer une app HTML » (guided).
+  if (
+    isShortDevWorkOfferFollowup(query) &&
+    (threadOpen || isExistingHtmlPresentationImproveRequest(query))
+  ) {
+    return {
+      path: "exploratory_conversation_light",
+      reply: buildShortDevWorkNudgeReply(query),
+      socialChatContinuity: true,
+      devTechnicalNudge: true,
+      topic: extractSocialChatTopic(query),
+      ...LOCAL_SOCIAL_RAIL_FLAGS,
+    };
+  }
+
   if (!threadOpen) return null;
 
   // Fil social ouvert + mini-reprise ambiguë → reste en social (pas general/explain).

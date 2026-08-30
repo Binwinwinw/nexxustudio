@@ -4,7 +4,27 @@ Registre de lots. Pas un GO d’exécution. Pas un changelog de version. Pas le 
 
 Un lot technique ne s’ouvre que sur GO qui le **nomme** + fiche (objectif, périmètre, preuve, invariants, risques).
 
-Dernière mise à jour : 2026-08-29 — `CODE_EXPLAIN_PASTED_PAYLOAD` **clos**. File prioritaire 1→6 **terminée**.
+Dernière mise à jour : 2026-08-30 — `E2E_SOCIAL_HTML_NUDGE_SEQUENCE` **live HTTP validé** (commit local, pas de push). Lots HTML inline / named-create fence non mélangés ici.
+
+---
+
+## E2E_SOCIAL_HTML_NUDGE_SEQUENCE
+
+- Statut : **live validé** — HTTP `/api/stream` VERT. Commit local, pas de push
+- Objectif : preuve **séquentielle** 4 tours (chaque reply → history du tour suivant). Pas Playwright UI.
+- Périmètre :
+  - `server/tests/e2e-social-html-nudge-sequence.test.js`
+  - `socialChatContinuityPolicy.js` — nudge si fil papoter **ou** `isExistingHtmlPresentationImproveRequest`
+  - `agentPipeline.js` — ne pas reset history sur entity pivot si `isShortDevWorkOfferFollowup` ; earlyTurn cède si `devTechnicalNudge`
+  - `conversationMoveContractVerification.js` — `exploratory_conversation_light` n'est pas rewrite `information_seeking`
+  - `intentShortCircuit.js` — step relance technique si `devTechnicalNudge`
+  - `webProjectScopingGuards.js` — `isExistingHtmlPresentationImproveRequest`
+- Hors périmètre : fence named_create / web scoping (lot jumeau) ; Playwright `tests/e2e/` ; self-mod / career ; consume JUST
+- Preuve test : `e2e-social-html-nudge-sequence` **1/1** ; `social-chat-continuity` phrase T4 avec **et sans** history
+- Preuve live : T1 `instant` (INSTANT_RESPONSES salut, papoter) → T2/T3 `social_deterministic` → T4 `exploratory_conversation_light` + relance design/structure/responsive, pas SharePoint, pas guided
+- Invariants : consume JUST gelé ; lots clos intacts ; pas 2e NLU
+- Risques : surface T4 live parfois suffixe du nudge (stream `result`) ; `créer une app HTML` doit rester guided
+- Rollback : retirer exemption path exploratory + garde improve-sans-fil + skip entity pivot
 
 ---
 

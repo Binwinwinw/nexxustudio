@@ -60,6 +60,27 @@ describe("conversationMoveContractVerification — profils", () => {
     );
   });
 
+  it("exploratory_conversation_light + family information_seeking → pas de rewrite preuves ancrées", () => {
+    const q =
+      "et bien on va directement attaquer du lourd, as tu des connaissances en html car je voudrais que tu proposes une amélioration de la présentation de mon portefolio. Pourrais tu m'aider??";
+    assert.equal(
+      resolveMoveContractProfile(
+        { family: "information_seeking" },
+        "exploratory_conversation_light",
+      ),
+      null,
+    );
+    const nudge =
+      "Oui. Tu veux améliorer quoi dans la présentation : le design, la structure, le responsive ou un point précis ?";
+    const verified = verifyMoveContract(nudge, q, {
+      conversationMove: { family: "information_seeking" },
+      pipelinePath: "exploratory_conversation_light",
+    });
+    assert.equal(verified.compliant, true);
+    assert.match(verified.text || nudge, /présentation|design|structure/i);
+    assert.doesNotMatch(verified.text || nudge, /preuves ancrées/i);
+  });
+
   it("meta_capabilities path + family information_seeking → pas de contrat info_seeking", () => {
     assert.equal(
       resolveMoveContractProfile(
