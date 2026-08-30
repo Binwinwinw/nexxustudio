@@ -4,6 +4,7 @@
  */
 import { normalizeArchitectureDesignQuery } from "./architectureDesignIntentGuards.js";
 import { isWebArtifactBuildExclusionForArchitectureDesign } from "./architectureDesignIntentGuards.js";
+import { isGuidedCreationScopingRequest } from "../../policies/guided/guidedCreationScopingPolicy.js";
 
 export const WEB_PROJECT_SCOPING_RULE = "web_project_scoping_not_agent_architecture";
 
@@ -133,6 +134,9 @@ export function isExistingHtmlPresentationImproveRequest(query = "") {
  */
 export function classifyWebProjectScopingRequest(query = "") {
   if (isExistingHtmlPresentationImproveRequest(query)) return null;
+  if (isGuidedCreationScopingRequest(query) && !extractWebProjectPlatform(query)) {
+    return null;
+  }
   if (!isWebProjectScopingRequest(query)) return null;
 
   const platform = extractWebProjectPlatform(query);

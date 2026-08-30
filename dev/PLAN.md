@@ -4,7 +4,7 @@ Registre de lots. Pas un GO d’exécution. Pas un changelog de version. Pas le 
 
 Un lot technique ne s’ouvre que sur GO qui le **nomme** + fiche (objectif, périmètre, preuve, invariants, risques).
 
-Dernière mise à jour : 2026-08-30 — `E2E_SOCIAL_HTML_NUDGE_SEQUENCE` **live HTTP validé** (commit local, pas de push). Lots HTML inline / named-create fence non mélangés ici.
+Dernière mise à jour : 2026-08-30 — `E2E_SOCIAL_HTML_NUDGE_SEQUENCE` + `NAMED_CREATE_WEB_SCOPING_PREEMPT` **live HTTP validé**. Commits locaux, pas de push. Lots HTML inline non rouverts.
 
 ---
 
@@ -25,6 +25,25 @@ Dernière mise à jour : 2026-08-30 — `E2E_SOCIAL_HTML_NUDGE_SEQUENCE` **live 
 - Invariants : consume JUST gelé ; lots clos intacts ; pas 2e NLU
 - Risques : surface T4 live parfois suffixe du nudge (stream `result`) ; `créer une app HTML` doit rester guided
 - Rollback : retirer exemption path exploratory + garde improve-sans-fil + skip entity pivot
+
+---
+
+## NAMED_CREATE_WEB_SCOPING_PREEMPT
+
+- Statut : **live validé** — HTTP `/api/stream` VERT. Commit local, pas de push
+- Objectif : `explicit_named_create` (prio 600) ne vole plus SharePoint / page HTML CMS. App HTML+JSON (carte membre) reste `guided_creation_scoping`. Carte de visite + agent Python inchangés.
+- Périmètre :
+  - `currentTurnAnchoringPolicy.js` — `resolveNamedCreateStartShortCircuit` skip si `classifyWebProjectScopingRequest`
+  - `webProjectScopingGuards.js` — classify skip si guided **et** pas de plateforme extraite
+  - `conversationMoveAuthority.js` — CLARIFY_ONE earlyTurn cède si named_create
+  - `agentPipeline.js` — passe `query` à l'autorité ConversationMove
+- Hors périmètre : social continuity ; self-mod / career ; `guidedCreationScopingPolicy.js` ; JUST consume
+- Preuve test : G11 SharePoint ; `guided-creation-scoping` HTML_MEMBER + PYTHON ; carte de visite named ; authority cède named_create
+- Preuve live : SharePoint → `web_project_scoping_clarify` ; carte membre → `guided_creation_scoping` ; carte de visite → `named_create_start` ; Python → `guided_creation_scoping`
+- Invariants : consume JUST gelé ; une chaîne amont ; lots HTML inline non rouverts
+- Risques : page html association reste web (plateforme `html`) ; skip guided trop large si `extractWebProjectPlatform` trop permissif
+- Hors lot (WIP préexistant) : smoke arch bot → `named_create_start` ; RAG/linter → `ideation_deterministic`
+- Rollback : retirer guards named/web + cession CLARIFY_ONE
 
 ---
 

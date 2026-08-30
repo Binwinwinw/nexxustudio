@@ -1090,6 +1090,7 @@ class AgentPipeline {
     const moveAuthority = applyConversationMoveAuthority({
       conversationMove,
       clarificationGate,
+      query: pipelineQuery,
     });
     const effectiveClarificationGate = moveAuthority.clarificationGate;
 

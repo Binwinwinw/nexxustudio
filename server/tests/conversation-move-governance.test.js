@@ -368,11 +368,25 @@ describe("conversationMoveAuthority — P2 autorité gate", () => {
     const applied = applyConversationMoveAuthority({
       conversationMove: move,
       clarificationGate: { shouldClarify: false },
+      query: SHAREPOINT_QUERY,
     });
     assert.equal(applied.authorityApplied, true);
     assert.ok(applied.earlyTurn?.text);
     assert.equal(applied.earlyTurn.pipelinePath, "web_project_scoping_clarify");
     assert.match(applied.earlyTurn.text, /SharePoint/i);
+  });
+
+  it("cède named_create — carte de visite n'est pas clarification_gate", () => {
+    const q = "créer une carte de visite";
+    const move = evaluateConversationMove(q);
+    const applied = applyConversationMoveAuthority({
+      conversationMove: move,
+      clarificationGate: { shouldClarify: true, pipelinePath: "clarification_gate" },
+      query: q,
+    });
+    assert.equal(applied.earlyTurn, null);
+    assert.equal(applied.clarificationGate.shouldClarify, false);
+    assert.equal(applied.clarificationGate.suppressedByNamedCreate, true);
   });
 });
 

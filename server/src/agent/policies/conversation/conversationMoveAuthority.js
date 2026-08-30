@@ -6,6 +6,7 @@ import {
   CONVERSATION_MOVES,
   shouldRunClarificationGate,
 } from "./conversationMovePolicy.js";
+import { resolveNamedCreateStartShortCircuit } from "./currentTurnAnchoringPolicy.js";
 
 /**
  * @returns {boolean}
@@ -20,6 +21,7 @@ export function isConversationMoveAuthorityEnabled() {
  * @param {{
  *   conversationMove?: object|null,
  *   clarificationGate?: { shouldClarify?: boolean, message?: string, pipelinePath?: string|null },
+ *   query?: string,
  * }} input
  * @returns {{
  *   clarificationGate: object,
@@ -30,6 +32,7 @@ export function isConversationMoveAuthorityEnabled() {
 export function applyConversationMoveAuthority({
   conversationMove = null,
   clarificationGate = {},
+  query = "",
 } = {}) {
   const gate = { ...clarificationGate };
 
@@ -55,6 +58,17 @@ export function applyConversationMoveAuthority({
     conversationMove.move === CONVERSATION_MOVES.CLARIFY_ONE &&
     conversationMove.clarifyQuestion
   ) {
+    if (resolveNamedCreateStartShortCircuit(query)?.reply) {
+      return {
+        clarificationGate: {
+          ...gate,
+          shouldClarify: false,
+          suppressedByNamedCreate: true,
+        },
+        earlyTurn: null,
+        authorityApplied: true,
+      };
+    }
     return {
       clarificationGate: gate,
       earlyTurn: {
