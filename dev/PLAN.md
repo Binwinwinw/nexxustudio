@@ -4,7 +4,27 @@ Registre de lots. Pas un GO d’exécution. Pas un changelog de version. Pas le 
 
 Un lot technique ne s’ouvre que sur GO qui le **nomme** + fiche (objectif, périmètre, preuve, invariants, risques).
 
-Dernière mise à jour : 2026-08-30 — `E2E_SOCIAL_HTML_NUDGE_SEQUENCE` + `NAMED_CREATE_WEB_SCOPING_PREEMPT` **live HTTP validé**. Commits locaux, pas de push. Lots HTML inline non rouverts.
+Dernière mise à jour : 2026-08-30 — `ARCHITECTURE_SMOKE_BOT_RAG_LINTER` **live validé**, commit local, pas de push. Lots HTML inline / social / calendar hors commit.
+
+---
+
+## ARCHITECTURE_SMOKE_BOT_RAG_LINTER
+
+- Statut : **live validé** — tests 83/83, live `/api/stream` 7/7. Commit local, pas de push
+- Objectif : smoke v1.1 — bot audit → `guided_creation_scoping` ; RAG « mettre en place » + linter « plusieurs approches » → `architecture_design_deterministic`. Pas de matrice idéation générique. Pas de gabarit print named-create.
+- Périmètre :
+  - `currentTurnAnchoringPolicy.js` — `resolveNamedCreateStartShortCircuit` skip si `isGuidedCreationScopingRequest`
+  - `reactAuditShortCircuit.js` — G48 emit skip si guided (faux positif « audite »)
+  - `conversationTurnRoutingPolicy.js` — famille G46 IDEATION ne finalise pas si `isArchitectureDesignIntent`
+  - `intentContractRegistry.js` — G48 SIL skip si guided ; G44 SIL skip si architecture
+  - `architectureDesignIntentGuards.js` — yield si `isGuidedCreationScopingRequest` (smoke code-reviewer court)
+  - `server/tests/architecture-design-intent.test.js` + `server/scripts/live-architecture-smoke.mjs`
+- Hors périmètre : `guidedCreationScopingPolicy.js` métier ; HTML inline / self-mod / career ; consume JUST ; 3 commits `4d109be` / `3eb1e6a` / `4980767` ; cleanup `876a74d` ; cartes de visite ; SharePoint
+- Preuve test : smoke v1.1 bot / RAG / linter + non-régression carte de visite, SharePoint, agent Python, idéation ouverte
+- Preuve live : bot → `guided_creation_scoping` ; RAG + linter → `architecture_design_deterministic` ; carte / SharePoint / Python / « Quel projet IA… » inchangés
+- Invariants : consume JUST gelé ; une chaîne amont ; pas de 2e NLU ; pas de shuffle G46/architecture
+- Risques : skip named-create trop large si `isGuidedCreationScopingRequest` s’élargit (carte de visite = false aujourd’hui) ; reply live RAG parfois ancrage « recyclait un cadre » (path OK)
+- Rollback : retirer les `if` locaux + asserts lot + script live
 
 ---
 
@@ -301,7 +321,7 @@ Runtime ~23:00 (historique) : tour 1 social ; tour 2 exploratory « sujet court 
 
 ## État
 
-**File prioritaire 1→6 terminée.** `CODE_EXPLAIN_PASTED_PAYLOAD` **clos**. Aucun lot technique ouvert.
+**File prioritaire 1→6 terminée.** `CODE_EXPLAIN_PASTED_PAYLOAD` **clos**. `ARCHITECTURE_SMOKE_BOT_RAG_LINTER` **commité local**. Lots HTML inline / social / calendar non commités.
 
 Pas d’écriture dans `docs/Journal_de_bord.md` ni `docs/Journal_des_ameliorations.md` sans GO « entrée de version ».
 3 commits posés ; PR texte prête ; pas de push tant que non demandé.

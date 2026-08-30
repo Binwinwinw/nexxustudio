@@ -919,7 +919,8 @@ export function resolveIntentContract(query = "", packet = {}) {
       history: packet?.history || [],
       workspaceRoot: packet?.workspaceRoot,
       packageJsonHasReact: packet?.packageJsonHasReact,
-    })
+    }) &&
+    !isGuidedCreationScopingContractRequest(query, packet)
   ) {
     return {
       contract: DEFAULT_CONTRACT,
@@ -931,7 +932,7 @@ export function resolveIntentContract(query = "", packet = {}) {
     isMetaAssistantBehaviorRequest(query) ||
     isComprehensionDemonstrationRequest(query) ||
     isAssistantUtteranceClarifyRequest(query, { history: packet?.history || [] }) ||
-    isIdeationIntent(query)
+    (isIdeationIntent(query) && !isArchitectureDesignIntent(query))
   ) {
     return {
       contract: DEFAULT_CONTRACT,

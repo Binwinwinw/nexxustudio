@@ -8,6 +8,7 @@ import {
 } from "./reactAuditContractRouter.js";
 import { isReactAuditRequest } from "../../utils/intent-guards/reactAuditIntentGuards.js";
 import { isUiNavigationRestructureFeedback } from "../../utils/conversation/uiNavigationFeedbackGuards.js";
+import { isGuidedCreationScopingRequest } from "../guided/guidedCreationScopingPolicy.js";
 import { RESPONSE_MODES } from "../../config/modeResponseContracts.js";
 
 /**
@@ -72,6 +73,7 @@ export function resolveReactAuditShortCircuit(query = "", options = {}) {
  * @param {object} [options]
  */
 export function resolveReactAuditShortCircuitEmit(query = "", options = {}) {
+  if (isGuidedCreationScopingRequest(query)) return null;
   const hit = resolveReactAuditShortCircuit(query, options);
   if (!hit) return null;
 

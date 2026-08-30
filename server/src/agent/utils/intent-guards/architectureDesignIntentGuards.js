@@ -8,6 +8,7 @@ import { isHtmlProjectDeliverable } from "../../policies/delivery/index.js";
 import {
   isInlineProductBriefPaste,
   isProjectScopingAssistRequest,
+  isGuidedCreationScopingRequest,
 } from "../../policies/guided/index.js";
 import { isCodeConceptExplainRequest } from "../../policies/code/codeConceptExplainPolicy.js";
 import { isProjectIdeaCritiqueRequest } from "./ideationIntentGuards.js";
@@ -184,6 +185,7 @@ export function isSpreadsheetCreateRequest(query = "") {
 
 /** Évite evaluateJustIntent ↔ TLP (admin → technical_overview → ici). */
 function isGuidedCreationInsteadOfArchitecture(query = "") {
+  if (isGuidedCreationScopingRequest(query)) return true;
   if (isProjectScopingAssistRequest(query)) return true;
   if (isInlineProductBriefPaste(query)) return true;
   if (isCodeConceptExplainRequest(query)) return true;

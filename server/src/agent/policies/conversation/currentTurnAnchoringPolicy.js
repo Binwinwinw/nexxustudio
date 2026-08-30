@@ -15,6 +15,7 @@ import {
 } from "../../utils/intent-guards/ideationIntentGuards.js";
 import { isArchitectureDesignIntent } from "../../utils/intent-guards/architectureDesignIntentGuards.js";
 import { classifyWebProjectScopingRequest } from "../../utils/intent-guards/webProjectScopingGuards.js";
+import { isGuidedCreationScopingRequest } from "../guided/guidedCreationScopingPolicy.js";
 import {
   hasImageAttachments,
   isAttachedVisionRequest,
@@ -357,6 +358,7 @@ export function resolveNamedCreateStartShortCircuit(query = "") {
   if (isIdeationIntent(query) || isProjectIdeaCritiqueRequest(query)) return null;
   if (isArchitectureDesignIntent(query)) return null;
   if (classifyWebProjectScopingRequest(query)) return null;
+  if (isGuidedCreationScopingRequest(query)) return null;
   if (
     /\b(?:python|javascript|typescript|java\b|rust|golang|fichier html|\.html)\b/i.test(
       query,

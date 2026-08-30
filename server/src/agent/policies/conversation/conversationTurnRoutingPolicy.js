@@ -29,6 +29,7 @@ import {
   resolveMetaCapabilitiesShortCircuit,
 } from "../meta/metaCapabilitiesPolicy.js";
 import { isExplicitWebSearchRequest } from "../routing/explicitWebSearchRequestPolicy.js";
+import { isArchitectureDesignIntent } from "../../utils/intent-guards/architectureDesignIntentGuards.js";
 
 const SOCIAL_HEALTH_RE =
   /\b(?:comment (?:ca|ça) va|comment vas[- ]?tu|comment allez[- ]?vous|comment vous allez|tu vas bien|vous allez bien|ca va\b|ça va\b|comment tu te sens)\b/i;
@@ -91,6 +92,7 @@ function routeFamilyToShortCircuit(family, query = "", options = {}) {
     case CONVERSATION_TURN_FAMILIES.IDEATION: {
       // Filet : demande web explicite ne doit jamais servir des pistes RAG.
       if (isExplicitWebSearchRequest(query)) return null;
+      if (isArchitectureDesignIntent(query)) return null;
       const hit = resolveOpenPromptContinuityShortCircuit(query, options);
       if (hit?.reply) {
         return {

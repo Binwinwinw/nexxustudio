@@ -25,7 +25,12 @@ const CODE_REVIEWER_QUERY =
 
 import { ARCHITECTURE_DESIGN_SMOKE_V1_1 } from "./fixtures/architectureDesignSmokeV1_1.js";
 import { isGuidedCreationScopingRequest } from "../src/agent/policies/guided/index.js";
-import { isProjectIdeaCritiqueRequest } from "../src/agent/utils/intent-guards/ideationIntentGuards.js";
+import {
+  isProjectIdeaCritiqueRequest,
+  isIdeationIntent,
+} from "../src/agent/utils/intent-guards/ideationIntentGuards.js";
+import { resolveNamedCreateStartShortCircuit } from "../src/agent/policies/conversation/currentTurnAnchoringPolicy.js";
+import { resolveConversationTurnFamilyShortCircuit } from "../src/agent/policies/conversation/conversationTurnRoutingPolicy.js";
 import { resolvePosture } from "../src/agent/policies/posture/posturePolicy.js";
 import { POSTURES } from "../src/agent/policies/posture/sessionModeState.js";
 import { isSubstantiveWorkRequest } from "../src/agent/utils/conversation/genericGreetingGuards.js";
@@ -296,4 +301,63 @@ describe("architecture design — smoke registry v1.1", () => {
       }
     });
   }
+});
+
+describe("ARCHITECTURE_SMOKE_BOT_RAG_LINTER", () => {
+  const BOT = "je veux créer un bot assistant qui audite la qualité du code";
+  const RAG = "comment mettre en place un agent RAG local pour mon dépôt";
+  const LINTER =
+    "propose moi plusieurs approches pour un linter intelligent sur mon repo";
+
+  it("bot audit : skip named_create, SC guided_creation_scoping", async () => {
+    assert.equal(isGuidedCreationScopingRequest(BOT), true);
+    assert.equal(isArchitectureDesignIntent(BOT), false);
+    assert.equal(resolveNamedCreateStartShortCircuit(BOT), null);
+    const hit = await runConversationShortCircuit(BOT);
+    assert.equal(hit?.path, "guided_creation_scoping");
+    assert.equal(hit?.deferToLlm, true);
+  });
+
+  it("RAG dépôt : G46 ideation cède, SC architecture", async () => {
+    assert.equal(isArchitectureDesignIntent(RAG), true);
+    assert.equal(isIdeationIntent(RAG), true);
+    assert.equal(isGuidedCreationScopingRequest(RAG), false);
+    assert.equal(resolveConversationTurnFamilyShortCircuit(RAG), null);
+    const hit = await runConversationShortCircuit(RAG);
+    assert.equal(hit?.path, "architecture_design_deterministic");
+    assert.match(hit?.reply || "", /3 approches/i);
+  });
+
+  it("linter repo : G46 ideation cède, SC architecture", async () => {
+    assert.equal(isArchitectureDesignIntent(LINTER), true);
+    assert.equal(isIdeationIntent(LINTER), true);
+    assert.equal(resolveConversationTurnFamilyShortCircuit(LINTER), null);
+    const hit = await runConversationShortCircuit(LINTER);
+    assert.equal(hit?.path, "architecture_design_deterministic");
+    assert.match(hit?.reply || "", /3 approches/i);
+  });
+
+  it("non-régression : carte de visite named_create ; SharePoint web ; Python guided ; idéation ouverte", async () => {
+    const carte = "créer une carte de visite";
+    assert.equal(isGuidedCreationScopingRequest(carte), false);
+    assert.equal(resolveNamedCreateStartShortCircuit(carte)?.path, "named_create_start");
+    const carteHit = await runConversationShortCircuit(carte);
+    assert.equal(carteHit?.path, "named_create_start");
+
+    const sharepoint =
+      "je voudrais créer un site avec sharepoint pourras tu m'aider à faire cela";
+    assert.equal(resolveNamedCreateStartShortCircuit(sharepoint), null);
+    const spHit = await runConversationShortCircuit(sharepoint);
+    assert.equal(spHit?.path, "web_project_scoping_clarify");
+
+    const python =
+      "j'aimerais créer un agent IA en langage python tu pourrais m'aider à le faire ?";
+    const pyHit = await runConversationShortCircuit(python);
+    assert.equal(pyHit?.path, "guided_creation_scoping");
+
+    const openIdea = "Quel projet IA je pourrais lancer ?";
+    assert.equal(isArchitectureDesignIntent(openIdea), false);
+    const ideaHit = await runConversationShortCircuit(openIdea);
+    assert.equal(ideaHit?.path, "ideation_deterministic");
+  });
 });
