@@ -8,7 +8,10 @@ import {
   isTechnicalLearningPathSignal,
 } from "../../utils/intent-guards/technicalLearningPathIntentGuards.js";
 import { isPrimaryCareerLearningSignal } from "../../utils/intent-guards/careerLearningPathIntentGuards.js";
-import { isInformationSeekingWithTarget } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
+import {
+  isExplicitTextCreationRequest,
+  isInformationSeekingWithTarget,
+} from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import { isLearningRequestWithTarget } from "../../utils/intent-guards/learningRequestIntentGuards.js";
 import { isTranslationRequest, isTranslationDerivedRequest } from "../../utils/intent-guards/translationIntentGuards.js";
 import { isContextReferenceRequest } from "../../utils/intent-guards/contextReferenceIntentGuards.js";
@@ -27,6 +30,7 @@ import {
 } from "../social/socialPatternPolicy.js";
 
 function isSubstantiveWorkRequest(query = "") {
+  if (isExplicitTextCreationRequest(query)) return true;
   const q = normalizeText(query);
   if (!q) return false;
 
@@ -127,7 +131,7 @@ function detectTaskAxis(q) {
 
   const workRequest = isSubstantiveWorkRequest(q);
   const helpRequest = TASK_HELP_RE.test(q);
-  const actionRequest = TASK_ACTION_RE.test(q);
+  const actionRequest = TASK_ACTION_RE.test(q) || isExplicitTextCreationRequest(q);
   const learningShell =
     isStrongTechnicalLearningShell(q) || isTechnicalLearningPathSignal(q);
   const careerShell = isPrimaryCareerLearningSignal(q);

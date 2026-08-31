@@ -5,6 +5,11 @@ import {
   isAssistantUtteranceClarifyRequest,
 } from "../src/agent/policies/qualification/assistantUtteranceClarifyPolicy.js";
 import { isMetaAssistantBehaviorRequest } from "../src/agent/utils/intent-guards/metaAssistantBehaviorGuards.js";
+import {
+  isNamedDefinitionRequest,
+  isIncompleteDefinitionAsk,
+  isExplicitInformationOrDefinitionRequest,
+} from "../src/agent/utils/intent-guards/informationSeekingIntentGuards.js";
 import { resolveMetaAssistantBehaviorShortCircuit } from "../src/agent/policies/meta/metaAssistantBehaviorPolicy.js";
 import { classifyConversationTurn } from "../src/agent/micro/classifiers/conversationTurnType.js";
 import { resolveMetaFeedbackShortCircuit } from "../src/agent/micro/replies/metaFeedbackReplyBuilder.js";
@@ -161,5 +166,141 @@ describe("G44 — meta assistant behavior (critique réflexion)", () => {
       history: SALUT_HISTORY,
     });
     assert.equal(grounding?.path, "comprehension_grounding_deterministic");
+  });
+});
+
+const DEFINITION_THREAD = [
+  { role: "user", content: "salut" },
+  {
+    role: "assistant",
+    content:
+      "Salut ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
+  },
+  { role: "user", content: "saurais tu définir un mot ?" },
+  {
+    role: "assistant",
+    content:
+      "Je ne peux pas définir un mot sans connaître la référence exacte ou le contexte de l'usage que tu as en tête.",
+  },
+];
+
+const DEFINITION_OR_INFO_PATHS = new Set([
+  "information_seeking_full_pipeline",
+  "simple_factual_lookup",
+  "general_knowledge_deterministic",
+  "general_knowledge_full_pipeline",
+]);
+
+const META_FEEDBACK_PATHS = new Set([
+  "meta_conversation_feedback",
+  "meta_feedback_deterministic",
+]);
+
+describe("priorité bruit conversationnel vs demande explicite", () => {
+  it("terme nommé vs placeholder — la classe, pas un libellé", () => {
+    assert.equal(isNamedDefinitionRequest("saurais tu définir un mot ?"), false);
+    assert.equal(isNamedDefinitionRequest("c'est quoi un pull request"), true);
+    assert.equal(
+      isNamedDefinitionRequest("qu'est ce que tu fais de beau ???"),
+      false,
+    );
+    assert.equal(
+      isNamedDefinitionRequest("d'accord alors qu'est ce qu'on peut faire aujourd'hui??"),
+      false,
+    );
+    assert.equal(
+      isNamedDefinitionRequest("le mot c'est pull request"),
+      true,
+    );
+    assert.equal(
+      isNamedDefinitionRequest(
+        'merci de ta réponse, alors la définition du mot que je cherche est "pull request"',
+      ),
+      true,
+    );
+  });
+
+  it("cas incomplets — définir un mot sans X n'est pas une demande nommée", () => {
+    const incomplete = [
+      "saurais tu définir un mot ?",
+      "définis un mot",
+      "je voudrais définir un mot",
+      "je voudrais la définition d'un mot",
+      "peux-tu définir un mot",
+    ];
+    for (const q of incomplete) {
+      assert.equal(isNamedDefinitionRequest(q), false, q);
+      assert.equal(isIncompleteDefinitionAsk(q), true, q);
+      assert.equal(isExplicitInformationOrDefinitionRequest(q), false, q);
+      assert.equal(isMetaAssistantBehaviorRequest(q), false, q);
+    }
+  });
+  it("remerciement + définition nommée → info/définition, pas méta", async () => {
+    const q =
+      'merci de ta réponse, alors la définition du mot que je cherche est "pull request"';
+    assert.equal(isMetaAssistantBehaviorRequest(q), false);
+    const hit = await runConversationShortCircuit(q, { history: DEFINITION_THREAD });
+    assert.equal(DEFINITION_OR_INFO_PATHS.has(hit?.path), true, hit?.path);
+    assert.equal(META_FEEDBACK_PATHS.has(hit?.path), false);
+  });
+
+  it("wrap ok/alors + définition nommée → info/définition", async () => {
+    const q = "ok alors définis pull request";
+    assert.equal(isMetaAssistantBehaviorRequest(q), false);
+    const hit = await runConversationShortCircuit(q, { history: DEFINITION_THREAD });
+    assert.equal(DEFINITION_OR_INFO_PATHS.has(hit?.path), true, hit?.path);
+    assert.equal(META_FEEDBACK_PATHS.has(hit?.path), false);
+  });
+
+  it("demande directe → info/définition", async () => {
+    const q = "c'est quoi un pull request";
+    assert.equal(isMetaAssistantBehaviorRequest(q), false);
+    const hit = await runConversationShortCircuit(q, { history: [] });
+    assert.equal(DEFINITION_OR_INFO_PATHS.has(hit?.path), true, hit?.path);
+    assert.equal(META_FEEDBACK_PATHS.has(hit?.path), false);
+  });
+
+  it("reformulation courte avec terme nommé → info/définition", async () => {
+    const q = "le mot c'est pull request";
+    assert.equal(isMetaAssistantBehaviorRequest(q), false);
+    const hit = await runConversationShortCircuit(q, { history: DEFINITION_THREAD });
+    assert.equal(DEFINITION_OR_INFO_PATHS.has(hit?.path), true, hit?.path);
+    assert.equal(META_FEEDBACK_PATHS.has(hit?.path), false);
+  });
+
+  it("demande ambiguë sans terme — pas info-seeking, pas méta", async () => {
+    const incomplete = [
+      "saurais tu définir un mot ?",
+      "définis un mot",
+      "je voudrais définir un mot",
+      "je voudrais la définition d'un mot",
+      "peux-tu définir un mot",
+    ];
+    for (const q of incomplete) {
+      const hit = await runConversationShortCircuit(q, { history: SALUT_HISTORY });
+      assert.equal(DEFINITION_OR_INFO_PATHS.has(hit?.path), false, `${q} → ${hit?.path}`);
+      assert.equal(META_FEEDBACK_PATHS.has(hit?.path), false, q);
+    }
+  });
+
+  it("merci seul après définition — pas méta, pas info-seeking", async () => {
+    const q = "merci de ta réponse";
+    assert.equal(isMetaAssistantBehaviorRequest(q), false);
+    const hit = await runConversationShortCircuit(q, { history: DEFINITION_THREAD });
+    assert.notEqual(hit?.path, "information_seeking_full_pipeline");
+    assert.equal(META_FEEDBACK_PATHS.has(hit?.path), false);
+  });
+
+  it("vrai méta réflexion → meta_conversation_feedback", async () => {
+    const q = "là, on dirait que tu réponds sans réfléchir";
+    assert.equal(isMetaAssistantBehaviorRequest(q), true);
+    const hit = await runConversationShortCircuit(q, { history: DEFINITION_THREAD });
+    assert.equal(hit?.path, "meta_conversation_feedback");
+  });
+
+  it("vrai méta hors-sujet reste un rail méta", async () => {
+    const q = "ta réponse était hors sujet";
+    const hit = await runConversationShortCircuit(q, { history: DEFINITION_THREAD });
+    assert.equal(META_FEEDBACK_PATHS.has(hit?.path), true, hit?.path);
   });
 });

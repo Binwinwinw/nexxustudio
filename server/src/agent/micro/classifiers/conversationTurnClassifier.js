@@ -22,6 +22,7 @@ import {
   isMetaCapabilitiesIntent,
 } from "../../policies/meta/index.js";
 import { isExplicitWebSearchRequest } from "../../policies/routing/explicitWebSearchRequestPolicy.js";
+import { isExplicitInformationOrDefinitionRequest } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 
 export const CONVERSATION_TURN_FAMILIES = Object.freeze({
   SOCIAL_CHECKIN: "social_checkin",
@@ -370,6 +371,16 @@ export function classifyConversationTurnFamily(query = "", options = {}) {
   ) {
     scores[CONVERSATION_TURN_FAMILIES.META_CRITIQUE_ASSISTANT] *= 0.55;
     signals.push("comprehension_over_meta");
+  }
+
+  if (isExplicitInformationOrDefinitionRequest(query)) {
+    scores[CONVERSATION_TURN_FAMILIES.TASK_REQUEST] = Math.max(
+      scores[CONVERSATION_TURN_FAMILIES.TASK_REQUEST],
+      0.86,
+    );
+    scores[CONVERSATION_TURN_FAMILIES.SOCIAL_CHECKIN] *= 0.35;
+    scores[CONVERSATION_TURN_FAMILIES.META_CRITIQUE_ASSISTANT] *= 0.35;
+    signals.push("explicit_ask_over_conversational_noise");
   }
 
   const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1]);

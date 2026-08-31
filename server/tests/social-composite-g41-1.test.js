@@ -6,7 +6,7 @@ import {
   buildIdentityCapabilityCompositeReply,
   resolveSocialCompositeShortCircuit,
 } from "../src/agent/policies/social/index.js";
-import { isCapabilityOverviewRequest } from "../src/agent/utils/metaConversationIntentGuards.js";
+import { isCapabilityOverviewRequest } from "../src/agent/utils/intent-guards/metaConversationIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 
 const IDENTITY_CAP_QUERY =

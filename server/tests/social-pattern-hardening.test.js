@@ -19,11 +19,11 @@ import {
   isSimpleFactualQuestion,
   resolveIntentDomain,
 } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
-import { shouldAllowClarifyThenBuild } from "../src/agent/utils/deliverableMandateGuards.js";
+import { shouldAllowClarifyThenBuild } from "../src/agent/utils/context/deliverableMandateGuards.js";
 import { isConversationSocialOnlyQuery } from "../src/agent/policies/intent/conversationIntentFrame.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
-import { isGeneralKnowledgeRequest } from "../src/agent/utils/generalKnowledgeIntentGuards.js";
-import { classifyMetaConversationIntent } from "../src/agent/utils/metaConversationIntentGuards.js";
+import { isGeneralKnowledgeRequest } from "../src/agent/utils/intent-guards/generalKnowledgeIntentGuards.js";
+import { classifyMetaConversationIntent } from "../src/agent/utils/intent-guards/metaConversationIntentGuards.js";
 import { INTENT_DOMAINS } from "../../shared/justIntentCatalog.js";
 
 const CONVERSATION_CASES = [
@@ -63,6 +63,12 @@ const CONVERSATION_CASES = [
     mustNotFactual: true,
   },
   {
+    query: "qu'est-ce que tu tu veux faire ou continuer à faire ?",
+    patternName: "social/meta_who_drives",
+    mustNotClarify: true,
+    mustNotFactual: true,
+  },
+  {
     query: "je veux faire quoi maintenant ??",
     patternName: "social/meta_who_drives",
     mustNotClarify: true,
@@ -82,6 +88,20 @@ const CONVERSATION_CASES = [
   },
   {
     query: "qu'est ce que tu fais de beau ???",
+    patternName: "social/phatic_checkin",
+    mustNotClarify: true,
+    mustNotFactual: true,
+    mustNotGeneralKnowledge: true,
+  },
+  {
+    query: "qu'est-ce que tu fais ?",
+    patternName: "social/phatic_checkin",
+    mustNotClarify: true,
+    mustNotFactual: true,
+    mustNotGeneralKnowledge: true,
+  },
+  {
+    query: "qu'est ce que tu fais de beau§??",
     patternName: "social/phatic_checkin",
     mustNotClarify: true,
     mustNotFactual: true,
@@ -131,17 +151,26 @@ const CONVERSATION_CASES = [
     mustNotHeavyPipeline: true,
   },
   {
+    query: "salut comment ca va ??? tu es prêt à tafer ?",
+    patternName: "social/work_ready",
+    mustNotClarify: true,
+    mustNotFactual: true,
+    mustNotHeavyPipeline: true,
+  },
+  {
     query: "j'ai mal au ventre qu'est ce que tu peux faire pour cela ?",
     patternName: "social/personal_discomfort",
     mustNotClarify: true,
     mustNotFactual: true,
-    // GK / méta capability peuvent encore scorer — le short-circuit social prime.
+    // Aide verbée (« tu peux ») = task surface ; SC social prime quand même.
+    allowTaskSurface: true,
   },
   {
     query: "j'ai fais caca bleu tu saurais d'ou ca peut venir ?",
     patternName: "social/personal_discomfort",
     mustNotClarify: true,
     mustNotFactual: true,
+    allowTaskSurface: true,
   },
   {
     query: "j'ai pipi au lit d'ou ça peut venir ?",
@@ -202,7 +231,9 @@ describe("G35 social_pattern_hardening — classification", () => {
       assert.equal(hit.patternName, item.patternName);
       assert.ok(hit.reply.length > 20);
       assert.equal(isKnownSocialPattern(item.query), true);
-      assert.equal(isConversationSocialOnlyQuery(item.query), true);
+      if (!item.allowTaskSurface) {
+        assert.equal(isConversationSocialOnlyQuery(item.query), true);
+      }
     });
   }
 
@@ -216,8 +247,12 @@ describe("G35 social_pattern_hardening — classification", () => {
       null,
     );
     assert.equal(
-      isPhaticSocialCheckinIntent("qu'est-ce que tu fais pour corriger ce bug"),
+      isPhaticSocialCheckinIntent("qu'est-ce que tu fais pour corriger ce bug ?"),
       false,
+    );
+    assert.equal(
+      classifySocialPattern("fichier prêt à l'emploi pour copier"),
+      null,
     );
   });
 
@@ -227,6 +262,35 @@ describe("G35 social_pattern_hardening — classification", () => {
     assert.ok(hit?.blockedPaths.includes("clarification_gate"));
     assert.ok(hit?.blockedPaths.includes("simple_factual_lookup"));
     assert.deepEqual(hit?.blockedPaths, [...SOCIAL_PATTERN_BLOCKED_PATHS]);
+  });
+});
+
+describe("G35 social_pattern_hardening — frontière phatique / invite / travail", () => {
+  it("phatique nu vs invitation vs travail relâché", async () => {
+    const phatic = "qu'est-ce que tu fais ?";
+    const invite = "salut et si on papotait ?";
+    const work = "qu'est-ce que tu fais pour corriger ce bug ?";
+
+    assert.equal(isPhaticSocialCheckinIntent(phatic), true);
+    assert.equal(isPhaticSocialCheckinIntent(invite), false);
+    assert.equal(isPhaticSocialCheckinIntent(work), false);
+
+    assert.equal(classifySocialPattern(phatic)?.patternName, "social/phatic_checkin");
+    assert.equal(classifySocialPattern(invite)?.patternName, "social/chat_invite");
+    assert.notEqual(classifySocialPattern(work)?.patternName, "social/phatic_checkin");
+
+    const phaticHit = await runConversationShortCircuit(phatic);
+    assert.equal(phaticHit?.path, "social_deterministic");
+    assert.equal(phaticHit?.socialPatternName, "social/phatic_checkin");
+    assert.doesNotMatch(phaticHit?.reply || "", /Tu mentionnes|clarifier de quoi/i);
+
+    const inviteHit = await runConversationShortCircuit(invite);
+    assert.equal(inviteHit?.socialPatternName, "social/chat_invite");
+    assert.notEqual(inviteHit?.socialPatternName, "social/phatic_checkin");
+
+    const workHit = await runConversationShortCircuit(work);
+    assert.notEqual(workHit?.socialPatternName, "social/phatic_checkin");
+    assert.doesNotMatch(workHit?.reply || "", /Tu mentionnes|clarifier de quoi/i);
   });
 });
 

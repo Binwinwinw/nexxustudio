@@ -2,6 +2,7 @@
  * META_ASSISTANT_BEHAVIOR — critique UX / comportement de l'assistant (pas mandat métier).
  */
 import { normalizeText as normalizeTextBase } from "../parsing-normalization/normalizationGuards.js";
+import { isExplicitInformationOrDefinitionRequest } from "./informationSeekingIntentGuards.js";
 
 const BEHAVIOR_CRITIQUE_PATTERNS = [
   /\btu penses qu.{0,60}(reflechir|réfléchir|penser)\b/i,
@@ -16,14 +17,14 @@ const BEHAVIOR_CRITIQUE_PATTERNS = [
   /\btu comprends ce que\b/i,
   /\b(?:a|à) quel moment\b.{0,40}\b(?:comprends|montrer|montre)\b/i,
   /\b(avant de repondre|avant de répondre)\b/i,
-  /\b(ton comportement|ta reponse|ta réponse|tes reponses|tes réponses)\b/i,
+  /\bton comportement\b/i,
+  /\b(reponse|réponse).{0,40}(chelou|bizarre|etrange|étrange|nul|pas bien|hors sujet|mauvaise?|pas (?:clair|correcte?)|un echec|un échec)\b/i,
   /\bpourquoi tu reponds\b/i,
   /\bpourquoi tu réponds\b/i,
   /\bj aimerais que tu (?:reflechisses|réfléchisses|penses)\b/i,
   /\btu ne (?:reflechis|réfléchis) pas\b/i,
   /\breflechir avant\b/i,
   /\bréfléchir avant\b/i,
-  /\b(reponse|réponse).{0,30}(chelou|bizarre|etrange|étrange|nul|pas bien)\b/i,
   /\b(comportement|clarification).{0,30}(chelou|bizarre|trop|agressif|penible|pénible)\b/i,
   /\btu (?:ne )?reflechis\b/i,
   /\btu (?:ne )?réfléchis\b/i,
@@ -62,6 +63,7 @@ function normalizeText(input = "") {
 export function isMetaAssistantBehaviorRequest(query = "") {
   const q = normalizeText(query);
   if (!q || q.length < 12) return false;
+  if (isExplicitInformationOrDefinitionRequest(query)) return false;
   return BEHAVIOR_CRITIQUE_PATTERNS.some((pattern) => pattern.test(q));
 }
 

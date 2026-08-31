@@ -4,6 +4,7 @@
  */
 import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { isSubstantiveWorkRequest } from "../../utils/conversation/genericGreetingGuards.js";
+import { isExplicitInformationOrDefinitionRequest } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import {
   isAssistantChatOpenOffer,
   isSocialChatThreadActive,
@@ -62,6 +63,7 @@ export function isPapoterAcceptanceSurface(query = "") {
   const q = norm(query);
   if (!q || q.length < 6 || q.length > 120) return false;
   if (isSubstantiveWorkRequest(query)) return false;
+  if (isExplicitInformationOrDefinitionRequest(query)) return false;
   if (SUBSTANTIVE_PAPOTER_TOPIC_RE.test(q)) return false;
   return ACCEPT_PAPOTER_RE.test(q) || BARE_ACCEPT_PAPOTER_RE.test(q);
 }

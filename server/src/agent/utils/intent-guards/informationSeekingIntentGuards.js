@@ -309,10 +309,16 @@ function cleanDefinitionTarget(raw = "") {
     .trim();
 }
 
+/** « qu'est-ce que tu fais » n'est pas une définition du clause d'activité. */
+const ACTIVITY_CLAUSE_TARGET_RE =
+  /^(?:tu|vous|on|je|nous)\s+(?:fais|faites|peux|peut|pouvez|veux|veut|voulez|voudrais)\b/i;
+
 function isUsableDefinitionTarget(raw = "") {
   const target = cleanDefinitionTarget(raw);
   if (target.length < 2 || target.length > 64) return false;
-  return !GENERIC_DEFINITION_PLACEHOLDER_RE.test(target);
+  if (GENERIC_DEFINITION_PLACEHOLDER_RE.test(target)) return false;
+  if (ACTIVITY_CLAUSE_TARGET_RE.test(target)) return false;
+  return true;
 }
 
 /**

@@ -5,6 +5,7 @@
 import { parseFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { isHowToRequestShell } from "../../utils/intent-guards/howToRequestIntentGuards.js";
 import { isRecipeKnowledgeRequest } from "../../utils/intent-guards/recipeKnowledgeIntentGuards.js";
+import { isExplicitInformationOrDefinitionRequest } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import {
   isCapabilityOverviewRequest,
   isMetaConversationIntent,
@@ -176,6 +177,7 @@ function buildAngleRelaunch(subject, { context = null, example = null } = {}) {
 export function resolveExploratorySubjectAngleShortCircuit(query = "") {
   if (resolveFramingCorrection(query)) return null;
   if (isHowToRequestShell(query) || isRecipeKnowledgeRequest(query)) return null;
+  if (isExplicitInformationOrDefinitionRequest(query)) return null;
   if (DIRECT_ANGLE_RE.test(query)) return null;
   if (
     isCapabilityOverviewRequest(query) ||
