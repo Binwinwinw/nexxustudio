@@ -4,7 +4,54 @@ Registre de lots. Pas un GO d’exécution. Pas un changelog de version. Pas le 
 
 Un lot technique ne s’ouvre que sur GO qui le **nomme** + fiche (objectif, périmètre, preuve, invariants, risques).
 
-Dernière mise à jour : 2026-08-30 — `ARCHITECTURE_SMOKE_BOT_RAG_LINTER` **live validé**, commit local, pas de push. Lots HTML inline / social / calendar hors commit.
+Dernière mise à jour : 2026-08-31 — `DOC_SOURCE_OF_TRUTH_V1` **verif OK**, pas commité. Routing HTML / social / calendar / architecture commité local, pas de push.
+
+---
+
+## DOC_SOURCE_OF_TRUTH_V1
+
+- Statut : **verif OK** — pas commité. GO 2026-08-31
+- Objectif : figer la hiérarchie documentaire Citadelle ; aligner `dev/PLAN.md` sur les commits réels ; snapshot ops 2026-08-29 inchangé comme daté.
+- Périmètre : `docs/governance/documentation-source-of-truth.md` ; `docs/ops/clotures-2026-08-29.md` ; `dev/PLAN.md` (statuts clos seulement)
+- Hors périmètre : FEEDBACK / health-incidents ; `.cursor/` ; `.cursorrules` ; PDF philo ; routing ; JUST consume ; journaux de version
+- Preuve : liens de la carte existent ; fiches PLAN des lots 30–31 portent les SHA ; clôtures 29 restent un snapshot
+- Invariants : canon input non recopié ; `docs/` ≠ registre de lots ; pas d’entrée Journal sans GO version
+- Risques : fusionner le snapshot 29 avec les commits du 30 ; traiter le telemetry JSON comme de la doc
+- Rollback : retirer la fiche + les trois fichiers hors Git si non commité
+
+---
+
+## SOCIAL_META_CALENDAR_ROUTING_V1
+
+- Statut : **clos** — commits `e96c69a` (social/meta) + `756ea98` (calendar). GO 2026-08-30
+- Objectif : routing social / meta / framing (check-in, G41/G44, acceptance, intent frame) ; calendar lookup sur consigne réelle, pas copy HTML collé.
+- Périmètre :
+  - A : `conversationTurnClassifier.js`, `conversationFramingPolicy.js`, `conversationIntentFrame.js`, `socialAcceptanceOfOfferPolicy.js`, `metaAssistantBehaviorGuards.js`, `informationSeekingIntentGuards.js` (cible définition : pas « tu fais / on peut ») + tests `social-meta-g44`, `social-composite-g41-1`, `social-pattern-hardening`
+  - B : `externalCalendarLookupIntentGuards.js` + `external-calendar-lookup-routing.test.js`
+- Hors périmètre : HTML inline V1/V2 ; self-mod / career ; guided ; architecture ; JUST consume ; PLAN / FEEDBACK / docs / `.cursor`
+- Preuve : tests sociaux G41/G44/pattern + calendar lookup ; live HTTP optionnel (check-in, méta, pleine lune)
+- Invariants : consume JUST gelé ; une chaîne amont ; pas de 2e NLU ; pas de reorder SC global
+- Risques : skip meta trop large si `ta réponse` + définition ; skip calendar trop large si consigne vide (HTML seul)
+- Rollback : retirer les gardes locales du dirty tree
+- Commits : `e96c69a` + `756ea98` (deux intentions). Pas de push
+
+---
+
+## WEB_HTML_INLINE_ORCHESTRATION_V2
+
+- Statut : **clos** — commit `355c090`. GO 2026-08-30
+- Objectif : payload HTML collé / aide HTML utilisateur — `self_modification` et `career_learning_path` ne préemptent plus. Rails HTML/code. Non-régression self-mod runtime et carrière sans HTML.
+- Périmètre :
+  - `intentGuards.js` — skip self-mod si artefact HTML utilisateur
+  - `careerLearningPathIntentGuards.js` — career sur consigne, pas le copy HTML
+  - `guidedCreationScopingPolicy.js` — HTML collé ≠ brief produit ; improve collé ≠ cadrage création
+  - `codeIntentPolicy.js` — `pastedDocumentMandateText` exporté
+  - tests : `self-modification-guard.test.js`, `pasted-html-payload-routing.test.js`
+- Hors périmètre : social / calendar / framing ; JUST consume ; lots clos (`4d109be`, `3eb1e6a`, `4980767`, `5fc3bc2`, `876a74d`)
+- Preuve : `pasted-html-payload-routing` + `self-modification-guard` verts. Aide HTML : SC `exploratory_conversation_light`, JUST `web_html`. Portfolio collé : pas career/self/guided, JUST `web_html`. Self-mod runtime et carrière sans HTML inchangés.
+- Invariants : consume JUST gelé ; une chaîne amont ; pas de 2e NLU
+- Risques : skip guided trop large sur « créer une app HTML » + paste ; skip self-mod trop large si « tes fichiers » + html
+- Rollback : retirer gardes locales + asserts
 
 ---
 
@@ -62,8 +109,33 @@ Dernière mise à jour : 2026-08-30 — `ARCHITECTURE_SMOKE_BOT_RAG_LINTER` **li
 - Preuve live : SharePoint → `web_project_scoping_clarify` ; carte membre → `guided_creation_scoping` ; carte de visite → `named_create_start` ; Python → `guided_creation_scoping`
 - Invariants : consume JUST gelé ; une chaîne amont ; lots HTML inline non rouverts
 - Risques : page html association reste web (plateforme `html`) ; skip guided trop large si `extractWebProjectPlatform` trop permissif
-- Hors lot (WIP préexistant) : smoke arch bot → `named_create_start` ; RAG/linter → `ideation_deterministic`
+- Hors lot à l’époque : smoke arch bot / RAG-linter — **clos** depuis par `ARCHITECTURE_SMOKE_BOT_RAG_LINTER` (`5fc3bc2`)
 - Rollback : retirer guards named/web + cession CLARIFY_ONE
+
+---
+
+## WEB_HTML_INLINE_EXPLORATORY_CONTINUITY_FALSE_POSITIVE
+
+- Statut : **clos (superseded)** — mécanisme nudge dans `4d109be` (`E2E_SOCIAL_HTML_NUDGE_SEQUENCE`). Ne pas rouvrir.
+- Objectif : en fil papoter, une demande **courte avec signal dev net** (HTML/CSS/JS/code/page/site + aider/modifier/corriger…) ne doit être ni du bavardage social LLM, ni un contrat lourd `GUIDED_CREATION_SCOPING`. Sortie : **relance technique brève, déterministe**. JUST / triage restent shadow.
+- Périmètre :
+  - `server/src/agent/policies/social/socialChatContinuityPolicy.js` — `isShortDevWorkOfferFollowup` + `buildShortDevWorkNudgeReply`
+  - `intentShortCircuit.js` — step relance technique si `devTechnicalNudge`
+  - `webProjectScopingGuards.js` — `isExistingHtmlPresentationImproveRequest`
+- Hors périmètre : `WEB_HTML_INLINE_ORCHESTRATION` (self-mod / career) ; recall ; consume JUST
+- Note : code nudge absorbé par `4d109be`. Self-mod / career HTML : `355c090`.
+
+---
+
+## WEB_HTML_INLINE_ORCHESTRATION
+
+- Statut : **clos (superseded)** — absorbé par `WEB_HTML_INLINE_ORCHESTRATION_V2` commit `355c090`. Ne pas rouvrir.
+- Objectif : quand la demande est un artefact HTML utilisateur, `self_modification_deterministic` et `career_learning_path` ne préemptent plus.
+- Périmètre :
+  - `server/src/agent/utils/intent-guards/intentGuards.js`
+  - `server/src/agent/utils/intent-guards/careerLearningPathIntentGuards.js`
+  - tests : `self-modification-guard.test.js`, `career-learning-path-routing.test.js`, `pasted-html-payload-routing.test.js`
+- Note : working tree de ce V1 n’existe plus ; preuve dans `355c090`.
 
 ---
 
@@ -84,7 +156,7 @@ Dernière mise à jour : 2026-08-30 — `ARCHITECTURE_SMOKE_BOT_RAG_LINTER` **li
 - Invariants : consume JUST gelé ; une chaîne amont ; pas de 2e NLU ; recall inchangé
 - Risques résiduels : détecteur HTML/fence dupliqué (pas d’import recall) ; lexique G40/`résume` dans un copy HTML hors marqueurs collés ; `intent-triage-classifier.test.js` seul : cycle ESM `pythonDeliveryPolicy` **préexistant** (WIP) — preuve triage dans `code-intent-policy`
 - Rollback : retirer `codeIntentMandateText` / skip triage payload + tests suite collée
-- Prochain pas : commit path-by-path **sur demande** (working tree sale) ; pas de push
+- Commit : `21d2ad8`. Pas de push. Ne pas rouvrir.
 
 ---
 
@@ -321,8 +393,8 @@ Runtime ~23:00 (historique) : tour 1 social ; tour 2 exploratory « sujet court 
 
 ## État
 
-**File prioritaire 1→6 terminée.** `CODE_EXPLAIN_PASTED_PAYLOAD` **clos**. `ARCHITECTURE_SMOKE_BOT_RAG_LINTER` **commité local**. Lots HTML inline / social / calendar non commités.
+**File prioritaire 1→6 terminée.** Routing HTML / social / calendar / architecture / cleanup **commité local**, pas de push. `DOC_SOURCE_OF_TRUTH_V1` **verif OK**, pas commité. FEEDBACK hors lot.
 
 Pas d’écriture dans `docs/Journal_de_bord.md` ni `docs/Journal_des_ameliorations.md` sans GO « entrée de version ».
-3 commits posés ; PR texte prête ; pas de push tant que non demandé.
+Pas de push tant que non demandé.
 Candidats d’audit A–E : [`dev/AUDIT-2026-08-29.md`](AUDIT-2026-08-29.md) seulement — **pas ouverts**, hors backlog registre.
