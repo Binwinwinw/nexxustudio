@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {
   isExplicitWebToolInvocationRequest,
   isExternalCalendarLookupRequest,
+  isExternalDateLookupRequest,
   isLocalDatetimeRequest,
   shouldBypassLocalDatetimeShortCircuit,
   buildExternalCalendarWebQuery,
@@ -74,4 +75,34 @@ test("policy — resolveExternalCalendarLookupShortCircuit", () => {
   const hit = resolveExternalCalendarLookupShortCircuit(FULL_MOON_Q);
   assert.equal(hit?.path, "simple_factual_lookup");
   assert.equal(hit?.factType, "external_calendar");
+});
+
+function portfolioImproveWithCalendarCopy() {
+  return [
+    "voici mon portfolio une page html qu'il faut améliorer donc propose des améliorations du code suivant :",
+    '<!DOCTYPE html><html lang="fr"><body>',
+    "<p>Si vous cherchez un développeur capable de transformer une idée.</p>",
+    "<h2>Parlons de votre prochain projet</h2>",
+    "<p>Une approche produit avant tout. Calendrier lunaire des événements.</p>",
+    "<footer>© 2026 BinWinWinW</footer>",
+    "</body></html>",
+  ].join("\n");
+}
+
+test("HTML collé — cherchez + prochain dans le copy ≠ calendrier externe", async () => {
+  const q = portfolioImproveWithCalendarCopy();
+  assert.equal(isExternalCalendarLookupRequest(q), false);
+  assert.equal(isExternalDateLookupRequest(q), false);
+  assert.equal(resolveExternalCalendarLookupShortCircuit(q), null);
+  const hit = await runConversationShortCircuit(q);
+  assert.notEqual(hit?.externalCalendarLookup, true);
+  assert.notEqual(
+    hit?.path === "simple_factual_lookup" && hit?.externalCalendarLookup,
+    true,
+  );
+});
+
+test("pleine lune avant un HTML collé reste un lookup calendaire", () => {
+  const q = `${FULL_MOON_Q}\n<!DOCTYPE html><html><body>ok</body></html>`;
+  assert.equal(isExternalCalendarLookupRequest(q), true);
 });

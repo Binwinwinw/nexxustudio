@@ -4,6 +4,7 @@
  */
 import { normalizeText } from "../parsing-normalization/normalizationGuards.js";
 import { isHistoricalDateQuestion, isRelativeOrFutureDatetimeQuestion } from "../../micro/replies/simpleFactualComposer.js";
+import { pastedDocumentMandateText } from "../../policies/code/codeIntentPolicy.js";
 
 const EXTERNAL_CALENDAR_EVENT_RE =
   /\b(?:pleine\s+lune|nouvelle\s+lune|derni[eè]re\s+lune|lune\s+bleue|phase\s+(?:de\s+la\s+)?lune|calendrier\s+lunaire|[eé]clipse\s+(?:lunaire|solaire)?|solstice|[eé]quinoxe)\b/i;
@@ -28,12 +29,17 @@ function normalize(query = "") {
   return normalizeText(query).trim();
 }
 
+/** Consigne seule si un document HTML/fence est collé — le copy n'est pas la question. */
+function normalizeMandate(query = "") {
+  return normalize(pastedDocumentMandateText(query));
+}
+
 /**
  * @param {string} query
  * @returns {boolean}
  */
 export function isExplicitWebToolInvocationRequest(query = "") {
-  return EXPLICIT_WEB_TOOL_RE.test(normalize(query));
+  return EXPLICIT_WEB_TOOL_RE.test(normalizeMandate(query));
 }
 
 /**
@@ -41,7 +47,7 @@ export function isExplicitWebToolInvocationRequest(query = "") {
  * @returns {boolean}
  */
 export function isExternalCalendarLookupRequest(query = "") {
-  const q = normalize(query);
+  const q = normalizeMandate(query);
   if (!q) return false;
   if (EXTERNAL_CALENDAR_EVENT_RE.test(q)) return true;
   if (FUTURE_EVENT_RE.test(q) && /\b(?:lune|soleil|astre|astronomi)/i.test(q)) {
@@ -56,11 +62,12 @@ export function isExternalCalendarLookupRequest(query = "") {
  * @returns {boolean}
  */
 export function isExternalDateLookupRequest(query = "") {
-  const q = normalize(query);
+  const mandate = pastedDocumentMandateText(query);
+  const q = normalize(mandate);
   if (!q) return false;
-  if (isHistoricalDateQuestion(query)) return false;
-  if (isRelativeOrFutureDatetimeQuestion(query)) return false;
-  if (isLocalDatetimeRequest(query)) return false;
+  if (isHistoricalDateQuestion(mandate)) return false;
+  if (isRelativeOrFutureDatetimeQuestion(mandate)) return false;
+  if (isLocalDatetimeRequest(mandate)) return false;
   if (!GENERIC_DATE_QUESTION_RE.test(q) && !EXTERNAL_LOOKUP_VERB_RE.test(q)) {
     return false;
   }
@@ -81,7 +88,7 @@ export function isExternalDateLookupRequest(query = "") {
  * @returns {boolean}
  */
 export function isLocalDatetimeRequest(query = "") {
-  return LOCAL_DATETIME_RE.test(normalize(query));
+  return LOCAL_DATETIME_RE.test(normalizeMandate(query));
 }
 
 /**
@@ -102,7 +109,7 @@ export function shouldBypassLocalDatetimeShortCircuit(query = "") {
  * @returns {string}
  */
 export function buildExternalCalendarWebQuery(query = "") {
-  const q = normalize(query);
+  const q = normalizeMandate(query);
   if (/\bpleine\s+lune\b/i.test(q)) {
     return "prochaine pleine lune date calendrier lunaire";
   }
