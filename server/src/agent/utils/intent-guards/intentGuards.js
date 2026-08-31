@@ -60,7 +60,6 @@ const SELF_MODIFICATION_PATTERNS = [
 ];
 
 const INTERNAL_SYSTEM_PATTERNS = [
-  /\bfichier(s)?\b/,
   /\btes fichiers\b/,
   /\btes composants\b/,
   /\bce qui te compose\b/,
@@ -71,16 +70,14 @@ const INTERNAL_SYSTEM_PATTERNS = [
   /\bagentpipeline\b/,
   /\btextguards\b/,
   /\bintentguards\b/,
-  /\bprompt\b/,
-  /\bconfiguration\b/,
-  /\bmodule\b/,
-  /\bpipeline\b/,
-  /\bsource\b/,
-  /\bcode\b/,
+  /\b(?:ton|tes|votre|vos)\s+prompts?\b/,
+  /\bsystem prompt\b/,
+  /\b(?:ton|tes|votre|vos)\s+codes?\b/,
+  /\bcode (?:source )?(?:de |du |de la )?(?:citadelle|nexxus|runtime|orchestrateur)\b/,
   /\binternal files\b/,
   /\bsystem files\b/,
   /\byour files\b/,
-  /\byour components\b/
+  /\byour components\b/,
 ];
 
 function matchesAny(text, patterns) {
@@ -101,12 +98,22 @@ const EXTERNAL_FILE_TARGET_PATTERNS = [
   /\bprojects\//,
   /\bforge\//,
   /\bserver\/data\//,
-  /\b\.(js|ts|tsx|jsx|py|php|rb|go|rs|java|cs|json|md|yml|yaml)\b/,
+  /\b\.(js|ts|tsx|jsx|py|php|rb|go|rs|java|cs|json|md|yml|yaml|html?|css)\b/,
 ];
+
+/** Page / CSS utilisateur — pas les sources de la Citadelle. */
+const USER_CODE_ARTIFACT_RE =
+  /\b(?:html|css|htm|page web|site web|code html)\b/;
+
+const SELF_COMPOSE_RE =
+  /\b(?:te compose|me compose|tes fichiers|tes composants|ce qui te compose|orchestrateur|citadelle|nexxus|agentpipeline|systempromptbuilder)\b/;
 
 export function isSelfModificationQuery(input = "") {
   const text = normalizeText(input);
   if (matchesAny(text, EXTERNAL_FILE_TARGET_PATTERNS)) {
+    return false;
+  }
+  if (USER_CODE_ARTIFACT_RE.test(text) && !SELF_COMPOSE_RE.test(text)) {
     return false;
   }
   return (

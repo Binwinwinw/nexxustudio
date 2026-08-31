@@ -3,6 +3,7 @@
  * Ex. : « comment devenir développeur », « parcours reconversion data analyst »
  */
 import { normalizeFamiliarityQuery } from "./familiarityIntentGuards.js";
+import { pastedDocumentMandateText } from "../../policies/code/codeIntentPolicy.js";
 import { isPedagogicalOverviewRequest } from "./pedagogicalOverviewIntentGuards.js";
 import { isTechnicalOverviewRequest } from "./technicalOverviewIntentGuards.js";
 import { isDebugDiagnosticRequest } from "./debugDiagnosticIntentGuards.js";
@@ -59,7 +60,7 @@ const HEALTH_ROLE_HINT_RE =
  */
 
 function normalizeQuery(query = "") {
-  return normalizeFamiliarityQuery(query);
+  return normalizeFamiliarityQuery(pastedDocumentMandateText(query));
 }
 
 function cleanTargetRole(part = "") {

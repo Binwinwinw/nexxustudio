@@ -9,6 +9,10 @@ import {
 } from "../../../../../shared/justIntentCatalog.js";
 import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { isCodeConceptExplainRequest } from "../code/codeConceptExplainPolicy.js";
+import {
+  hasInlineMarkupOrFencedCodeDocument,
+  pastedDocumentMandateText,
+} from "../code/codeIntentPolicy.js";
 import { isExistingSourceAnalysisRequest } from "../../utils/intent-guards/localFileUriIntentGuards.js";
 import { isExistingFilePathAnalysisRequest } from "../../../../../shared/generatorFirstPolicy.js";
 import { isLearningRequestWithTarget } from "../../utils/intent-guards/learningRequestIntentGuards.js";
@@ -164,6 +168,7 @@ export function isProjectScopingAssistRequest(query = "") {
 export function isInlineProductBriefPaste(query = "") {
   const raw = String(query || "");
   if (raw.length < 500) return false;
+  if (hasInlineMarkupOrFencedCodeDocument(raw)) return false;
   const q = normalizeFamiliarityQuery(raw);
   const markers = [
     /\bbrainstorm/i,
@@ -183,6 +188,15 @@ export function isGuidedCreationScopingRequest(query = "") {
   // Analyse d'un fichier existant ≠ création web/code.
   if (isExistingSourceAnalysisRequest(query)) return false;
   if (isExistingFilePathAnalysisRequest(query)) return false;
+  // Page HTML collée à améliorer ≠ cadrage d'une nouvelle app.
+  if (
+    hasInlineMarkupOrFencedCodeDocument(query) &&
+    /\b(?:am[eé]lior(?:er|e|ation)?|modifi(?:er|e)|corrig(?:er|e)|refactor(?:er|ise)?)\b/i.test(
+      pastedDocumentMandateText(query),
+    )
+  ) {
+    return false;
+  }
   if (isProjectScopingAssistRequest(query)) return true;
   if (isInlineProductBriefPaste(query)) return true;
   const ji = evaluateJustIntent(query);

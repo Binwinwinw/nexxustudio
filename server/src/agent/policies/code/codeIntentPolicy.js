@@ -102,7 +102,7 @@ export function hasInlineMarkupOrFencedCodeDocument(raw = "") {
 }
 
 /** Consigne avant le premier marqueur de document collé ; query entière sinon. */
-function codeIntentMandateText(query = "") {
+export function pastedDocumentMandateText(query = "") {
   const s = String(query || "");
   if (!hasInlineMarkupOrFencedCodeDocument(s)) return s;
   const starts = [];
@@ -116,6 +116,10 @@ function codeIntentMandateText(query = "") {
   push(/<(?:head|body|style|section|header|nav|article|footer|main)[\s>]/i);
   if (!starts.length) return "";
   return s.slice(0, Math.min(...starts));
+}
+
+function codeIntentMandateText(query = "") {
+  return pastedDocumentMandateText(query);
 }
 
 /**

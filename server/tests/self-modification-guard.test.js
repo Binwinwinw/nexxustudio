@@ -60,6 +60,17 @@ describe("intentGuards — détection auto-modification", () => {
       false,
     );
   });
+
+  it("n'accuse pas une aide sur du HTML utilisateur", () => {
+    assert.equal(
+      isSelfModificationQuery("tu peux m'aider à modifier du code html ?"),
+      false,
+    );
+    assert.equal(
+      resolveSelfModificationRoute("tu peux m'aider à modifier du code html ?"),
+      null,
+    );
+  });
 });
 
 describe("selfModificationReplyBuilder — contrat épistémique", () => {
@@ -115,5 +126,10 @@ describe("intentTriage — routage self_analysis", () => {
     const triage = triageUserIntent(Q_CAPABILITY);
     assert.equal(triage.top_intent, TRIAGE_INTENTS.SELF_ANALYSIS);
     assert.ok(triage.signals?.includes("self_modification_guard"));
+  });
+
+  it("aide HTML utilisateur n'est pas self_analysis", () => {
+    const triage = triageUserIntent("tu peux m'aider à modifier du code html ?");
+    assert.notEqual(triage.top_intent, TRIAGE_INTENTS.SELF_ANALYSIS);
   });
 });
