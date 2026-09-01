@@ -14,6 +14,7 @@ import {
   hasPostRepairSocialClose,
   buildPostRepairSocialCloseReply,
 } from "./postRepairSocialClosePolicy.js";
+import { resolveLeadingGreetingMirror, withLeadingGreetingMirror } from "./socialGreetingMirrorPolicy.js";
 
 export const SOCIAL_PATTERN_HARDENING_RULE = "social_pattern_hardening_g35";
 export const SOCIAL_PHATIC_CHECKIN_RULE = "social_phatic_checkin_g43";
@@ -808,12 +809,7 @@ export function buildSocialPatternReply(patternName = "", query = "") {
         history: [],
         salt: query || patternName,
       });
-      const q = normalizeFamiliarityQuery(query);
-      const hasGreeting = /(?:^|\s)(?:salut|bonjour|hello|coucou|hey|bonsoir)\b/i.test(q);
-      if (hasGreeting && !/^(?:salut|bonjour|hello|coucou|hey)/i.test(core)) {
-        return `Salut ! ${core}`;
-      }
-      return core;
+      return withLeadingGreetingMirror(query, core);
     }
     case "social/mood_checkin":
       return (
@@ -852,11 +848,7 @@ export function buildSocialPatternReply(patternName = "", query = "") {
       );
     case "social/play_invite": {
       const q = normalizeFamiliarityQuery(query);
-      const opener = /^(?:bonjour|bonsoir)\b/i.test(q)
-        ? "Bonjour"
-        : /^(?:salut|hello|coucou|hey|yo|yop)\b/i.test(q)
-          ? "Salut"
-          : "Ok";
+      const opener = resolveLeadingGreetingMirror(query) || "Ok";
       if (/\bpierre[\s-]*feuille|\bchifoumi\b/i.test(q)) {
         return (
           `${opener} — pierre-feuille-ciseaux, parfait. ` +
@@ -893,12 +885,7 @@ export function buildSocialPatternReply(patternName = "", query = "") {
       return "Désolé pour la réponse bizarre. On laisse ça là.";
     }
     case "social/work_ready": {
-      const q = normalizeFamiliarityQuery(query);
-      const opener = /^(?:bonjour|bonsoir)\b/i.test(q)
-        ? "Bonjour"
-        : /(?:^|\s)(?:salut|hello|coucou|hey|yo|yop)\b/i.test(q)
-          ? "Salut"
-          : "";
+      const opener = resolveLeadingGreetingMirror(query) || "";
       const checkin = isWellbeingCheckinIntent(query);
       const lead = opener
         ? checkin
@@ -915,7 +902,7 @@ export function buildSocialPatternReply(patternName = "", query = "") {
       if (
         /^(?:salut|bonjour|hello|coucou|hey|bonsoir|yo|yop|yepa|yépa)\b/i.test(q)
       ) {
-        const opener = /^(?:bonjour|bonsoir)\b/i.test(q) ? "Bonjour" : "Salut";
+        const opener = resolveLeadingGreetingMirror(query) || "Salut";
         return (
           `${opener} — ok, je t'écoute. ` +
           "De quel sujet tu as envie qu'on parle ?"

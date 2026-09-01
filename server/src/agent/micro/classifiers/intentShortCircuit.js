@@ -99,6 +99,7 @@ import {
   isSocialToneRepairIntent,
   isPhaticSocialCheckinIntent,
   isMetaWhoDrivesIntent,
+  applyLeadingGreetingMirrorToHit,
 } from "../../policies/social/index.js";
 import {
   resolveCodeConceptExplainShortCircuit,
@@ -789,7 +790,8 @@ export async function runConversationShortCircuit(query, options = {}) {
   });
 
   const emit = (hit) => {
-    const gated = applyShortCircuitSufficiencyGate(query, hit, parseState);
+    const mirrored = applyLeadingGreetingMirrorToHit(query, hit);
+    const gated = applyShortCircuitSufficiencyGate(query, mirrored, parseState);
     return annotateShortCircuitCognitiveCycle(gated);
   };
 

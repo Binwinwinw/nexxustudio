@@ -4,6 +4,7 @@ import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
 } from "../../policies/posture/index.js";
+import { withLeadingGreetingMirror } from "../../policies/social/socialGreetingMirrorPolicy.js";
 
 export const IDENTITY_MAX_WORDS = 14;
 
@@ -125,32 +126,28 @@ export function isIdentityIntent(query = "") {
 }
 
 export function getIdentityDeterministicReply(query = "", options = {}) {
+  let reply = null;
   if (isIdentityNameIntent(query)) {
-    return composeMannerReply({
+    reply = composeMannerReply({
       family: RESPONSE_MANNER_FAMILIES.IDENTITY_NAME,
       history: options.history || [],
       salt: query,
     });
-  }
-  if (isIdentitySpecialtiesIntent(query)) {
-    return IDENTITY_SPECIALTIES_REPLY;
-  }
-  if (isIdentityRoleIntent(query)) {
-    return IDENTITY_ROLE_REPLY;
-  }
-  if (isIdentityNatureIntent(query)) {
-    return (
+  } else if (isIdentitySpecialtiesIntent(query)) {
+    reply = IDENTITY_SPECIALTIES_REPLY;
+  } else if (isIdentityRoleIntent(query)) {
+    reply = IDENTITY_ROLE_REPLY;
+  } else if (isIdentityNatureIntent(query)) {
+    reply =
       "Je suis un assistant IA spécialisé en orchestration — pas une conscience générale. " +
       "Je suis efficace sur dev, architecture, doc et le routage gouverné de La Citadelle. " +
-      "Précise l'angle si tu vises un type d'intelligence en particulier."
-    );
-  }
-  if (isIdentityWhoIntent(query) || isIdentityExternalIntent(query)) {
-    return composeMannerReply({
+      "Précise l'angle si tu vises un type d'intelligence en particulier.";
+  } else if (isIdentityWhoIntent(query) || isIdentityExternalIntent(query)) {
+    reply = composeMannerReply({
       family: RESPONSE_MANNER_FAMILIES.IDENTITY_WHO,
       history: options.history || [],
       salt: query,
     });
   }
-  return null;
+  return reply ? withLeadingGreetingMirror(query, reply) : null;
 }

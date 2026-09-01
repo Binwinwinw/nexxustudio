@@ -2,6 +2,7 @@ import AgentPipeline from "./agentPipeline.js";
 import { runPipeline } from "./orchestrator/runPipeline.js";
 import { isTechnicalStatusReport } from "./utils/conversation/conversationGuards.js";
 import { getIdentityDeterministicReply } from "./utils/intent-guards/identityIntentGuards.js";
+import { withLeadingGreetingMirror } from "./policies/social/socialGreetingMirrorPolicy.js";
 import {
   buildParseState,
   evaluateAutoReplySufficiency,
@@ -35,7 +36,7 @@ class Agent {
       return null;
     }
     if (segmentPlan.signalOnly && segmentPlan.preamble) {
-      return segmentPlan.preamble;
+      return withLeadingGreetingMirror(q, segmentPlan.preamble);
     }
 
     const asksAgentArchitecture =
@@ -147,6 +148,8 @@ class Agent {
         "Bonjour ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
       coucou:
         "Coucou ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
+      bonsoir:
+        "Bonsoir ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
       "ça va": "Oui, tout va bien ici. Comment puis-je t'aider ?",
       "ca va": "Oui, tout va bien ici. Comment puis-je t'aider ?",
       "comment vas tu":
@@ -174,7 +177,7 @@ class Agent {
     }
 
     if (exactGreetings[cleanQ]) {
-      return exactGreetings[cleanQ];
+      return withLeadingGreetingMirror(q, exactGreetings[cleanQ]);
     }
 
     const weightedPatterns = [
@@ -226,7 +229,7 @@ class Agent {
       }, 0);
 
       if (score >= pattern.threshold) {
-        return pattern.response;
+        return withLeadingGreetingMirror(q, pattern.response);
       }
     }
 

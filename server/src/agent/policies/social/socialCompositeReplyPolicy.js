@@ -7,6 +7,7 @@ import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
 } from "../posture/index.js";
+import { withLeadingGreetingMirror } from "./socialGreetingMirrorPolicy.js";
 
 export const SOCIAL_COMPOSITE_RULE = "social_composite_g41_1";
 
@@ -25,11 +26,12 @@ export function isIdentityCapabilityCompositeRequest(query = "") {
  */
 export function buildIdentityCapabilityCompositeReply(query = "", options = {}) {
   if (!isIdentityCapabilityCompositeRequest(query)) return null;
-  return composeMannerReply({
+  const reply = composeMannerReply({
     family: RESPONSE_MANNER_FAMILIES.IDENTITY_CAPABILITY_COMPOSITE,
     history: options.history || [],
     salt: query,
   });
+  return withLeadingGreetingMirror(query, reply);
 }
 
 /**

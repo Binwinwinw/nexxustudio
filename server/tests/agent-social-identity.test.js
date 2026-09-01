@@ -34,6 +34,21 @@ describe("agent deterministic social — identité", () => {
     assert.match(reply, /NEXXUS/i);
   });
 
+  it('bonjour en tête + identité → préfixe Bonjour !', () => {
+    const reply = agent.getDeterministicSocialResponse("bonjour comment t'appelles tu");
+    assert.ok(reply);
+    assert.match(reply, /^Bonjour ! /);
+    assert.match(reply, /NEXXUS/i);
+    assert.doesNotMatch(reply, /^Bonjour ! Bonjour/i);
+  });
+
+  it('salut en tête + qui es tu → salutation déjà là ou Salut !', () => {
+    const reply = agent.getDeterministicSocialResponse("salut qui es tu ?");
+    assert.ok(reply);
+    assert.match(reply, /NEXXUS/i);
+    assert.match(reply, /^(?:Salut ! |Bonjour ! )/);
+  });
+
   it('répond sans LLM à "Qui es tu ??"', () => {
     const reply = agent.getDeterministicSocialResponse("Qui es tu ??");
     assert.ok(reply);
@@ -90,6 +105,17 @@ describe("P0 identity_questions — short-circuit social_deterministic", () => {
     assert.match(sc.reply, /NEXXUS/i);
     assert.ok(sc.reply.length < 800);
     assert.notEqual(sc.path, "information_seeking_full_pipeline");
+  });
+
+  it("bonjour comment t'appelles tu → social_deterministic + miroir Bonjour", async () => {
+    const sc = await runConversationShortCircuit(
+      "bonjour comment t'appelles tu",
+      scOpts,
+    );
+    assert.equal(sc?.path, "social_deterministic");
+    assert.match(sc.reply, /^Bonjour ! /);
+    assert.match(sc.reply, /NEXXUS/i);
+    assert.doesNotMatch(sc.reply, /^Bonjour ! Bonjour/i);
   });
 
   it("quelles sont tes spécialités → social_deterministic (pas COMPOSER/explain)", async () => {
