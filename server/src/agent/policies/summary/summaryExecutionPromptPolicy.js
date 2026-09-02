@@ -68,17 +68,20 @@ export function buildWebSummarySystemAddon(query = "", contract = null) {
   const url = contract?.source?.url || extractSummaryUrl(query) || "URL fournie";
   const maxSentences = contract?.constraints?.max_sentences || 8;
   return [
-    "VARIANTE WEB_SUMMARY (G38) — distillation structurée du contenu principal :",
+    "VARIANTE WEB_SUMMARY (G38) — lecture de surface, 1 GET, URL fournie uniquement :",
     `- Source page : ${url}`,
-    `- Longueur cible : ~${maxSentences} phrases sur le contenu principal.`,
+    `- Longueur cible : ~${maxSentences} phrases descriptives.`,
+    "Preuve = HTML de cette URL au moment du fetch. Pas un crawl, pas un audit, pas une vérité canon.",
     "ÉTAPES :",
-    "1) Identifie l'article ou le contenu principal de la page.",
-    "2) Exclue explicitement : navigation, header, footer, menus, bannières, promos, widgets, formulaires, cookies, liens annexes, répétitions de layout.",
-    "3) Résume la thèse, les points clés, les données explicites et les action items éventuels présents dans le contenu principal.",
+    "1) Identifie le contenu principal visible (titre, objet apparent, rubriques).",
+    "2) Exclue : navigation, header, footer, menus, bannières, promos, widgets, formulaires, cookies, liens annexes.",
+    "3) Décris ce qu'on voit : « la page contient… », « on voit… ». Reste au HTML extrait.",
     "INTERDIT :",
+    "- Suivre des liens, inventer des routes, pages ou fonctionnalités absentes du HTML.",
     "- Résumer le chrome du site (menus, footer, CTA marketing).",
     "- Inventer des faits absents du contenu principal extrait.",
     "- Traiter la page comme un texte collé brut sans sélection du main content.",
+    "- Audit, recommandations techniques non demandées.",
   ].join("\n");
 }
 

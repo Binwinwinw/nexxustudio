@@ -12,8 +12,10 @@ import { sanitizeToolOutput } from "../services/tool-output-sanitizer.js";
 
 /** Plafond corps HTML — anti DoS mémoire. */
 const MAX_BODY_BYTES = 2_000_000;
-/** Texte injecté au LLM — plafond VRAM / contexte. */
-const MAX_TEXT_CHARS = 15_000;
+/** Lecture surface — pas un dump de site. */
+export const SURFACE_MAX_CHARS = 4_000;
+export const SURFACE_EXCERPT_CHARS = 2_400;
+export const SURFACE_HEADING_LIMIT = 10;
 const MAX_REDIRECTS = 3;
 const RATE_LIMIT_ENTRY_TTL_MS = 60_000;
 
@@ -166,7 +168,7 @@ export async function extractUrlContent(url, options = {}) {
       return fail(raw, extractedAt, "Page vide", "empty_body");
     }
 
-    const rawText = extractMarkdownFromHtml(html, currentUrl);
+    const rawText = extractSurfaceFromHtml(html, currentUrl);
     const contentPolicy = checkContentPolicy(rawText);
     if (contentPolicy.blocked) {
       return fail(raw, extractedAt, contentPolicy.reason, "content_policy");
@@ -190,6 +192,7 @@ export async function extractUrlContent(url, options = {}) {
       sanitization: sanitized.flags,
       extractedAt,
       success: true,
+      profile: "surface",
     };
   } catch (error) {
     console.error("[URL Extractor] Échec:", error.message);
@@ -253,39 +256,79 @@ function pruneRateLimitMap() {
 }
 
 /**
+ * 1 GET, HTML de l'URL fournie seulement. Titre + meta + rubriques + extrait.
+ * Pas de suivi de liens, pas de dump body.
+ *
  * @param {string} html
  * @param {string} url
  * @returns {string}
  */
-function extractMarkdownFromHtml(html, url) {
+function extractSurfaceFromHtml(html, url) {
   const $ = cheerio.load(html);
 
   $("script, style, nav, footer, header, aside, .sidebar, iframe, noscript").remove();
 
+  const title = firstMetaText($, [
+    "title",
+    'meta[property="og:title"]',
+    'meta[name="twitter:title"]',
+  ]);
+  const description = firstMetaText($, [
+    'meta[name="description"]',
+    'meta[property="og:description"]',
+  ]);
+
+  const headings = [];
+  $("h1, h2, h3").each((_, el) => {
+    if (headings.length >= SURFACE_HEADING_LIMIT) return false;
+    const t = clipText($(el).text(), 120);
+    if (t) headings.push(t);
+  });
+
+  let mainRoot = $("main, article, [role='main']").first();
   if (String(url).includes("github.com")) {
     const readme = $("article.markdown-body");
-    if (readme.length > 0) {
-      return cleanText(readme.text());
-    }
+    if (readme.length > 0) mainRoot = readme;
   }
+  if (!mainRoot.length) mainRoot = $("body");
+  const excerpt = clipText(mainRoot.text(), SURFACE_EXCERPT_CHARS);
 
-  const main = $("main, article, [role='main']").first();
-  if (main.length > 0) {
-    return cleanText(main.text());
+  const parts = [];
+  if (title) parts.push(`Titre: ${clipText(title, 200)}`);
+  if (description) parts.push(`Description: ${clipText(description, 400)}`);
+  if (headings.length) parts.push(`Rubriques: ${headings.join(" · ")}`);
+  if (excerpt) parts.push(`Extrait:\n${excerpt}`);
+  return parts.join("\n").slice(0, SURFACE_MAX_CHARS);
+}
+
+/**
+ * @param {import("cheerio").CheerioAPI} $
+ * @param {string[]} selectors
+ * @returns {string}
+ */
+function firstMetaText($, selectors) {
+  for (const sel of selectors) {
+    const el = $(sel).first();
+    if (!el.length) continue;
+    const value = sel.startsWith("meta")
+      ? el.attr("content")
+      : el.text();
+    const clipped = clipText(value, 400);
+    if (clipped) return clipped;
   }
-
-  return cleanText($("body").text());
+  return "";
 }
 
 /**
  * @param {string} text
+ * @param {number} [max]
  * @returns {string}
  */
-function cleanText(text) {
+function clipText(text, max = SURFACE_MAX_CHARS) {
   return String(text || "")
     .replace(/\s+/g, " ")
     .trim()
-    .substring(0, MAX_TEXT_CHARS);
+    .slice(0, max);
 }
 
 /**

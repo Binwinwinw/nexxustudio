@@ -81,6 +81,9 @@ describe("G38.1 — prompts système distincts", () => {
     assert.match(addon, /WEB_SUMMARY/i);
     assert.match(addon, /contenu principal/i);
     assert.match(addon, /navigation|footer|promos|widgets/i);
+    assert.match(addon, /lecture de surface|1 GET/i);
+    assert.match(addon, /pas un crawl/i);
+    assert.doesNotMatch(addon, /action items/i);
     assert.doesNotMatch(addon, /uniquement le contenu fourni par l'utilisateur/i);
   });
 

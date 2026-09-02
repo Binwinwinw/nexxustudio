@@ -79,6 +79,10 @@ const FOLLOWUP_MARKER_RE =
 const DOCUMENT_REFERENCE_RE =
   /\b(?:ce\s+document|ce\s+fichier|ce\s+texte|le\s+document|l\s+analyse|document\s+joint|fichier\s+joint)\b/;
 
+function hasLiveHttpUrl(query = "") {
+  return /\bhttps?:\/\//i.test(String(query || ""));
+}
+
 /**
  * @param {string} raw
  */
@@ -145,6 +149,10 @@ export function isDocumentSynthesisExcluded(query = "", attachments = []) {
   if (isCodeIntentRequest(query)) return true;
   const q = normalizeDocumentSynthesisQuery(query);
   if (/\b(?:runtime|pipeline|short-circuit|nodemon|forge)\b/.test(q)) return true;
+  // URL live = page web, pas un PDF/txt manquant.
+  if (hasLiveHttpUrl(query) && !hasTextAttachments(attachments) && !extractPastedSourceText(query)) {
+    return true;
+  }
   return false;
 }
 
@@ -492,6 +500,12 @@ export function buildDocumentSynthesisRecoveryMessage(
 ) {
   const bypass = resolveDocumentSynthesisBypassReply(query, history, attachments);
   if (bypass) return bypass;
+  if (hasLiveHttpUrl(query)) {
+    return (
+      "Je n'ai pas pu extraire le contenu de cette page. " +
+      "Réessaie, ou colle un extrait si le site bloque le fetch."
+    );
+  }
   if (hasDocumentSynthesisShell(query)) {
     return buildMissingSourceClarifyReply();
   }

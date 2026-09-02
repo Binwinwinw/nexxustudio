@@ -65,7 +65,7 @@ const CHAPTER_REFERENCE_RE =
   /\b(?:chapitre|chapter)\s+(?:\d+|[ivxlc]+|un|deux|trois|quatre|cinq|six|sept|huit|neuf|dix)\b/i;
 
 const WEB_PAGE_INTENT_RE =
-  /\b(?:cette\s+page|cet\s+article|this\s+page|this\s+article|la\s+page\s+web|ce\s+site|le\s+site|site\s+web|cette\s+url|cette\s+adresse)\b/i;
+  /\b(?:cette\s+page|cet\s+article|this\s+page|this\s+article|la\s+page\s+web|ce\s+site|le\s+site|site\s+web|cette\s+url|cette\s+adresse|cette\s+application|cette\s+appli)\b/i;
 
 const URL_RE = /\bhttps?:\/\/[^\s"'<>)\]]+/i;
 

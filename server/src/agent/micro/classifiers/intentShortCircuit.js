@@ -708,6 +708,27 @@ function buildAttachedVisionPipelineHit(effectiveQuery, attachments = []) {
 }
 
 /**
+ * Gate pipeline : `wantsAnalysis` saute le SC (Document Analysis PJ/PDF).
+ * Exception : URL live — WEB_SUMMARY, pas extraction PDF.
+ *
+ * @param {{
+ *   wantsAnalysis?: boolean,
+ *   forgeProduction?: boolean,
+ *   query?: string,
+ * }} [opts]
+ * @returns {boolean}
+ */
+export function shouldEvaluateConversationShortCircuit({
+  wantsAnalysis = false,
+  forgeProduction = false,
+  query = "",
+} = {}) {
+  if (forgeProduction) return false;
+  if (!wantsAnalysis) return true;
+  return Boolean(extractSummaryUrl(query));
+}
+
+/**
  * @param {string} query
  * @param {{
  *   wantsAnalysis?: boolean,
@@ -755,10 +776,12 @@ export async function runConversationShortCircuit(query, options = {}) {
     };
   }
 
-  // Cluster web+citations+rapport : ne pas tuer le SC web (FACTUAL_RESEARCH)
+  // Cluster web+citations+rapport : ne pas tuer le SC web (FACTUAL_RESEARCH).
+  // URL live + « analyser » : WEB_SUMMARY, pas Document Analysis PDF.
   if (
     wantsAnalysis &&
-    !isWebCitationsStructuredReportCluster(query)
+    !isWebCitationsStructuredReportCluster(query) &&
+    !extractSummaryUrl(query)
   ) {
     return null;
   }

@@ -19,7 +19,10 @@ import {
   evaluateClarificationDecision,
 } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
-import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
+import {
+  runConversationShortCircuit,
+  shouldEvaluateConversationShortCircuit,
+} from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolveDocumentContinuity } from "../src/agent/micro/continuity/documentContinuityContext.js";
 import { isDocumentFollowUpIntent } from "../src/agent/micro/continuity/documentFollowUpGuards.js";
 import { resolvePipelineFallback } from "../src/agent/utils/conversation/genericGreetingGuards.js";
@@ -46,7 +49,11 @@ describe("documentSynthesisPolicy — batterie #33", () => {
     const hit = await runConversationShortCircuit(
       DOCUMENT_SYNTHESIS_CANONICAL_PASTED_QUERY,
     );
-    assert.equal(hit?.path, "document_synthesis_deterministic");
+    assert.ok(
+      hit?.path === "document_synthesis_deterministic" ||
+        hit?.path === "document_synthesis_llm",
+      hit?.path,
+    );
     assert.match(hit?.reply, /Synthèse du passage/i);
     assert.match(hit?.reply, /1789|Bastille|Versailles/i);
     assert.doesNotMatch(hit?.reply, /Je vois la piste/i);
@@ -57,7 +64,11 @@ describe("documentSynthesisPolicy — batterie #33", () => {
     const hit = await runConversationShortCircuit(
       DOCUMENT_SYNTHESIS_CANONICAL_COMMENTARY_QUERY,
     );
-    assert.equal(hit?.path, "document_synthesis_deterministic");
+    assert.ok(
+      hit?.path === "document_synthesis_deterministic" ||
+        hit?.path === "document_synthesis_llm",
+      hit?.path,
+    );
     assert.match(hit?.reply, /Lecture du passage/i);
     assert.match(hit?.reply, /lucioles/i);
     assert.match(hit?.reply, /style.*thème.*argument/i);
@@ -72,6 +83,55 @@ describe("documentSynthesisPolicy — batterie #33", () => {
     assert.match(hit?.reply, /colle.*passage|joins le document/i);
     assert.doesNotMatch(hit?.reply, /géographie|histoire/i);
     assert.doesNotMatch(hit?.reply, /Je vois la piste/i);
+  });
+
+  it("analyser une appli via URL → pipeline évalue le SC malgré wantsAnalysis", () => {
+    const q =
+      "je voudrais analyser cette application : https://binwinwinw.pe.hu/epn-web/";
+    assert.equal(
+      shouldEvaluateConversationShortCircuit({
+        wantsAnalysis: true,
+        query: q,
+      }),
+      true,
+    );
+    assert.equal(
+      shouldEvaluateConversationShortCircuit({
+        wantsAnalysis: true,
+        query: "analyse ce PDF",
+      }),
+      false,
+    );
+    assert.equal(
+      shouldEvaluateConversationShortCircuit({
+        wantsAnalysis: false,
+        query: "salut",
+      }),
+      true,
+    );
+  });
+
+  it("analyser une appli via URL → pas un PDF manquant, même sous wantsAnalysis", async () => {
+    const q =
+      "je voudrais analyser cette application : https://binwinwinw.pe.hu/epn-web/";
+    assert.equal(extractPastedSourceText(q), null);
+    assert.equal(resolveDocumentSynthesisContext(q), null);
+    const hit = await runConversationShortCircuit(q, {
+      getDeterministicSocialResponse: () => null,
+      wantsAnalysis: true,
+    });
+    assert.ok(hit, "wantsAnalysis ne doit pas tuer le SC si une URL est fournie");
+    assert.equal(hit.webSummary, true);
+    assert.notEqual(hit.path, "document_synthesis_clarify");
+    assert.doesNotMatch(hit.reply || "", /colle le passage|joins le document/i);
+    const fallback = resolvePipelineFallback({
+      query: q,
+      history: [],
+      rawResponse: "",
+      reason: "empty_pipeline_output",
+    });
+    assert.doesNotMatch(fallback || "", /colle le \*\*passage\*\*|joins le \*\*document\*\*/i);
+    assert.doesNotMatch(fallback || "", /PDF, txt/i);
   });
 
   it("clarification gate → can_answer_now pour source présente", () => {

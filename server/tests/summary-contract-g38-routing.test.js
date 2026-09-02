@@ -532,4 +532,14 @@ describe("G38 — short-circuit piloté par contrat", () => {
     assert.equal(hit.summaryContract?.intent, SUMMARY_INTENTS.KNOWN_ENTITY);
     assert.equal(hit.summaryContractTelemetry?.forbidDocumentRequest, true);
   });
+
+  it("analyser cette application + URL → WEB_SUMMARY", () => {
+    const q =
+      "je voudrais analyser cette application : https://binwinwinw.pe.hu/epn-web/";
+    const contract = classifySummaryContract(q);
+    assert.equal(contract?.intent, SUMMARY_INTENTS.WEB_PAGE);
+    assert.equal(contract?.contract, SUMMARY_CONTRACTS.WEB_SUMMARY);
+    assert.equal(contract?.source?.provided, true);
+    assert.match(contract?.source?.url || "", /binwinwinw\.pe\.hu/);
+  });
 });

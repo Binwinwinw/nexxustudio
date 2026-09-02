@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
-import { extractUrlContent } from "../src/utils/urlExtractor.js";
+import { extractUrlContent, SURFACE_MAX_CHARS } from "../src/utils/urlExtractor.js";
 import { sanitizeToolOutput } from "../src/services/tool-output-sanitizer.js";
 import { extractSummaryUrl } from "../src/agent/policies/summary/index.js";
 import { checkUrlSsrf } from "../src/security/ssrfProtection.js";
@@ -88,6 +88,7 @@ describe("urlExtractor — garde-fous", () => {
 
     assert.equal(r.success, true, r.error || "expected success");
     assert.ok(r.content);
+    assert.equal(r.profile, "surface");
     assert.match(r.content, /Contenu principal/i);
     assert.match(r.content, /consigne injectée supprimée/i);
     assert.ok(r.sanitization);
@@ -104,6 +105,46 @@ describe("urlExtractor — garde-fous", () => {
     });
     assert.equal(r.success, false);
     assert.match(String(r.error || ""), /Content-Type|non HTML/i);
+  });
+
+  it("lecture surface — un GET, pas de suivi de liens, plafond court", async () => {
+    let getCount = 0;
+    const uniqueTail = "MARQUEUR_PARAGRAPHE_LOINTAIN_NE_PAS_GARDER";
+    const paragraphs = Array.from({ length: 80 }, (_, i) =>
+      `<p>${"Bloc visible de l application pour test de plafond. ".repeat(4)} n=${i}</p>`,
+    ).join("");
+    const html = `<!doctype html><html><head>
+      <title>EPN Web</title>
+      <meta name="description" content="Portail EPN de test">
+    </head><body>
+      <nav><a href="https://example.com/secret-admin">Admin</a></nav>
+      <main>
+        <h1>Accueil</h1>
+        <h2>Ateliers</h2>
+        ${paragraphs}
+        <p>${uniqueTail}</p>
+      </main>
+    </body></html>`;
+
+    const r = await extractUrlContent("https://example.com/epn-web/", {
+      ...mockOpts,
+      httpGet: async () => {
+        getCount += 1;
+        return {
+          status: 200,
+          headers: { "content-type": "text/html; charset=utf-8" },
+          data: html,
+        };
+      },
+    });
+
+    assert.equal(r.success, true, r.error || "expected success");
+    assert.equal(getCount, 1);
+    assert.ok(r.content.length <= SURFACE_MAX_CHARS);
+    assert.match(r.content, /Titre: EPN Web/);
+    assert.match(r.content, /Rubriques: Accueil/);
+    assert.doesNotMatch(r.content, /secret-admin/);
+    assert.doesNotMatch(r.content, new RegExp(uniqueTail));
   });
 });
 

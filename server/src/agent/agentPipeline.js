@@ -257,7 +257,10 @@ import {
   isInformationSeekingWithTarget,
 } from "./utils/intent-guards/informationSeekingIntentGuards.js";
 import { formatJustIntentSummary } from "../../../shared/justIntentCatalog.js";
-import { runConversationShortCircuit } from "./micro/classifiers/intentShortCircuit.js";
+import {
+  runConversationShortCircuit,
+  shouldEvaluateConversationShortCircuit,
+} from "./micro/classifiers/intentShortCircuit.js";
 import {
   shouldFinalizeArchitectureDesignRail,
   applyArchitectureDepthMetrics,
@@ -1695,9 +1698,16 @@ class AgentPipeline {
     }
 
     // 🔑 1b–1d. Micro-délestage conversationnel (social / idéation / familiarité)
-    if (!wantsAnalysis && !isForgeProductionRun) {
+    // wantsAnalysis saute le SC sauf URL live (WEB_SUMMARY, pas Document Analysis PDF).
+    if (
+      shouldEvaluateConversationShortCircuit({
+        wantsAnalysis,
+        forgeProduction: isForgeProductionRun,
+        query: pipelineQuery,
+      })
+    ) {
       const deepeningCtx = evaluateBoundedSubjectDeepening(query, orchestrationHistory);
-      if (deepeningCtx && isSubjectDeepeningLlmEnabled()) {
+      if (deepeningCtx && isSubjectDeepeningLlmEnabled() && !wantsAnalysis) {
         if (onStep) onStep("📖 Sujet générique — aperçu enrichi (P3)...");
         const deepeningOut = await synthesizeBoundedSubjectDeepening(deepeningCtx.subject, {
           onStep,
@@ -2101,7 +2111,7 @@ class AgentPipeline {
                 shortCircuit.reflectiveHint = [
                   shortCircuit.reflectiveHint,
                   "",
-                  "[CONTENU PAGE EXTRAIT — source exclusive pour le résumé]",
+                  "[CONTENU PAGE EXTRAIT — lecture surface, 1 GET, pas de crawl]",
                   `URL: ${pageUrl}`,
                   "---BEGIN PAGE---",
                   pageClean.text,
@@ -2703,11 +2713,13 @@ class AgentPipeline {
       // Cluster web+citations+rapport sans PJ → recherche web, pas Document Analysis
       const clusterWebReportWithoutAttachment =
         isWebCitationsStructuredReportCluster(query) && !hasAttachedDocs;
+      const liveWebUrlWithoutAttachment = containsUrl && !hasAttachedDocs;
 
       const needsDocumentAnalysis =
         wantsAnalysis &&
         !isAnalyticalCritique &&
         !clusterWebReportWithoutAttachment &&
+        !liveWebUrlWithoutAttachment &&
         !shouldBypassDocumentAnalysisRoute(query, intentTriage, attachedFiles) &&
         (containsUrl || isLongText || hasAttachedDocs);
       const needsConsensus = (intent === 'ADR' || options.criticality === 'HIGH') && !needsDocumentAnalysis;
