@@ -139,3 +139,35 @@ describe("P0 identity_questions — short-circuit social_deterministic", () => {
   });
 });
 
+describe("SOCIAL_CHECKIN_IDENTITY_FIX — greeting + identité", () => {
+  const scOpts = {
+    getDeterministicSocialResponse: (q) => agent.getDeterministicSocialResponse(q),
+  };
+
+  it("bonjour + nom + comment vas tu → état et identité, pas santé seule", async () => {
+    const q = "bonjour, quel est ton nom et comment vas tu ?";
+    const sc = await runConversationShortCircuit(q, scOpts);
+    assert.equal(sc?.path, "social_deterministic");
+    assert.match(sc.reply, /NEXXUS/i);
+    assert.match(sc.reply, /tout va bien|ça va bien|ça va, merci/i);
+    assert.match(sc.reply, /^Bonjour ! /);
+    assert.doesNotMatch(sc.reply, /^Bonjour ! Bonjour/i);
+    assert.notEqual(sc?.socialCheckinPriority, true);
+  });
+
+  it("salut, comment ça va ? → social seul, pas d'identité", async () => {
+    const sc = await runConversationShortCircuit("salut, comment ça va ?", scOpts);
+    assert.equal(sc?.path, "social_deterministic");
+    assert.match(sc.reply, /va bien|tout va bien|ça va/i);
+    assert.doesNotMatch(sc.reply, /NEXXUS/i);
+    assert.doesNotMatch(sc.reply, /je m['']appelle|mon rôle/i);
+  });
+
+  it("quel est ton nom ? → identité seule, pas d'état santé", async () => {
+    const sc = await runConversationShortCircuit("quel est ton nom ?", scOpts);
+    assert.equal(sc?.path, "social_deterministic");
+    assert.match(sc.reply, /NEXXUS/i);
+    assert.doesNotMatch(sc.reply, /tout va bien ici|ça va bien, merci/i);
+  });
+});
+

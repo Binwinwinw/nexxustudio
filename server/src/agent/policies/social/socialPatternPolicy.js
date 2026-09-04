@@ -4,6 +4,7 @@
 import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { isSubstantiveWorkRequest } from "../../utils/conversation/genericGreetingGuards.js";
 import { isInformationSeekingWithTarget, isExplicitInformationOrDefinitionRequest } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
+import { isIdentityIntent } from "../../utils/intent-guards/identityIntentGuards.js";
 import {
   composeMannerReply,
   RESPONSE_MANNER_FAMILIES,
@@ -505,6 +506,8 @@ export function isIdleConfirmedSocialCheckin(query = "", options = {}) {
   // JUST/G46 étiquettent trop de tours « social_checkin » (greeting, open_prompt…).
   // Seul le wellbeing explicite, sans autre unité, préempte l'invitation opérationnelle.
   if (!isWellbeingCheckinIntent(query)) return false;
+  // Identité + check-in = composite social_deterministic, pas santé seule.
+  if (isIdentityIntent(query)) return false;
   // Miroir salut+info : check-in + cible info-seeking = composite, pas social seul.
   if (isInformationSeekingWithTarget(query)) return false;
   if (isSubstantiveWorkRequest(query)) return false;

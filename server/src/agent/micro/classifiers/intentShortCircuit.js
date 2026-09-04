@@ -82,6 +82,7 @@ import { resolveProjectIdeaCritiqueShortCircuit } from "../../utils/intent-guard
 import { classifyWebProjectScopingRequest } from "../../utils/intent-guards/webProjectScopingGuards.js";
 import {
   resolveSocialCompositeShortCircuit,
+  buildIdentityCheckinCompositeReply,
   isKnownSocialPattern,
   resolveSocialPatternShortCircuit,
   resolveSocialChatContinuityShortCircuit,
@@ -321,6 +322,15 @@ function fulfillRoutingCase(lookup, query, options = {}) {
   const id = lookup?.winning_rule;
   if (!id || id === "active_goal_elliptic_followup") return null;
   if (id === "social_wellbeing_checkin") {
+    const identityCheckin = buildIdentityCheckinCompositeReply(query, options);
+    if (identityCheckin) {
+      return {
+        path: "social_deterministic",
+        mode: RESPONSE_MODES.INSTANT,
+        reply: identityCheckin,
+        step: "⚡ Identité + état — réponse déterministe composée...",
+      };
+    }
     return {
       path: "social_deterministic",
       mode: RESPONSE_MODES.INSTANT,
@@ -628,6 +638,21 @@ function buildSocialDeterministicShortCircuit(
       step: "📅 Date/heure — réponse déterministe...",
       enforce: { allowRefusal: false },
     };
+  }
+
+  if (simpleIntent.asksIdentity && simpleIntent.asksStateOfHealth) {
+    const identityCheckin = buildIdentityCheckinCompositeReply(effectiveQuery, {
+      history: options.history || [],
+    });
+    if (identityCheckin) {
+      return {
+        path: "social_deterministic",
+        mode: RESPONSE_MODES.INSTANT,
+        reply: identityCheckin,
+        step: "⚡ Identité + état — réponse déterministe composée...",
+        enforce: { allowRefusal: false },
+      };
+    }
   }
 
   if (simpleIntent.asksIdentity) {

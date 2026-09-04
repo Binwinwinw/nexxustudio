@@ -149,5 +149,7 @@ export function getIdentityDeterministicReply(query = "", options = {}) {
       salt: query,
     });
   }
-  return reply ? withLeadingGreetingMirror(query, reply) : null;
+  if (!reply) return null;
+  if (options.skipGreetingMirror) return reply;
+  return withLeadingGreetingMirror(query, reply);
 }
