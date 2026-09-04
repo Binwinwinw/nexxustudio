@@ -113,7 +113,7 @@ import {
   isCausalWhyExplainRequest,
 } from "../../policies/posture/index.js";
 import { recordSocialPatternTelemetry } from "../../telemetry/socialPatternTelemetry.js";
-import { isConversationMemoryRecallRequest } from "../../utils/conversation/conversationGuards.js";
+import { isConversationMemoryRecallRequest, isAttachedVisionRequest, isTaskCapabilityAskWithoutPayload, buildTaskCapabilityAskReply } from "../../utils/conversation/conversationGuards.js";
 import { resolveGeneralKnowledgeShortCircuit } from "../replies/generalKnowledgeComposerContract.js";
 import {
   resolveSummaryContractShortCircuit,
@@ -128,7 +128,6 @@ import {
   resolveHtmlAnalyzerFactsFromAttachments,
   tryFileAnalysisAwaitingSource,
 } from "../../policies/attachment/index.js";
-import { isAttachedVisionRequest } from "../../utils/conversation/conversationGuards.js";
 import { resolvePedagogicalOverviewShortCircuit } from "../replies/pedagogicalOverviewComposer.js";
 import { resolveBeginnerTopicOverviewShortCircuit } from "../replies/beginnerTopicOverviewComposer.js";
 import { resolveCareerLearningPathShortCircuit } from "../replies/careerLearningPathComposer.js";
@@ -750,6 +749,7 @@ export function shouldEvaluateConversationShortCircuit({
 } = {}) {
   if (forgeProduction) return false;
   if (!wantsAnalysis) return true;
+  if (isTaskCapabilityAskWithoutPayload(query)) return true;
   return Boolean(extractSummaryUrl(query));
 }
 
@@ -797,6 +797,16 @@ export async function runConversationShortCircuit(query, options = {}) {
       mode: RESPONSE_MODES.INSTANT,
       reply: awaitingFileSource.reply,
       step: "📎 Analyse de fichier — en attente de la pièce...",
+      enforce: { allowRefusal: false },
+    };
+  }
+
+  if (isTaskCapabilityAskWithoutPayload(query, options.attachments || [])) {
+    return {
+      path: "task_capability_ask_deterministic",
+      mode: RESPONSE_MODES.SIMPLE_FAST,
+      reply: buildTaskCapabilityAskReply(query),
+      step: "⚡ Capacité — mode d'emploi, pas diagnostic...",
       enforce: { allowRefusal: false },
     };
   }

@@ -407,11 +407,52 @@ export {
 /**
  * Garde analytique technique unifié (registry DIAGNOSTIC + intentClassifier).
  */
+const TASK_CAPABILITY_MODAL_RE =
+  /\b(?:peux[- ]?tu|pourras[- ]?tu|pourrais[- ]?tu|pouvez[- ]?vous|est[- ]?ce que tu (?:peux|pourras|pourrais)|est[- ]?ce que vous pouvez|sais[- ]?tu|tu (?:peux|pourras|pourrais)|can you|are you able to)\b/;
+
+const TASK_CAPABILITY_VERB_RE =
+  /\b(?:analys(?:er|e)|audit(?:er)?|diagnostiquer|examiner|inspecter)\b/;
+
+const DEFERRED_TASK_PAYLOAD_RE =
+  /\b(?:si je(?: te)? (?:colle|donne|envoie|passe|fournis|partage|mets)|au prochain message|dans le prochain(?: message)?|quand je(?: te)? (?:colle|envoie|donne))\b/;
+
+const CONCRETE_TASK_OBJECT_RE =
+  /\b(?:ce|cet|cette|ces|notre|nos|mon|ma|mes)\s+(?:code|erreur|timeout|fichier|pipeline|module|fonction|classe|bug|crash|appli|application|citadelle|depot|d[eé]p[oô]t)\b/;
+
+/**
+ * « Pourras-tu analyser X si je te donne Y ? » — mode d'emploi, pas DIAGNOSTIC.
+ * URL live / PJ réelle / objet déjà là restent une tâche.
+ */
+export function isTaskCapabilityAskWithoutPayload(input = "", attachments = []) {
+  if (Array.isArray(attachments) && attachments.length > 0) return false;
+  if (/https?:\/\//i.test(String(input || ""))) return false;
+  const text = normalizeText(input).toLowerCase();
+  if (!text || !TASK_CAPABILITY_MODAL_RE.test(text)) return false;
+  if (DEFERRED_TASK_PAYLOAD_RE.test(text)) return true;
+  if (!TASK_CAPABILITY_VERB_RE.test(text)) return false;
+  return !CONCRETE_TASK_OBJECT_RE.test(text);
+}
+
+export const TASK_CAPABILITY_ASK_SITE_REPLY =
+  "Oui, je peux analyser un site. Dans le prochain message, envoie l'URL et précise en une phrase ce que tu veux que j'examine (contenu, UX, technique, etc.).";
+
+export const TASK_CAPABILITY_ASK_GENERIC_REPLY =
+  "Oui, je peux le faire. Envoie le matériau (URL, fichier ou extrait) et dis en une phrase l'objectif.";
+
+export function buildTaskCapabilityAskReply(input = "") {
+  const text = normalizeText(input).toLowerCase();
+  if (/\b(?:site|url|adresse|page(?: web)?|appli|application)\b/.test(text)) {
+    return TASK_CAPABILITY_ASK_SITE_REPLY;
+  }
+  return TASK_CAPABILITY_ASK_GENERIC_REPLY;
+}
+
 export function isAnalyticalTechnicalRequest(query = "") {
   const q = normalizeText(query).toLowerCase();
   if (!q) return false;
 
   if (isArchitectureDesignIntent(query)) return false;
+  if (isTaskCapabilityAskWithoutPayload(query)) return false;
 
   return (
     /\banalyse\b|\banalyser\b|\bameliore\b|\baméliore\b|\bameliorer\b|\baméliorer\b|\bamelioration\b|\bamélioration\b|\bameliorations\b|\baméliorations\b|\bcorrige\b|\bcorriger\b|\baudit\b|\bauditer\b|\brefactor\b|\brefactoriser\b|\bcode\b|\barchitecture\b|\bdiagnostic\b|\bdebug\b|\berreur\b|\bbug\b/.test(
@@ -428,6 +469,7 @@ export function isDocumentAnalysisIntent(query = "", attachments = []) {
   if (isAnalyticalCritiqueIntent(query, attachments)) return false;
   if (isMetaConversationIntent(query)) return false;
   if (isMetaCapabilitiesIntent(query)) return false;
+  if (isTaskCapabilityAskWithoutPayload(query, attachments)) return false;
 
   // Revues de dépôt / URL GitHub → contrat REPO_ANALYSIS (évite cycle d'import).
   const raw = String(query || "");

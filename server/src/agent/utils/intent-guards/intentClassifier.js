@@ -7,6 +7,7 @@
 import {
   isArchitectureDesignIntent,
   isAnalyticalTechnicalRequest,
+  isTaskCapabilityAskWithoutPayload,
 } from "../conversation/conversationGuards.js";
 import { isMetaModelStackOpinionQuery, isMetaPredictionLimitsQuery, isMetaPeerAssistantsQuery } from "../../policies/meta/metaCapabilitiesPolicy.js";
 import { isInformationSeekingLightQuery } from "../../policies/routing/informationSeekingLightPolicy.js";
@@ -228,6 +229,17 @@ export function classifyIntent(query = "", context = {}) {
       bypassDirectAnswer: false,
       scores: scoreDetails,
       reason: "architecture_design_options_short_circuit_preferred",
+    };
+  }
+
+  // 4b. CAPABILITY ASK — « pourras-tu analyser X si je te donne Y » : pas DIAGNOSTIC
+  if (isTaskCapabilityAskWithoutPayload(query)) {
+    return {
+      intent: INTENT_TAXONOMY.NORMAL_CONVERSATION,
+      budget: REASONING_BUDGET.NORMAL_CONVERSATION,
+      bypassDirectAnswer: false,
+      scores: scoreDetails,
+      reason: "task_capability_ask_without_payload",
     };
   }
 

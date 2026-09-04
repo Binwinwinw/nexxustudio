@@ -10,7 +10,7 @@ import {
   getCodeIntentLabel,
   hasInlineMarkupOrFencedCodeDocument,
 } from "../policies/code/codeIntentPolicy.js";
-import { isDocumentAnalysisIntent } from "../utils/conversation/conversationGuards.js";
+import { isDocumentAnalysisIntent, isTaskCapabilityAskWithoutPayload } from "../utils/conversation/conversationGuards.js";
 import { isCodeIntentRequest } from "../policies/code/codeIntentPolicy.js";
 import { isCodeConceptExplainTriageSignal } from "../policies/code/codeConceptExplainPolicy.js";
 import { suppressesCodeGenerationForProgrammingPedagogy } from "../utils/intent-guards/programmingPedagogyLightIntentGuards.js";
@@ -411,6 +411,7 @@ function clarificationHint(intent) {
  */
 export function resolveWantsAnalysisFromTriage(triage, query = "", attachments = []) {
   if (isMetaCapabilitiesIntent(query)) return false;
+  if (isTaskCapabilityAskWithoutPayload(query, attachments)) return false;
 
   if (
     Array.isArray(attachments) &&

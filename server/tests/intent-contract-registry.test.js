@@ -257,6 +257,12 @@ test("conversationGuards: unified isAnalyticalTechnicalRequest includes debug", 
     await import("../src/agent/utils/conversation/conversationGuards.js");
   assert.equal(isAnalyticalTechnicalRequest("debug ce timeout"), true);
   assert.equal(isAnalyticalTechnicalRequest("refactor ce module"), true);
+  assert.equal(
+    isAnalyticalTechnicalRequest(
+      "pourras tu analyser un site si je te colle au prochain message son adresse ?",
+    ),
+    false,
+  );
 });
 
 test("conversationGuards: isDocumentAnalysisIntent covers extraire", async () => {

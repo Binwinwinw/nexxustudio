@@ -109,6 +109,14 @@ describe("documentSynthesisPolicy — batterie #33", () => {
       }),
       true,
     );
+    assert.equal(
+      shouldEvaluateConversationShortCircuit({
+        wantsAnalysis: true,
+        query:
+          "pourras tu analyser un site si je te colle au prochain message son adresse ?",
+      }),
+      true,
+    );
   });
 
   it("analyser une appli via URL → pas un PDF manquant, même sous wantsAnalysis", async () => {
