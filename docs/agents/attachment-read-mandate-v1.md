@@ -6,13 +6,13 @@ Note doctrinale. La logique n’est pas ici : elle est déjà verrouillée dans 
 
 - Contrat : `ATTACHMENT_READ_MANDATE_CONTRACT` dans `server/src/agent/policies/attachment/attachmentReadMandatePolicy.js`
 - Cadrage : `resolveAttachmentFraming` dans `server/src/agent/policies/attachment/attachmentTaskPolicy.js`
-- Preuves : `server/tests/attachment-read-mandate.test.js` (cas structurants), plus `attachment-task-policy.test.js` et `routing-case-dictionary.test.js` (fiche `document_attached_guard`)
+- Preuves : `server/tests/attachment-read-mandate.test.js` (cas structurants + suite raster `image/*`), plus `attachment-task-policy.test.js` et `routing-case-dictionary.test.js` (fiche `document_attached_guard` ; image seule ≠ cette fiche)
 
 ## Quand le mandat s’active
 
-Le mandat s’applique seulement s’il y a **à la fois** un verbe de travail (améliorer, résumer, analyser, corriger, …) **et** un joint exploitable : mention explicite du fichier, ou pièce jointe texte déjà là.
+Le mandat s’applique seulement s’il y a **à la fois** un verbe de travail (améliorer, résumer, analyser, corriger, …) **et** un joint **documentaire** exploitable : mention explicite du fichier **texte**, ou pièce jointe texte déjà là.
 
-Un salut + un fichier, sans demande de travail, **n’active pas** le mandat. La clarification reste licite.
+Une PJ **image seule** **n’active pas** le mandat. Filtre : chaque attachment a un MIME `image/*` (png, jpeg, gif, webp, …), ou une extension raster si le MIME manque. « Analyse le fichier » + `.jpg` / `.png` / `.gif` / `.webp` reste le rail Vision (`VISION_ATTACHED`), pas un ingest document. SVG est refusé plus tôt par FILE_CAPABILITY. Un salut + un fichier, sans demande de travail, **n’active pas** non plus le mandat. La clarification reste licite hors Vision explicite.
 
 ## Ce qu’il interdit
 
@@ -23,7 +23,7 @@ Une fois le mandat actif :
 3. **Clarifier l’objectif** quand le fichier **est** la cible (« améliore ça », « résume le fichier joint »). Même vague : si le fichier est lisible, on travaille dessus. On ne redemande pas « quel est ton objectif ? ».
 4. **Une réponse générique** qui n’utilise pas le joint. La preuve d’usage est obligatoire : un span source ≥ 16 caractères, ou au moins 2 tokens distinctifs du fichier (les verbes de travail ne comptent pas).
 
-Si le fichier est illisible ou vide, on demande **un fichier lisible**, pas un nouvel objectif.
+Si le fichier **texte** est illisible ou vide, on demande **un fichier lisible**, pas un nouvel objectif. Si l’échec porte sur une **image**, on dit l’incertitude vision — jamais « fichier vide / trop court » (canon : invariant 10).
 
 ## Priorité de cadrage
 

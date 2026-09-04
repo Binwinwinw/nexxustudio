@@ -616,6 +616,35 @@ Phrase réutilisable : *Sur Vision attachée, une description sort ; le refus pi
 
 ---
 
+## Lot fermé — Mandat lecture vs Vision raster (2026-09-01)
+
+Hors P3–P5. Ne rouvre pas l’ancrage `entity_miss`. Précise l’invariant 10 : fallback document interdit aussi sous forme *fichier vide / trop court*.  
+Règle durable : [`citadelle-input-invariants.md`](../governance/citadelle-input-invariants.md) **invariant 10** + [`attachment-read-mandate-v1.md`](attachment-read-mandate-v1.md). Cette section est l’historique, pas une seconde source.
+
+### Bug initial
+
+*« analyse le fichier »* + PNG → pipeline `VISION_ATTACHED`, briefing visuel produit, puis le mandat lecture document remplace par *« Fichier vide ou trop court pour une analyse. »*
+
+### Cause racine
+
+Trigger lexical `analyse` + `fichier` + `attachments.length > 0`, **sans** regarder le MIME. Raster sans couche texte → ingest `empty` → file guard document.
+
+### Correctif
+
+`isImageOnlyAttachments` : mandat inactif ; clarify `can_answer_now` ; file guard / repair / filet COMPOSER → incertitude vision, pas *fichier vide*.
+
+### Non-régression — explicite
+
+- Document texte : mandat et *fichier vide* légitimes inchangés.
+- `entity_miss` / allowRefusal Vision : lots fermés, pas rouverts.
+- FILE_ANALYSIS / SQL / HTML / PDF : hors lot.
+
+### Verdict
+
+**Lot validé, fermé.** Doctrine stabilisée au canon (invariant 10). Preuve : suite raster `image/*` `attachment-read-mandate.test.js` + filet `mode-response-contracts.test.js`.
+
+---
+
 ## Lot fermé — Complétude d’input / clause d’existence (2026-08-17)
 
 Hors P3–P5. Ne rouvre pas Vision ni `subject_angle_explore`.  

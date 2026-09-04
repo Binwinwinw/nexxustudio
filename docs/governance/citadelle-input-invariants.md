@@ -21,7 +21,7 @@ Preuve runtime : tests listés ci-dessous.
 7. Les tests sont la preuve. Un souvenir documentaire ne suffit pas.
 8. Cadrage conversationnel : sujet clair reste sujet ; exemple reste exemple ; correction utilisateur remplace l’hypothèse ; pas de web avant cadrage stable.
 9. Vision attachée : l’image est l’ancre du tour ; l’ancrage lexical ne rejette pas une description visuelle valide.
-10. Vision attachée + demande de description explicite : pas de refus *piste / destination* ; livrer le briefing ou une erreur honnête.
+10. Vision attachée (image réelle + demande vision/analyse) : pas de refus *piste / destination* ni fallback document (*fichier vide / trop court*) ; livrer le briefing ou une erreur honnête. PJ raster seule : mandat lecture document inactif.
 11. Unité explicite d’existence / fraîcheur : survit à la normalisation ; borne la réponse sans changer le sujet ; compression invalide si elle disparaît de `effectiveQuery`, des contraintes (`scope_guard`), du plan ou de la requête web.
 
 ---
@@ -91,7 +91,8 @@ Les tests **protègent** le contrat. Ils ne documentent pas une intention.
 | Shadow JUST, consume interdit | télémétrie JUST + tests frame (P1) |
 | Cadrage sujet / contexte / correction | `server/tests/conversation-framing-subject-context.test.js` |
 | Ancrage Vision attachée (`entity_miss`) | `server/tests/current-turn-anchoring.test.js` — suite Vision |
-| Refus COMPOSER Vision (`allowRefusal` / piste) | `server/tests/mode-response-contracts.test.js` — suite Vision attachée |
+| Refus COMPOSER Vision (`allowRefusal` / piste / *fichier vide*) | `server/tests/mode-response-contracts.test.js` — suite Vision attachée |
+| Mandat lecture inactif sur PJ `image/*` seule | `server/tests/attachment-read-mandate.test.js` — suite raster |
 | Complétude d’input — clause d’existence (`scope_guard`) | `server/tests/existence-scope-guard.test.js` |
 
 Un changement qui casse ces tests n’est pas une amélioration : c’est une régression, sauf lot autonome validé qui met à jour **à la fois** ce canon et les tests.

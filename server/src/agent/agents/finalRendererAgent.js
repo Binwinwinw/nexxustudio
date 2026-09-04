@@ -22,6 +22,7 @@ import {
   validateRendererWithMakersChecker,
 } from "../verification/makersCheckerBridge.js";
 import { resolvePipelineFallback } from "../utils/conversation/genericGreetingGuards.js";
+import { isImageOnlyAttachments } from "../utils/conversation/conversationGuards.js";
 import { enforceSimpleFactualDirectness } from "../micro/replies/simpleFactualComposer.js";
 import { isCodeReviewRequest } from "../policies/code/codeReviewPolicy.js";
 import {
@@ -1414,9 +1415,14 @@ Laquelle t'intéresse ?`;
           ? Boolean(packet.meta.sourceBacked)
           : attachmentRefs.length > 0 || attachments.length > 0,
       ingestedText:
-        packet?.meta?.document_briefing ||
-        packet?.vision_briefing ||
-        "",
+        packet?.meta?.intent_contract_id === "VISION_ATTACHED" ||
+        isImageOnlyAttachments(attachments)
+          ? packet?.vision_briefing ||
+            packet?.meta?.document_briefing ||
+            ""
+          : packet?.meta?.document_briefing ||
+            packet?.vision_briefing ||
+            "",
     });
 
     if (guard.blocked) {

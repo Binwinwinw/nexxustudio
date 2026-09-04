@@ -113,7 +113,7 @@ Policy domaine = **règle de régime** une fois le path posé (ou pour poser un 
 | **Dossier** | `policies/attachment/` |
 | **Packs** | `ATTACHMENT_READ_MANDATE_V1` |
 | **Déclencheur** | PJ réelle + tâche sur le fichier (lire, expliquer, extraire) |
-| **Périmètre** | Mandat de **lire** l’attachement ; framing `code_review` / `document` / vision (vision = contrat à part, **non rouvert**) |
+| **Périmètre** | Mandat de **lire** l’attachement documentaire ; framing `code_review` / `document`. Raster seul → Vision (`VISION_ATTACHED`), mandat inactif (canon invariant 10). |
 | **Bloque** | Réponse « je n’ai pas le fichier » si la PJ est là ; traiter une PJ comme une query nue |
 | **Laisse** | Ingestion lot 4 ; analyse locale prioritaire (web skip si contrat fichier) |
 

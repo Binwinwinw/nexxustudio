@@ -79,6 +79,10 @@ import {
 } from "../epistemic/index.js";
 import { isReactAuditRequest } from "../../utils/intent-guards/reactAuditIntentGuards.js";
 import { isAttachmentWorkRequest } from "../attachment/index.js";
+import {
+  isAttachedVisionRequest,
+  isImageOnlyAttachments,
+} from "../../utils/conversation/conversationGuards.js";
 import { shouldAllowClarifyThenBuild } from "../../utils/context/deliverableMandateGuards.js";
 import { isExistingSourceAnalysisSatisfiable } from "../analysis/index.js";
 import {
@@ -204,6 +208,19 @@ export function evaluateClarificationDecision(
     return pack(
       CLARIFICATION_DECISIONS.CAN_ANSWER_NOW,
       "attachment_work_no_objective_clarify",
+      true,
+      signals,
+    );
+  }
+
+  if (
+    isImageOnlyAttachments(attachments) &&
+    isAttachedVisionRequest(query, attachments)
+  ) {
+    signals.push("vision_attached_work");
+    return pack(
+      CLARIFICATION_DECISIONS.CAN_ANSWER_NOW,
+      "vision_image_no_document_mandate",
       true,
       signals,
     );

@@ -19,6 +19,7 @@ import { isGuidedCreationScopingRequest } from "../guided/guidedCreationScopingP
 import {
   hasImageAttachments,
   isAttachedVisionRequest,
+  VISION_IMAGE_UNCERTAINTY_REPLY,
 } from "../../utils/conversation/conversationGuards.js";
 
 export const CURRENT_TURN_ANCHORING_RULE = "current_turn_anchoring_v1";
@@ -197,11 +198,8 @@ export function isVisionAttachedAnchoringExempt(input = {}) {
   return isAttachedVisionRequest(String(input.query || ""), attachments);
 }
 
-function buildVisionAnalysisError(signals = []) {
-  if (signals.includes("vision_failed")) {
-    return "L'analyse de l'image jointe a échoué (erreur technique). Réessaie, ou décris l'image à la main.";
-  }
-  return "L'analyse de l'image jointe n'a rien produit. Réessaie, ou décris l'image à la main.";
+function buildVisionAnalysisError(_signals = []) {
+  return VISION_IMAGE_UNCERTAINTY_REPLY;
 }
 
 function licensesCodeReviewRagTemplate(query = "") {

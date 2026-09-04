@@ -455,14 +455,36 @@ export function isDocumentAnalysisIntent(query = "", attachments = []) {
 }
 
 /**
- * Pièces jointes image (vision).
+ * Rasters Vision (FILE_CAPABILITY) : png / jpeg / gif / webp.
+ * MIME allowlist d'abord ; extension si le client n'envoie pas de MIME fiable.
+ * SVG (`image/svg+xml`) n'est pas un raster — refus FILE_CAPABILITY plus tôt.
  */
+const IMAGE_ATTACHMENT_EXT = /\.(png|jpe?g|webp|gif)$/i;
+const VISION_RASTER_MIME_RE = /^image\/(jpeg|jpg|png|gif|webp)$/i;
+
+function isRasterVisionAttachment(file = {}) {
+  const mime = String(file?.mimetype || "")
+    .toLowerCase()
+    .split(";")[0]
+    .trim();
+  if (mime.startsWith("image/")) return VISION_RASTER_MIME_RE.test(mime);
+  const name = file?.originalname || file?.name || "";
+  return IMAGE_ATTACHMENT_EXT.test(name);
+}
+
 export function hasImageAttachments(attachments = []) {
   if (!Array.isArray(attachments) || attachments.length === 0) return false;
-  return attachments.some((file) =>
-    String(file?.mimetype || "").startsWith("image/"),
-  );
+  return attachments.some(isRasterVisionAttachment);
 }
+
+/** Toutes les PJ sont des rasters Vision — pas un document texte à ingérer. */
+export function isImageOnlyAttachments(attachments = []) {
+  if (!Array.isArray(attachments) || attachments.length === 0) return false;
+  return attachments.every(isRasterVisionAttachment);
+}
+
+export const VISION_IMAGE_UNCERTAINTY_REPLY =
+  "Je n'arrive pas à analyser correctement cette image — l'analyse vision a échoué (modèle ou décodage), ce n'est pas un document texte vide. Peux-tu la renvoyer, la recadrer, ou me décrire ce qu'elle contient ?";
 
 const VIDEO_ATTACHMENT_EXT = /\.(mp4)$/i;
 

@@ -19,6 +19,7 @@ import {
 import { evaluateFileContextGuard } from "../src/agent/policies/guards/fileContextGuard.js";
 import { evaluateClarificationDecision } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseContracts.js";
+import { isImageOnlyAttachments } from "../src/agent/utils/conversation/conversationGuards.js";
 
 const GUIDE_HTML = {
   originalname: "Guide de remédiation 3ème _ Programmes 2025.html",
@@ -150,6 +151,7 @@ describe("attachmentReadMandate — contrat + frontières", () => {
     assert.ok(c.legitimateStops.includes("unreadable"));
     assert.ok(c.clarificationForbiddenWhen.includes("readable_file_even_if_improve_is_vague"));
     assert.deepEqual(c.framingPriority, ["request_nature", "work_verb", "file_type"]);
+    assert.equal(c.frontiers.image_only_attachment, "no_mandate_vision");
   });
 
   it("HTML pédagogique + améliorer → document (verbe > type)", () => {
@@ -281,5 +283,93 @@ describe("critic file-use reconcile", () => {
     );
     assert.equal(out.verdict, "ok");
     assert.deepEqual(out.reasons, []);
+  });
+});
+
+describe("attachmentReadMandate — image raster ≠ document vide", () => {
+  const QUERY_ANALYSE = "analyse le fichier";
+  const RASTERS = [
+    { originalname: "capture.png", mimetype: "image/png" },
+    { originalname: "photo.jpg", mimetype: "image/jpeg" },
+    { originalname: "photo.jpeg", mimetype: "image/jpeg" },
+    { originalname: "clip.gif", mimetype: "image/gif" },
+    { originalname: "shot.webp", mimetype: "image/webp" },
+  ];
+  const JPEG = RASTERS[1];
+
+  it("isImageOnlyAttachments : image/* (pas PNG seulement)", () => {
+    for (const file of RASTERS) {
+      assert.equal(isImageOnlyAttachments([file]), true, file.mimetype);
+    }
+    assert.equal(isImageOnlyAttachments([{ mimetype: "image/jpeg" }]), true);
+    assert.equal(isImageOnlyAttachments([RASTERS[0], GUIDE_HTML]), false);
+    assert.equal(
+      isImageOnlyAttachments([{ mimetype: "image/svg+xml", originalname: "icon.svg" }]),
+      false,
+    );
+    assert.equal(
+      isImageOnlyAttachments([{ originalname: "photo.jpg" }]),
+      true,
+    );
+  });
+
+  for (const file of RASTERS) {
+    it(`trigger lexical inactif sur ${file.mimetype} (${file.originalname})`, () => {
+      assert.equal(isAttachmentWorkRequest(QUERY_ANALYSE, [file]), false);
+      assert.equal(isAttachmentPresentWithoutWorkRequest(QUERY_ANALYSE, [file]), false);
+      const verdict = evaluateAttachmentReadMandate({
+        query: QUERY_ANALYSE,
+        attachments: [file],
+        ingestedText: "",
+        reply: "",
+      });
+      assert.equal(verdict.applies, false);
+      assert.equal(verdict.ok, true);
+    });
+  }
+
+  it("HTML texte reste sous mandat", () => {
+    assert.equal(isAttachmentWorkRequest(QUERY_ANALYSE, [GUIDE_HTML]), true);
+  });
+
+  it("JPEG : file guard ne remplace pas par « fichier vide »", () => {
+    const guard = evaluateFileContextGuard({
+      query: QUERY_ANALYSE,
+      response: "Un bouton Login, fond sombre.",
+      attachments: [JPEG],
+      ingestedText: "",
+    });
+    assert.notEqual(guard.action, "blocked");
+    assert.doesNotMatch(String(guard.blockedMessage || ""), /fichier vide|trop court/i);
+  });
+
+  it("JPEG : vision_briefing compte comme lisible", () => {
+    const guard = evaluateFileContextGuard({
+      query: QUERY_ANALYSE,
+      response: "Capture d'écran : dashboard Nexxus, latence 3 min.",
+      attachments: [JPEG],
+      ingestedText: "--- BRIEFING VISUEL ---\nDashboard Nexxus, latence 3 min.\n---",
+    });
+    assert.notEqual(guard.action, "blocked");
+    assert.doesNotMatch(String(guard.blockedMessage || ""), /fichier vide|trop court/i);
+  });
+
+  it("JPEG : clarify image+analyse → can_answer_now", () => {
+    const d = evaluateClarificationDecision(QUERY_ANALYSE, {}, null, [], [JPEG]);
+    assert.equal(d.decision, "can_answer_now");
+    assert.match(d.reason, /vision_image/);
+  });
+
+  it("JPEG / GIF / WebP : repair → incertitude vision, pas fichier vide", () => {
+    for (const file of [JPEG, RASTERS[3], RASTERS[4]]) {
+      const repair = buildAttachmentMandateRepairReply({
+        query: QUERY_ANALYSE,
+        attachments: [file],
+        ingestedText: "",
+        defects: [MANDATE_DEFECTS.UNREAD],
+      });
+      assert.doesNotMatch(repair, /trop court pour une analyse/i, file.mimetype);
+      assert.match(repair, /renvoyer|recadrer|décrire/i);
+    }
   });
 });

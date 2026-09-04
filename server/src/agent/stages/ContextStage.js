@@ -46,7 +46,7 @@ export class ContextStage {
         if (analyzable.length > 0) {
           if (onStep)
             onStep(
-              `👁️ Ingestion visuelle : Analyse de ${analyzable.length} image(s)...`,
+              `👁️ Ingestion visuelle : analyse de ${analyzable.length} image(s) — ça peut prendre quelques minutes.`,
             );
           visionData = await visionAgent.analyze(
             analyzable,

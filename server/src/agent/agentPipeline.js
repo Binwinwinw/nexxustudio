@@ -63,6 +63,7 @@ import {
   isDocumentAnalysisIntent,
   buildAttachmentPacketMeta,
   hasTextAttachments,
+  isImageOnlyAttachments,
   isConversationMemoryRecallRequest,
 } from "./utils/conversation/conversationGuards.js";
 import {
@@ -3885,7 +3886,13 @@ class AgentPipeline {
         sourceBacked:
           attachmentRefs.length > 0 ||
           (Array.isArray(attachedFiles) && attachedFiles.length > 0),
-        ingestedText: packet?.meta?.document_briefing || "",
+        ingestedText:
+          packet?.meta?.intent_contract_id === "VISION_ATTACHED" ||
+          isImageOnlyAttachments(attachedFiles)
+            ? packet?.vision_briefing ||
+              packet?.meta?.document_briefing ||
+              ""
+            : packet?.meta?.document_briefing || "",
         htmlViews: packet?.meta?.html_document_views || null,
       });
       if (composedDelivery.blocked) {

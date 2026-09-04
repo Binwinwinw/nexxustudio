@@ -468,6 +468,15 @@ test("Vision attachée — 5. vision_failed ou briefing vide → erreur honnête
   assert.doesNotMatch(empty, /Je vois la piste/i);
 });
 
+test("Vision attachée — fallback document « fichier vide » → incertitude, pas piste", () => {
+  const out = resolveVisionAttachedComposerDelivery(
+    visionPacket("analyse le fichier", { vision_failed: true }),
+    "Fichier vide ou trop court pour une analyse.",
+  );
+  assert.doesNotMatch(out, /trop court pour une analyse/i);
+  assert.match(out, /échoué|modèle|renvoyer/i);
+});
+
 test("Vision attachée — 6. vague sans image → refus encore possible", () => {
   const packet = {
     user_query: "tu peux m'aider ?",

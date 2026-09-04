@@ -2,7 +2,7 @@
  * ATTACHMENT_READ_MANDATE_V1 — contrat normatif.
  * Source de vérité : ATTACHMENT_READ_MANDATE_CONTRACT ci-dessous.
  */
-import { hasTextAttachments } from "../../utils/conversation/conversationGuards.js";
+import { hasTextAttachments, isImageOnlyAttachments, VISION_IMAGE_UNCERTAINTY_REPLY } from "../../utils/conversation/conversationGuards.js";
 import {
   classifyAttachmentTask,
   resolveAttachmentFraming,
@@ -22,10 +22,13 @@ export const ATTACHMENT_READ_MANDATE_CONTRACT = Object.freeze({
   id: "ATTACHMENT_READ_MANDATE_V1",
   trigger: {
     anyOf: [
-      "work_verb AND joint_object_mention",
+      "work_verb AND joint_object_mention AND NOT image_only",
       "text_attachment AND work_verb",
     ],
-    not: "attachment_present AND NOT work_verb",
+    not: [
+      "attachment_present AND NOT work_verb",
+      "image_only_attachment",
+    ],
   },
   readObligations: [
     "ingest_before_any_content_answer",
@@ -55,6 +58,7 @@ export const ATTACHMENT_READ_MANDATE_CONTRACT = Object.freeze({
     unreadable: "stop",
     empty: "stop",
     present_without_work: "no_mandate",
+    image_only_attachment: "no_mandate_vision",
     vague_improve_readable: "mandate_no_objective_clarify",
   },
   framingPriority: ["request_nature", "work_verb", "file_type"],
@@ -116,6 +120,8 @@ export function hasAttachmentPresent(attachments = []) {
  * Déclenchement du mandat — clause trigger du contrat.
  */
 export function isAttachmentWorkRequest(query = "", attachments = []) {
+  // Toutes les PJ `image/*` (png/jpeg/gif/webp, …) → Vision, pas mandat document.
+  if (isImageOnlyAttachments(attachments)) return false;
   const q = String(query || "");
   if (WORK_VERB_RE.test(q) && JOINT_OBJECT_RE.test(q)) return true;
   if (hasAttachmentPresent(attachments) && WORK_VERB_RE.test(q)) return true;
@@ -124,6 +130,7 @@ export function isAttachmentWorkRequest(query = "", attachments = []) {
 
 /** PJ présente, aucune demande exploitable → mandat inactif, clarify encore licite. */
 export function isAttachmentPresentWithoutWorkRequest(query = "", attachments = []) {
+  if (isImageOnlyAttachments(attachments)) return false;
   return hasAttachmentPresent(attachments) && !isAttachmentWorkRequest(query, attachments);
 }
 
@@ -340,6 +347,9 @@ export function buildAttachmentMandateRepairReply(input = {}) {
     "fichier joint";
 
   const ingestStatus = resolveIngestStatus(ingestedText, readStatus, htmlViews);
+  if (isImageOnlyAttachments(attachments)) {
+    return VISION_IMAGE_UNCERTAINTY_REPLY;
+  }
   if (htmlViews && ingestStatus === "ok") {
     return buildHtmlDocumentAnalysisReply(htmlViews, query);
   }

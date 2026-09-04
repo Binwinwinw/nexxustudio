@@ -6,6 +6,7 @@ import {
   isArchitectureDesignIntent,
   hasImageAttachments,
   isAttachedVisionRequest,
+  VISION_IMAGE_UNCERTAINTY_REPLY,
 } from "../utils/conversation/conversationGuards.js";
 import { isFreshFactualCompareWithWebRequest } from "../policies/routing/explicitWebSearchRequestPolicy.js";
 import { lookupRoutingCase } from "../policies/routing/routingCaseDictionary.js";
@@ -399,9 +400,6 @@ export function shouldEmitDocumentFallbackChunks(usedFallback, onContent) {
   return Boolean(usedFallback && onContent);
 }
 
-const VISION_HONEST_ERROR =
-  "L'analyse de l'image jointe a échoué ou n'a rien produit. Réessaie, ou décris l'image à la main.";
-
 /**
  * VISION_ATTACHED + image réelle + demande Vision explicite.
  * @param {object} packet
@@ -433,11 +431,12 @@ export function resolveVisionAttachedComposerDelivery(packet = {}, text = "") {
   const raw = String(text || "");
   const piste = isInsufficientSignalRefusal(raw) || /^Je vois la piste/i.test(raw.trim());
   const empty = !raw.trim();
-  if (!piste && !empty) return raw;
+  const falseEmpty = /fichier vide|trop court pour une analyse/i.test(raw);
+  if (!piste && !empty && !falseEmpty) return raw;
 
   const failed = packet?.meta?.vision_failed === true;
   const briefing = formatVisionBriefingReply(packet?.vision_briefing || "");
-  if (failed || !briefing) return VISION_HONEST_ERROR;
+  if (failed || !briefing) return VISION_IMAGE_UNCERTAINTY_REPLY;
   return briefing;
 }
 

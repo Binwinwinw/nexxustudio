@@ -167,6 +167,16 @@ describe("routingCaseDictionary — incidents + goulot", () => {
     assertNoPiste(out);
   });
 
+  it("image jointe (png/jpeg) + analyse le fichier → pas document_attached_guard", () => {
+    for (const attachments of [
+      [{ originalname: "capture.png", mimetype: "image/png" }],
+      [{ originalname: "photo.jpg", mimetype: "image/jpeg" }],
+    ]) {
+      const lookup = lookupRoutingCase("analyse le fichier", { attachments });
+      assert.notEqual(lookup.winning_rule, "document_attached_guard");
+    }
+  });
+
   it("demande opérationnelle floue peut encore émettre la piste", () => {
     const out = enforceModeContract(RESPONSE_MODES.SIMPLE_FAST, "", {
       query: "fais quelque chose",
