@@ -70,9 +70,21 @@ const PHATIC_CHECKIN_RE =
 const PHATIC_BARE_ACTIVITY_RE =
   /^(?:salut|bonjour|hello|coucou|hey|bonsoir)\b.{0,40}\b(?:qu['\u2019]?\s*est[- ]ce que\s+)?(?:tu|vous)\s+fais(?:es|ez)?(?:\s+de\s+(?:beau|bon|chouette|neuf))?\s*[?!.…]*$|^(?:qu['\u2019]?\s*est[- ]ce que\s+)?(?:tu|vous)\s+fais(?:es|ez)?(?:\s+de\s+(?:beau|bon|chouette|neuf))?\s*[?!.…]*$|^(?:tu|vous)\s+fais\s+quoi\s*[?!.…]*$/i;
 
+/** « que fais-tu / que faites-vous » — inversion, pas « tu fais ». */
+const PHATIC_INVERSION_RE =
+  /\bque\s+fais(?:es|ez)?[- ]?(?:tu|vous)\b|\bque\s+faites[- ]?vous\b|\ba\s+quoi\s+sers[- ]?(?:tu|vous)\b|\ba\s+quoi\s+servez[- ]?vous\b/i;
+
 /** « qu'est-ce que tu fais pour corriger… » — pas un check-in phatique. */
 const PHATIC_TASK_OBJECT_RE =
   /\bfais(?:es|ez)?\s+(?:pour|avec|sur|ce|cet|cette|le|la|les|un|une|mon|ton|ma|ta|du|de\s+la|l['\u2019])/i;
+
+/**
+ * Préambule de tâche dans un tour encore social.
+ * Autorise la phrase « piste / destination » ; exclut le small talk agent.
+ * Texte déjà sanitisé (apostrophes → espaces, accents retirés).
+ */
+const SOCIAL_TASK_PREAMBLE_RE =
+  /\bj ai besoin(?: de(?: ton)? aide| d aide)? pour\b|\bje (?:voudrais|veux|souhaite)(?! faire quoi)\b|\baide[- ]moi (?:a|pour)\b|\b(?:lancer|construire|analyser|creer)\s+(?:un|une|le|la|mon|ma|ce|cet|cette)\b/;
 
 const META_WHO_DRIVES_RE =
   /\b(?:qu['\u2019]?\s*est[- ]?ce\s+que\s+(?:tu|vous)(?:\s+tu)?\s+(?:veux|voudrais|veut|voulez)\s+(?:faire|continuer)|que\s+veux[- ]?(?:tu|vous)\s+(?:faire|continuer)|(?:tu|on) (?:veux|voudrais|veut) (?:faire )?quoi(?:\s+maintenant)?|je (?:veux|voudrais) faire quoi(?:\s+maintenant)?|c['']?\s*est (?:moi|toi) qui (?:choisit|decide|décide))\b/i;
@@ -319,12 +331,33 @@ const GREETING_ONLY_RE =
  * @param {string} query
  * @returns {boolean}
  */
+export function isSocialTurnWithTaskPreamble(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q) return false;
+  return SOCIAL_TASK_PREAMBLE_RE.test(q);
+}
+
 export function isPhaticSocialCheckinIntent(query = "") {
   const q = normalizeFamiliarityQuery(query);
   if (!q || q.length < 8 || q.length > 120) return false;
   if (suppressesKnownSocialPattern(query)) return false;
+  if (isSocialTurnWithTaskPreamble(query)) return false;
   if (PHATIC_TASK_OBJECT_RE.test(q)) return false;
-  return PHATIC_CHECKIN_RE.test(q) || PHATIC_BARE_ACTIVITY_RE.test(q);
+  return (
+    PHATIC_CHECKIN_RE.test(q) ||
+    PHATIC_BARE_ACTIVITY_RE.test(q) ||
+    PHATIC_INVERSION_RE.test(q)
+  );
+}
+
+/** Small talk « que fais-tu » — rôle Nexxus, pas la phrase piste / destination. */
+export const SOCIAL_AGENT_ACTIVITY_REPLY =
+  "Je suis NEXXUS, l'assistant de La Citadelle. Je peux t'aider à cadrer un projet, analyser des documents, ou répondre à des questions. Qu'est-ce que tu aimerais faire ?";
+
+/** Small talk centré agent — pas un préambule de tâche. */
+export function isSocialSmallTalkAboutAgent(query = "") {
+  if (isSocialTurnWithTaskPreamble(query)) return false;
+  return isPhaticSocialCheckinIntent(query) || isIdentityIntent(query);
 }
 
 /**
@@ -807,6 +840,10 @@ export function buildSocialPatternReply(patternName = "", query = "") {
     case "social/gratitude":
       return buildGratitudeClosureReply(query);
     case "social/phatic_checkin": {
+      const q = normalizeFamiliarityQuery(query);
+      if (PHATIC_INVERSION_RE.test(q)) {
+        return withLeadingGreetingMirror(query, SOCIAL_AGENT_ACTIVITY_REPLY);
+      }
       const core = composeMannerReply({
         family: RESPONSE_MANNER_FAMILIES.SOCIAL_PHATIC_CONTINUITY,
         history: [],

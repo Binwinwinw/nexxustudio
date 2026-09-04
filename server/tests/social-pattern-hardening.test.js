@@ -94,7 +94,7 @@ const CONVERSATION_CASES = [
     mustNotGeneralKnowledge: true,
   },
   {
-    query: "qu'est-ce que tu fais ?",
+    query: "bonjour que fais tu ?",
     patternName: "social/phatic_checkin",
     mustNotClarify: true,
     mustNotFactual: true,
@@ -268,14 +268,17 @@ describe("G35 social_pattern_hardening — classification", () => {
 describe("G35 social_pattern_hardening — frontière phatique / invite / travail", () => {
   it("phatique nu vs invitation vs travail relâché", async () => {
     const phatic = "qu'est-ce que tu fais ?";
+    const inversion = "bonjour que fais tu ?";
     const invite = "salut et si on papotait ?";
     const work = "qu'est-ce que tu fais pour corriger ce bug ?";
 
     assert.equal(isPhaticSocialCheckinIntent(phatic), true);
+    assert.equal(isPhaticSocialCheckinIntent(inversion), true);
     assert.equal(isPhaticSocialCheckinIntent(invite), false);
     assert.equal(isPhaticSocialCheckinIntent(work), false);
 
     assert.equal(classifySocialPattern(phatic)?.patternName, "social/phatic_checkin");
+    assert.equal(classifySocialPattern(inversion)?.patternName, "social/phatic_checkin");
     assert.equal(classifySocialPattern(invite)?.patternName, "social/chat_invite");
     assert.notEqual(classifySocialPattern(work)?.patternName, "social/phatic_checkin");
 
@@ -283,6 +286,11 @@ describe("G35 social_pattern_hardening — frontière phatique / invite / travai
     assert.equal(phaticHit?.path, "social_deterministic");
     assert.equal(phaticHit?.socialPatternName, "social/phatic_checkin");
     assert.doesNotMatch(phaticHit?.reply || "", /Tu mentionnes|clarifier de quoi/i);
+
+    const inversionHit = await runConversationShortCircuit(inversion);
+    assert.equal(inversionHit?.path, "social_deterministic");
+    assert.equal(inversionHit?.socialPatternName, "social/phatic_checkin");
+    assert.doesNotMatch(inversionHit?.reply || "", /Je vois la piste/i);
 
     const inviteHit = await runConversationShortCircuit(invite);
     assert.equal(inviteHit?.socialPatternName, "social/chat_invite");

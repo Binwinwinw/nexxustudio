@@ -16,6 +16,10 @@ import {
 } from "../config/modeResponseContracts.js";
 import { getComposerObservabilityContext } from "../config/intentContractRegistry.js";
 import { shouldBlockGenericInsufficientRefusal } from "../policies/posture/index.js";
+import {
+  isSocialSmallTalkAboutAgent,
+  buildSocialPatternReply,
+} from "../policies/social/index.js";
 import conversationHealth from "../telemetry/conversationHealth.js";
 import { recordComposerTelemetry } from "../telemetry/telemetryObservabilityBridge.js";
 import {
@@ -390,12 +394,14 @@ export const finalRendererAgent = {
       const blockPisteOnExplain =
         packet?.meta?.intent_contract_id === "DIRECT_EXPLANATION" ||
         shouldBlockGenericInsufficientRefusal(queryForRefusal);
+      const blockPisteOnSocialSmallTalk = isSocialSmallTalkAboutAgent(queryForRefusal);
       let enforced = enforceComposerContract(packet, rendered, composerOptions, {
         allowRefusal:
           !webGrounded &&
           !hasAttachedDocument &&
           !visionAttachedDescribe &&
           !blockPisteOnExplain &&
+          !blockPisteOnSocialSmallTalk &&
           !composerOptions.directArbitration &&
           !composerOptions.generalKnowledge &&
           !composerOptions.knownEntitySummary &&
@@ -856,6 +862,19 @@ export const finalRendererAgent = {
           allowRefusal: false,
         });
         this._logComposerPath(observability, "web_grounded_refusal_replaced", {});
+      }
+      if (blockPisteOnSocialSmallTalk) {
+        const pisteOrEmpty =
+          isInsufficientSignalRefusal(finalText) ||
+          !String(finalText || "").trim() ||
+          /^Je vois la piste/i.test(String(finalText || ""));
+        if (pisteOrEmpty) {
+          finalText = buildSocialPatternReply(
+            "social/phatic_checkin",
+            queryForRefusal,
+          );
+          this._logComposerPath(observability, "social_smalltalk_refusal_replaced", {});
+        }
       }
       if (blockPisteOnExplain) {
         const needsExplainFallback =
