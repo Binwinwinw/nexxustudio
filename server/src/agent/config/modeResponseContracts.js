@@ -33,6 +33,7 @@ import { sanitizeFalseWebCapabilityDenial } from "../policies/web/webCapabilityT
 import { evaluateRefusalSufficiency } from "../micro/parsing/refusalSufficiencyEvaluator.js";
 import { isExploitableProcedureIntent } from "../utils/intent-guards/procedureIntentGuards.js";
 import { sanitizeUnverifiedSkillExecutionClaims } from "../utils/quality-safety/skillExecutionClaimGuard.js";
+import { sanitizeInternalEnvironmentDisclosure } from "../utils/quality-safety/environmentDisclosureGuard.js";
 import {
   buildCodeDeliveryAddon,
   isCodeGenerationRequest,
@@ -871,6 +872,7 @@ export function enforceModeContract(mode, rawText, options = {}) {
 
   cleaned = sanitizeUnverifiedSkillExecutionClaims(cleaned);
   cleaned = sanitizeUnverifiedToolExecutionClaims(cleaned);
+  cleaned = sanitizeInternalEnvironmentDisclosure(cleaned);
   cleaned = sanitizeFalseWebCapabilityDenial(cleaned);
 
   // R1 / allowRefusal=false : jamais laisser passer le refus « piste »

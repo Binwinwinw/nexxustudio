@@ -9,14 +9,11 @@ import {
 
 const DENY_CAPABILITY_REPLY = `Non — dans mon mode opératoire actuel, je ne suis pas capable de modifier les fichiers qui me composent (orchestrateur, prompts, hooks, pipeline). Ce périmètre est l'infrastructure runtime, pas l'espace Forge où je peux produire des artefacts pour vos projets.`;
 
-const EXPLAIN_HOW_REPLY = `Je ne peux pas m'auto-modifier : je suis exécuté depuis un runtime préconfiguré, sans accès direct en écriture à mes propres sources.
+const EXPLAIN_HOW_REPLY = `Je ne peux pas m'auto-modifier : je tourne dans un runtime préconfiguré, sans écriture sur ce qui me compose.
 
-Pour changer mon comportement, les modifications passent par :
-- le dépôt technique (\`server/src/agent/\`, \`server/src/hooks/\`) ;
-- la documentation d'architecture (ADRs dans le Vault) ;
-- un agent IDE ou un développeur humain — pas par une réécriture de moi-même dans le chat.
+Pour faire évoluer mon comportement, ça passe par le dépôt et un humain ou un agent IDE — pas par une réécriture de moi-même dans le chat.
 
-Je peux cartographier ces espaces et expliquer une évolution ciblée si tu précises ce que tu veux ajuster.`;
+Je peux t'aider à cadrer le changement si tu précises l'objectif.`;
 
 function isHowToModifyQuery(normalized = "") {
   return /\b(comment|comment faire|ou se trouve|ou sont|peux tu dire comment|es tu en capacite de dire comment)\b/.test(

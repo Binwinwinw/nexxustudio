@@ -86,7 +86,8 @@ describe("selfModificationReplyBuilder — contrat épistémique", () => {
     const route = resolveSelfModificationRoute(Q_HOW);
     assert.equal(route.subKind, "self_modification_how");
     assert.match(route.reply, /pas.*auto-modifier|ne peux pas m'auto-modifier/i);
-    assert.match(route.reply, /server\/src\/agent|hooks|adr/i);
+    assert.match(route.reply, /runtime préconfiguré|dépôt|agent IDE/i);
+    assert.doesNotMatch(route.reply, /server\/src|\.cursor|npm run/i);
     assertNoCapabilityHallucination(route.reply);
   });
 

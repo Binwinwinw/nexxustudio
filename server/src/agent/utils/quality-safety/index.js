@@ -5,5 +5,6 @@ export * from "./assistantRepairGuards.js";
 export { default as responseThinkingCleaner } from "./responseThinkingCleaner.js";
 export * from "./skillExecutionClaimGuard.js";
 export * from "./toolExecutionClaimGuard.js";
+export * from "./environmentDisclosureGuard.js";
 export { default as reliabilityLogger } from "./reliabilityLogger.js";
 export * from "./llmConnectionErrors.js";
