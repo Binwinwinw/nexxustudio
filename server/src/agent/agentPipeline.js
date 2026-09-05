@@ -1705,6 +1705,7 @@ class AgentPipeline {
         wantsAnalysis,
         forgeProduction: isForgeProductionRun,
         query: pipelineQuery,
+        attachments: attachedFiles,
       })
     ) {
       const deepeningCtx = evaluateBoundedSubjectDeepening(query, orchestrationHistory);
@@ -2612,6 +2613,8 @@ class AgentPipeline {
       wordsCount,
       bypassSimpleFast,
       isForgeProductionRun,
+      query,
+      attachments: attachedFiles,
     })) {
       turnTelemetry.recordPipelinePath("simple_fast");
       console.log("[PIPELINE] SIMPLE_FAST détecté → simpleFast (word_guard)");

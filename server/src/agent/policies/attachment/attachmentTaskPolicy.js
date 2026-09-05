@@ -400,5 +400,8 @@ export function shouldRouteAttachmentTaskToFullPipeline(
   ) {
     return false;
   }
+  if (hit.matched && names.length > 0 && hit.task === ATTACHMENT_TASKS.DOC_SUMMARIZE) {
+    return true;
+  }
   return shouldSuppressSummaryContractForAttachment(query, attachments);
 }

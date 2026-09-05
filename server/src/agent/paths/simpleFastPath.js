@@ -21,6 +21,10 @@ import {
   resolveLocalSimpleFactualAnswer,
 } from "../micro/replies/simpleFactualComposer.js";
 import { resolveLocalDeterministicFallback, resolvePipelineFallback } from "../utils/conversation/genericGreetingGuards.js";
+import {
+  isExplicitDocumentAttachmentTurn,
+  isSocialLightLatencyTurn,
+} from "../policies/routing/routingLatencyContracts.js";
 import responseThinkingCleaner from "../utils/quality-safety/responseThinkingCleaner.js";
 import {
   composeMannerReply,
@@ -724,6 +728,8 @@ export function shouldRunWordGuardSimpleFast({
   wordsCount = 0,
   bypassSimpleFast = false,
   isForgeProductionRun = false,
+  query = "",
+  attachments = [],
 } = {}) {
   if (isForgeProductionRun || bypassSimpleFast || simpleFastConsumed) {
     return false;
@@ -731,6 +737,8 @@ export function shouldRunWordGuardSimpleFast({
   if (shortCircuitEvaluated && shortCircuitDeferredFull) {
     return false;
   }
+  if (isExplicitDocumentAttachmentTurn(query, attachments)) return false;
+  if (isSocialLightLatencyTurn(query, { attachments })) return false;
   return wordsCount < 15;
 }
 

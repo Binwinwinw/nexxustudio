@@ -45,19 +45,21 @@ import {
 } from "../interpreter/requestInterpreter.js";
 import { buildParseState } from "../parsing/responseSufficiencyEvaluator.js";
 import { applyShortCircuitSufficiencyGate } from "../parsing/shortCircuitSufficiencyGate.js";
+import { shouldBypassMultiSegmentShortCircuit } from "../../policies/routing/practicalAdviceRoutingGuard.js";
+import { annotateShortCircuitCognitiveCycle } from "../../policies/routing/shortCircuitCognitiveCyclePolicy.js";
+import { resolveReactAuditShortCircuitEmit } from "../../policies/routing/reactAuditShortCircuit.js";
+import { isResearchThenSummarizeRequest } from "../../policies/routing/researchThenSummarizePolicy.js";
 import {
-  annotateShortCircuitCognitiveCycle,
-  resolveReactAuditShortCircuitEmit,
-  shouldBypassMultiSegmentShortCircuit,
-  isResearchThenSummarizeRequest,
   decomposeRequest,
   isMultiUnitRequest,
   shouldPreemptMultiSegment,
   SOCIAL_SITUATIONS,
-  resolveInformationSeekingLightShortCircuit,
+} from "../../policies/routing/requestDecompositionPolicy.js";
+import { resolveInformationSeekingLightShortCircuit } from "../../policies/routing/informationSeekingLightPolicy.js";
+import {
   resolveExplicitWebSearchHelpShortCircuit,
   isWebCitationsStructuredReportCluster,
-} from "../../policies/routing/index.js";
+} from "../../policies/routing/explicitWebSearchRequestPolicy.js";
 import {
   resolveMultiSegmentPlan,
   buildMultiSegmentSystemHint,
@@ -114,6 +116,7 @@ import {
   isCausalWhyExplainRequest,
 } from "../../policies/posture/index.js";
 import { recordSocialPatternTelemetry } from "../../telemetry/socialPatternTelemetry.js";
+import { isExplicitDocumentAttachmentTurn } from "../../policies/routing/routingLatencyContracts.js";
 import { isConversationMemoryRecallRequest, isAttachedVisionRequest, isTaskCapabilityAskWithoutPayload, buildTaskCapabilityAskReply } from "../../utils/conversation/conversationGuards.js";
 import { resolveGeneralKnowledgeShortCircuit } from "../replies/generalKnowledgeComposerContract.js";
 import {
@@ -676,6 +679,7 @@ function buildSocialDeterministicShortCircuit(
       ),
       step: "⚡ État/Santé — réponse déterministe...",
       enforce: { allowRefusal: false },
+      ...LOCAL_SOCIAL_RAIL_FLAGS,
     };
   }
 
@@ -700,6 +704,7 @@ function buildSocialDeterministicShortCircuit(
         DEFAULT_SOCIAL_GREETING_REPLY,
       step: "⚡ Réponse sociale déterministe...",
       enforce: { allowRefusal: false },
+      ...LOCAL_SOCIAL_RAIL_FLAGS,
     };
   }
 
@@ -740,6 +745,7 @@ function buildAttachedVisionPipelineHit(effectiveQuery, attachments = []) {
  *   wantsAnalysis?: boolean,
  *   forgeProduction?: boolean,
  *   query?: string,
+ *   attachments?: unknown[],
  * }} [opts]
  * @returns {boolean}
  */
@@ -747,11 +753,14 @@ export function shouldEvaluateConversationShortCircuit({
   wantsAnalysis = false,
   forgeProduction = false,
   query = "",
+  attachments = [],
 } = {}) {
   if (forgeProduction) return false;
   if (!wantsAnalysis) return true;
-  if (isTaskCapabilityAskWithoutPayload(query)) return true;
-  return Boolean(extractSummaryUrl(query));
+  if (isTaskCapabilityAskWithoutPayload(query, attachments)) return true;
+  if (extractSummaryUrl(query)) return true;
+  if (isExplicitDocumentAttachmentTurn(query, attachments)) return true;
+  return false;
 }
 
 /**
@@ -817,7 +826,8 @@ export async function runConversationShortCircuit(query, options = {}) {
   if (
     wantsAnalysis &&
     !isWebCitationsStructuredReportCluster(query) &&
-    !extractSummaryUrl(query)
+    !extractSummaryUrl(query) &&
+    !isExplicitDocumentAttachmentTurn(query, options.attachments || [])
   ) {
     return null;
   }
@@ -959,6 +969,9 @@ export async function runConversationShortCircuit(query, options = {}) {
   if (routingHit?.reply) {
     return emit({
       ...routingHit,
+      ...(routingHit.path === "social_deterministic"
+        ? LOCAL_SOCIAL_RAIL_FLAGS
+        : {}),
       enforce: { allowRefusal: false },
       routing_case_id: routingLookup.routing_case_id,
       matched_rules: routingLookup.matched_rules,
@@ -1138,6 +1151,7 @@ export async function runConversationShortCircuit(query, options = {}) {
         enforce: { allowRefusal: false },
         socialPatternMatched: true,
         socialPatternName: toneHit.patternName,
+        ...LOCAL_SOCIAL_RAIL_FLAGS,
       });
     }
   }
@@ -1283,6 +1297,7 @@ export async function runConversationShortCircuit(query, options = {}) {
           enforce: { allowRefusal: false },
           socialPatternMatched: true,
           socialPatternName: socialPatternHit.patternName,
+          ...LOCAL_SOCIAL_RAIL_FLAGS,
         });
       }
     } else {
@@ -1302,6 +1317,7 @@ export async function runConversationShortCircuit(query, options = {}) {
         enforce: { allowRefusal: false, sectionedComposite: true },
         socialPatternMatched: true,
         socialPatternName: socialPatternHit.patternName,
+        ...LOCAL_SOCIAL_RAIL_FLAGS,
       });
     }
   }

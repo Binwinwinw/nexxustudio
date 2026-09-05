@@ -15,3 +15,4 @@ export * from "./compareChooseCompositePolicy.js";
 export * from "./multiSegmentQualificationPolicy.js";
 export * from "./generalKnowledgeEnrichmentPolicy.js";
 export * from "./routingCaseDictionary.js";
+export * from "./routingLatencyContracts.js";
