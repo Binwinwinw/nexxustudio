@@ -39,16 +39,16 @@ function checkRepeatedFallback(history) {
   const txt = String(lastAssistant.content);
   return isInsufficientSignalRefusal(txt) || txt.includes("Il faudrait que tu arrives à préciser :") || txt.includes("Pour avancer sur");
 }
+import { shouldDeferShortCircuitToFullPipeline } from "./policies/routing/practicalAdviceRoutingGuard.js";
+import { resolveKnowledgeEnrichmentPolicy } from "./policies/routing/knowledgeEnrichmentPolicy.js";
+import { resolveClarificationGate } from "./policies/routing/clarificationDecisionPolicy.js";
+import { mergeAgentCycleWithShortCircuit } from "./policies/routing/shortCircuitCognitiveCyclePolicy.js";
+import { resolveResearchThenSummarizeIntentContractId } from "./policies/routing/researchThenSummarizePolicy.js";
 import {
-  shouldDeferShortCircuitToFullPipeline,
-  resolveKnowledgeEnrichmentPolicy,
-  resolveClarificationGate,
-  mergeAgentCycleWithShortCircuit,
-  resolveResearchThenSummarizeIntentContractId,
   decomposeRequest,
   buildMultiUnitExecutionHint,
-  isWebCitationsStructuredReportCluster,
-} from "./policies/routing/index.js";
+} from "./policies/routing/requestDecompositionPolicy.js";
+import { isWebCitationsStructuredReportCluster } from "./policies/routing/explicitWebSearchRequestPolicy.js";
 import {
   observeConnectorPlanShadow,
   applyConnectorPhaseCWebKey,
