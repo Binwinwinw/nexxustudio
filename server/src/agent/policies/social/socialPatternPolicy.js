@@ -98,6 +98,13 @@ export function isMetaWhoDrivesIntent(query = "") {
 const ANTHROPOMORPHIC_RE =
   /\b(?:(?:est[- ]ce que )?tu as (?:faim|soif|sommeil)|as[- ]tu faim|tu dors|tu es fatigu[eé]|tu t['']?ennuies|tu manges|tu bois|tu reves|tu rêves)\b/i;
 
+/**
+ * Check-in joueur sur l’état de l’agent (circuits / forme / fatigue).
+ * Texte déjà sanitisé — pas un brief d’architecture.
+ */
+const AGENT_STATE_ANTHROPO_RE =
+  /\bcomment se porte(?:nt)? (?:tes|vos) circuits?\b|\b(?:tes|vos) circuits? (?:vont|va|tiennent|roulent)(?: bien)?\b|\b(?:tes|vos) circuits? ca va\b|\bcomment (?:va|vont) (?:tes|vos) circuits?\b|\bcomment va ta forme\b|\b(?:tu es|vous etes|t es) en forme\b|\b(?:tu es|vous etes) fatigu/;
+
 /** Kinship nouns — not every occurrence of « famille ». */
 const FAMILY_NOUN_RE =
   /\b(?:famille|fr[eè]res?|s(?:oe|œ)urs?|parents?|papa|maman|p[eè]re|m[eè]re)\b/i;
@@ -354,10 +361,35 @@ export function isPhaticSocialCheckinIntent(query = "") {
 export const SOCIAL_AGENT_ACTIVITY_REPLY =
   "Je suis NEXXUS, l'assistant de La Citadelle. Je peux t'aider à cadrer un projet, analyser des documents, ou répondre à des questions. Qu'est-ce que tu aimerais faire ?";
 
+/** Check-in anthropomorphique d’état — court, sans internals. */
+export const SOCIAL_AGENT_STATE_REPLY =
+  "Ça va bien de mon côté. Tu veux discuter ou cadrer quelque chose ?";
+
+/**
+ * « comment se portent tes circuits ? » / forme / fatigue — pas un explain technique.
+ * @param {string} query
+ * @returns {boolean}
+ */
+export function isAgentStateAnthropomorphicIntent(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || q.length < 10 || q.length > 120) return false;
+  if (suppressesKnownSocialPattern(query)) return false;
+  if (isSocialTurnWithTaskPreamble(query)) return false;
+  if (WELLBEING_EXPLANATORY_RE.test(q)) return false;
+  if (/\b(?:architecture|orchestrat|firmware|interne|schema|schem)\b/.test(q)) {
+    return false;
+  }
+  return AGENT_STATE_ANTHROPO_RE.test(q);
+}
+
 /** Small talk centré agent — pas un préambule de tâche. */
 export function isSocialSmallTalkAboutAgent(query = "") {
   if (isSocialTurnWithTaskPreamble(query)) return false;
-  return isPhaticSocialCheckinIntent(query) || isIdentityIntent(query);
+  return (
+    isPhaticSocialCheckinIntent(query) ||
+    isIdentityIntent(query) ||
+    isAgentStateAnthropomorphicIntent(query)
+  );
 }
 
 /**
@@ -786,7 +818,11 @@ export function classifySocialPattern(query = "", history = [], priorState = nul
       reply: buildSocialPatternReply("social/user_family_clarify", query),
     };
   }
-  if (ANTHROPOMORPHIC_RE.test(q) || isAssistantFamilyCheckin(query)) {
+  if (
+    ANTHROPOMORPHIC_RE.test(q) ||
+    isAgentStateAnthropomorphicIntent(query) ||
+    isAssistantFamilyCheckin(query)
+  ) {
     return {
       patternName: "social/anthropomorphic_checkin",
       reply: buildSocialPatternReply("social/anthropomorphic_checkin", query),
@@ -876,6 +912,9 @@ export function buildSocialPatternReply(patternName = "", query = "") {
     case "social/anthropomorphic_checkin":
       if (isAssistantFamilyCheckin(query) || isBareFamilyCheckinFollowup(query)) {
         return ANTHROPOMORPHIC_FAMILY_REPLY;
+      }
+      if (isAgentStateAnthropomorphicIntent(query)) {
+        return withLeadingGreetingMirror(query, SOCIAL_AGENT_STATE_REPLY);
       }
       return (
         "Non, je ne mange pas — mais je prends volontiers une question ou une idée à la place. " +

@@ -26,6 +26,7 @@ import {
   classifySocialPattern,
   isGratitudeClosureIntent,
   isPhaticSocialCheckinIntent,
+  isAgentStateAnthropomorphicIntent,
   isWellbeingCheckinIntent,
 } from "../social/socialPatternPolicy.js";
 
@@ -114,7 +115,7 @@ function detectTaskAxis(q) {
     };
   }
 
-  if (isPhaticSocialCheckinIntent(q)) {
+  if (isPhaticSocialCheckinIntent(q) || isAgentStateAnthropomorphicIntent(q)) {
     return {
       present: false,
       helpRequest: false,

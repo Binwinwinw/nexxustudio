@@ -99,6 +99,7 @@ import {
   isIdleConfirmedSocialCheckin,
   isSocialToneRepairIntent,
   isPhaticSocialCheckinIntent,
+  isAgentStateAnthropomorphicIntent,
   isMetaWhoDrivesIntent,
   applyLeadingGreetingMirrorToHit,
 } from "../../policies/social/index.js";
@@ -1239,6 +1240,7 @@ export async function runConversationShortCircuit(query, options = {}) {
     hasJokePerformSignal(effectiveQuery) ||
     hasJokeMetaSignal(effectiveQuery) ||
     isPhaticSocialCheckinIntent(effectiveQuery) ||
+    isAgentStateAnthropomorphicIntent(effectiveQuery) ||
     isMetaWhoDrivesIntent(effectiveQuery) ||
     isSocialCheckinConsistencyCritique(effectiveQuery) ||
     isSocialToneRepairIntent(effectiveQuery);
@@ -2079,6 +2081,7 @@ export async function runConversationShortCircuit(query, options = {}) {
     hasJokeMetaSignal(effectiveQuery) ||
     hasSocialPlayInviteSignal(effectiveQuery) ||
     isPhaticSocialCheckinIntent(effectiveQuery) ||
+    isAgentStateAnthropomorphicIntent(effectiveQuery) ||
     isMetaWhoDrivesIntent(effectiveQuery)
       ? null
       : buildFamiliarityReply(effectiveQuery, {
