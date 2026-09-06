@@ -91,6 +91,8 @@ export function extractHowToTopic(payload = "") {
     /savoir\s+si\s+tu\s+sais\s+comment\s+(?:on\s+)?(?:fait|faire)\s+(?:un\s+|une\s+)?(.+?)(?:\s*\?|$)/,
     /voudrais\s+savoir\s+comment\s+(?:faire\s+)?(?:un\s+|une\s+)?(.+?)(?:\s*\?|$)/,
     /aimerais\s+savoir\s+comment\s+(?:faire\s+)?(?:un\s+|une\s+)?(.+?)(?:\s*\?|$)/,
+    /les\s+etapes\s+(?:pour|de)\s+(?:un\s+|une\s+|des\s+)?(.+?)(?:\s*\?|$)/,
+    /marche\s+a\s+suivre(?:\s+pour\s+(.+?))?(?:\s*\?|$)/,
   ];
   for (const pattern of patterns) {
     const match = normalized.match(pattern);

@@ -15,6 +15,7 @@ import {
 } from "../../utils/intent-guards/ideationIntentGuards.js";
 import { isArchitectureDesignIntent } from "../../utils/intent-guards/architectureDesignIntentGuards.js";
 import { classifyWebProjectScopingRequest } from "../../utils/intent-guards/webProjectScopingGuards.js";
+import { isHowToRequestShell } from "../../utils/intent-guards/howToRequestIntentGuards.js";
 import { isGuidedCreationScopingRequest } from "../guided/guidedCreationScopingPolicy.js";
 import {
   hasImageAttachments,
@@ -353,6 +354,7 @@ function buildAnchoringRepair(anchors, foreignFamily) {
  * @returns {{ path: string, reply: string }|null}
  */
 export function resolveNamedCreateStartShortCircuit(query = "") {
+  if (isHowToRequestShell(query)) return null;
   if (isIdeationIntent(query) || isProjectIdeaCritiqueRequest(query)) return null;
   if (isArchitectureDesignIntent(query)) return null;
   if (classifyWebProjectScopingRequest(query)) return null;

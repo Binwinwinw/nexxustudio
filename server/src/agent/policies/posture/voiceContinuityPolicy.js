@@ -5,6 +5,7 @@
  */
 import { TUTOIEMENT_COMPOSER_LINE } from "./addressingPolicy.js";
 import { POSTURES } from "./sessionModeState.js";
+import { isHowToRequestShell } from "../../utils/intent-guards/howToRequestIntentGuards.js";
 
 export const VOICE_CONTINUITY_CONTRACT = "VOICE_CONTINUITY_V1";
 export const VOICE_CONTINUITY_RULE = "voice_continuity_policy_v1";
@@ -246,6 +247,8 @@ export function shouldDeferSocialRouting(query = "") {
     q,
   );
   if (greetingOnly) return false;
+
+  if (isHowToRequestShell(q)) return true;
 
   if (shouldBlockGenericInsufficientRefusal(q) && q.length >= 36) {
     return true;

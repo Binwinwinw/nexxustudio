@@ -13,6 +13,7 @@ import {
 import { isCodeConceptExplainRequest } from "../../policies/code/codeConceptExplainPolicy.js";
 import { isProjectIdeaCritiqueRequest } from "./ideationIntentGuards.js";
 import { isCreateMandateRequest } from "./informationSeekingIntentGuards.js";
+import { isHowToRequestShell } from "./howToRequestIntentGuards.js";
 
 export const ARCHITECTURE_DESIGN_RULE = "architecture_options_not_execution";
 
@@ -210,6 +211,7 @@ function isGuidedCreationInsteadOfArchitecture(query = "") {
 }
 
 export function isArchitectureDesignIntent(query = "") {
+  if (isHowToRequestShell(query)) return false;
   if (isProjectIdeaCritiqueRequest(query)) return false;
   if (isGuidedCreationInsteadOfArchitecture(query)) return false;
   const q = normalizeArchitectureDesignQuery(query);

@@ -16,6 +16,7 @@ import {
 import { isExistingSourceAnalysisRequest } from "../../utils/intent-guards/localFileUriIntentGuards.js";
 import { isExistingFilePathAnalysisRequest } from "../../../../../shared/generatorFirstPolicy.js";
 import { isLearningRequestWithTarget } from "../../utils/intent-guards/learningRequestIntentGuards.js";
+import { isHowToRequestShell } from "../../utils/intent-guards/howToRequestIntentGuards.js";
 
 export const GUIDED_CREATION_SCOPING_RULE = "guided_creation_scoping_v1";
 export const GUIDED_CREATION_SCOPING_CONTRACT_ID = "GUIDED_CREATION_SCOPING";
@@ -183,6 +184,7 @@ export function isInlineProductBriefPaste(query = "") {
 }
 
 export function isGuidedCreationScopingRequest(query = "") {
+  if (isHowToRequestShell(query)) return false;
   if (isObviousCodeDeliverableRequest(query)) return false;
   if (isCodeConceptExplainRequest(query)) return false;
   // Analyse d'un fichier existant ≠ création web/code.

@@ -18,6 +18,7 @@ import { isTechnicalLearningPathSignal } from "./technicalLearningPathIntentGuar
 import { isCodeConceptExplainRequest } from "../../policies/code/codeConceptExplainPolicy.js";
 import { extractCodeConceptExplainSubject } from "../../policies/code/codeConceptExplainExecutionPolicy.js";
 import { isArchitectureDesignIntent } from "./architectureDesignIntentGuards.js";
+import { isHowToRequestShell } from "./howToRequestIntentGuards.js";
 
 export const TECHNICAL_OVERVIEW_ROUTING_RULE =
   "technical_overview_local_generative";
@@ -170,6 +171,8 @@ function isPedagogySoftOverviewPreempt(query = "") {
  */
 export function isTechnicalOverviewRequest(query = "") {
   if (isCodeConceptExplainRequest(query)) return true;
+  // Avant architecture : « base de … » + how-to sinon JUST ↔ guided (stack overflow).
+  if (isHowToRequestShell(query)) return false;
 
   const q = normalizeFamiliarityQuery(query);
   if (!q || q.length < 8) return false;

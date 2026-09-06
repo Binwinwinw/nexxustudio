@@ -168,6 +168,7 @@ import {
   buildSubjectTypeClarifyReply,
   resolveSubjectTypeClarifyShortCircuit,
   resolveHowToShortCircuit,
+  isHowToRequestShell,
   resolveAssistantUtteranceClarifyShortCircuit,
 } from "../../policies/qualification/index.js";
 import {
@@ -1807,7 +1808,9 @@ export async function runConversationShortCircuit(query, options = {}) {
     });
   }
 
-  const guidedCreationHit = resolveGuidedCreationScopingShortCircuit(effectiveQuery);
+  const guidedCreationHit = isHowToRequestShell(effectiveQuery)
+    ? null
+    : resolveGuidedCreationScopingShortCircuit(effectiveQuery);
   if (guidedCreationHit?.deferToLlm) {
     return emit({
       path: guidedCreationHit.path,
@@ -2129,7 +2132,9 @@ export async function runConversationShortCircuit(query, options = {}) {
     });
   }
 
-  const careerHit = resolveCareerLearningPathShortCircuit(effectiveQuery);
+  const careerHit = isHowToRequestShell(effectiveQuery)
+    ? null
+    : resolveCareerLearningPathShortCircuit(effectiveQuery);
   if (careerHit?.deferToLlm) {
     return emit({
       path: careerHit.path,
@@ -2196,7 +2201,7 @@ export async function runConversationShortCircuit(query, options = {}) {
     });
   }
 
-  if (isArchitectureDesignIntent(query)) {
+  if (!isHowToRequestShell(effectiveQuery) && isArchitectureDesignIntent(query)) {
     const architectureReply = buildArchitectureDesignReply(effectiveQuery);
     if (architectureReply) {
       const depth = resolveArchitectureDepthControl(effectiveQuery);
@@ -2270,7 +2275,9 @@ export async function runConversationShortCircuit(query, options = {}) {
     });
   }
 
-  const technicalHit = resolveTechnicalOverviewShortCircuit(effectiveQuery);
+  const technicalHit = isHowToRequestShell(effectiveQuery)
+    ? null
+    : resolveTechnicalOverviewShortCircuit(effectiveQuery);
   if (technicalHit?.deferToLlm) {
     return emit({
       path: technicalHit.path,

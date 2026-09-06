@@ -87,6 +87,12 @@ export function isSubstantiveWorkRequest(query = "") {
     /(code|fichier|script|fonction|classe|module|composant|html|css|json|api|algorithme|programme|livrable|artefact|snippet|exemple complet|application|appli|projet)/i;
   const formatHint =
     /(format|commenté|commente|en français|en francais|markdown|typescript|javascript|python|java|react|vue|vite|niveau|contrainte|spécification|specification)/i;
+  const toolNames =
+    /\b(?:phpmyadmin|mysql|postgres(?:ql)?|sql|git|docker|nginx|apache|npm|composer)\b/i;
+  const proceduralVerbs =
+    /\b(?:cr[eé]er?|cree|ajouter|configurer|installer|supprimer|modifier|importer|exporter)\b/i;
+
+  if (toolNames.test(q) && proceduralVerbs.test(q)) return true;
 
   if (
     /\b(?:para[iî]t(?:-il)? pertinent|ne me complimente pas|trouve(?:s)? des failles|ne soi[st] pas (?:obligatoirement )?d['']accord)\b/i.test(

@@ -4,6 +4,7 @@
  */
 import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { isSubstantiveWorkRequest } from "../../utils/conversation/genericGreetingGuards.js";
+import { isHowToRequestShell } from "../../utils/intent-guards/howToRequestIntentGuards.js";
 import { isExplicitInformationOrDefinitionRequest, isExplicitTextCreationRequest } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import { isMetaAssistantBehaviorRequest } from "../../utils/intent-guards/metaAssistantBehaviorGuards.js";
 import { isGeneralKnowledgeRequest } from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
@@ -182,6 +183,7 @@ export function isSocialChatThreadActive(history = []) {
     const content = String(turns[i].content || "");
     if (
       isSubstantiveWorkRequest(content) ||
+      isHowToRequestShell(content) ||
       HARD_TASK_BREAK_RE.test(norm(content)) ||
       isExplicitWebSearchRequest(content)
     ) {
@@ -254,6 +256,7 @@ export function isSoftSocialChatFollowup(query = "", options = {}) {
   }
   if (resolveFramingCorrection(query)) return false;
   if (isSubstantiveWorkRequest(query)) return false;
+  if (isHowToRequestShell(query)) return false;
   if (HARD_TASK_BREAK_RE.test(q)) return false;
   if (isExplicitWebSearchRequest(query)) return false;
   if (isConversationMemoryRecallRequest(query)) return false;
@@ -422,6 +425,7 @@ export function buildCulturalHypothesisReply(hypothesis = {}) {
 export function resolveSocialChatContinuityShortCircuit(query = "", options = {}) {
   const history = options.history || [];
   if (resolveFramingCorrection(query)) return null;
+  if (isHowToRequestShell(query)) return null;
   if (isAttachedVisionRequest(query, options.attachments || [])) return null;
   if (
     isGreetingOnlyIntent(query) ||
