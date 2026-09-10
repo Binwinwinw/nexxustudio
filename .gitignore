@@ -47,6 +47,9 @@ server/state/session-work-memory/
 server/data/session_owners.json
 docs/archive/session_owners.json
 server/data/security/audit-history.jsonl
+# Runtime data
+server/FEEDBACK_SIGNAL.json
+server/data/conversation/health-incidents.jsonl
 server/data/telemetry/*.json
 server/data/video-uploads/
 server/data/video-jobs/
