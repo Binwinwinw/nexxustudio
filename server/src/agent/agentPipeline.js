@@ -61,11 +61,18 @@ import {
 } from "./micro/replies/analyticalCritiqueReplyBuilder.js";
 import {
   isDocumentAnalysisIntent,
+  isTechnicalStatusReport,
   buildAttachmentPacketMeta,
   hasTextAttachments,
   isImageOnlyAttachments,
   isConversationMemoryRecallRequest,
 } from "./utils/conversation/conversationGuards.js";
+import { getIdentityDeterministicReply } from "./utils/intent-guards/identityIntentGuards.js";
+import {
+  buildParseState,
+  evaluateAutoReplySufficiency,
+} from "./micro/parsing/responseSufficiencyEvaluator.js";
+import { resolveMultiSegmentPlan } from "./micro/parsing/multiSegmentResponsePlan.js";
 import {
   resolveDocumentContinuity,
   runDocumentFollowUp,
@@ -202,6 +209,7 @@ import {
   containsInternalPromptLeak,
   listInternalPromptLeakMarkers,
   resolveInternalLeakFallback,
+  withLeadingGreetingMirror,
 } from "./policies/social/index.js";
 import { recordSocialPatternTelemetry } from "./telemetry/socialPatternTelemetry.js";
 import {
@@ -286,6 +294,7 @@ import {
   shouldBlockGenericInsufficientRefusal,
   resolveOutputLanguagePolicy,
   enforceOutputLanguage,
+  applyTranslationPathLanguagePolicy,
 } from "./policies/posture/index.js";
 import {
   composeCapabilityContext,
@@ -378,10 +387,236 @@ const INSTANT_RESPONSES = {
   'hey nexxus': 'Salut, je suis là.'
 };
 
+function buildDeterministicSocialResponse(q) {
+  const cleanQ = q
+    .toLowerCase()
+    .replace(/[?!.]+$/g, "")
+    .replace(/[^\p{L}\p{N}\s-]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const normalizedQ = cleanQ.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  const parseState = buildParseState(q);
+  const segmentPlan = resolveMultiSegmentPlan(q);
+  if (segmentPlan.shouldDeferToPipeline) {
+    return null;
+  }
+  if (segmentPlan.signalOnly && segmentPlan.preamble) {
+    return withLeadingGreetingMirror(q, segmentPlan.preamble);
+  }
+
+  const asksAgentArchitecture =
+    !isTechnicalStatusReport(cleanQ) &&
+    /(citadelle|nexxus)/.test(normalizedQ) &&
+    /(agent|orchestrat|sous-agent|sous agent|forge)/.test(normalizedQ) &&
+    /(y a|il y a|est-ce que|c est quoi|comment|structure|architecture)/.test(
+      normalizedQ,
+    );
+  if (asksAgentArchitecture) {
+    const archReply =
+      "Oui. La Citadelle utilise un agent principal d'orchestration et des agents specialises. L'agent principal coordonne, les agents specialises executent des taches ciblees, et la Forge est le sous-systeme technique de production et transformation.";
+    const archSufficiency = evaluateAutoReplySufficiency({
+      query: q,
+      detectedSignal: "architecture_fact",
+      parseState,
+      candidateReply: archReply,
+    });
+    if (!archSufficiency.sufficient) return null;
+    return archReply;
+  }
+
+  const technicalMarkers = [
+    "projet",
+    "forge",
+    "atelier",
+    "formation",
+    "initiation",
+    "teams",
+    "microsoft 365",
+    "application",
+    "appli",
+    "plan",
+    "objectifs",
+    "deroule",
+    "déroulé",
+    "exercices",
+    "support",
+    "animateur",
+    "code",
+    "build",
+    "architecture",
+    "fonctionnalite",
+    "fonctionnalités",
+    "expert",
+    "studio",
+    "dossier",
+    "fichier",
+    "repo",
+    "document",
+    "doc",
+    "chemin",
+    "path",
+    "base",
+    "bdd",
+    "database",
+    "log",
+    "index",
+    "analys",
+    "corrig",
+    "amélio",
+    "amélior",
+    "amelio",
+    "amelior",
+    "refactor",
+    "lire",
+    "creer",
+    "créer",
+    "cree",
+    "crée",
+    "gener",
+    "génér",
+    "audit",
+    "scann",
+    "compar",
+    "cherch",
+    "peux-tu",
+    "peux tu",
+    "pourrais-tu",
+    "pourrais tu",
+    "besoin que",
+    "analyse ceci",
+    "prends ce",
+  ];
+
+  const hasTechnicalIntent = technicalMarkers.some((marker) =>
+    cleanQ.includes(marker),
+  );
+  if (hasTechnicalIntent) {
+    return undefined;
+  }
+
+  const exactGreetings = {
+    salut:
+      "Salut ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
+    "salut salut":
+      "Salut ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
+    bonjour:
+      "Bonjour ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
+    hello:
+      "Bonjour ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
+    coucou:
+      "Coucou ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
+    bonsoir:
+      "Bonsoir ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
+    "ça va": "Oui, tout va bien ici. Comment puis-je t'aider ?",
+    "ca va": "Oui, tout va bien ici. Comment puis-je t'aider ?",
+    "comment vas tu":
+      "Tout va bien ici. Comment puis-je t'aider aujourd'hui ?",
+    "comment vas-tu":
+      "Tout va bien ici. Comment puis-je t'aider aujourd'hui ?",
+    "bonjour comment vas tu":
+      "Bonjour ! Tout va bien ici. Comment puis-je t'aider aujourd'hui ?",
+    "bonjour comment vas-tu":
+      "Bonjour ! Tout va bien ici. Comment puis-je t'aider aujourd'hui ?",
+    "salut ça va":
+      "Salut ! Tout va bien ici. Quelle est la mission du jour ?",
+    "salut ca va":
+      "Salut ! Tout va bien ici. Quelle est la mission du jour ?",
+    "salut salut comment vas tu":
+      "Bonjour ! Tout va bien ici. Que faisons-nous aujourd'hui ?",
+  };
+
+  const wordCount = cleanQ.split(/\s+/).filter(Boolean).length;
+
+  if (wordCount > 15) {
+    return undefined;
+  }
+
+  if (exactGreetings[cleanQ]) {
+    return withLeadingGreetingMirror(q, exactGreetings[cleanQ]);
+  }
+
+  const weightedPatterns = [
+    {
+      response:
+        "Je réponds rapidement pour t'aider efficacement, et ma réponse reste pleinement concentrée sur ta demande. Si tu veux, on peut prendre le temps d'explorer ton idée plus en détail.",
+      keywords: [
+        ["hey", 1],
+        ["héy", 1],
+        ["pourquoi", 1],
+        ["pressé", 2],
+        ["presse", 2],
+        ["vite", 1],
+        ["bluffant", 2],
+      ],
+      threshold: 3,
+    },
+    {
+      response:
+        "Bonjour ! Si tu veux on peut papoter ou je t'aide à cadrer un projet, clarifier un besoin, structurer des livrables. Qu'est-ce que tu veux faire ?",
+      keywords: [
+        ["bonjour", 3],
+        ["salut", 3],
+        ["hello", 3],
+        ["coucou", 3],
+        ["yop", 2],
+        ["yo", 1],
+        ["comment", 1],
+        ["vas", 1],
+        ["va", 1],
+        ["dedans", 0.5],
+      ],
+      threshold: 3.5,
+    },
+  ];
+
+  const identityReply = getIdentityDeterministicReply(q);
+  if (identityReply) {
+    return identityReply;
+  }
+
+  for (const pattern of weightedPatterns) {
+    const score = pattern.keywords.reduce((total, [keyword, weight]) => {
+      const isShort = keyword.length <= 3;
+      const matched = isShort
+        ? new RegExp(`\\b${keyword}\\b`, "i").test(cleanQ)
+        : cleanQ.includes(keyword);
+      return total + (matched ? weight : 0);
+    }, 0);
+
+    if (score >= pattern.threshold) {
+      return withLeadingGreetingMirror(q, pattern.response);
+    }
+  }
+
+  const activityMarkers = [
+    "fais",
+    "prévu",
+    "programme",
+    "occupe",
+    "penses",
+    "crois",
+    "avis",
+  ];
+  const isDeepQuery =
+    activityMarkers.some((m) => cleanQ.includes(m)) ||
+    cleanQ.split(" ").length > 8;
+
+  if (isDeepQuery) {
+    return undefined;
+  }
+
+  return undefined;
+}
+
 class AgentPipeline {
-  constructor({ maxIterations = 5, getDeterministicSocialResponse }) {
+  constructor({ maxIterations = 5, getDeterministicSocialResponse } = {}) {
     this.maxIterations = maxIterations;
-    this.getDeterministicSocialResponse = getDeterministicSocialResponse;
+    this.getDeterministicSocialResponse =
+      getDeterministicSocialResponse === undefined
+        ? buildDeterministicSocialResponse
+        : getDeterministicSocialResponse;
     this.options = {};
     // Orchestrateur Souverain — instancié une fois, réutilisé à chaque tour
     this._sovereign = new SovereignOrchestrator(this);
@@ -796,41 +1031,6 @@ class AgentPipeline {
       { history: orchestrationHistory },
     );
 
-    const pendingClarificationResume = resumePendingClarification(
-      query,
-      orchestrationHistory,
-    );
-    if (
-      pendingClarificationResume.status === CLARIFICATION_RESUME_STATUS.RESOLVED &&
-      pendingClarificationResume.reply
-    ) {
-      console.log(
-        `[PIPELINE] pending_clarification_resume slot=${pendingClarificationResume.slotFilled} ` +
-          `path=${pendingClarificationResume.resumePath} topic=${pendingClarificationResume.pending?.topic || "?"}`,
-      );
-      if (onStep) {
-        onStep("🔗 Reprise clarification — slot rempli, reprise du fil...", {
-          pipelinePath: pendingClarificationResume.resumePath,
-          slotFilled: pendingClarificationResume.slotFilled,
-        });
-      }
-      const resumedReply = enforceModeContract(
-        RESPONSE_MODES.INSTANT,
-        pendingClarificationResume.reply,
-        { allowRefusal: false, sectionedComposite: true },
-      );
-      return this._finalizePipelineTurn({
-        text: resumedReply,
-        pipelinePath: pendingClarificationResume.resumePath,
-        status: true,
-        deliveryMode: DELIVERY_MODES.BUFFERED_FINAL,
-        pipelineTelemetryCtx,
-        turnTelemetry,
-        onContent,
-        onStep,
-      });
-    }
-
     const requestDecomposition = decomposeRequest(
       pipelineQuery,
       orchestrationHistory,
@@ -892,6 +1092,52 @@ class AgentPipeline {
         pipelineTelemetryCtx.intentContractId = guidedIntentContractId;
       }
     }
+
+    const pendingClarificationResume = resumePendingClarification(
+      query,
+      orchestrationHistory,
+    );
+    if (
+      pendingClarificationResume.status === CLARIFICATION_RESUME_STATUS.RESOLVED &&
+      pendingClarificationResume.reply
+    ) {
+      const resumeCommitment = requestWorkup?.response_commitment || null;
+      console.log(
+        `[PIPELINE] pending_clarification_resume slot=${pendingClarificationResume.slotFilled} ` +
+          `path=${pendingClarificationResume.resumePath} topic=${pendingClarificationResume.pending?.topic || "?"} ` +
+          `renderMode=${resumeCommitment?.renderMode || "none"}`,
+      );
+      if (pipelineTelemetryCtx) {
+        pipelineTelemetryCtx.pending_clarification_resume = {
+          resumePath: pendingClarificationResume.resumePath,
+          slotFilled: pendingClarificationResume.slotFilled,
+          response_commitment: resumeCommitment,
+        };
+      }
+      if (onStep) {
+        onStep("🔗 Reprise clarification — slot rempli, reprise du fil...", {
+          pipelinePath: pendingClarificationResume.resumePath,
+          slotFilled: pendingClarificationResume.slotFilled,
+          renderMode: resumeCommitment?.renderMode || null,
+        });
+      }
+      const resumedReply = enforceModeContract(
+        RESPONSE_MODES.INSTANT,
+        pendingClarificationResume.reply,
+        { allowRefusal: false, sectionedComposite: true },
+      );
+      return this._finalizePipelineTurn({
+        text: resumedReply,
+        pipelinePath: pendingClarificationResume.resumePath,
+        status: true,
+        deliveryMode: DELIVERY_MODES.BUFFERED_FINAL,
+        pipelineTelemetryCtx,
+        turnTelemetry,
+        onContent,
+        onStep,
+      });
+    }
+
     const summaryContract = classifySummaryContract(pipelineQuery, {
       attachments: attachedFiles,
       history: orchestrationHistory,
@@ -1095,6 +1341,7 @@ class AgentPipeline {
       conversationMove,
       clarificationGate,
       query: pipelineQuery,
+      response_commitment: requestWorkup?.response_commitment || null,
     });
     const effectiveClarificationGate = moveAuthority.clarificationGate;
 
@@ -1122,7 +1369,10 @@ class AgentPipeline {
       authorityApplied: moveAuthority.authorityApplied,
     });
 
-    if (moveAuthority.earlyTurn?.text) {
+    if (
+      moveAuthority.earlyTurn?.text &&
+      requestWorkup?.response_commitment?.renderMode === "clarify"
+    ) {
       const socialNudgeHit = resolveSocialChatContinuityShortCircuit(
         pipelineQuery,
         {
@@ -1762,6 +2012,7 @@ class AgentPipeline {
         turnComprehension,
         turnLoop,
         languagePolicy: pipelineTelemetryCtx?.languagePolicy || null,
+        response_commitment: requestWorkup?.response_commitment || null,
       });
 
       // WorkloadSignal + WorkUnitCountAndPlan — count→reconcile→normalize→plan (verrou avant exécution)
@@ -2257,6 +2508,26 @@ class AgentPipeline {
                   history: orchestrationHistory,
                 });
               }
+            } else if (shortCircuit.howToProcedural) {
+              const { buildHowToProceduralDirectFallback } = await import(
+                "./policies/qualification/howToQualificationPolicy.js"
+              );
+              return this._finalizePipelineTurn({
+                text: applySurfaceMicroContract(
+                  pipelineQuery,
+                  buildHowToProceduralDirectFallback(pipelineQuery),
+                ),
+                pipelinePath: shortCircuit.path || "how_to_procedural_llm",
+                status: true,
+                reason: "how_to_procedural_local_fallback",
+                deliveryMode: DELIVERY_MODES.BUFFERED_FINAL,
+                pipelineTelemetryCtx,
+                turnTelemetry,
+                onContent,
+                onStep,
+                query: pipelineQuery,
+                history: orchestrationHistory,
+              });
             } else if (
               shortCircuit.technicalOverview ||
               shortCircuit.guidedCreationScoping
@@ -3764,6 +4035,9 @@ class AgentPipeline {
             (output) => output?.stage === "web_research" && output?.content,
           ))
       ) {
+        if (pipelineTelemetryCtx) {
+          pipelineTelemetryCtx.hasWebEvidence = true;
+        }
         const fidelityValidation = validateWebEvidenceFidelityReply(
           safeOutput,
           packet,
@@ -4291,22 +4565,36 @@ class AgentPipeline {
       this._turnDeliveryCtx?.getLanguagePolicy?.() ||
       null;
     if (languagePolicy) {
-      const langGate = enforceOutputLanguage(finalText, languagePolicy, {
+      const langPolicyForGate = applyTranslationPathLanguagePolicy(
+        languagePolicy,
+        effectiveQuery,
         pipelinePath,
+      );
+      const langGate = enforceOutputLanguage(finalText, langPolicyForGate, {
+        pipelinePath,
+        hasWebEvidence: Boolean(pipelineTelemetryCtx?.hasWebEvidence),
       });
       turnTelemetry?.setMetric?.(
         "output_language",
-        languagePolicy.outputLanguage,
+        langPolicyForGate.outputLanguage,
       );
       turnTelemetry?.setMetric?.(
         "output_language_ok",
         langGate.ok,
       );
-      if (!langGate.ok) {
+      if (langGate.blocked) {
         finalText = langGate.text;
         turnTelemetry?.setMetric?.("output_language_blocked", true);
         console.warn(
-          `[OutputLanguage] expected=${languagePolicy.outputLanguage} path=${pipelinePath} blocked=true`,
+          `[OutputLanguage] expected=${langPolicyForGate.outputLanguage} path=${pipelinePath} blocked=true`,
+        );
+      } else if (langGate.preserved) {
+        turnTelemetry?.setMetric?.(
+          "output_language_preserved",
+          langGate.preserved,
+        );
+        console.warn(
+          `[OutputLanguage] expected=${langPolicyForGate.outputLanguage} path=${pipelinePath} preserved=${langGate.preserved}`,
         );
       }
     }

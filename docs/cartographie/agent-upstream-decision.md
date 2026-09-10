@@ -4,7 +4,7 @@
 |-------|--------|
 | **Périmètre** | `micro/classifiers/` (focus `intentShortCircuit.js`), `config/`, `policies/routing/`, `policies/intent/` |
 | **Chemin racine** | `server/src/agent/` |
-| **Date de mise à jour** | 2026-08-17 |
+| **Date de mise à jour** | 2026-09-06 |
 | **Mode** | Lecture seule — cartographie structurelle (pas de refactor) |
 | **Lecture** | Inventaire, pas cible — [`METHODE.md`](./METHODE.md) |
 | **Référence amont** | [`agent-front-doors.md`](./agent-front-doors.md) (lot 0) |
@@ -199,6 +199,38 @@ Chaque hit passe par `emit` = **sufficiency gate** + **`annotateShortCircuitCogn
 2. **Config vs intent** — seuils just-intent dans `justIntentThresholds` ; contrats/modes dans `config/` — OK sémantiquement, mais calibration dispersée.  
 3. **`classifyShortCircuitIntent`** = rejoue tout le SC pour un path — utile tests, coûteux si abusé runtime.
 
+### 6.5 Trou observé — pattern sans décision de correspondance (2026-09-06)
+
+**Pas un lot.** Diagnostic d’alignement. Distinct du conflit de décideurs (cycle vs SC vs overview).
+
+**Constat (live) :** le système détecte un pattern (`créer` + surface `application web` → cadrage projet site) et l’applique comme réponse, **sans** vérifier que ce pattern correspond à la demande (créer une base dans un outil nommé).
+
+| Ce n’est pas | Pourquoi |
+|--------------|----------|
+| Conflit cycle / SC / overview | Ici un seul rail gagne ; le cycle peut même *entériner* le faux pattern (`PARTIAL_CLARIFY`) |
+| Modèle trop petit (1–3B) | Les petits modèles tiennent une tâche **déjà structurée**. Ici la structure manque **avant** le modèle |
+
+**Flux actuel (problématique)**
+
+```
+détection de pattern  →  saut direct sur rail spécialisé  →  reply
+                         (pas de décision explicite)
+                         (pas de validation de correspondance)
+```
+
+**Séquence cible d’alignement** (quand un lot sera ouvert — pas maintenant)
+
+1. **Compréhension** — qu’est-ce que l’utilisateur demande vraiment ?
+2. **Décision** — quel *type* de réponse est approprié ?
+3. **Pattern** — comment formuler *cette* réponse ?
+4. **Exécution** — génération via le modèle
+
+Aujourd’hui 3 et 4 existent (rails + LLM). 1 existe en paquets (`nexxusAgentCycle`) mais **n’arrête pas** 3. **2 est le trou** : aucune couche ne sépare « pattern détecté » et « réponse appropriée ».
+
+**Conséquence :** un `emit` SC (ex. `web_project_scoping_clarify` en 0b) *est* la décision. Le `response_commitment` du cycle n’invalide le rail que s’il dit déjà autre chose — or le cycle peut avoir été nourri par le même pattern.
+
+Chantier méthode : **C4**, [`METHODE.md`](./METHODE.md) — cadrage : [`c4-response-type-decision.md`](./c4-response-type-decision.md). **Pas de runtime** tant que le lot 1 C4 n’a pas de GO.
+
 ---
 
 ## 7. Zones de couplage & risques
@@ -211,6 +243,7 @@ Chaque hit passe par `emit` = **sufficiency gate** + **`annotateShortCircuitCogn
 | U4 | Double classification G46 | Moyenne | Pipeline + SC |
 | U5 | `intentContractRegistry` + forced ids SC | Moyenne | Contrats parallèles |
 | U6 | Chantier B (ordre rails) | Doc déjà | `ARCHITECTURE_RULES` §4.6 — hors simplification structurelle lot 1 |
+| U7 | Pattern → rail sans correspondance (C4) | Haute | `emit` = décision ; pas d’étape 2 « type de réponse approprié » |
 
 ---
 
@@ -262,3 +295,5 @@ Smoke ciblés (comportement, pas refactor) : social check-in ; factoid G49 ; cla
 | 2026-08-17 | Colonne 0+1+4 complète jusqu’au visible ; plateforme incomplète (lots 2–3, policies domaine) |
 | 2026-08-17 | Pointeur : policies domaine écrite — [`agent-domain-policies.md`](./agent-domain-policies.md) |
 | 2026-08-18 | Lecture : inventaire pour décider — [`METHODE.md`](./METHODE.md) |
+| 2026-09-06 | §6.5 + U7 — trou C4 pattern sans correspondance, **pas de lot** |
+| 2026-09-06 | C4 cadrage (pas de runtime) — [`c4-response-type-decision.md`](./c4-response-type-decision.md) |

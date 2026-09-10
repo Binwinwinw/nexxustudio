@@ -369,6 +369,7 @@ describe("conversationMoveAuthority — P2 autorité gate", () => {
       conversationMove: move,
       clarificationGate: { shouldClarify: false },
       query: SHAREPOINT_QUERY,
+      response_commitment: { renderMode: "clarify" },
     });
     assert.equal(applied.authorityApplied, true);
     assert.ok(applied.earlyTurn?.text);

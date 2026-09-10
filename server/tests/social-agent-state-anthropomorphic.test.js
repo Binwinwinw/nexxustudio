@@ -16,6 +16,11 @@ const PHATIC = "que fais tu ?";
 
 const TECHNICAL_LEAK =
   /orchestrat|architecture|local-first|firmware|périmètre|perimetre|Je vois la piste|validation locale/i;
+const PAPOTER_MENU =
+  /Si tu veux on peut papoter|structurer des livrables/i;
+
+const CHECKIN = "salut, comment ça va ?";
+const HOLDING = "tu tiens le coup ?";
 
 const OPERATIONAL_INVITE = {
   role: "assistant",
@@ -49,7 +54,8 @@ describe("SOCIAL_AGENT_STATE_ANTHROPO_V1", () => {
     assert.equal(hit?.path, "social_deterministic");
     assert.equal(hit?.socialPatternName, "social/anthropomorphic_checkin");
     assert.match(hit?.reply || "", /^Bonjour !/);
-    assert.match(hit?.reply || "", /ça va bien|discuter|cadrer/i);
+    assert.match(hit?.reply || "", /Ça va bien de mon côté/);
+    assert.doesNotMatch(hit?.reply || "", PAPOTER_MENU);
     assert.doesNotMatch(hit?.reply || "", TECHNICAL_LEAK);
   });
 
@@ -68,5 +74,22 @@ describe("SOCIAL_AGENT_STATE_ANTHROPO_V1", () => {
     const hit = await runConversationShortCircuit(PHATIC);
     assert.equal(hit?.socialPatternName, "social/phatic_checkin");
     assert.doesNotMatch(hit?.reply || "", TECHNICAL_LEAK);
+  });
+
+  it("tu tiens le coup ? → même rail état, pas explain", async () => {
+    assert.equal(isAgentStateAnthropomorphicIntent(HOLDING), true);
+    const hit = await runConversationShortCircuit(HOLDING);
+    assert.equal(hit?.path, "social_deterministic");
+    assert.equal(hit?.socialPatternName, "social/anthropomorphic_checkin");
+    assert.doesNotMatch(hit?.reply || "", TECHNICAL_LEAK);
+  });
+
+  it("check-in classique reste wellbeing, pas circuits", async () => {
+    assert.equal(isAgentStateAnthropomorphicIntent(CHECKIN), false);
+    const hit = await runConversationShortCircuit(CHECKIN);
+    assert.equal(hit?.path, "social_deterministic");
+    assert.notEqual(hit?.socialPatternName, "social/anthropomorphic_checkin");
+    assert.doesNotMatch(hit?.reply || "", TECHNICAL_LEAK);
+    assert.doesNotMatch(hit?.reply || "", PAPOTER_MENU);
   });
 });

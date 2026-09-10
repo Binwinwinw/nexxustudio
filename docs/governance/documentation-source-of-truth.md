@@ -24,6 +24,7 @@ La branche `wip/checkpoint-20260824-0117` sert à **restaurer** un état local. 
 ## Frontières
 
 - **Canon input** : uniquement [`citadelle-input-invariants.md`](citadelle-input-invariants.md). Ne pas le recopier ici ni dans les rules IDE. Divergence mémoire / protocole / règle : le canon gagne.
+- **Trace de décision (compréhension → routage)** : index [`decision-trace.md`](decision-trace.md). Distinct du canon (comportement), du PLAN (lots) et du vault ADR (patrimoine). Statut `proposed` jusqu’à GO texte. Ne pas verser l’architecture input dans `.memory/decisions.md`.
 - **Registre de lots** : uniquement [`dev/PLAN.md`](../../dev/PLAN.md). Cette carte n’est pas ce registre. `docs/` n’est pas un registre de lots.
 - **Protocole d’exécution** : [`AI_EXECUTION_LOOP.md`](../AI_EXECUTION_LOOP.md). Fiche lot : [`AI_LOT_TEMPLATE.md`](../AI_LOT_TEMPLATE.md).
 - **Journaux de version** : [`Journal_de_bord.md`](../Journal_de_bord.md) (récit) ; [`Journal_des_ameliorations.md`](../Journal_des_ameliorations.md) (delta par version). Pas des backlogs. Distincts du journal secondaire.

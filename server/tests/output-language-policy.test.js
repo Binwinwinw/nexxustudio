@@ -7,6 +7,7 @@ import {
   resolveOutputLanguagePolicy,
   enforceOutputLanguage,
   isTextInLanguage,
+  hasFrenchResponseStructure,
   buildOutputLanguageSystemAddon,
 } from "../src/agent/policies/posture/outputLanguagePolicy.js";
 import {
@@ -118,3 +119,72 @@ describe("output_language_policy", () => {
     assert.equal(isTextInLanguage(hit.reply, "en"), true);
   });
 });
+
+const MIXED_HARNESS_FR =
+  "Le harnais (harness en anglais) est la couche d'exécution d'un système multi-agent. " +
+  "The agent and the planner and the worker share the same runtime, with tools and budgets for this loop. " +
+  "En pratique, c'est le cadre qui lance, borne et relance les appels. " +
+  "Source : « Designing Agent Harnesses » (https://example.com/harness).";
+
+const ENGLISH_ONLY_HARNESS =
+  "The harness in a multi-agent system is the execution layer. " +
+  "The agent uses tools and the planner shares the runtime with the worker. " +
+  "This and that are handled by the same budget and the same loop.";
+
+describe("COMPOSER_LANGUAGE_GATE_PRESERVES_EVIDENCE_V1", () => {
+  const frPolicy = { outputLanguage: "fr" };
+
+  it("query harnais + glose EN reste FR", () => {
+    const policy = resolveOutputLanguagePolicy(
+      "ok, je voudrais que tu recherches des informations précises sur le harnais (harness en anglais) dans un système agentique multi agent",
+    );
+    assert.equal(policy.outputLanguage, "fr");
+  });
+
+  it("mixte technique hors COMPOSER → toujours BLOCK_REPLY", () => {
+    assert.equal(isTextInLanguage(MIXED_HARNESS_FR, "fr"), false);
+    const gated = enforceOutputLanguage(MIXED_HARNESS_FR, frPolicy);
+    assert.equal(gated.blocked, true);
+    assert.match(gated.text, /pas pu garder cette réponse dans ta langue/i);
+  });
+
+  it("mixte technique COMPOSER + preuves web → conserve, pas BLOCK_REPLY", () => {
+    assert.equal(hasFrenchResponseStructure(MIXED_HARNESS_FR), true);
+    const gated = enforceOutputLanguage(MIXED_HARNESS_FR, frPolicy, {
+      pipelinePath: "COMPOSER",
+      hasWebEvidence: true,
+    });
+    assert.equal(gated.blocked, false);
+    assert.match(gated.text, /harnais|couche d['']exécution|En pratique/i);
+    assert.doesNotMatch(gated.text, /pas pu garder cette réponse dans ta langue/i);
+  });
+
+  it("COMPOSER anglais pur + preuves web → conserve le livrable", () => {
+    const gated = enforceOutputLanguage(ENGLISH_ONLY_HARNESS, frPolicy, {
+      pipelinePath: "COMPOSER",
+      hasWebEvidence: true,
+    });
+    assert.equal(gated.blocked, false);
+    assert.equal(gated.ok, false);
+    assert.equal(gated.preserved, "web_evidence");
+    assert.equal(gated.text, ENGLISH_ONLY_HARNESS);
+  });
+
+  it("anglais pur hors COMPOSER → BLOCK_REPLY", () => {
+    const gated = enforceOutputLanguage(ENGLISH_ONLY_HARNESS, frPolicy, {
+      pipelinePath: "SIMPLE_FAST",
+    });
+    assert.equal(gated.blocked, true);
+    assert.match(gated.text, /pas pu garder cette réponse dans ta langue/i);
+  });
+
+  it("dump espagnol COMPOSER sans preuve web → toujours bloqué", () => {
+    const gated = enforceOutputLanguage(SPANISH_WEB_DUMP, frPolicy, {
+      pipelinePath: "COMPOSER",
+      hasWebEvidence: false,
+    });
+    assert.equal(gated.blocked, true);
+    assert.doesNotMatch(gated.text, /Gustos y Disgustos|opinás/i);
+  });
+});
+

@@ -103,7 +103,7 @@ const ANTHROPOMORPHIC_RE =
  * Texte déjà sanitisé — pas un brief d’architecture.
  */
 const AGENT_STATE_ANTHROPO_RE =
-  /\bcomment se porte(?:nt)? (?:tes|vos) circuits?\b|\b(?:tes|vos) circuits? (?:vont|va|tiennent|roulent)(?: bien)?\b|\b(?:tes|vos) circuits? ca va\b|\bcomment (?:va|vont) (?:tes|vos) circuits?\b|\bcomment va ta forme\b|\b(?:tu es|vous etes|t es) en forme\b|\b(?:tu es|vous etes) fatigu/;
+  /\bcomment se porte(?:nt)? (?:tes|vos) circuits?\b|\b(?:tes|vos) circuits? (?:vont|va|tiennent|roulent)(?: bien)?\b|\b(?:tes|vos) circuits? ca va\b|\bcomment (?:va|vont) (?:tes|vos) circuits?\b|\bcomment va ta forme\b|\b(?:tu es|vous etes|t es) en forme\b|\b(?:tu es|vous etes) fatigu|\b(?:tu tiens|vous tenez) le coup\b/;
 
 /** Kinship nouns — not every occurrence of « famille ». */
 const FAMILY_NOUN_RE =

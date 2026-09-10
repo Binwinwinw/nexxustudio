@@ -6,6 +6,8 @@ import {
   extractGeneralKnowledgeSubject,
   isCulturalArtifactSubject,
   isPureGeographicFamiliarity,
+  isConceptLookupRequest,
+  isCitadelleProductConceptQuery,
 } from "../src/agent/utils/intent-guards/generalKnowledgeIntentGuards.js";
 import { isRecipeKnowledgeRequest } from "../src/agent/utils/intent-guards/recipeKnowledgeIntentGuards.js";
 import {
@@ -26,6 +28,7 @@ import { runConversationShortCircuit } from "../src/agent/micro/classifiers/inte
 import {
   resolveQueryEntityUnderstanding,
   shouldBypassForgeSubjectClarification,
+  isGenericOpenWorldConceptSubject,
 } from "../src/agent/utils/parsing-normalization/queryEntityUnderstanding.js";
 import { resolveGeneralKnowledgeEnrichmentPolicy } from "../src/agent/policies/routing/generalKnowledgeEnrichmentPolicy.js";
 import { buildFamiliarityReply } from "../src/agent/micro/replies/familiarityReplyBuilder.js";
@@ -132,6 +135,105 @@ describe("generalKnowledgeShortCircuit — fiche locale humaine", () => {
   });
 });
 
+describe("generic open-world concept — Gantt / Kanban", () => {
+  const GANTT_QUERY = "qu'est-ce qu'un diagramme de Gantt";
+  const GANTT_TERRAIN_QUERY = "peux tu développer le concept du diagramme de gant ?";
+  const KANBAN_QUERY = "c'est quoi le kanban";
+
+  it("Gantt et Kanban sont des concepts open-world, pas du produit Citadelle", () => {
+    assert.equal(isGenericOpenWorldConceptSubject(GANTT_QUERY), true);
+    assert.equal(isGenericOpenWorldConceptSubject(KANBAN_QUERY), true);
+    assert.equal(isGeneralKnowledgeRequest(GANTT_QUERY), true);
+    assert.equal(isGeneralKnowledgeRequest(KANBAN_QUERY), true);
+    const ganttU = resolveQueryEntityUnderstanding(GANTT_QUERY);
+    assert.equal(ganttU.domain, "general");
+    assert.equal(ganttU.primarySubject, "diagramme de gantt");
+    assert.equal(shouldBypassForgeSubjectClarification(GANTT_QUERY), true);
+    const verdict = evaluateEpistemicRefusal({
+      query: GANTT_QUERY,
+      hasReliableContext: false,
+      responseText: "",
+    });
+    assert.equal(verdict.shouldRefuse, false);
+    assert.equal(verdict.reason, "general_knowledge_generous_response");
+  });
+
+  it("Gantt → fiche locale, explication directe, pas Forge ni URL", async () => {
+    const local = resolveLocalGeneralKnowledgeDetail(GANTT_QUERY);
+    assert.ok(local);
+    assert.match(local, /diagramme de Gantt/i);
+    assert.match(local, /jalon/i);
+    assert.doesNotMatch(local, /Forge|colle .*url|preuve textuelle/i);
+
+    const hit = await runConversationShortCircuit(GANTT_QUERY, {
+      getDeterministicSocialResponse: () => null,
+      history: [],
+    });
+    assert.equal(hit?.path, "general_knowledge_deterministic");
+    assert.match(hit?.reply || "", /tâches|taches/i);
+    assert.doesNotMatch(hit?.reply || "", /Forge|preuve textuelle/i);
+    assert.equal(
+      isGeneralKnowledgeContractViolation(
+        GANTT_QUERY,
+        "Sans preuve textuelle directe, colle une URL ou un contexte Forge.",
+      ),
+      true,
+    );
+  });
+
+  it("terrain : développer le concept du diagramme de gant → fiche, pas SIMPLE_FAST ni incertitude", async () => {
+    assert.equal(isGenericOpenWorldConceptSubject(GANTT_TERRAIN_QUERY), true);
+    assert.equal(isGeneralKnowledgeRequest(GANTT_TERRAIN_QUERY), true);
+    assert.equal(shouldBypassSimpleFast(GANTT_TERRAIN_QUERY), true);
+    assert.equal(
+      extractGeneralKnowledgeSubject(GANTT_TERRAIN_QUERY),
+      "diagramme de gant",
+    );
+    const local = resolveLocalGeneralKnowledgeDetail(GANTT_TERRAIN_QUERY);
+    assert.ok(local);
+    assert.match(local, /jalon/i);
+
+    const hit = await runConversationShortCircuit(GANTT_TERRAIN_QUERY, {
+      getDeterministicSocialResponse: () => null,
+      history: [],
+    });
+    assert.equal(hit?.path, "general_knowledge_deterministic");
+    assert.match(hit?.reply || "", /tâches|taches/i);
+    assert.doesNotMatch(
+      hit?.reply || "",
+      /Ce qui change|falloff|changelog|ADR-007/i,
+    );
+
+    const verdict = evaluateEpistemicRefusal({
+      query: GANTT_TERRAIN_QUERY,
+      hasReliableContext: false,
+      responseText: "",
+    });
+    assert.equal(verdict.shouldRefuse, false);
+    assert.equal(verdict.reason, "general_knowledge_generous_response");
+  });
+
+  it("Kanban sans fiche locale → GK pipeline, pas clarify Forge", async () => {
+    assert.equal(resolveLocalGeneralKnowledgeDetail(KANBAN_QUERY), null);
+    const hit = await runConversationShortCircuit(KANBAN_QUERY, {
+      getDeterministicSocialResponse: () => null,
+      history: [],
+    });
+    assert.equal(hit?.path, "general_knowledge_full_pipeline");
+    assert.equal(hit?.generalKnowledge, true);
+    const clarify = buildSubjectClarificationReply(
+      {
+        nature: "unresolved_proper_name",
+        target: "kanban",
+        confidence: "low",
+      },
+      { mustClarify: true, allowDirectAnswer: false },
+      { query: KANBAN_QUERY },
+    );
+    assert.equal(clarify, null);
+  });
+});
+
 describe("generalKnowledge — pas de clarify Forge sur entité claire", () => {
   it("pas de réponse Forge/logiciel/jeu pour Nissan", () => {
     assert.equal(buildFamiliarityReply(NISSAN_QUERY), null);
@@ -188,5 +290,49 @@ describe("generalKnowledgeShortCircuit — sans fiche locale", () => {
     assert.match(prompt, /carbonara/i);
     assert.match(prompt, /Pas de menu d'options/i);
     assert.equal(requiresGeneralKnowledgeComposerContract(CARBONARA_QUERY), true);
+  });
+});
+
+describe("concept_lookup shells — indépendant du lexique sujet", () => {
+  const SHELLS = [
+    ["qu'est-ce qu'un diagramme de Gantt", "diagramme de gantt"],
+    ["c'est quoi le kanban", "kanban"],
+    ["que signifie PERT", "pert"],
+    ["explique le concept de scrum", "scrum"],
+    ["peux tu développer le concept du diagramme de gant ?", "diagramme de gant"],
+  ];
+
+  it("détecte la famille sur Gantt / Kanban / PERT / Scrum, plusieurs phrasings", () => {
+    for (const [q, subject] of SHELLS) {
+      assert.equal(isConceptLookupRequest(q), true, q);
+      assert.equal(isGeneralKnowledgeRequest(q), true, q);
+      assert.match(extractGeneralKnowledgeSubject(q) || "", new RegExp(subject, "i"), q);
+    }
+  });
+
+  it("GK sans figurer au lexique open-world (diagramme de flux)", () => {
+    const q = "c'est quoi un diagramme de flux";
+    assert.equal(isGenericOpenWorldConceptSubject(q), false);
+    assert.equal(isConceptLookupRequest(q), true);
+    assert.equal(isGeneralKnowledgeRequest(q), true);
+  });
+
+  it("n'attrape pas un déictique (qu'est-ce qu'on / c'est quoi tu)", () => {
+    assert.equal(isConceptLookupRequest("qu'est-ce qu'on peut faire ?"), false);
+    assert.equal(isConceptLookupRequest("c'est quoi tu fais ?"), false);
+  });
+
+  it("concept Citadelle : lookup GK, mais pas le skip épistémique généreux", () => {
+    const q = "c'est quoi FILE_ANALYSIS";
+    assert.equal(isConceptLookupRequest(q), true);
+    assert.equal(isGeneralKnowledgeRequest(q), true);
+    assert.equal(isCitadelleProductConceptQuery(q), true);
+    assert.equal(resolveGeneralKnowledgeShortCircuit(q), null);
+    const verdict = evaluateEpistemicRefusal({
+      query: q,
+      hasReliableContext: false,
+      responseText: "",
+    });
+    assert.notEqual(verdict.reason, "general_knowledge_generous_response");
   });
 });

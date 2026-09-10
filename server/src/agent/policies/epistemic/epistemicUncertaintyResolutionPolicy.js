@@ -8,6 +8,8 @@
  */
 import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { isSubstantiveWorkRequest } from "../../utils/conversation/genericGreetingGuards.js";
+import { isCodeIntentRequest } from "../code/codeIntentPolicy.js";
+import { isNamedToolAdminHowToRequest } from "../../utils/intent-guards/namedToolAdminHowToGuard.js";
 import {
   assessKnowledgeFreshnessRisk,
   isWebSearchThreadMaintenanceMessage,
@@ -381,6 +383,8 @@ export function resolveEpistemicUncertaintyShortCircuit(query = "", options = {}
   if (!query || !String(query).trim()) return null;
   if (isSubstantiveWorkRequest(query)) return null;
   if (isWellbeingCheckinIntent(query)) return null;
+  // HOWTO_NAMED_TOOL_ADMIN_BYPASSES_EPISTEMIC_V1 — rail how_to_procedural_llm ensuite.
+  if (isNamedToolAdminHowToRequest(query) && !isCodeIntentRequest(query)) return null;
 
   const evaluation = evaluateEpistemicUncertaintyResolution(query, options);
   const { action, reply, state, socialChatThread } = evaluation;

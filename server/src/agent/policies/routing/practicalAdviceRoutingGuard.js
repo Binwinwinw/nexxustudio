@@ -76,6 +76,9 @@ export function shouldDeferShortCircuitToFullPipeline(shortCircuit = null, query
   if (shortCircuit.debugDiagnostic) {
     return false;
   }
+  if (shortCircuit.howToProcedural || shortCircuit.path === "how_to_procedural_llm") {
+    return false;
+  }
   if (shortCircuit.compareChoose) {
     return true;
   }

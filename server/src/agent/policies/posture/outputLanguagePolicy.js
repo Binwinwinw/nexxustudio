@@ -5,9 +5,24 @@
 import {
   LANGUAGE_NAME_FROM_CODE,
   normalizeLanguageLabel,
+  isTranslationRequestReady,
+  extractTargetLanguage,
 } from "../../utils/intent-guards/translationIntentGuards.js";
 
 export const OUTPUT_LANGUAGE_RULE = "output_language_follows_user_v1";
+
+/** Lot : gate langue ne détruit pas un livrable COMPOSER evidence-backed. */
+export const COMPOSER_LANGUAGE_GATE_PRESERVES_EVIDENCE_V1 =
+  "COMPOSER_LANGUAGE_GATE_PRESERVES_EVIDENCE_V1";
+
+/** Lot : rail traduction — langue cible, pas le dump source. */
+export const TRANSLATION_PREEMPTS_CODE_CONCEPT_GLOSSARY_V1 =
+  "TRANSLATION_PREEMPTS_CODE_CONCEPT_GLOSSARY_V1";
+
+const TRANSLATION_LANGUAGE_PATHS = new Set([
+  "translation_pipeline",
+  "translation_multi_target",
+]);
 
 export const OUTPUT_LANGUAGE_CODES = Object.freeze(["fr", "en", "es", "de"]);
 
@@ -55,6 +70,18 @@ function stripNoise(text = "") {
     .replace(/[^\p{L}\s¿¡']/gu, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+/**
+ * Bruit de sortie : titres/extraits cités, gloses parenthèses, URLs.
+ * Ne change pas detectDominantLanguage sur l'input utilisateur.
+ */
+function stripProseLanguageNoise(text = "") {
+  return String(text || "")
+    .replace(URL_RE, " ")
+    .replace(/\([^)]{0,120}\)/g, " ")
+    .replace(/[«»""][^«»""]{0,200}[«»""]/g, " ")
+    .replace(PRODUCT_NOISE_RE, " ");
 }
 
 function countMatches(text, re) {
@@ -121,8 +148,38 @@ function detectConversationLanguage(history = []) {
   return detected.confidence === "low" ? null : detected.code;
 }
 
+function resolveTranslationOutputLanguage(query = "") {
+  if (!isTranslationRequestReady(query)) return null;
+  const target = extractTargetLanguage(query);
+  if (!target || !OUTPUT_LANGUAGE_CODES.includes(target)) return null;
+  return target;
+}
+
 /**
- * Priorité : consigne explicite > input courant > continuité user > jamais les sources.
+ * Rail traduction : la langue cible gouverne, pas le dump source collé.
+ * @param {object|null} policy
+ * @param {string} query
+ * @param {string} pipelinePath
+ */
+export function applyTranslationPathLanguagePolicy(
+  policy = null,
+  query = "",
+  pipelinePath = "",
+) {
+  if (!TRANSLATION_LANGUAGE_PATHS.has(String(pipelinePath || ""))) {
+    return policy;
+  }
+  const target = resolveTranslationOutputLanguage(query);
+  if (!target) return policy;
+  return {
+    ...(policy || {}),
+    outputLanguage: target,
+    explicitOverride: true,
+  };
+}
+
+/**
+ * Priorité : consigne explicite > cible traduction prête > input courant > continuité user > jamais les sources.
  * @param {string} query
  * @param {{ history?: object[], sourceLanguage?: string|null }} [options]
  * @returns {{
@@ -143,8 +200,12 @@ export function resolveOutputLanguagePolicy(query = "", options = {}) {
 
   let outputLanguage = "fr";
   let explicitOverride = false;
+  const translationTarget = resolveTranslationOutputLanguage(query);
   if (explicit) {
     outputLanguage = explicit;
+    explicitOverride = true;
+  } else if (translationTarget) {
+    outputLanguage = translationTarget;
     explicitOverride = true;
   } else if (current.confidence !== "low") {
     outputLanguage = current.code;
@@ -184,6 +245,36 @@ export function isTextInLanguage(text = "", language = "fr") {
   return detected.code === language;
 }
 
+/**
+ * Scoring de prose finale : titres, extraits, gloses et URLs ne votent pas.
+ */
+export function isOutputProseInLanguage(text = "", language = "fr") {
+  const detected = detectDominantLanguage(stripProseLanguageNoise(text));
+  if (detected.confidence === "low") return true;
+  return detected.code === language;
+}
+
+/**
+ * Structure FR : marqueurs + accents, même si du jargon EN reste dans le corps.
+ */
+export function hasFrenchResponseStructure(text = "") {
+  const raw = String(text || "");
+  const cleaned = stripNoise(stripProseLanguageNoise(raw));
+  const fr = countMatches(cleaned, FR_MARKERS);
+  const accents = /[àâçéèêëîïôùûœ]/i.test(raw);
+  if (fr >= 4) return true;
+  if (fr >= 2 && accents) return true;
+  if (accents && fr >= 1 && /^\s*\d+[\).:]/m.test(raw)) return true;
+  return false;
+}
+
+function isComposerWithWebEvidence(options = {}) {
+  return (
+    String(options.pipelinePath || "") === "COMPOSER" &&
+    options.hasWebEvidence === true
+  );
+}
+
 export function buildLanguageMismatchBlock(language = "fr") {
   return BLOCK_REPLY[language] || BLOCK_REPLY.fr;
 }
@@ -191,8 +282,8 @@ export function buildLanguageMismatchBlock(language = "fr") {
 /**
  * @param {string} text
  * @param {{ outputLanguage?: string, explicitOverride?: boolean }} [policy]
- * @param {{ pipelinePath?: string }} [options]
- * @returns {{ text: string, ok: boolean, blocked: boolean }}
+ * @param {{ pipelinePath?: string, hasWebEvidence?: boolean }} [options]
+ * @returns {{ text: string, ok: boolean, blocked: boolean, preserved?: string }}
  */
 export function enforceOutputLanguage(text = "", policy = null, options = {}) {
   const expected = policy?.outputLanguage || "fr";
@@ -209,8 +300,24 @@ export function enforceOutputLanguage(text = "", policy = null, options = {}) {
   if (raw.startsWith("{") && raw.endsWith("}")) {
     return { text, ok: true, blocked: false };
   }
-  if (isTextInLanguage(raw, expected)) {
+  if (isTextInLanguage(raw, expected) || isOutputProseInLanguage(raw, expected)) {
     return { text, ok: true, blocked: false };
+  }
+  if (isComposerWithWebEvidence(options)) {
+    if (expected === "fr" && hasFrenchResponseStructure(raw)) {
+      return {
+        text: raw,
+        ok: true,
+        blocked: false,
+        preserved: "structural_language",
+      };
+    }
+    return {
+      text: raw,
+      ok: false,
+      blocked: false,
+      preserved: "web_evidence",
+    };
   }
   return {
     text: buildLanguageMismatchBlock(expected),

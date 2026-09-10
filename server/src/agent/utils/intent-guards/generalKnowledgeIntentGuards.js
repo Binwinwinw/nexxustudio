@@ -15,6 +15,7 @@ import {
 import { hasExplicitDecisionCriterion } from "../../micro/replies/directArbitrationComposerContract.js";
 import { classifySelectiveDecisionIntent } from "./selectiveDecisionIntentGuards.js";
 import { isAdminProcedureRequest } from "./adminProcedureIntentGuards.js";
+import { isIdentityIntent } from "./identityIntentGuards.js";
 import {
   isPhaticSocialCheckinIntent,
   isSocialCheckinConsistencyCritique,
@@ -24,8 +25,12 @@ import { isRecipeKnowledgeRequest, extractRecipeSubject } from "./recipeKnowledg
 import { isHowToRequestShell } from "./howToRequestIntentGuards.js";
 import {
   extractPrimaryKnowledgeSubject,
+  extractConceptLookupSubject,
   classifyKnowledgeDomain,
   hasCompoundKnowledgeAsk,
+  isGenericOpenWorldConceptSubject,
+  isConceptLookupRequest,
+  isCitadelleProductConceptQuery,
   KNOWLEDGE_DOMAINS,
 } from "../parsing-normalization/queryEntityUnderstanding.js";
 import {
@@ -34,6 +39,12 @@ import {
 } from "../../policies/summary/index.js";
 import { isLightCulturalRecognitionRequest } from "../../policies/pedagogical/index.js";
 
+export {
+  isConceptLookupRequest,
+  extractConceptLookupSubject,
+  isCitadelleProductConceptQuery,
+};
+
 export const GENERAL_KNOWLEDGE_ROUTING_RULE =
   "general_knowledge_generous_human_response";
 
@@ -41,7 +52,7 @@ const KNOWLEDGE_SHELL_PATTERN =
   /\b(?:connais|connaisse|connaitre|sais|savez|peux tu|tu peux|donne|donne moi|detaille|détailler|detailler|explique|decris|décris|parle moi|parle-moi|dis moi|dis-moi)\b/i;
 
 const SUBSTANTIVE_ASK_PATTERN =
-  /\b(?:recette|c'est quoi|c est quoi|qu'est ce que|qu est ce que|qu'est-ce que|definition|définition|histoire|origine|fonctionnement|caracteristiques|caractéristiques|en quoi consiste|a quoi sert|à quoi sert)\b/i;
+  /\b(?:recette|c'est quoi|c est quoi|qu'est ce que|qu est ce que|qu'est-ce que|qu'est-ce qu[''](?:un|une)|quest-ce qu[''](?:un|une)|qu est-?ce qu(?:e| un| une)|developper\s+(?:le |la |l |un |une )?concept|definition|définition|histoire|origine|fonctionnement|caracteristiques|caractéristiques|en quoi consiste|a quoi sert|à quoi sert)\b/i;
 
 const DOMAIN_MARKER_PATTERN =
   /\b(?:recette|plat|monument|cathedrale|cathédrale|basilique|musee|musée|vehicule|véhicule|voiture|montre|chaussure|basket|sneaker|pates|pâtes|mijote|mijoter|cuisine|architecte|construction)\b/i;
@@ -92,6 +103,10 @@ export function isCulturalArtifactSubject(subject = "") {
     return true;
   }
 
+  if (isGenericOpenWorldConceptSubject(probe)) {
+    return true;
+  }
+
   const category = inferSubjectCategory(probe, subject);
   if (category === SUBJECT_CATEGORIES.PLACE_INSTITUTION) {
     const subtype = inferPlaceSubtype(probe, category);
@@ -135,8 +150,8 @@ export function extractGeneralKnowledgeSubject(query = "") {
   if (!q) return null;
 
   const whatPatterns = [
-    /\b(?:c'est quoi|c est quoi|qu'est ce que|qu est ce que|qu'est-ce que)\s+(?:la |le |les |l')?([^?.!]+)/i,
-    /\b(?:explique|decris|décris|parle moi de|parle-moi de|dis moi ce que tu sais sur|dis-moi ce que tu sais sur)\s+(?:la |le |les |l')?([^?.!]+)/i,
+    /\b(?:c est quoi|qu est-?ce qu(?:e| un| une))\s+(?:la |le |les |l |un |une )?([^?.!]+)/i,
+    /\b(?:explique|decris|décris|parle moi de|parle-moi de|dis moi ce que tu sais sur|dis-moi ce que tu sais sur)\s+(?:la |le |les |l |un |une )?([^?.!]+)/i,
   ];
   for (const pattern of whatPatterns) {
     const match = q.match(pattern);
@@ -159,6 +174,7 @@ export function extractGeneralKnowledgeSubject(query = "") {
  */
 export function isGeneralKnowledgeRequest(query = "") {
   if (!query || isSelectiveDecisionBlocked(query)) return false;
+  if (isIdentityIntent(query)) return false;
   if (isLightCulturalRecognitionRequest(query)) return false;
   if (isPhaticSocialCheckinIntent(query)) return false;
   if (isSocialCheckinConsistencyCritique(query)) return false;
@@ -173,11 +189,21 @@ export function isGeneralKnowledgeRequest(query = "") {
 
   if (isPureGeographicFamiliarity(query)) return false;
 
+  if (isConceptLookupRequest(query)) return true;
+
   if (hasCompoundKnowledgeAsk(query)) return true;
 
   const subject = extractGeneralKnowledgeSubject(query);
 
-  if (SUBSTANTIVE_ASK_PATTERN.test(q) && subject) return true;
+  if (
+    SUBSTANTIVE_ASK_PATTERN.test(q) &&
+    (subject || isGenericOpenWorldConceptSubject(q))
+  ) {
+    return true;
+  }
+  if (KNOWLEDGE_SHELL_PATTERN.test(q) && isGenericOpenWorldConceptSubject(q)) {
+    return true;
+  }
   if (KNOWLEDGE_SHELL_PATTERN.test(q) && DOMAIN_MARKER_PATTERN.test(q)) return true;
 
   if (KNOWLEDGE_SHELL_PATTERN.test(q) && subject && isCulturalArtifactSubject(subject)) {

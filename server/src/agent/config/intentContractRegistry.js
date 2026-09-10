@@ -25,6 +25,7 @@ import {
 } from "./modeResponseContracts.js";
 import { isCodeGenerationRequest } from "../policies/code/codeDeliveryPolicy.js";
 import { isCodeIntentRequest } from "../policies/code/codeIntentPolicy.js";
+import { isNamedToolAdminHowToRequest } from "../utils/intent-guards/namedToolAdminHowToGuard.js";
 import { isCodeReviewRequest } from "../policies/code/codeReviewPolicy.js";
 import { requiresGenerousComposerResponse } from "../policies/routing/practicalAdviceRoutingGuard.js";
 import { isSocialAcceptanceOfOffer } from "../policies/social/index.js";
@@ -1051,10 +1052,17 @@ export function resolveIntentContract(query = "", packet = {}) {
       "DESIGN_CREATE",
       "REPO_ANALYSIS",
     ]);
+    // HOWTO_NAMED_TOOL_ADMIN_BYPASSES_EPISTEMIC_V1 — pas de revue/diagnostic par classe.
+    const namedToolAdminHowTo =
+      isNamedToolAdminHowToRequest(query) && !isCodeIntentRequest(query);
     const byIntent = sorted.find(
       (c) =>
         (c.orchestratorIntents || []).includes(userIntent) &&
-        !INTENT_CLASS_FALLBACK_BLOCKLIST.has(c.id),
+        !INTENT_CLASS_FALLBACK_BLOCKLIST.has(c.id) &&
+        !(
+          namedToolAdminHowTo &&
+          (c.id === "CODE_INTENT" || c.id === "DIAGNOSTIC")
+        ),
     );
     if (byIntent) return { contract: byIntent, matchedBy: `orchestrator:${userIntent}` };
   }

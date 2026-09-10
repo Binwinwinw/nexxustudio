@@ -7,7 +7,7 @@ import {
   getDebugDiagnosticSystemPrompt,
   RESPONSE_MODES,
 } from '../../../../server/src/agent/config/modeResponseContracts.js';
-import { enforceHowToProceduralDirectness } from '../../../../server/src/agent/policies/howToQualificationPolicy.js';
+import { enforceHowToProceduralDirectness } from '../../../../server/src/agent/policies/qualification/howToQualificationPolicy.js';
 import {
   buildSimpleFactualSystemAddon,
   finalizeSimpleFactualAnswer,

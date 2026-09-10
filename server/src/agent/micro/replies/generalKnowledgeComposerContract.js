@@ -7,7 +7,11 @@ import {
 } from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
 import { isRecipeKnowledgeRequest } from "../../utils/intent-guards/recipeKnowledgeIntentGuards.js";
 import { isHowToRequestShell } from "../../utils/intent-guards/howToRequestIntentGuards.js";
-import { hasCompoundKnowledgeAsk } from "../../utils/parsing-normalization/queryEntityUnderstanding.js";
+import {
+  hasCompoundKnowledgeAsk,
+  isGenericOpenWorldConceptSubject,
+  isCitadelleProductConceptQuery,
+} from "../../utils/parsing-normalization/queryEntityUnderstanding.js";
 import {
   isCulturalContentSummaryRequest,
   extractCulturalSummarySubject,
@@ -24,7 +28,7 @@ export const GK_VOLUME_TIER_DEEP = "deep";
 const DETAILED_RE =
   /\b(?:en detail|en détail|detaille|détaillé|approfond|avec des details|avec des détails)\b/i;
 const CEST_QUOI_RE =
-  /\b(?:c'est quoi|c est quoi|qu'est ce que|qu est ce que|qu'est-ce que|definition|définition)\b/i;
+  /\b(?:c'est quoi|c est quoi|qu'est ce que|qu est ce que|qu'est-ce que|qu'est-ce qu[''](?:un|une)|qu est-?ce qu(?:e| un| une)|definition|définition)\b/i;
 const YES_NO_RE =
   /\b(?:oui ou non|juste oui|dis[- ]?moi oui|réponds oui|oui\/non)\b/i;
 const STEP_BY_STEP_RE =
@@ -110,17 +114,31 @@ La viande est généralement marinée 12 à 24 h, puis saisie, les légumes sont
 
 Tu veux que je te détaille une étape précise, ou tu veux des variantes ?`;
 
+const GANTT_DETAIL = `Un **diagramme de Gantt** est un planning visuel : en ordonnée les tâches, en abscisse le temps, chaque barre montre quand une tâche commence, combien elle dure, et quand elle finit.
+
+Les barres se chevauchent ou s'enchaînent selon les **dépendances** (une tâche ne peut souvent démarrer qu'après une autre). Les **jalons** marquent une date-clé sans durée (livraison, go/no-go).
+
+On s'en sert pour planifier un projet, suivre l'avancement, et communiquer un calendrier à une équipe — c'est un outil de gestion de projet standard, pas un composant de La Citadelle.
+
+Si tu veux, on peut en croquer un sur un mini-projet concret.`;
+
 const LOCAL_KNOWLEDGE_FICHES = {
   "boeuf bourguignon": BOEUF_BOURGUIGNON_DETAIL,
   "bœuf bourguignon": BOEUF_BOURGUIGNON_DETAIL,
   "le boeuf bourguignon": BOEUF_BOURGUIGNON_DETAIL,
   "le bœuf bourguignon": BOEUF_BOURGUIGNON_DETAIL,
+  "diagramme de gantt": GANTT_DETAIL,
+  "un diagramme de gantt": GANTT_DETAIL,
+  gantt: GANTT_DETAIL,
 };
 
 function normalizeFicheKey(subject = "") {
   return String(subject || "")
     .toLowerCase()
-    .replace(/^(?:la |le |les |l')/, "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/^(?:la |le |les |l'|un |une )/, "")
+    .replace(/\bdiagramme de gant\b/, "diagramme de gantt")
     .trim();
 }
 
@@ -133,9 +151,19 @@ export const requiresRecipeKnowledgeComposerContract = requiresGeneralKnowledgeC
 
 export function resolveLocalGeneralKnowledgeDetail(query = "") {
   const subject = extractGeneralKnowledgeSubject(query);
-  if (!subject) return null;
-  const key = normalizeFicheKey(subject);
-  return LOCAL_KNOWLEDGE_FICHES[key] || LOCAL_KNOWLEDGE_FICHES[subject.toLowerCase().trim()] || null;
+  const candidates = [];
+  if (subject) {
+    candidates.push(normalizeFicheKey(subject), subject.toLowerCase().trim());
+  }
+  candidates.push(normalizeFicheKey(query));
+  for (const key of candidates) {
+    if (key && LOCAL_KNOWLEDGE_FICHES[key]) return LOCAL_KNOWLEDGE_FICHES[key];
+  }
+  const hay = normalizeFicheKey(query);
+  for (const [key, fiche] of Object.entries(LOCAL_KNOWLEDGE_FICHES)) {
+    if (key.length >= 5 && hay.includes(key)) return fiche;
+  }
+  return null;
 }
 
 /** @deprecated alias */
@@ -292,6 +320,7 @@ export const buildRecipeKnowledgeUserPrompt = buildGeneralKnowledgeUserPrompt;
  */
 export function resolveGeneralKnowledgeShortCircuit(query = "") {
   if (!isGeneralKnowledgeRequest(query)) return null;
+  if (isCitadelleProductConceptQuery(query)) return null;
   const local = resolveLocalGeneralKnowledgeDetail(query);
   if (local) {
     return {
@@ -324,6 +353,14 @@ export function isGeneralKnowledgeContractViolation(query = "", text = "") {
   if (!body) return true;
   if (tier !== GK_VOLUME_TIER_LIGHT && body.length < 80) return true;
   if (/je n['']?ai pas assez d'elements fiables/i.test(body)) return true;
+  if (
+    isGenericOpenWorldConceptSubject(query) &&
+    /\b(?:contexte forge|handoff forge|colle (?:une )?url|url interne|preuve textuelle)\b/i.test(
+      body,
+    )
+  ) {
+    return true;
+  }
 
   const subject = extractGeneralKnowledgeSubject(query);
   if (subject) {

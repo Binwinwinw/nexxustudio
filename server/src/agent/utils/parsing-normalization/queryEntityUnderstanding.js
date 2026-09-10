@@ -40,6 +40,31 @@ const FOOTWEAR_PATTERN = /\b(?:nike|adidas|chaussure|basket|sneaker|air max|yeez
 const TECH_BRAND_PATTERN =
   /\b(?:nothing\s*phone|nothing\s*tech|apple|samsung|google pixel|oneplus|xiaomi|huawei|marque)\b/i;
 
+/** Concepts métier / CS publics — pas un outillage Citadelle. */
+const PROJECT_METHOD_CONCEPT_RE =
+  /\b(?:diagramme\s+de\s+gantt?|gantt|kanban|pert|scrum|diagramme\s+pert)\b/i;
+
+/**
+ * Famille concept_lookup — shells sanitisés, sans lexique de sujet.
+ * « qu'est-ce qu'un » → « qu est-ce qu un ».
+ */
+const CONCEPT_LOOKUP_PATTERNS = [
+  /\bc est quoi\s+(?:la |le |les |l |un |une )?(.+)/i,
+  /\bqu est-?ce qu(?:e| un| une)\s+(?:la |le |les |l |un |une )?(.+)/i,
+  /\b(?:developper|expliquer|explique)\s+(?:le |la |l |un |une )?concept\s+(?:du |de la |de l |des |de )?(.+)/i,
+  /\bque signifie\s+(?:la |le |les |l |un |une )?(.+)/i,
+  /\bdefinition\s+(?:de |du |de la |de l |des )(.+)/i,
+  /\ben quoi consiste\s+(?:la |le |les |l |un |une )?(.+)/i,
+  /\ba quoi sert\s+(?:la |le |les |l |un |une )?(.+)/i,
+];
+
+const CONCEPT_LOOKUP_DEICTIC_RE =
+  /^(?:tu|toi|te|ton|ta|tes|on|nous|vous|je|me|mon|ma|mes|ca|cela|ceci|celui|celle|ceux|celles)\b/i;
+
+/** Produit Citadelle — Vague 2. Pas un test de culture générale. */
+const CITADELLE_PRODUCT_CONCEPT_RE =
+  /\b(?:la citadelle|citadelle|nexxus|file[_ ]?analysis|just[- ]?intent|simple[_ ]?fast)\b/i;
+
 function normalizeQuery(query = "") {
   return normalizeFamiliarityQuery(query);
 }
@@ -48,6 +73,39 @@ function stripLeadingArticle(text = "") {
   return String(text || "")
     .replace(/^(?:la |le |les |l'|un |une )/i, "")
     .trim();
+}
+
+function cleanLookupSubject(raw = "") {
+  const cleaned = stripLeadingArticle(String(raw || "").split(/\s+et\s+/i)[0]).trim();
+  if (cleaned.length < 2) return null;
+  if (CONCEPT_LOOKUP_DEICTIC_RE.test(cleaned)) return null;
+  return cleaned.replace(/\s+/g, " ");
+}
+
+/**
+ * Sujet X d'une question de définition. Capture le slot, ne classe pas X.
+ * @param {string} query
+ * @returns {string|null}
+ */
+export function extractConceptLookupSubject(query = "") {
+  const q = normalizeQuery(query);
+  if (!q) return null;
+  for (const pattern of CONCEPT_LOOKUP_PATTERNS) {
+    const match = q.match(pattern);
+    const subject = cleanLookupSubject(match?.[1]);
+    if (subject) return subject;
+  }
+  return null;
+}
+
+/** Frame « question de définition », indépendant du lexique sujet. */
+export function isConceptLookupRequest(query = "") {
+  return Boolean(extractConceptLookupSubject(query));
+}
+
+/** Concept d'outillage Citadelle — régime de preuve Vague 2. */
+export function isCitadelleProductConceptQuery(text = "") {
+  return CITADELLE_PRODUCT_CONCEPT_RE.test(normalizeQuery(text));
 }
 
 /**
@@ -68,12 +126,8 @@ export function extractPrimaryKnowledgeSubject(query = "") {
     if (fromShell) return fromShell;
   }
 
-  const whatMatch = q.match(
-    /\b(?:c'est quoi|c est quoi|qu'est ce que|qu est ce que|qu'est-ce que)\s+(?:la |le |les |l')?([^?.!]+)/i,
-  );
-  if (whatMatch?.[1]) {
-    return stripLeadingArticle(whatMatch[1].split(/\s+et\s+/i)[0]).trim();
-  }
+  const lookupSubject = extractConceptLookupSubject(query);
+  if (lookupSubject) return lookupSubject;
 
   const parsed = parseFamiliarityQuery(query);
   if (parsed?.rawSubject) {
@@ -98,6 +152,11 @@ function extractFromFamiliarityShell(fragment = "") {
   return null;
 }
 
+/** Concept générique hors produit Citadelle (Gantt, Kanban, …). */
+export function isGenericOpenWorldConceptSubject(text = "") {
+  return PROJECT_METHOD_CONCEPT_RE.test(normalizeQuery(text));
+}
+
 /**
  * @param {string} query
  * @param {string} [subject]
@@ -112,6 +171,7 @@ export function classifyKnowledgeDomain(query = "", subject = "") {
   if (HOROLOGY_PATTERN.test(probe)) return KNOWLEDGE_DOMAINS.HOROLOGY;
   if (FOOTWEAR_PATTERN.test(probe)) return KNOWLEDGE_DOMAINS.FOOTWEAR;
   if (TECH_BRAND_PATTERN.test(probe)) return KNOWLEDGE_DOMAINS.GENERAL;
+  if (PROJECT_METHOD_CONCEPT_RE.test(probe)) return KNOWLEDGE_DOMAINS.GENERAL;
 
   if (KNOWLEDGE_SHELL_PATTERN.test(probe) && subject) {
     return KNOWLEDGE_DOMAINS.GENERAL;
@@ -174,6 +234,7 @@ export function resolveQueryEntityUnderstanding(query = "") {
  * @param {string} query
  */
 export function shouldBypassForgeSubjectClarification(query = "") {
+  if (isGenericOpenWorldConceptSubject(query)) return true;
   const understanding = resolveQueryEntityUnderstanding(query);
   if (understanding.shouldBypassForgeClarification) return true;
   if (understanding.hasCompoundAsk && understanding.domain !== KNOWLEDGE_DOMAINS.UNKNOWN) {

@@ -22,6 +22,7 @@ export function isConversationMoveAuthorityEnabled() {
  *   conversationMove?: object|null,
  *   clarificationGate?: { shouldClarify?: boolean, message?: string, pipelinePath?: string|null },
  *   query?: string,
+ *   response_commitment?: { renderMode?: string }|null,
  * }} input
  * @returns {{
  *   clarificationGate: object,
@@ -33,6 +34,7 @@ export function applyConversationMoveAuthority({
   conversationMove = null,
   clarificationGate = {},
   query = "",
+  response_commitment = null,
 } = {}) {
   const gate = { ...clarificationGate };
 
@@ -65,6 +67,13 @@ export function applyConversationMoveAuthority({
           shouldClarify: false,
           suppressedByNamedCreate: true,
         },
+        earlyTurn: null,
+        authorityApplied: true,
+      };
+    }
+    if (response_commitment?.renderMode !== "clarify") {
+      return {
+        clarificationGate: gate,
         earlyTurn: null,
         authorityApplied: true,
       };

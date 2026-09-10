@@ -4,9 +4,7 @@
 import { normalizeForParse } from "../../micro/parsing/requestSegmentParser.js";
 import { extractLearningRequestTarget } from "./learningRequestIntentGuards.js";
 import { isProgrammingPedagogyLightRequest } from "./programmingPedagogyLightIntentGuards.js";
-
-const HOW_TO_SHELL_RE =
-  /\b(?:comment\s+(?:on\s+)?(?:fait|faire|preparer|preparer)|sais\s+tu\s+comment\s+(?:on\s+)?(?:fait|faire)|comment\s+faire|savoir\s+si\s+tu\s+sais\s+comment|voudrais\s+savoir\s+comment|aimerais\s+savoir\s+comment(?:\s+faire)?|tu\s+sais\s+comment\s+(?:on\s+)?(?:fait|faire)|marche\s+a\s+suivre|demarche\s+a\s+suivre|les\s+etapes\s+(?:pour|de))\b/i;
+import { HOW_TO_SHELL_RE } from "./namedToolAdminHowToGuard.js";
 
 const LEARNING_TECH_TARGET_RE =
   /\b(?:bash|shell|zsh|powershell|python|javascript|typescript|java|linux|git|docker|react|sql|langage)\b/i;
@@ -35,4 +33,5 @@ export function isHowToRequestShell(query = "") {
   return HOW_TO_SHELL_RE.test(normalized);
 }
 
+export { isNamedToolAdminHowToRequest } from "./namedToolAdminHowToGuard.js";
 export { HOW_TO_SHELL_RE };

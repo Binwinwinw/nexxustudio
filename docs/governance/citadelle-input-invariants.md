@@ -6,6 +6,7 @@ Si un autre document contredit cette page : **cette page gagne**.
 
 Mémoire (historique des lots) : [`docs/agents/input-comprehension-chantier.md`](../agents/input-comprehension-chantier.md)  
 Protocole (plan → preuve → bouclage) : [`docs/AI_EXECUTION_LOOP.md`](../AI_EXECUTION_LOOP.md)  
+Trace de décision (autorité du cycle, pas le comportement) : [`decision-trace.md`](decision-trace.md)  
 Preuve runtime : tests listés ci-dessous.
 
 ---

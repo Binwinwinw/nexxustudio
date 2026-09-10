@@ -9,6 +9,8 @@ Source unique : `docs/governance/citadelle-input-invariants.md`
 
 Lire le canon avant tout changement routing, policies, JUST, `entities`, clarify ou SC.
 
+Si la tâche touche l’autorité compréhension → commitment → contrat : lire aussi `docs/governance/decision-trace.md` (interdits + ADR). Ne pas recopier.
+
 Ne pas recopier le canon ici ni ailleurs.
 
 Divergence (mémoire / protocole / règle IDE vs canon) : le canon gagne. Pointer, ne pas redéfinir.

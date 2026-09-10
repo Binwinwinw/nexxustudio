@@ -212,6 +212,8 @@ Guards (`isHowTo…`, `isInformationSeeking…`) : **lot 3**. Cités ici comme d
 
 Si le path est faux : d’abord *qu’est-ce qui a été compris* (domaines, move, phatique), ensuite *qui a tranché* (lot 1).
 
+Si le path est un **rail spécialisé** (ex. `web_project_scoping_*`) alors que la demande n’est pas ce livrable : trou **METHODE C4** — pattern détecté appliqué sans décision de correspondance. Pas le même diagnostic que cycle vs SC. Cadrage : [`c4-response-type-decision.md`](./c4-response-type-decision.md). **Pas de runtime.**
+
 ---
 
 ## 7. Risques
@@ -258,3 +260,5 @@ Lots 0–1–4 non retravaillés. Pas de 3e doc amont. Pas de parser. Pas de mé
 | 2026-08-17 | Cadrage validé : 4 couches écrites ; lot 3 = prochain candidat gardes |
 | 2026-08-17 | Pointeur : policies domaine écrite — [`agent-domain-policies.md`](./agent-domain-policies.md) |
 | 2026-08-18 | Lecture : inventaire pour décider — [`METHODE.md`](./METHODE.md) |
+| 2026-09-06 | Debug live : pointeur C4 (pattern sans correspondance), pas de lot |
+| 2026-09-06 | METHODE C4 cadrage — [`c4-response-type-decision.md`](./c4-response-type-decision.md), pas de runtime |

@@ -75,7 +75,15 @@ const AMBIGUOUS_BROAD_TOPIC_RE =
   /\b(avion|fusee|fusée|voiture|bateau|moteur|fusible|robot|maison)\b/i;
 
 const COMPLEX_SIGNAL_RE =
-  /\b(vrai|veritable|véritable|fabrique|fabriquer|construire\s+un\s+vrai|industriel|aeronautique|aéronautique|site\s+web|application|projet\s+react)\b/i;
+  /\b(vrai|veritable|véritable|fabrique|fabriquer|construire\s+un\s+vrai|industriel|aeronautique|aéronautique|projet\s+react)\b/i;
+
+/** « créer une application / un site web » = livrable à cadrer, pas « phpMyAdmin l'application web ». */
+const COMPLEX_BUILD_APP_RE =
+  /\b(?:creer|créer|construire|developper|développer)\s+(?:un|une|des)\s+(?:site\s+web|application|app)\b/i;
+
+const NAMED_DB_TOOL_RE = /\b(?:phpmyadmin|mysql|postgres(?:ql)?)\b/i;
+const DB_OBJECT_RE = /\b(?:base(?:\s+de\s+donn[ée]es)?|database|bdd)\b/i;
+const DB_CREATE_VERB_RE = /\b(?:cr[eé]er?|cree|ajouter)\b/i;
 
 const SENSITIVE_TOPIC_RE =
   /\b(bombe|explosif|arme|drogue|poison|hack|pirater|casser\s+un)\b/i;
@@ -98,7 +106,23 @@ export function extractHowToTopic(payload = "") {
     const match = normalized.match(pattern);
     if (match?.[1]) return match[1].trim();
   }
+  if (isNamedDbCreateProcedure(normalized)) {
+    return "créer une base dans phpMyAdmin";
+  }
   return "ça";
+}
+
+/**
+ * Procédure UI / SQL nommée (phpMyAdmin, MySQL…) — pas cadrage « construire une app ».
+ * @param {string} payload
+ */
+export function isNamedDbCreateProcedure(payload = "") {
+  const normalized = normalizeForParse(payload);
+  return (
+    NAMED_DB_TOOL_RE.test(normalized) &&
+    DB_CREATE_VERB_RE.test(normalized) &&
+    DB_OBJECT_RE.test(normalized)
+  );
 }
 
 export { isHowToRequestShell };
@@ -116,7 +140,11 @@ export function classifyHowToScopeAndRisk(payload = "") {
     return { qualification: HOW_TO_QUALIFICATIONS.SENSITIVE_OR_RESTRICTED, topic };
   }
 
-  if (COMPLEX_SIGNAL_RE.test(normalized)) {
+  if (isNamedDbCreateProcedure(normalized)) {
+    return { qualification: HOW_TO_QUALIFICATIONS.SIMPLE_BENIGN_LOCAL, topic };
+  }
+
+  if (COMPLEX_SIGNAL_RE.test(normalized) || COMPLEX_BUILD_APP_RE.test(normalized)) {
     return { qualification: HOW_TO_QUALIFICATIONS.COMPLEX_BUT_BENIGN, topic };
   }
 
@@ -181,6 +209,7 @@ export function hasRichHowToLocalTemplate(payload = "") {
   ) {
     return true;
   }
+  if (isNamedDbCreateProcedure(normalized)) return true;
   return false;
 }
 
@@ -428,6 +457,16 @@ export function buildHowToSimpleLocalContent(payload = "", tone = "natural") {
       "couches de biscuits et de crème dans un plat, termine par du cacao amer et laisse reposer au frais " +
       "au moins 4 h (idéal une nuit)."
     );
+  }
+
+  if (isNamedDbCreateProcedure(normalized)) {
+    return [
+      "Oui. Dans phpMyAdmin, ouvre l'onglet Bases de données.",
+      "Entre le nom de la nouvelle base.",
+      "Choisis si besoin une collation comme utf8mb4_unicode_ci.",
+      "Clique sur Créer.",
+      "La base apparaîtra ensuite dans la colonne de gauche, et tu pourras y ajouter des tables.",
+    ].join("\n");
   }
 
   if (tone === "labeled") {

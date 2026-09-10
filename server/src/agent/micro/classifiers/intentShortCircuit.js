@@ -15,7 +15,10 @@
  * Ownership (revue P5) : SC meta ≠ composeur ; expertWebSearch = search+rank ;
  * Sovereign = retries ; validator = titres/aveu ; pas de rebranche FACTUAL→runPipeline.
  */
-import { RESPONSE_MODES } from "../../config/modeResponseContracts.js";
+import {
+  RESPONSE_MODES,
+  isInsufficientSignalRefusal,
+} from "../../config/modeResponseContracts.js";
 import { resolveConversationContinuityShortCircuit } from "../continuity/conversationContinuityContext.js";
 import { resolveAnaphoraReferenceShortCircuit } from "../continuity/anaphoraReferenceResolver.js";
 import {
@@ -104,6 +107,7 @@ import {
   isAgentStateAnthropomorphicIntent,
   isMetaWhoDrivesIntent,
   applyLeadingGreetingMirrorToHit,
+  containsInternalPromptLeak,
 } from "../../policies/social/index.js";
 import {
   resolveCodeConceptExplainShortCircuit,
@@ -174,6 +178,7 @@ import {
 import {
   buildTranslationClarifyReply,
   isTranslationPipelineReady,
+  isTranslationRequestReady,
   requiresTranslationClarification,
 } from "../../utils/intent-guards/translationIntentGuards.js";
 import { buildTranslationRequestPlan } from "../../utils/parsing-normalization/translationRequestPlan.js";
@@ -764,6 +769,181 @@ export function shouldEvaluateConversationShortCircuit({
   return false;
 }
 
+export function isShortCircuitClarifyPath(path = "") {
+  return /_clarify(?:_|$)/.test(String(path || ""));
+}
+
+/**
+ * Job implicite d'un path SC typé. null = rail non typé C4, pas de gate.
+ * @param {string} path
+ * @returns {"scoping"|"clarify"|"overview"|null}
+ */
+export function inferShortCircuitPathResponseType(path = "") {
+  const p = String(path || "");
+  if (!p) return null;
+  if (/scoping/i.test(p)) return "scoping";
+  if (isShortCircuitClarifyPath(p)) return "clarify";
+  if (/overview/i.test(p)) return "overview";
+  return null;
+}
+
+/**
+ * Gate d'autorité cycle : un *_clarify SC n'est émis que si le cycle a engagé clarify.
+ * Sans renderMode (appels isolés), comportement inchangé.
+ * @param {string} path
+ * @param {{ renderMode?: string }|null} [response_commitment]
+ */
+export function shouldEmitShortCircuitClarify(path = "", response_commitment = null) {
+  if (!isShortCircuitClarifyPath(path)) return true;
+  const renderMode = response_commitment?.renderMode;
+  if (renderMode == null || renderMode === "") return true;
+  return renderMode === "clarify";
+}
+
+/**
+ * Gate C4 : un rail typé n'émet que si son job = responseType du cycle.
+ * Sans responseType (appels isolés), comportement inchangé.
+ * @param {string} path
+ * @param {{ responseType?: string }|null} [response_commitment]
+ */
+export function shouldEmitForResponseType(path = "", response_commitment = null) {
+  const responseType = response_commitment?.responseType;
+  if (responseType == null || responseType === "") return true;
+  const implied = inferShortCircuitPathResponseType(path);
+  if (implied == null) return true;
+  return implied === responseType;
+}
+
+const PRE_EMIT_LEAK_RE = [
+  /Analyze the Request/i,
+  /EXECUTION_BRIEF/i,
+  /System Instruction/i,
+  /NO English meta-commentary/i,
+  /redacted_thinking/i,
+];
+
+const PRINT_DELIVERABLE_TEMPLATE_RE =
+  /print,\s*HTML ou PDF|Pour la présenter : print/i;
+
+const AUTOMATION_OR_NAMED_TOOL_RE =
+  /\b(?:n8n|phpmyadmin|automatisation|workflow|destinataires?)\b/i;
+
+const CONCRETE_ASK_RE =
+  /\b(?:comment\s+(?:[cç]a\s+)?(?:fonctionne|marche)|c['']est\s+quoi|qu['']est[- ]ce\s+que|est[- ]ce\s+que\s+tu\s+sais\s+ce\s+que)\b/i;
+
+const CARRYOVER_STOPWORDS = new Set([
+  "est",
+  "que",
+  "quoi",
+  "sais",
+  "bien",
+  "avec",
+  "cette",
+  "pour",
+  "suis",
+  "dans",
+  "plus",
+  "une",
+  "les",
+  "des",
+  "tu",
+  "ce",
+  "de",
+  "la",
+  "le",
+  "et",
+  "ou",
+  "un",
+  "du",
+  "en",
+  "au",
+  "ne",
+  "pas",
+  "je",
+  "me",
+  "te",
+  "sur",
+  "comment",
+  "faire",
+  "veux",
+  "peux",
+  "aide",
+]);
+
+function queryHasConcreteSubject(query = "") {
+  const q = String(query || "");
+  if (AUTOMATION_OR_NAMED_TOOL_RE.test(q)) return true;
+  if (CONCRETE_ASK_RE.test(q) && q.trim().split(/\s+/).length >= 4) return true;
+  return false;
+}
+
+function isPrintDeliverableTemplate(text = "") {
+  return PRINT_DELIVERABLE_TEMPLATE_RE.test(String(text || ""));
+}
+
+function hasForbiddenInternalText(text = "") {
+  const raw = String(text || "");
+  if (!raw) return false;
+  if (containsInternalPromptLeak(raw)) return true;
+  return PRE_EMIT_LEAK_RE.some((re) => re.test(raw));
+}
+
+function isCarryoverQueryPoisoned(userQuery = "", rewrittenQuery = "") {
+  const rewritten = String(rewrittenQuery || "").trim();
+  if (!/^approfondis\s+/i.test(rewritten)) return false;
+  const tokens = String(userQuery || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .match(/[a-z0-9]{4,}/g);
+  if (!tokens?.length) return false;
+  const rw = rewritten.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return tokens.some(
+    (token) => !CARRYOVER_STOPWORDS.has(token) && !rw.includes(token),
+  );
+}
+
+/**
+ * Garde pré-émission : job↔rail, carryover↔question, sortie interdite, refus injustifié.
+ * Sans responseType, le contrôle job typé reste permissif (C4.2).
+ * @returns {{ ok: boolean, reason: string|null }}
+ */
+export function assertPreEmitCoherence({
+  path = "",
+  text = "",
+  query = "",
+  rewrittenQuery = null,
+  response_commitment = null,
+} = {}) {
+  if (!shouldEmitForResponseType(path, response_commitment)) {
+    return { ok: false, reason: "job_rail_mismatch" };
+  }
+  if (
+    path === "named_create_start" &&
+    isPrintDeliverableTemplate(text) &&
+    AUTOMATION_OR_NAMED_TOOL_RE.test(query)
+  ) {
+    return { ok: false, reason: "job_rail_mismatch" };
+  }
+
+  if (
+    /continuity_carryover/i.test(String(path || "")) &&
+    isCarryoverQueryPoisoned(query, rewrittenQuery)
+  ) {
+    return { ok: false, reason: "carryover_mismatch" };
+  }
+
+  if (hasForbiddenInternalText(text)) {
+    return { ok: false, reason: "forbidden_output" };
+  }
+
+  if (isInsufficientSignalRefusal(text) && queryHasConcreteSubject(query)) {
+    return { ok: false, reason: "unjustified_refusal" };
+  }
+
+  return { ok: true, reason: null };
+}
+
 /**
  * @param {string} query
  * @param {{
@@ -860,6 +1040,22 @@ export async function runConversationShortCircuit(query, options = {}) {
   });
 
   const emit = (hit) => {
+    if (!shouldEmitShortCircuitClarify(hit?.path, options.response_commitment)) {
+      return null;
+    }
+    const coherence = assertPreEmitCoherence({
+      path: hit?.path,
+      text: hit?.reply,
+      query,
+      rewrittenQuery: hit?.continuityEffectiveQuery || hit?.effectiveQuery || null,
+      response_commitment: options.response_commitment,
+    });
+    if (!coherence.ok) {
+      console.warn(
+        `[PRE_EMIT] blocked reason=${coherence.reason} path=${hit?.path || "none"}`,
+      );
+      return null;
+    }
     const mirrored = applyLeadingGreetingMirrorToHit(query, hit);
     const gated = applyShortCircuitSufficiencyGate(query, mirrored, parseState);
     return annotateShortCircuitCognitiveCycle(gated);
@@ -1605,7 +1801,9 @@ export async function runConversationShortCircuit(query, options = {}) {
     });
   }
 
-  const codeConceptHit = resolveCodeConceptExplainShortCircuit(effectiveQuery);
+  const codeConceptHit = isTranslationRequestReady(effectiveQuery)
+    ? null
+    : resolveCodeConceptExplainShortCircuit(effectiveQuery);
   if (codeConceptHit?.reply) {
     return emit({
       path: codeConceptHit.path,

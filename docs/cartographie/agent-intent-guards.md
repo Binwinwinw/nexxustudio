@@ -67,7 +67,7 @@ Dossier `utils/intent-guards/` : ~35 modules. Groupés pour le debug, pas pour l
 | Famille | Modules (ex.) | Rôle |
 |---------|---------------|------|
 | **Sentinelle / identité** | `intentGuards.js`, `identityIntentGuards.js`, `acknowledgmentIntentGuards.js` | Capacité, permission, « qui es-tu », ack |
-| **Info / familiarité** | `informationSeekingIntentGuards.js`, `familiarityIntentGuards.js`, `generalKnowledgeIntentGuards.js`, `learningRequestIntentGuards.js` | Infos sur X vs apprendre vs fiche |
+| **Info / familiarité** | `informationSeekingIntentGuards.js`, `familiarityIntentGuards.js`, `generalKnowledgeIntentGuards.js`, `learningRequestIntentGuards.js` | Infos sur X vs apprendre vs fiche. `isConceptLookupRequest` = famille définition (shells sanitisés, sans lexique sujet). Concepts publics → GK open-world ; concepts produit Citadelle → Vague 2. |
 | **Pédagogie** | `pedagogicalOverview*`, `beginnerTopicOverview*`, `technicalOverview*`, `technicalLearningPath*`, `careerLearningPath*`, `programmingPedagogyLight*` | Overview / parcours |
 | **Procédure / how-to** | `howToRequestIntentGuards.js`, `procedureIntentGuards.js`, `adminProcedureIntentGuards.js` | Marche à suivre |
 | **Décision / compare** | `compareChooseIntentGuards.js`, `selectiveDecisionIntentGuards.js` | Arbitrage |

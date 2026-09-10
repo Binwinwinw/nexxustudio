@@ -23,6 +23,7 @@ import {
   buildGeneralKnowledgeSystemAddon,
   buildCulturalContentSummarySystemAddon,
 } from "../micro/replies/generalKnowledgeComposerContract.js";
+import { isCitadelleProductConceptQuery } from "../utils/parsing-normalization/queryEntityUnderstanding.js";
 import {
   requiresKnowledgeFreshnessComposerContract,
   buildKnowledgeFreshnessSystemAddon,
@@ -1005,7 +1006,10 @@ export function evaluateEpistemicRefusal(options = {}) {
     };
   }
 
-  if (requiresGeneralKnowledgeComposerContract(query)) {
+  if (
+    requiresGeneralKnowledgeComposerContract(query) &&
+    !isCitadelleProductConceptQuery(query)
+  ) {
     return {
       shouldRefuse: false,
       reason: "general_knowledge_generous_response",

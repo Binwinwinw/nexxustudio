@@ -56,11 +56,56 @@ const HOW_TO_SCOPE_PENDING_PATTERNS = [
   },
 ];
 
+const HOW_TO_SCALE_PENDING_RE =
+  /pr[eé]cise l['']?[eé]chelle vis[eé]e|l['']?[eé]chelle vis[eé]e \(d[eé]butant/i;
+
+const WEB_PROJECT_SCOPING_PENDING_RE =
+  /site vitrine|espace collaboratif|type de site SharePoint|Pour ta page HTML/i;
+
+const HOW_TO_SCALE_REJECT_RE =
+  /\b(?:simple|demande\s+est\s+simple|pas\s+(?:besoin\s+d['']?)?(?:echelle|maquette)|tu\s+dois\s+m['']aider|aide[- ]moi\s+[aà]\s+le\s+faire)\b/i;
+
 const STILL_MISSING_RE =
   /\b(?:je\s+sais\s+pas|je\s+ne\s+sais\s+pas|aucune\s+idee|aucune\s+idée|pas\s+sur|pas\s+sûr)\b/i;
 
 const NEW_REQUEST_RE =
   /\b(?:traduis|corrige|calcule|donne\s+moi\s+la\s+date|quelle\s+heure|bonjour|salut)\b/i;
+
+/**
+ * @param {Array<{ role?: string, content?: string }>} history
+ */
+function findLastUserMessage(history = []) {
+  const list = Array.isArray(history) ? history : [];
+  for (let i = list.length - 1; i >= 0; i -= 1) {
+    if (list[i]?.role === "user" && String(list[i]?.content || "").trim()) {
+      return String(list[i].content).trim();
+    }
+  }
+  return "";
+}
+
+function isHowToScaleReject(normalized = "") {
+  if (HOW_TO_SCALE_REJECT_RE.test(normalized)) return true;
+  return (
+    /\b(?:creer|créer|cree)\b/.test(normalized) &&
+    /\b(?:base|database|bdd)\b/.test(normalized)
+  );
+}
+
+function buildScaleRejectResume(query = "", history = []) {
+  const prior = findLastUserMessage(history);
+  const payload = prior || query;
+  return {
+    reply: [
+      "Tu as raison. Ici je devais te donner la procédure, pas te demander une échelle.",
+      buildHowToSimpleLocalContent(payload, "natural"),
+    ].join("\n"),
+    resumePath: "how_to_simple_local",
+    enrichedQuery: payload,
+    howToQualification: HOW_TO_QUALIFICATIONS.SIMPLE_BENIGN_LOCAL,
+    slotFilled: "direct_procedure",
+  };
+}
 
 /**
  * @param {Array<{ role?: string, content?: string }>} history
@@ -85,6 +130,24 @@ export function extractPendingClarificationState(assistantContent = "") {
 
   const subjectTypePending = extractSubjectTypePendingState(content);
   if (subjectTypePending) return subjectTypePending;
+
+  if (HOW_TO_SCALE_PENDING_RE.test(content)) {
+    return {
+      clarificationActive: true,
+      clarificationType: "how_to_scale",
+      topic: "how_to_scale",
+      candidateSlots: ["direct_procedure"],
+    };
+  }
+
+  if (WEB_PROJECT_SCOPING_PENDING_RE.test(content)) {
+    return {
+      clarificationActive: true,
+      clarificationType: "web_project_scoping",
+      topic: "web_project_scoping",
+      candidateSlots: ["direct_procedure"],
+    };
+  }
 
   for (const pattern of HOW_TO_SCOPE_PENDING_PATTERNS) {
     if (pattern.test(content)) {
@@ -264,6 +327,22 @@ export function resumePendingClarification(query = "", history = []) {
     return {
       status: CLARIFICATION_RESUME_STATUS.RESOLVED,
       pending,
+      ...resolved,
+    };
+  }
+
+  if (
+    pending.clarificationType === "how_to_scale" ||
+    pending.clarificationType === "web_project_scoping"
+  ) {
+    if (!isHowToScaleReject(normalized)) {
+      return { status: CLARIFICATION_RESUME_STATUS.NOT_AN_ANSWER, pending };
+    }
+    const resolved = buildScaleRejectResume(query, history);
+    return {
+      status: CLARIFICATION_RESUME_STATUS.RESOLVED,
+      pending,
+      skipClarificationGate: true,
       ...resolved,
     };
   }

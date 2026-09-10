@@ -810,6 +810,44 @@ function resolveRetrievalDecision(
   };
 }
 
+const RESPONSE_TYPES = Object.freeze({
+  DIRECT: "direct",
+  CLARIFY: "clarify",
+  OVERVIEW: "overview",
+  SCOPING: "scoping",
+});
+
+function isScopingAssessment(intentAssessment) {
+  const familyId = String(intentAssessment?.familyId || "");
+  const path = String(intentAssessment?.path || "");
+  return (
+    intentAssessment?.primaryDomain === QUERY_DOMAINS.WEBAPP ||
+    familyId === "web_project_scoping" ||
+    familyId.includes("scoping") ||
+    path.includes("scoping")
+  );
+}
+
+function isOverviewAssessment(intentAssessment) {
+  const familyId = String(intentAssessment?.familyId || "");
+  return (
+    intentAssessment?.primaryDomain === QUERY_DOMAINS.PEDAGOGICAL ||
+    familyId === "pedagogical_overview" ||
+    familyId === "technical_overview" ||
+    familyId.includes("overview")
+  );
+}
+
+/** Job autorisé de la reply. Distinct de renderMode (canal). */
+function resolveResponseType(intentAssessment) {
+  if (isScopingAssessment(intentAssessment)) return RESPONSE_TYPES.SCOPING;
+  if (intentAssessment?.responseStrategy === RESPONSE_STRATEGIES.PARTIAL_CLARIFY) {
+    return RESPONSE_TYPES.CLARIFY;
+  }
+  if (isOverviewAssessment(intentAssessment)) return RESPONSE_TYPES.OVERVIEW;
+  return RESPONSE_TYPES.DIRECT;
+}
+
 /**
  * Bloc 4 — engagement de rendu contractuel (composer = renderer, pas décideur).
  * @param {ReturnType<typeof understandQuery>} understanding
@@ -823,11 +861,13 @@ function resolveResponseCommitment(
 ) {
   const { constraints, intentContractId, primaryDomain, responseStrategy } =
     intentAssessment;
+  const responseType = resolveResponseType(intentAssessment);
 
   if (responseStrategy === RESPONSE_STRATEGIES.PARTIAL_CLARIFY) {
     return {
       kind: "clarify_missing_slots",
       renderMode: "clarify",
+      responseType,
       minItems: null,
       sections: ["blocking_question"],
       forbidClarification: false,
@@ -845,6 +885,7 @@ function resolveResponseCommitment(
     return {
       kind: "deterministic",
       renderMode: "deterministic",
+      responseType,
       minItems: null,
       sections: ["direct_answer"],
       forbidClarification: true,
@@ -863,6 +904,7 @@ function resolveResponseCommitment(
     return {
       kind: "guided_product_comparison",
       renderMode: "contractual_llm",
+      responseType,
       minItems: constraints.minModels || 3,
       sections: [
         "context_one_liner",
@@ -886,6 +928,7 @@ function resolveResponseCommitment(
         ? "evidence_backed_comparison"
         : "evidence_backed_factual",
       renderMode: "contractual_llm",
+      responseType,
       minItems: evidenceRequirement.comparative ? 2 : null,
       sections: ["answer", "freshness_caveat"],
       forbidClarification: evidenceRequirement.explicitWebRequested,
@@ -898,6 +941,7 @@ function resolveResponseCommitment(
   return {
     kind: primaryDomain || "general_explain",
     renderMode: "llm_direct",
+    responseType,
     minItems: null,
     sections: ["direct_answer"],
     forbidClarification: false,

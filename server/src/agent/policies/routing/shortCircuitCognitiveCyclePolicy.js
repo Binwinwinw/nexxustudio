@@ -202,7 +202,7 @@ export function annotateShortCircuitCognitiveCycle(hit) {
 }
 
 /**
- * Fusionne le cycle amont (understandQuery) avec la contribution short-circuit terminale.
+ * Annote le cycle amont avec la contribution SC. N'écrase pas le "quoi".
  * @param {object|null} baseCycle
  * @param {object|null} shortCircuitCycle
  */
@@ -211,25 +211,24 @@ export function mergeAgentCycleWithShortCircuit(baseCycle, shortCircuitCycle) {
   if (!baseCycle) return shortCircuitCycle;
 
   return {
+    ...baseCycle,
     rule: baseCycle.rule || shortCircuitCycle.rule,
     understanding: baseCycle.understanding,
-    intent_assessment: {
-      ...baseCycle.intent_assessment,
-      ...shortCircuitCycle.intent_assessment,
+    intent_assessment: baseCycle.intent_assessment,
+    evidence_requirement: baseCycle.evidence_requirement,
+    retrieval_decision: baseCycle.retrieval_decision,
+    action_decision: baseCycle.action_decision,
+    response_commitment: baseCycle.response_commitment,
+    short_circuit: {
+      path: shortCircuitCycle.shortCircuitPath,
+      source: shortCircuitCycle.source,
+      migrationBatch: shortCircuitCycle.migrationBatch,
+      intent_assessment: shortCircuitCycle.intent_assessment,
+      evidence_requirement: shortCircuitCycle.evidence_requirement,
+      retrieval_decision: shortCircuitCycle.retrieval_decision,
+      response_commitment: shortCircuitCycle.response_commitment,
     },
-    evidence_requirement: {
-      ...baseCycle.evidence_requirement,
-      ...shortCircuitCycle.evidence_requirement,
-    },
-    retrieval_decision: {
-      ...baseCycle.retrieval_decision,
-      ...shortCircuitCycle.retrieval_decision,
-    },
-    response_commitment: {
-      ...baseCycle.response_commitment,
-      ...shortCircuitCycle.response_commitment,
-    },
-    short_circuit_authoritative: true,
+    short_circuit_authoritative: false,
     shortCircuitPath: shortCircuitCycle.shortCircuitPath,
     plan: baseCycle.plan,
   };

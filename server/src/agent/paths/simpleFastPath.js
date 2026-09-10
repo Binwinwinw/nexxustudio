@@ -336,6 +336,15 @@ export async function applySimpleFastDeliveryPipeline({
   }
 
   if (!String(fastOut || "").trim()) {
+    if (howToProcedural) {
+      const { buildHowToProceduralDirectFallback } = await import(
+        "../policies/qualification/howToQualificationPolicy.js"
+      );
+      fastOut = buildHowToProceduralDirectFallback(query) || "";
+    }
+  }
+
+  if (!String(fastOut || "").trim()) {
     if (debugDiagnostic) {
       const { buildDebugDiagnosticDirectFallback } = await import(
         "../micro/replies/debugDiagnosticComposer.js"

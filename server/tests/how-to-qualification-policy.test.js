@@ -161,6 +161,24 @@ describe("howToQualificationPolicy — batterie #25", () => {
     assert.equal(hit?.path, "how_to_procedural_llm");
     assert.notEqual(hit?.path, "general_knowledge_full_pipeline");
   });
+
+  it("phpMyAdmin l'application web + créer une base → simple, pas complex", () => {
+    const q =
+      "je suis sur phpmyadmin l'application web, je veux créer une nouvelle base de données pourrais tu me donner la marche à suivre ?";
+    const { qualification, topic } = classifyHowToScopeAndRisk(q);
+    assert.equal(qualification, HOW_TO_QUALIFICATIONS.SIMPLE_BENIGN_LOCAL);
+    assert.match(topic, /phpMyAdmin|base/i);
+    const reply = buildHowToSimpleLocalContent(q, "natural");
+    assert.match(reply, /Bases de donn/i);
+    assert.doesNotMatch(reply, /[eé]chelle vis[eé]e/i);
+  });
+
+  it("créer une application reste complex_but_benign", () => {
+    const { qualification } = classifyHowToScopeAndRisk(
+      "comment créer une application web ?",
+    );
+    assert.equal(qualification, HOW_TO_QUALIFICATIONS.COMPLEX_BUT_BENIGN);
+  });
 });
 
 describe("howToQualificationPolicy — verrou P3 procedural", () => {

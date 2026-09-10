@@ -3,6 +3,7 @@
  * G40.3 — glossaire local si SIMPLE_FAST échoue.
  */
 import { isCodeConceptExplainRequest } from "./codeConceptExplainPolicy.js";
+import { isTranslationRequestReady } from "../../utils/intent-guards/translationIntentGuards.js";
 import {
   buildSpecVsMiniSpecGlossaryReply,
   resolveCodeConceptGlossaryFallback,
@@ -277,6 +278,7 @@ export function extractCodeConceptExplainSubject(query = "") {
  * @returns {object|null}
  */
 export function resolveCodeConceptExplainShortCircuit(query = "") {
+  if (isTranslationRequestReady(query)) return null;
   if (!isCodeConceptExplainRequest(query)) return null;
 
   const dualSpec = buildSpecVsMiniSpecGlossaryReply(query);

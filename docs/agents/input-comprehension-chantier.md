@@ -6,7 +6,20 @@ Mémoire de chantier. Historique des lots. **Pas** la source de vérité du comp
 
 Les sections ci-dessous sont l’**historique** P0–P2. Elles ne gouvernent plus. Si conflit : le canon gagne.
 
-**État** : 2026-08-17 — chantier compréhension d’input **fermé** (P0–P2 faits, P3–P5 non ouverts). Lots conversation fermés : cadrage sujet / contexte (invariant 8) ; ancrage Vision (invariant 9) ; refus COMPOSER Vision (invariant 10) ; complétude d’input / clause d’existence (invariant 11).
+**État** : 2026-09-01 — lot **GENERAL_KNOWLEDGE_CONCEPT_SHELLS_V1** (ouvert puis prouvé ci-dessous). Chantier compréhension d’input **fermé** pour P0–P2 (P3–P5 non ouverts). Lots conversation fermés : cadrage sujet / contexte (invariant 8) ; ancrage Vision (invariant 9) ; refus COMPOSER Vision (invariant 10) ; complétude d’input / clause d’existence (invariant 11).
+
+### Lot GENERAL_KNOWLEDGE_CONCEPT_SHELLS_V1
+
+| Champ | Valeur |
+|-------|--------|
+| Objectif | Reconnaître la famille `concept_lookup` sur shells sanitisés, sans lexique de sujet. |
+| Périmètre | `queryEntityUnderstanding.js` (`isConceptLookupRequest`) ; `isGeneralKnowledgeRequest` consomme la famille ; Vague 2 conservée si `isCitadelleProductConceptQuery`. Pas de resolver X (lot suivant). Pas de fix social. |
+| Preuve | `server/tests/general-knowledge-routing.test.js` — suite `concept_lookup shells`. |
+| Invariants | 1 (pas de 2e NLU), 6 (JUST shadow), 7 (tests = preuve). Pas de champ `entities`. |
+| Risques | « c'est quoi X » trop large → slot déictique rejeté (`tu`/`on`/…). Produit Citadelle ne doit pas skip épistémique. |
+
+Hors lot (fermés, pas d’inertie) : `GENERAL_KNOWLEDGE_SUBJECT_RESOLUTION_V1`, `SOCIAL_CHECKIN_IDENTITY_FIX`.
+
 
 **Sources** : runtime `agentPipeline.run`, `nexxusAgentCycle`, policies conversation / intent. Canvas d’inventaire : hors dépôt (Cursor).
 

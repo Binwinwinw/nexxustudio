@@ -70,16 +70,19 @@ describe("shortCircuitCognitiveCycle — lot 1 social/datetime/math/meta", () =>
     assert.equal(hit.cognitiveCycleAuthoritative, true);
   });
 
-  it("mergeAgentCycleWithShortCircuit — short-circuit prime sur commitment", () => {
+  it("mergeAgentCycleWithShortCircuit — cycle conserve le commitment, SC annote", () => {
     const understanding = understandQuery("salut");
     const base = buildRequestWorkup("salut", understanding);
+    const cycleRenderMode = base.response_commitment.renderMode;
     const sc = buildShortCircuitCognitiveContribution({
       path: "social_deterministic",
       reply: "Salut !",
     });
     const merged = mergeAgentCycleWithShortCircuit(base, sc);
-    assert.equal(merged.short_circuit_authoritative, true);
-    assert.equal(merged.response_commitment.renderMode, "deterministic");
-    assert.equal(merged.response_commitment.terminalReply, "Salut !");
+    assert.equal(merged.short_circuit_authoritative, false);
+    assert.equal(merged.response_commitment.renderMode, cycleRenderMode);
+    assert.equal(merged.response_commitment.terminalReply, undefined);
+    assert.equal(merged.short_circuit.response_commitment.terminalReply, "Salut !");
+    assert.equal(merged.shortCircuitPath, "social_deterministic");
   });
 });

@@ -51,6 +51,7 @@ Cadre d’un chantier : problème observé ; cause probable ; correction limité
 | C1 | « j'aimerais savoir pour quelle raison la lune… » → hunt web « Terre » | Shell `j'aimerais` = `information_seeking` ; cible `de la terre` | Shell causal (`pourquoi` / `pour quelle raison` / `comment se fait`) **avant** `information_seeking` | `information-seeking-intent-guards` : `j'aimerais + pour quelle raison` → `simple_factual_lookup` | **Codé** — rejouer après reload |
 | C2 | Question cadrée → piste ou stub web | Refus générique / filet web trop tôt | Réponse courte (fiche / `simple_factual`) si déjà cadré | `voice-continuity-v1` + `simple-factual-composer` (Lune) | **Codé** — rejouer après reload |
 | C3 | `NORMAL_CONVERSATION` + `DIRECT_EXPLANATION` + COMPOSER trop lourd après un rail court | Orchestration qui n’arrête pas | Ajustement d’orchestration (latence / coût) — pas une refonte | À écrire **avant** d’ouvrir | **Vigilance** — pas ouvert |
+| C4 | Pattern détecté (`créer` + `application web` → projet site) appliqué **sans** vérifier qu’il correspond à la demande | Rail spécialisé = réponse ; pas d’étape « ce pattern est-il le bon type de réponse » | Cadrage : [`c4-response-type-decision.md`](./c4-response-type-decision.md). Lot 1 = champ `responseType` visible, **sans** gate `emit` | Lot 1 proposé dans le cadrage (pas codé) | **Cadrage ouvert — pas de runtime** |
 
 Décisions = après les cartes. Les corrections **finalisent l’existant**, elles n’inventent pas une cible.
 
@@ -67,6 +68,8 @@ Décisions = après les cartes. Les corrections **finalisent l’existant**, ell
 | [`agent-intent-guards.md`](./agent-intent-guards.md) | Guards |
 | [`agent-domain-policies.md`](./agent-domain-policies.md) | Policies domaine (vue séparée) |
 | [`citadelle-vs-deepseek-harness.md`](./citadelle-vs-deepseek-harness.md) | Photo comparative DSH — pas une cible |
+| [`c4-response-type-decision.md`](./c4-response-type-decision.md) | Cadrage C4 — type de réponse (C4.1–C4.2 runtime ; C4.3 pas ouvert) |
+| [`pre-emit-coherence.md`](./pre-emit-coherence.md) | Cadrage pré-émission — job ↔ rail + anti-leak (pas de runtime) |
 
 Registre packs : [`nexxus-routing-behavior-registry-v1.md`](../agents/nexxus-routing-behavior-registry-v1.md) — catalogue, pas fusionné ici.
 
@@ -90,3 +93,5 @@ Registre packs : [`nexxus-routing-behavior-registry-v1.md`](../agents/nexxus-rou
 | 2026-08-18 | Règle de travail : simplicité = contrôle du rail (simple / ambigu / complexe) |
 | 2026-08-18 | Chantiers C1–C2 documentés (codés) ; C3 vigilance COMPOSER, pas ouvert |
 | 2026-08-18 | Photo comparative DSH — [`citadelle-vs-deepseek-harness.md`](./citadelle-vs-deepseek-harness.md) |
+| 2026-09-06 | Trou C4 documenté, **pas ouvert** — pattern sans décision de correspondance. Détail : [`agent-upstream-decision.md`](./agent-upstream-decision.md) §6.5 |
+| 2026-09-06 | C4 cadrage ouvert, pas de runtime — [`c4-response-type-decision.md`](./c4-response-type-decision.md) |
