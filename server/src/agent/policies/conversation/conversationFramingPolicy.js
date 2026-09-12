@@ -50,6 +50,19 @@ function clauseSubject(clause = "") {
   return stripArticle(raw.replace(/\bpar exemple\b[\s\S]*$/i, "").trim());
 }
 
+const EMPTY_FAMILIARITY_PROBE_TAIL_RE =
+  /\s+(?:je ne sais pas si tu connais|si tu connais|(?:est[- ]ce que )?tu connais)\s*$/;
+
+/** NP déjà nommé (`sur le X` / `sur X`) avant une sonde « tu connais » sans complément. */
+function extractSubjectBeforeEmptyFamiliarityProbe(query = "") {
+  const q = norm(query);
+  if (!q) return "";
+  const stripped = q.replace(EMPTY_FAMILIARITY_PROBE_TAIL_RE, "");
+  if (!stripped || stripped === q) return "";
+  const hit = stripped.match(/\bsur\s+((?:le |la |les |l')?.+)$/);
+  return hit?.[1] ? stripArticle(hit[1]) : "";
+}
+
 /**
  * @param {string} query
  * @returns {{
@@ -71,6 +84,10 @@ export function resolveSubjectContextRoles(query = "") {
         context: null,
         example: stripArticle(loneExample[1]),
       };
+    }
+    const beforeProbe = extractSubjectBeforeEmptyFamiliarityProbe(query);
+    if (beforeProbe) {
+      return { subject: beforeProbe, context: null, example: null };
     }
     return { subject: null, context: null, example: null };
   }
@@ -167,7 +184,7 @@ function buildAngleRelaunch(subject, { context = null, example = null } = {}) {
   } else if (context) {
     loc = ` (${context})`;
   }
-  return `Oui, je peux t'aider sur le ${core}${loc}. Tu voulais développer quelle partie de ${core} ?`;
+  return `Je vois le ${core}${loc}. Je peux partir côté usage ; sinon tu me dis si tu visais plutôt l'architecture.`;
 }
 
 /**

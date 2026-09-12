@@ -19,7 +19,7 @@ import {
   RESPONSE_MODES,
   isInsufficientSignalRefusal,
 } from "../../config/modeResponseContracts.js";
-import { resolveConversationContinuityShortCircuit } from "../continuity/conversationContinuityContext.js";
+import { resolveConversationContinuityShortCircuit, resolveSubjectAngleFollowupShortCircuit } from "../continuity/conversationContinuityContext.js";
 import { resolveAnaphoraReferenceShortCircuit } from "../continuity/anaphoraReferenceResolver.js";
 import {
   resolveOpenPromptContinuityShortCircuit,
@@ -167,6 +167,7 @@ import {
   isNamedDefinitionRequest,
   isExplicitInformationOrDefinitionRequest,
 } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
+import { resolveInternalReferentAuthorityHit } from "../../policies/routing/internalReferentsAuthorityGate.js";
 import {
   resolveSubjectTypingFromQuery,
   buildSubjectTypeClarifyReply,
@@ -1143,6 +1144,41 @@ export async function runConversationShortCircuit(query, options = {}) {
     });
   }
 
+  const subjectAngleFollowHit =
+    resolveSubjectAngleFollowupShortCircuit(effectiveQuery, history) ||
+    resolveSubjectAngleFollowupShortCircuit(query, history);
+  if (subjectAngleFollowHit?.reply) {
+    return annotateShortCircuitCognitiveCycle({
+      path: subjectAngleFollowHit.path,
+      mode: RESPONSE_MODES.SIMPLE_FAST,
+      reply: subjectAngleFollowHit.reply,
+      step: subjectAngleFollowHit.step,
+      enforce: { allowRefusal: false },
+      framingCorrection: Boolean(subjectAngleFollowHit.framingCorrection),
+      blockWebUntilFramingStable: Boolean(
+        subjectAngleFollowHit.blockWebUntilFramingStable,
+      ),
+      preferWebResearch: false,
+    });
+  }
+  if (subjectAngleFollowHit?.deferToFullPipeline) {
+    return emit({
+      path: subjectAngleFollowHit.path,
+      mode: RESPONSE_MODES.DOCUMENT,
+      reply: null,
+      deferToLlm: true,
+      deferToFullPipeline: true,
+      preferWebResearch: Boolean(subjectAngleFollowHit.preferWebResearch),
+      blockWebUntilFramingStable: false,
+      step: subjectAngleFollowHit.step,
+      enforce: { allowRefusal: false },
+      generalKnowledge: !subjectAngleFollowHit.preferWebResearch,
+      informationSeeking: Boolean(subjectAngleFollowHit.preferWebResearch),
+      continuityEffectiveQuery: subjectAngleFollowHit.effectiveQuery,
+      continuitySubject: subjectAngleFollowHit.continuitySubject,
+    });
+  }
+
   const routingDecomp =
     options.requestDecomposition || decompositionForPreempt;
   const routingHasWork =
@@ -1564,6 +1600,7 @@ export async function runConversationShortCircuit(query, options = {}) {
       reply: subjectAngleHit.reply,
       step: subjectAngleHit.step,
       enforce: { allowRefusal: false },
+      deferToLlm: false,
       blockWebUntilFramingStable: true,
       preferWebResearch: false,
       framingRoles: subjectAngleHit.framingRoles,
@@ -3121,6 +3158,19 @@ export async function runConversationShortCircuit(query, options = {}) {
   }
 
   if (isInformationSeekingWithTarget(effectiveQuery) || isNamedDefinitionRequest(effectiveQuery)) {
+    const internalReferentHit = resolveInternalReferentAuthorityHit(effectiveQuery);
+    if (internalReferentHit) {
+      return emit({
+        path: "general_knowledge_deterministic",
+        mode: RESPONSE_MODES.INSTANT,
+        reply: internalReferentHit.reply,
+        preferWebResearch: false,
+        internalReferentAuthority: true,
+        internalReferent: internalReferentHit.referent,
+        step: "🏛️ Référent interne — autorité locale (sans web)...",
+        enforce: { allowRefusal: false },
+      });
+    }
     const subjectTyping = resolveSubjectTypingFromQuery(effectiveQuery);
     if (subjectTyping?.requires_subject_disambiguation) {
       const clarifyReply = buildSubjectTypeClarifyReply(subjectTyping);

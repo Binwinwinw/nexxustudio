@@ -16,6 +16,9 @@ import {
   buildLexiconScienceTakeawayReply,
 } from "../../policies/pedagogical/index.js";
 import { isConversationTakeawaySummaryRequest } from "../../policies/summary/index.js";
+import { resolveFramingCorrectionShortCircuit } from "../../policies/conversation/conversationFramingPolicy.js";
+import { isExplicitInformationOrDefinitionRequest } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
+import { classifyConversationTurn } from "../classifiers/conversationTurnType.js";
 
 export const CONTINUITY_DEFAULT_WINDOW = 6;
 
@@ -30,6 +33,7 @@ export const CONTINUITY_TURN_PHASES = {
   FAMILIARITY_APERCU_PENDING: "familiarity_apercu_pending",
   SUBJECT_CONFIRMATION_PENDING: "subject_confirmation_pending",
   ENGAGEMENT_ELABORATION_PENDING: "engagement_elaboration_pending",
+  ANGLE_CHOICE_PENDING: "angle_choice_pending",
 };
 
 export const CONTINUITY_ASSISTANT_OFFERS = {
@@ -37,6 +41,7 @@ export const CONTINUITY_ASSISTANT_OFFERS = {
   SUBJECT_CONFIRMATION: "subject_confirmation",
   ELABORATION_DEEPEN: "elaboration_deepen",
   ELABORATION_VARIANT: "elaboration_variant",
+  ANGLE_CHOICE: "angle_choice",
 };
 
 const FAMILIARITY_PROPOSAL_PATTERN =
@@ -73,6 +78,71 @@ const FULL_RESUME_PATTERN =
 
 const CONFIRM_SUBJECT_PATTERN =
   /^Tu parles de (.+?) \?(?:\s*Si oui,?\s*je vois\.?)?\s*$/i;
+
+/** Ouverture subject_angle_explore — sujet tenu, angle à choisir. */
+const SUBJECT_ANGLE_OPENING_RE =
+  /Je vois le ([^.\n]+)\.\s*Je peux partir côté usage\s*;\s*sinon tu me dis si tu visais plutôt l'architecture/i;
+
+const RESEARCH_FOLLOWUP_RE =
+  /\b(?:renseigne(?:r|[- ]?toi)?|te renseigner|recherch(?:e|er)|cherche(?:r)?(?:\s+(?:pour moi|des infos))?)\b/i;
+const BARE_GREETING_RE =
+  /^(?:salut|bonjour|coucou|hello|hey|bonsoir)(?:\s+[!?.…]*)?$/i;
+
+/** Relance ouverte : l'utilisateur bascule de fil, sans coller au sujet tenu. */
+const EXPLICIT_SUBJECT_SWITCH_RE =
+  /\b(?:autre sujet|nouveau sujet|change(?:ons|r) de sujet|on change de (?:sujet|th[eè]me)|laisse(?:r)? (?:tomber|de c[oô]t[eé])|on arr[eê]te (?:avec )?ça|parlons plut[oô]t de|passe(?:r|ons)? [aà] autre chose)\b/i;
+
+const PLUTOT_ANGLE_TAIL_RE =
+  /\bplutot\s+(.+?)(?=\s*,|\s+tu peux|\s+te renseigner|\s+renseigne|\s+recherch|\s+cherche|\s+stp|$)/i;
+
+function stripSubjectOverlap(angle = "", subject = "") {
+  let out = String(angle || "")
+    .replace(/^(?:la |le |les |l'|du |de la |des |de l'|de )\s*/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const sub = String(subject || "").trim();
+  if (!out || !sub) return out;
+  out = out
+    .replace(
+      new RegExp(
+        `\\s+(?:du |de la |des |de |d')${sub.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`,
+        "i",
+      ),
+      "",
+    )
+    .trim();
+  for (const tok of sub.split(/\s+/).filter((w) => w.length >= 4)) {
+    out = out
+      .replace(
+        new RegExp(`\\s+${tok.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`, "i"),
+        "",
+      )
+      .trim();
+  }
+  return out.replace(/\s+(?:du|de|des|d')\s*$/i, "").trim();
+}
+
+/** « oui plutôt la syntaxe » — angle libre, pas seulement usage/architecture. */
+function extractChosenAngle(normalizedQuery = "", subject = "") {
+  const hit = String(normalizedQuery || "").match(PLUTOT_ANGLE_TAIL_RE);
+  if (!hit?.[1]) return null;
+  const angle = stripSubjectOverlap(hit[1], subject);
+  if (!angle || angle.length < 3) return null;
+  if (/^(?:oui|ouais|ok|non|stp)$/i.test(angle)) return null;
+  return angle;
+}
+
+function isIndependentFamiliaritySubject(query = "", heldSubject = "") {
+  const parsed = parseFamiliarityQuery(query);
+  const incoming = normalizeFamiliarityQuery(parsed?.rawSubject || "");
+  const held = normalizeFamiliarityQuery(heldSubject);
+  if (!incoming || incoming.length < 2 || !held) return false;
+  if (incoming === held) return false;
+  if (held.includes(incoming) || incoming.includes(held)) return false;
+  const heldTokens = held.split(/\s+/).filter((w) => w.length >= 4);
+  if (heldTokens.some((tok) => incoming.includes(tok))) return false;
+  return true;
+}
 
 const SHORT_FOLLOWUP_PATTERNS = [
   /^oui$/,
@@ -167,6 +237,9 @@ export function parsePedagogicExplainSubjectFromTurn(content = "") {
 }
 
 function resolveSubjectLabelFromTurn(content = "") {
+  const angleOpen = String(content || "").match(SUBJECT_ANGLE_OPENING_RE);
+  if (angleOpen?.[1]) return angleOpen[1].trim();
+
   const resumeMatch = String(content || "").match(DOMAIN_RESUME_OFFER_PATTERN);
   if (resumeMatch?.[1]) return resumeMatch[1].trim();
 
@@ -279,6 +352,16 @@ export function extractConversationState(turns = []) {
     return state;
   }
 
+  const angleOpen = lastAssistant.match(SUBJECT_ANGLE_OPENING_RE);
+  if (angleOpen?.[1]) {
+    state.activeSubjectLabel = angleOpen[1].trim();
+    state.activeSubject = normalizeFamiliarityQuery(state.activeSubjectLabel);
+    state.assistantOffer = CONTINUITY_ASSISTANT_OFFERS.ANGLE_CHOICE;
+    state.awaitingUserConfirmation = true;
+    state.turnPhase = CONTINUITY_TURN_PHASES.ANGLE_CHOICE_PENDING;
+    return state;
+  }
+
   let rawSubjectLabel = resolveSubjectLabelFromTurn(lastAssistant);
   if (!rawSubjectLabel) {
     rawSubjectLabel = resolveSubjectLabelFromRecentUser(turns);
@@ -350,7 +433,8 @@ export function isSubstantiveContinuityAcceptance(query = "", state = {}) {
   if (
     state.turnPhase !== CONTINUITY_TURN_PHASES.FAMILIARITY_APERCU_PENDING &&
     state.turnPhase !== CONTINUITY_TURN_PHASES.SUBJECT_CONFIRMATION_PENDING &&
-    state.turnPhase !== CONTINUITY_TURN_PHASES.ENGAGEMENT_ELABORATION_PENDING
+    state.turnPhase !== CONTINUITY_TURN_PHASES.ENGAGEMENT_ELABORATION_PENDING &&
+    state.turnPhase !== CONTINUITY_TURN_PHASES.ANGLE_CHOICE_PENDING
   ) {
     return false;
   }
@@ -534,6 +618,90 @@ export function getConversationContinuityDeterministicReply(query = "", history 
   const { state } = buildConversationContinuityContext(history);
   const resolved = resolveShortFollowup(query, state);
   return resolved?.reply ?? null;
+}
+
+/**
+ * Tour suivant une ouverture subject_angle_explore.
+ * Continuité (angle / objectif / correction) ou bascule de fil (on ne colle pas).
+ * L'historique reste : le sujet précédent n'est pas effacé, il n'est plus le mandat.
+ * @param {string} query
+ * @param {Array<{ role?: string, content?: string }>} [history]
+ */
+export function resolveSubjectAngleFollowupShortCircuit(query = "", history = []) {
+  const { state } = buildConversationContinuityContext(history);
+  if (state.turnPhase !== CONTINUITY_TURN_PHASES.ANGLE_CHOICE_PENDING) return null;
+
+  const subject = state.activeSubjectLabel || state.activeSubject || "";
+  if (!subject) return null;
+
+  const raw = String(query || "").trim();
+  if (!raw) return null;
+  if (BARE_GREETING_RE.test(raw)) return null;
+  if (isExplicitInformationOrDefinitionRequest(query)) return null;
+  if (classifyConversationTurn(query).turnType === "meta_feedback") return null;
+
+  const framing = resolveFramingCorrectionShortCircuit(query);
+  if (framing?.reply) return framing;
+
+  const q = normalizeFamiliarityQuery(query);
+  if (EXPLICIT_SUBJECT_SWITCH_RE.test(q)) return null;
+  if (isIndependentFamiliaritySubject(query, subject)) return null;
+
+  const chosenAngle = extractChosenAngle(q, subject);
+  const wantsArchitecture = /\barchitecture\b/i.test(q);
+  const wantsUsage = /\busage\b/i.test(q) && !wantsArchitecture;
+  const wantsResearch = RESEARCH_FOLLOWUP_RE.test(q);
+  const shortYes = /^(?:oui|ouais|ok|okay)\b/.test(q);
+  const avisCue = /\b(?:ton avis|quel est ton avis|que penses tu|qu en penses)\b/.test(
+    q,
+  );
+  const subjectTokens = String(subject)
+    .split(/\s+/)
+    .filter((w) => w.length >= 4);
+  const holdsSubject = subjectTokens.some((token) => q.includes(token));
+  const continueCue =
+    Boolean(chosenAngle) ||
+    wantsArchitecture ||
+    wantsUsage ||
+    wantsResearch ||
+    (shortYes && q.length < 24) ||
+    avisCue ||
+    holdsSubject;
+
+  if (
+    !continueCue &&
+    assessConversationTopicShift(query, history).detected
+  ) {
+    return null;
+  }
+
+  let angle = chosenAngle;
+  if (!angle && wantsArchitecture) angle = "architecture";
+  else if (!angle && wantsUsage) angle = "usage";
+  else if (!angle && shortYes && q.length < 24) angle = "usage";
+
+  if (!angle && !wantsResearch && q.length < 12) return null;
+
+  const topic = angle ? `${angle} de ${subject}` : subject;
+  const effectiveQuery = wantsResearch
+    ? `Recherche des informations fiables sur ${topic}.`
+    : angle
+      ? `Explique ${topic} (sujet déjà ouvert dans le fil).`
+      : `Avis concret sur ${subject} : ${raw}`;
+
+  return {
+    kind: "subject_angle_followup",
+    path: wantsResearch
+      ? "information_seeking_full_pipeline"
+      : "general_knowledge_continuity_carryover",
+    deferToFullPipeline: true,
+    deferToLlm: true,
+    preferWebResearch: Boolean(wantsResearch),
+    blockWebUntilFramingStable: false,
+    continuitySubject: subject,
+    effectiveQuery,
+    step: "🔗 Continuité — suite du sujet ouvert...",
+  };
 }
 
 export function resolveConversationContinuityShortCircuit(query = "", history = []) {
