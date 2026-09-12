@@ -623,14 +623,49 @@ export function isMetaKnownPeerProductQuery(query = "") {
   if (CITADELLE_INTERNAL_AGENTS_RE.test(q)) return false;
   if (isMetaModelStackOpinionQuery(query)) return false;
 
+  if (PEER_AI_URL_RE.test(raw) || /\bchat\.deepseek\b/i.test(raw)) {
+    return (
+      PEER_RECOGNITION_SHELL_RE.test(q) ||
+      PEER_AI_URL_RE.test(raw) ||
+      /\bhttps?:\/\//i.test(raw)
+    );
+  }
+
   const product = extractKnownPeerProduct(query);
   if (!product) return false;
+  if (
+    !(
+      PEER_RECOGNITION_SHELL_RE.test(q) ||
+      /\bhttps?:\/\//i.test(raw)
+    )
+  ) {
+    return false;
+  }
 
-  return (
-    PEER_RECOGNITION_SHELL_RE.test(q) ||
-    PEER_AI_URL_RE.test(raw) ||
-    /\bhttps?:\/\//i.test(raw)
+  const after = q.match(
+    /\b(?:tu connais|connais tu|est ce que tu connais)\s+(.+)$/,
   );
+  let subject = after?.[1] ? after[1].replace(/^(le|la|les|l)\s+/, "").trim() : "";
+  if (!subject) {
+    const stripped = q.replace(
+      /\s+(?:je ne sais pas si tu connais|(?:est ce que )?tu connais)$/,
+      "",
+    );
+    if (stripped && stripped !== q) {
+      const words = stripped.split(/\s+/).filter(Boolean);
+      if (words.length >= 1 && words.length <= 6) {
+        subject = stripped.replace(/^(le|la|les|l)\s+/, "").trim();
+      }
+    }
+  }
+  if (subject) {
+    const s = normalizeFamiliarityQuery(subject).replace(/^(le|la|les|l)\s+/, "");
+    const p = normalizeFamiliarityQuery(product);
+    if (s !== p && s !== `chat ${p}` && s !== `${p} chat` && s !== `${p} ai`) {
+      return false;
+    }
+  }
+  return true;
 }
 
 /**

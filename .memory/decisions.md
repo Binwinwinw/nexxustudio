@@ -198,3 +198,8 @@
 
 - **Decision**: `META_FEEDBACK_MARKERS` n’inclut plus le token de rôle (`l'assistant` / `l agent`). Reprise « X c’est l’assistant » = alignement. Plainte = `ta réponse` / hors sujet / ne maîtrise / corriger.
 - **Impact**: `conversationTurnType.js`, tests `subject-meta-turn.test.js`. Gate référents inchangé.
+
+## [2026-09-12] Sonde sociale vs refus épistémique (Pack 3)
+
+- **Decision**: « X, tu connais » avec NP nommé ≠ peer-assistant (DeepSeek chat) et ≠ refus épistémique long. Réponse courte + option de recherche, web seulement si mandat explicite. « tu connais ? » sans NP = clarification courte. Pack 1 `sur le X` inchangé.
+- **Impact**: `familiarityIntentGuards.js` (`resolveSocialFamiliarityProbeShortCircuit`), `isMetaKnownPeerProductQuery`, hook SC avant épistémique.

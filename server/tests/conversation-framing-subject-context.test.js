@@ -18,6 +18,8 @@ import { runConversationShortCircuit } from "../src/agent/micro/classifiers/inte
 import { getIdentityDeterministicReply } from "../src/agent/utils/intent-guards/identityIntentGuards.js";
 import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { shouldDeferShortCircuitToFullPipeline } from "../src/agent/policies/routing/practicalAdviceRoutingGuard.js";
+import { isMetaKnownPeerProductQuery } from "../src/agent/policies/meta/metaCapabilitiesPolicy.js";
+import { resolveSocialFamiliarityProbeShortCircuit } from "../src/agent/utils/intent-guards/familiarityIntentGuards.js";
 
 const CREOLE_MQ =
   "Est-ce que tu connais le créole dans les Antilles Françaises par exemple en Martinique ??";
@@ -370,6 +372,72 @@ describe("continuité après ouverture subject_angle_explore", () => {
     assert.match(hit?.reply || "", /excel/i);
     assert.doesNotMatch(hit?.reply || "", /langage python/i);
     assert.doesNotMatch(hit?.continuityEffectiveQuery || "", /Avis concret sur/i);
+  });
+});
+
+describe("Pack 3 — sonde sociale vs refus épistémique", () => {
+  const EPISTEMIC_LONG =
+    /n'ai pas assez d'éléments|piste.*destination|Je n'ai pas assez d'éléments fiables/i;
+
+  it("deepseek harness, tu connais → honnête + option recherche, pas peer, pas refus long", async () => {
+    const q = "deepseek harness, tu connais";
+    assert.equal(isMetaKnownPeerProductQuery(q), false);
+    assert.equal(resolveExploratorySubjectAngleShortCircuit(q), null);
+
+    const probe = resolveSocialFamiliarityProbeShortCircuit(q);
+    assert.ok(probe?.reply);
+    assert.equal(probe.preferWebResearch, false);
+    assert.match(probe.reply, /deepseek harness/i);
+    assert.match(probe.reply, /renseigner/i);
+    assert.doesNotMatch(probe.reply, EPISTEMIC_LONG);
+
+    const hit = await runConversationShortCircuit(q, { history: [] });
+    assert.notEqual(hit?.path, "meta_capabilities_peer_assistants_deterministic");
+    assert.notEqual(hit?.path, "epistemic_honesty_deterministic");
+    assert.notEqual(hit?.path, "subject_angle_explore");
+    assert.equal(hit?.preferWebResearch, false);
+    assert.match(hit?.reply || "", /deepseek harness/i);
+    assert.match(hit?.reply || "", /renseigner/i);
+    assert.doesNotMatch(hit?.reply || "", EPISTEMIC_LONG);
+    assert.doesNotMatch(hit?.reply || "", /chat\.deepseek/i);
+  });
+
+  it("tu connais ? sans NP → pas d'ouverture, clarification courte, pas refus long", async () => {
+    const q = "tu connais ?";
+    assert.equal(resolveExploratorySubjectAngleShortCircuit(q), null);
+    const hit = await runConversationShortCircuit(q, {
+      history: [],
+      getDeterministicSocialResponse: (x) => getIdentityDeterministicReply(x),
+    });
+    assert.notEqual(hit?.path, "subject_angle_explore");
+    assert.notEqual(hit?.path, "epistemic_honesty_deterministic");
+    assert.ok(hit?.reply);
+    assert.doesNotMatch(hit.reply, EPISTEMIC_LONG);
+    assert.match(hit.reply, /sujet/i);
+  });
+
+  it("explique le fonctionnement du harness → pas de sonde, pas de refus long", async () => {
+    const q = "explique le fonctionnement du harness";
+    assert.equal(resolveSocialFamiliarityProbeShortCircuit(q), null);
+    assert.equal(resolveExploratorySubjectAngleShortCircuit(q), null);
+    const hit = await runConversationShortCircuit(q, { history: [] });
+    assert.notEqual(hit?.path, "epistemic_honesty_deterministic");
+    assert.notEqual(hit?.path, "familiarity_deterministic");
+    assert.doesNotMatch(hit?.reply || "", EPISTEMIC_LONG);
+  });
+
+  it("ta réponse était hors sujet → méta inchangé", async () => {
+    const hit = await runConversationShortCircuit("ta réponse était hors sujet", {
+      history: [],
+    });
+    assert.equal(hit?.path, "meta_feedback_deterministic");
+  });
+
+  it("tu connais DeepSeek → peer inchangé", async () => {
+    const q = "est ce que tu connais DeepSeek ?";
+    assert.equal(isMetaKnownPeerProductQuery(q), true);
+    const hit = await runConversationShortCircuit(q, { history: [] });
+    assert.equal(hit?.path, "meta_capabilities_peer_assistants_deterministic");
   });
 });
 

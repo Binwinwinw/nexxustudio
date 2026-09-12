@@ -892,6 +892,116 @@ export function parseFamiliarityQuery(query = "") {
   return null;
 }
 
+const EMPTY_FAMILIARITY_PROBE_TAIL_RE =
+  /\s+(?:je ne sais pas si tu connais|(?:est[- ]ce que )?tu connais|connais tu)\s*$/;
+
+const PROBE_SEARCH_MANDATE_RE =
+  /\b(?:renseigne[- ]toi|te renseigner|cherche(?:r)?(?:\s+pour moi)?|recherche(?:\s+web)?|sur (?:le |la )?(?:toile|web|internet))\b/i;
+
+/**
+ * Sujet d'une sonde « tu connais » : complément après le verbe, ou NP avant
+ * une sonde vide (« X, tu connais »). `""` = sonde sans NP. `null` = pas une sonde.
+ * @param {string} query
+ * @returns {string|null}
+ */
+export function extractFamiliarityProbeSubject(query = "") {
+  const parsed = parseFamiliarityQuery(query);
+  if (parsed?.rawSubject) return cleanSubjectTail(parsed.rawSubject);
+
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || !/\b(?:tu connais|connais tu)\b/.test(q)) return null;
+  if (/^(?:est ce que )?tu connais$/.test(q) || /^connais tu$/.test(q)) {
+    return "";
+  }
+
+  const stripped = q.replace(EMPTY_FAMILIARITY_PROBE_TAIL_RE, "");
+  if (!stripped || stripped === q) return null;
+
+  const sur = stripped.match(/\bsur\s+((?:le |la |les |l )?.+)$/);
+  if (sur?.[1]) return stripLeadingArticle(cleanSubjectTail(sur[1]));
+
+  const words = stripped.split(/\s+/).filter(Boolean);
+  if (words.length >= 1 && words.length <= 6) {
+    return stripLeadingArticle(cleanSubjectTail(stripped));
+  }
+  return null;
+}
+
+function displayProbeSubject(raw = "") {
+  const cleaned = stripLeadingArticle(cleanSubjectTail(raw));
+  return formatSubjectSurfaceForm(cleaned) || cleaned;
+}
+
+/**
+ * Sonde sociale inversée / vide — pas Pack 1 (`sur le X`), pas `tu connais X` déjà parsé.
+ * @param {string} query
+ * @returns {{
+ *   path: string,
+ *   reply: string|null,
+ *   preferWebResearch: boolean,
+ *   deferToLlm?: boolean,
+ *   deferToFullPipeline?: boolean,
+ *   step: string,
+ * }|null}
+ */
+export function resolveSocialFamiliarityProbeShortCircuit(query = "") {
+  const parsed = parseFamiliarityQuery(query);
+  if (parsed?.rawSubject) return null;
+  if (isIdentityIntent(query) || isIdeationIntent(query)) return null;
+
+  const q = normalizeFamiliarityQuery(query);
+  if (!q || !/\b(?:tu connais|connais tu)\b/.test(q)) return null;
+
+  const stripped = q.replace(EMPTY_FAMILIARITY_PROBE_TAIL_RE, "");
+  if (stripped !== q && /\bsur\s+(?:le |la |les |l )?.+/.test(stripped)) {
+    return null;
+  }
+
+  const subject = extractFamiliarityProbeSubject(query);
+  if (subject === null) return null;
+
+  const wantsSearch = PROBE_SEARCH_MANDATE_RE.test(q);
+  if (wantsSearch && subject) {
+    return {
+      path: "familiarity_deterministic",
+      reply: null,
+      preferWebResearch: true,
+      deferToLlm: true,
+      deferToFullPipeline: true,
+      step: "🔍 Sonde sociale — recherche demandée sur le sujet...",
+    };
+  }
+
+  if (!subject) {
+    return {
+      path: "social_deterministic",
+      reply: "Tu vises quel sujet ? Donne-moi le nom, je te dis ce que j'en vois.",
+      preferWebResearch: false,
+      step: "🤝 Sonde sociale — sujet manquant, clarification courte...",
+    };
+  }
+
+  const resolved = resolveKnownOrUnknownSubject(subject);
+  const label = displayProbeSubject(subject);
+  const labelNorm = normalizeFamiliarityQuery(resolved.label || "");
+  const subjectNorm = normalizeFamiliarityQuery(subject);
+  const known =
+    resolved.known === true &&
+    Boolean(labelNorm) &&
+    (labelNorm === subjectNorm || subjectNorm === labelNorm);
+
+  const reply = known
+    ? `Oui, je vois globalement ${label}. Si tu veux, je peux me renseigner plus précisément.`
+    : `Pas assez pour en parler proprement sur ${label}. Si tu veux, je peux me renseigner plus précisément.`;
+
+  return {
+    path: "familiarity_deterministic",
+    reply,
+    preferWebResearch: false,
+    step: "🤝 Sonde sociale — reconnaissance minimale + option de recherche...",
+  };
+}
+
 /** @param {string} normalized @returns {SubjectCategory} */
 export function inferSubjectCategory(normalized = "", label = "") {
   const probe = `${normalized} ${normalizeFamiliarityQuery(label)}`.trim();

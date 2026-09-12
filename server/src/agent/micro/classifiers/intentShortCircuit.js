@@ -210,6 +210,7 @@ import { resolveDocumentSynthesisShortCircuit } from "../../policies/document/in
 import {
   resolveFamiliarityDomainOverviewShortCircuit,
   resolveSubjectReferenceResumeShortCircuit,
+  resolveSocialFamiliarityProbeShortCircuit,
 } from "../../policies/familiarity/index.js";
 import {
   resolvePedagogySoftOverviewShortCircuit,
@@ -1604,6 +1605,32 @@ export async function runConversationShortCircuit(query, options = {}) {
       blockWebUntilFramingStable: true,
       preferWebResearch: false,
       framingRoles: subjectAngleHit.framingRoles,
+    });
+  }
+
+  const socialProbeHit =
+    resolveSocialFamiliarityProbeShortCircuit(effectiveQuery) ||
+    resolveSocialFamiliarityProbeShortCircuit(query);
+  if (socialProbeHit?.reply) {
+    return emit({
+      path: socialProbeHit.path,
+      mode: RESPONSE_MODES.INSTANT,
+      reply: socialProbeHit.reply,
+      step: socialProbeHit.step,
+      enforce: { allowRefusal: false },
+      preferWebResearch: false,
+    });
+  }
+  if (socialProbeHit?.deferToFullPipeline) {
+    return emit({
+      path: socialProbeHit.path,
+      mode: RESPONSE_MODES.DOCUMENT,
+      reply: null,
+      deferToLlm: true,
+      deferToFullPipeline: true,
+      preferWebResearch: true,
+      step: socialProbeHit.step,
+      enforce: { allowRefusal: false },
     });
   }
 
