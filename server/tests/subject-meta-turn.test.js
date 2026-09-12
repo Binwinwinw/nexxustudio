@@ -14,6 +14,8 @@ import {
 } from "../src/agent/micro/subject/subjectSessionMemory.js";
 import { ENTITY_IDS } from "../src/agent/micro/subject/subjectEntityIds.js";
 import { SUBJECT_NATURES } from "../src/agent/micro/subject/subjectIntelligenceLayer.js";
+import { getIdentityDeterministicReply } from "../src/agent/utils/intent-guards/identityIntentGuards.js";
+import { lookupRoutingCase } from "../src/agent/policies/routing/routingCaseDictionary.js";
 
 const SESSION = "test-meta-turn";
 
@@ -49,6 +51,83 @@ describe("conversationTurnType", () => {
     const turn = classifyConversationTurn("comment faire pour lancer Need for Speed");
     assert.equal(turn.turnType, "task_request");
     assert.equal(turn.disableLauncherHints, false);
+  });
+
+  it("d'accord → pas méta", () => {
+    const turn = classifyConversationTurn("d'accord");
+    assert.notEqual(turn.turnType, "meta_feedback");
+    assert.equal(turn.shortCircuit, false);
+  });
+
+  it("reprise « c'est l'assistant » → pas méta", () => {
+    const full =
+      "donc nexxus c'est l'assistant et la citadelle c'est la plateforme";
+    const short = "donc nexxus c'est l'assistant";
+    assert.notEqual(classifyConversationTurn(full).turnType, "meta_feedback");
+    assert.notEqual(classifyConversationTurn(short).turnType, "meta_feedback");
+    assert.equal(resolveMetaFeedbackShortCircuit(full), null);
+    assert.equal(resolveMetaFeedbackShortCircuit(short), null);
+  });
+
+  it("token de rôle seul → pas méta", () => {
+    assert.notEqual(classifyConversationTurn("l'assistant").turnType, "meta_feedback");
+    assert.notEqual(classifyConversationTurn("l agent").turnType, "meta_feedback");
+    assert.equal(resolveMetaFeedbackShortCircuit("l'assistant"), null);
+  });
+
+  it("plainte explicite → méta inchangé", () => {
+    assert.equal(
+      classifyConversationTurn("ta réponse était hors sujet").turnType,
+      "meta_feedback",
+    );
+    assert.equal(
+      classifyConversationTurn("l'assistant ne maîtrise pas").turnType,
+      "meta_feedback",
+    );
+  });
+
+  it("batterie live : social / reprise / plainte / Citadelle", async () => {
+    const scOpts = {
+      getDeterministicSocialResponse: (q) => getIdentityDeterministicReply(q),
+    };
+    const ack = await runConversationShortCircuit("d'accord", scOpts);
+    assert.notEqual(ack?.path, "meta_feedback_deterministic");
+    assert.notEqual(classifyConversationTurn("d'accord").turnType, "meta_feedback");
+
+    const reprise =
+      "donc nexxus c'est l'assistant et la citadelle c'est la plateforme";
+    assert.notEqual(lookupRoutingCase(reprise).winning_rule, "meta_feedback");
+    assert.notEqual(
+      (await runConversationShortCircuit(reprise, scOpts))?.path,
+      "meta_feedback_deterministic",
+    );
+
+    const short = "donc nexxus c'est l'assistant";
+    assert.notEqual(lookupRoutingCase(short).winning_rule, "meta_feedback");
+    assert.notEqual(
+      (await runConversationShortCircuit(short, scOpts))?.path,
+      "meta_feedback_deterministic",
+    );
+
+    const horsSujet = await runConversationShortCircuit(
+      "ta réponse était hors sujet",
+      scOpts,
+    );
+    assert.equal(horsSujet?.path, "meta_feedback_deterministic");
+
+    const maitrise = await runConversationShortCircuit(
+      "l'assistant ne maîtrise pas",
+      scOpts,
+    );
+    assert.equal(maitrise?.path, "meta_feedback_deterministic");
+
+    const citadelle = await runConversationShortCircuit(
+      "C'est quoi la citadelle ??",
+      scOpts,
+    );
+    assert.notEqual(citadelle?.path, "meta_feedback_deterministic");
+    assert.equal(citadelle?.preferWebResearch, false);
+    assert.match(citadelle?.reply || "", /plateforme/i);
   });
 });
 

@@ -193,3 +193,8 @@
 - **Capability packs P2 Caveman lite** (2026-07-27) : instruction formulation serrée si `cavemanLevel !== NORMAL` + tour technique compatible ; `detectCavemanLevel` dans pipeline ; exclusions pédagogie/code_explain/spec. Tests `capability-packs-p2.test.js`.
 
 - **Tier 2 R1 retiré** (2026-07-26) : `deepseek-r1:8b` hors matrice warm-up, placement (`never`) et rôles agents. Reasoner runtime = **ornith:9b** (Tier 1). R1 reste installable Ollama en manuel, sans warm-up Citadelle.
+
+## [2026-09-12] Meta-feedback ≠ reprise copulative (Pack 2)
+
+- **Decision**: `META_FEEDBACK_MARKERS` n’inclut plus le token de rôle (`l'assistant` / `l agent`). Reprise « X c’est l’assistant » = alignement. Plainte = `ta réponse` / hors sujet / ne maîtrise / corriger.
+- **Impact**: `conversationTurnType.js`, tests `subject-meta-turn.test.js`. Gate référents inchangé.
