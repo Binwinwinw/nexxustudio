@@ -135,3 +135,5 @@
 - [code-review-html-order-demon] Audit sécu index.html : findings sans label Python → logic-error puis kind:runtime-critical → ordre invalide → message CODE_REVIEW_V1_1. Fix classify + scope blockers.
 
 - [identity-tc-blocks-social] « comment t'appelles-tu » / « qui es-tu » : `turnComprehension.workPresent` (intent `general`) bloque `social_deterministic` → `simple_factual_lookup` / piste. Filet : `resolveUnnamedInternalIdentityHit` avant G46. « comment s'appelle la plateforme sur laquelle tu opères » (pas de nom propre) → La Citadelle. Noms propres restent sur le branchement information_seeking.
+
+- [conversational-regressions-no-agent] La batterie `conversational-regressions.test.js` ne doit pas importer `agent.js` (hang Ollama). SC déterministe seulement. Gate : `cd server && npm run premerge`.

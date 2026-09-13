@@ -1,0 +1,263 @@
+/**
+ * Batterie permanente — Packs 1/2/3 + identité interne.
+ * Preuve : cd server && npm run premerge
+ * Fiche : docs/CONVERSATIONAL_REGRESSIONS.md
+ *
+ * Ne pas importer agent.js (Ollama). SC déterministe seulement.
+ */
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
+import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
+import { getIdentityDeterministicReply } from "../src/agent/utils/intent-guards/identityIntentGuards.js";
+import { buildTurnComprehension } from "../src/agent/policies/conversation/turnComprehension.js";
+import {
+  extractConversationState,
+  CONTINUITY_TURN_PHASES,
+  resolveSubjectAngleFollowupShortCircuit,
+} from "../src/agent/micro/continuity/conversationContinuityContext.js";
+import { resolveExploratorySubjectAngleShortCircuit } from "../src/agent/policies/conversation/conversationFramingPolicy.js";
+import { classifyConversationTurn } from "../src/agent/micro/classifiers/conversationTurnType.js";
+import { resolveMetaFeedbackShortCircuit } from "../src/agent/micro/replies/metaFeedbackReplyBuilder.js";
+import { lookupRoutingCase } from "../src/agent/policies/routing/routingCaseDictionary.js";
+import { isMetaKnownPeerProductQuery } from "../src/agent/policies/meta/metaCapabilitiesPolicy.js";
+import { resolveSocialFamiliarityProbeShortCircuit } from "../src/agent/utils/intent-guards/familiarityIntentGuards.js";
+
+const scOpts = {
+  getDeterministicSocialResponse: (q) => getIdentityDeterministicReply(q),
+};
+
+const LIVE_HARNESS =
+  "rien de spécial j'essaie de travailler sur le deepseek harness, je ne sais pas si tu connais?";
+const LIVE_PYTHON =
+  "rien de spécial j'essaie de travailler sur le langage python, je ne sais pas si tu connais ?";
+const LIVE_PYTHON_T4 =
+  "oui plutôt la syntaxe du python, tu peux te renseigner pour moi stp ??";
+const LIVE_SALUT = "salut qu'est ce que tu fais de beau ?";
+const LIVE_SALUT_REPLY =
+  "Salut ! Rien de fou de mon côté — prêt à t'aider sur ton chantier. On attaque quoi ?";
+
+const CITADELLE_REPLY =
+  "La Citadelle, c'est la plateforme, NEXXUS est l'assistant IA qui y vit, exécute les tâches et prend les décisions.";
+const NEXXUS_REPLY =
+  "NEXXUS, c'est l'assistant IA de La Citadelle. La Citadelle, c'est la plateforme.";
+
+const EPISTEMIC_LONG =
+  /n'ai pas assez d'éléments|piste.*destination|Je n'ai pas assez d'éléments fiables/i;
+const PISTE = /piste|destination/i;
+
+function liveTcOpts(query) {
+  return {
+    ...scOpts,
+    turnComprehension: buildTurnComprehension(query, []),
+    turnLoop: {},
+  };
+}
+
+function openingHistory(subjectQuery) {
+  const open = resolveExploratorySubjectAngleShortCircuit(subjectQuery);
+  return [
+    { role: "user", content: LIVE_SALUT },
+    { role: "assistant", content: LIVE_SALUT_REPLY },
+    { role: "user", content: subjectQuery },
+    { role: "assistant", content: open.reply },
+  ];
+}
+
+describe("Pack 1 — continuité après ouverture", () => {
+  it("python + syntaxe → même sujet, web OK, pas piste", async () => {
+    const open = resolveExploratorySubjectAngleShortCircuit(LIVE_PYTHON);
+    assert.equal(open?.path, "subject_angle_explore");
+    const history = [
+      { role: "user", content: "salut salut" },
+      { role: "assistant", content: "Salut !" },
+      { role: "user", content: LIVE_PYTHON },
+      { role: "assistant", content: open.reply },
+    ];
+    assert.equal(
+      extractConversationState(history).turnPhase,
+      CONTINUITY_TURN_PHASES.ANGLE_CHOICE_PENDING,
+    );
+    const hit = await runConversationShortCircuit(LIVE_PYTHON_T4, { history });
+    assert.notEqual(hit?.path, "subject_angle_explore");
+    assert.match(hit?.continuityEffectiveQuery || "", /syntaxe/i);
+    assert.match(hit?.continuityEffectiveQuery || "", /python/i);
+    assert.equal(hit?.preferWebResearch, true);
+    assert.doesNotMatch(hit?.reply || "", /piste, mais pas encore la destination/i);
+  });
+
+  it("harness + architecture → même sujet, web OK, pas piste", async () => {
+    const history = openingHistory(LIVE_HARNESS);
+    const q = "oui plutôt l'architecture, tu peux te renseigner pour moi stp ??";
+    const follow = resolveSubjectAngleFollowupShortCircuit(q, history);
+    assert.ok(follow);
+    assert.match(follow.effectiveQuery || "", /architecture/i);
+    assert.match(follow.effectiveQuery || "", /deepseek harness/i);
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.notEqual(hit?.path, "subject_angle_explore");
+    assert.equal(hit?.preferWebResearch, true);
+    assert.doesNotMatch(hit?.reply || "", PISTE);
+  });
+
+  it("après python, excel → nouveau cadre, pas avis-sur-python", async () => {
+    const open = resolveExploratorySubjectAngleShortCircuit(LIVE_PYTHON);
+    const history = [
+      { role: "user", content: LIVE_PYTHON },
+      { role: "assistant", content: open.reply },
+    ];
+    const q = "est ce que tu connais excel ??";
+    assert.equal(resolveSubjectAngleFollowupShortCircuit(q, history), null);
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.equal(hit?.path, "subject_angle_explore");
+    assert.match(hit?.reply || "", /excel/i);
+    assert.doesNotMatch(hit?.reply || "", /langage python/i);
+  });
+
+  it("hors sujet après ouverture → méta, pas 2e ouverture", async () => {
+    const history = openingHistory(LIVE_HARNESS);
+    const q = "ta réponse était hors sujet";
+    assert.equal(resolveSubjectAngleFollowupShortCircuit(q, history), null);
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.notEqual(hit?.path, "subject_angle_explore");
+    assert.notEqual(hit?.path, "general_knowledge_continuity_carryover");
+  });
+
+  it("C'est quoi la Citadelle ? → pas avalé par la continuité d'angle", async () => {
+    const history = openingHistory(LIVE_HARNESS);
+    const q = "C'est quoi la Citadelle ?";
+    assert.equal(resolveSubjectAngleFollowupShortCircuit(q, history), null);
+    const hit = await runConversationShortCircuit(q, { history, ...scOpts });
+    assert.notEqual(hit?.path, "subject_angle_explore");
+    assert.equal(hit?.preferWebResearch, false);
+    assert.match(hit?.reply || "", /plateforme/i);
+  });
+});
+
+describe("Pack 2 — meta-feedback vs reprise", () => {
+  it("d'accord → pas méta", async () => {
+    assert.notEqual(classifyConversationTurn("d'accord").turnType, "meta_feedback");
+    const hit = await runConversationShortCircuit("d'accord", scOpts);
+    assert.notEqual(hit?.path, "meta_feedback_deterministic");
+  });
+
+  it("donc Nexxus c'est l'assistant → reprise, pas méta", async () => {
+    const full =
+      "donc nexxus c'est l'assistant et la citadelle c'est la plateforme";
+    const short = "donc nexxus c'est l'assistant";
+    for (const q of [full, short]) {
+      assert.notEqual(classifyConversationTurn(q).turnType, "meta_feedback");
+      assert.equal(resolveMetaFeedbackShortCircuit(q), null);
+      assert.notEqual(lookupRoutingCase(q).winning_rule, "meta_feedback");
+      const hit = await runConversationShortCircuit(q, scOpts);
+      assert.notEqual(hit?.path, "meta_feedback_deterministic");
+    }
+  });
+
+  it("ta réponse était hors sujet → méta inchangé", async () => {
+    const q = "ta réponse était hors sujet";
+    assert.equal(classifyConversationTurn(q).turnType, "meta_feedback");
+    const hit = await runConversationShortCircuit(q, scOpts);
+    assert.equal(hit?.path, "meta_feedback_deterministic");
+  });
+
+  it("C'est quoi la Citadelle ? → pas méta, pas web", async () => {
+    const q = "C'est quoi la citadelle ??";
+    const hit = await runConversationShortCircuit(q, scOpts);
+    assert.notEqual(hit?.path, "meta_feedback_deterministic");
+    assert.equal(hit?.preferWebResearch, false);
+    assert.match(hit?.reply || "", /plateforme/i);
+  });
+});
+
+describe("Pack 3 — sonde sociale vs refus épistémique", () => {
+  it("deepseek harness, tu connais → honnête + option recherche", async () => {
+    const q = "deepseek harness, tu connais";
+    assert.equal(isMetaKnownPeerProductQuery(q), false);
+    assert.equal(resolveExploratorySubjectAngleShortCircuit(q), null);
+    const probe = resolveSocialFamiliarityProbeShortCircuit(q);
+    assert.match(probe?.reply || "", /deepseek harness/i);
+    assert.match(probe.reply, /renseigner/i);
+    const hit = await runConversationShortCircuit(q, { history: [] });
+    assert.notEqual(hit?.path, "meta_capabilities_peer_assistants_deterministic");
+    assert.notEqual(hit?.path, "epistemic_honesty_deterministic");
+    assert.notEqual(hit?.path, "subject_angle_explore");
+    assert.equal(hit?.preferWebResearch, false);
+    assert.doesNotMatch(hit?.reply || "", EPISTEMIC_LONG);
+    assert.doesNotMatch(hit?.reply || "", /chat\.deepseek/i);
+  });
+
+  it("tu connais ? sans NP → clarification courte, pas refus long", async () => {
+    const q = "tu connais ?";
+    assert.equal(resolveExploratorySubjectAngleShortCircuit(q), null);
+    const hit = await runConversationShortCircuit(q, { history: [], ...scOpts });
+    assert.notEqual(hit?.path, "subject_angle_explore");
+    assert.notEqual(hit?.path, "epistemic_honesty_deterministic");
+    assert.doesNotMatch(hit?.reply || "", EPISTEMIC_LONG);
+    assert.match(hit?.reply || "", /sujet/i);
+  });
+
+  it("explique le fonctionnement du harness → pas de sonde, pas de refus long", async () => {
+    const q = "explique le fonctionnement du harness";
+    assert.equal(resolveSocialFamiliarityProbeShortCircuit(q), null);
+    assert.equal(resolveExploratorySubjectAngleShortCircuit(q), null);
+    const hit = await runConversationShortCircuit(q, { history: [] });
+    assert.notEqual(hit?.path, "epistemic_honesty_deterministic");
+    assert.doesNotMatch(hit?.reply || "", EPISTEMIC_LONG);
+  });
+
+  it("ta réponse était hors sujet → méta inchangé", async () => {
+    const hit = await runConversationShortCircuit("ta réponse était hors sujet", {
+      history: [],
+    });
+    assert.equal(hit?.path, "meta_feedback_deterministic");
+  });
+});
+
+describe("Identité interne — gate référents", () => {
+  const battery = [
+    {
+      q: "comment t'appelles tu ??",
+      referent: "Nexxus",
+      reply: NEXXUS_REPLY,
+    },
+    {
+      q: "comment s'appelle la plateforme sur laquelle tu opères",
+      referent: "La Citadelle",
+      reply: CITADELLE_REPLY,
+    },
+    {
+      q: "c'est quoi la Citadelle ?",
+      referent: "La Citadelle",
+      reply: CITADELLE_REPLY,
+    },
+    {
+      q: "c'est quoi Nexxus ?",
+      referent: "Nexxus",
+      reply: NEXXUS_REPLY,
+    },
+    {
+      q: "c'est quoi Nexxus Studio ?",
+      referent: "Nexxus Studio",
+    },
+    {
+      q: "qui es-tu ?",
+      referent: "Nexxus",
+      reply: NEXXUS_REPLY,
+    },
+  ];
+
+  for (const { q, referent, reply } of battery) {
+    it(`${q} → gate référents, pas factual générique`, async () => {
+      const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+      assert.ok(sc?.reply);
+      assert.equal(sc.internalReferent, referent);
+      assert.equal(sc.internalReferentAuthority, true);
+      assert.equal(sc.preferWebResearch, false);
+      assert.notEqual(sc.path, "simple_factual_lookup");
+      assert.notEqual(sc.path, "information_seeking_full_pipeline");
+      assert.doesNotMatch(sc.reply, PISTE);
+      assert.match(sc.reply, /NEXXUS/i);
+      if (reply) assert.equal(sc.reply, reply);
+      if (referent === "Nexxus Studio") assert.match(sc.reply, /studio/i);
+    });
+  }
+});

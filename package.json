@@ -32,6 +32,7 @@
     "security:seed-history": "node server/src/scripts/seed-security-audit-history.js",
     "security:audit": "npm run security:audit:local && cd server && (npm audit --audit-level=high || node -e \"console.warn('[security:audit] npm audit ignore (reseau/SSL). Utilisez security:audit:local.')\")",
     "quality:gate": "cd server && npm run quality:gate",
+    "premerge": "cd server && npm run premerge",
     "conversation:daily-report": "cd server && npm run conversation:daily-report",
     "memory:daily-report": "cd server && npm run memory:daily-report",
     "ops:daily-report": "cd server && npm run ops:daily-report",

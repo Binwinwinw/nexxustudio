@@ -23,6 +23,10 @@ function run(label, args) {
   console.log(`✓ ${label} — PASS`);
 }
 
+run('test:conversational-regressions (Packs 1–3 + identité)', [
+  '--test',
+  'tests/conversational-regressions.test.js',
+]);
 run('test:skills', ['tests/ci/validate_skill_runtime.js']);
 run('test:code-delivery (policy + sentinels)', [
   '--test',

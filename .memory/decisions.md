@@ -208,3 +208,8 @@
 
 - **Decision**: Questions d’identité interne sans nom propre (comment t’appelles-tu, qui es-tu, nom de la plateforme d’opération) passent le gate référents figés **avant** simple_factual_lookup / simple_fast. Réponses courtes : Nexxus = assistant, La Citadelle = plateforme, Nexxus Studio = studio/dépôt. Pas de web, pas de nouvelle classe d’intention. Noms propres « c’est quoi X » restent sur le branchement information_seeking.
 - **Impact**: `internalReferentsAuthorityGate.js` (`resolveUnnamedInternalIdentityHit`), hook SC après `identityBeforeG46`.
+
+## [2026-09-12] Batterie conversationnelle permanente (Pack 4)
+
+- **Decision**: Packs 1/2/3 + identité sont figés dans `server/tests/conversational-regressions.test.js`, inclus dans `npm run premerge`. Fiche `docs/CONVERSATIONAL_REGRESSIONS.md`. Un cas rouge de cette batterie échoue le lot en cours.
+- **Impact**: `premerge.js`, `package.json` (root + server).
