@@ -1,0 +1,119 @@
+/**
+ * Gate d’autorité — référents internes figés.
+ *
+ * Cause : un lookup « c’est quoi X » sur un nom propre déjà déclaré
+ * (Nexxus / La Citadelle / Nexxus Studio) partait en
+ * information_seeking_full_pipeline + web. Le pivot appartient à
+ * l’identité locale, pas au monde.
+ *
+ * Même autorité pour les questions d’identité interne sans nom propre
+ * dans la phrase (« comment t’appelles-tu », « comment s’appelle la
+ * plateforme sur laquelle tu opères ») : réponse figée, pas factual
+ * générique ni web.
+ *
+ * Consultable, déclaratif, pas un inventaire. Pas de nom commun seul
+ * (une citadelle ≠ La Citadelle).
+ *
+ * Cadre figé : La Citadelle = plateforme ; Nexxus = assistant ;
+ * Nexxus Studio = studio / dépôt. Phrase courte « ce que c’est »,
+ * pas la fiche sociale longue « qui es-tu ».
+ */
+
+import {
+  isIdentityNameIntent,
+  isIdentityWhoIntent,
+} from "../../utils/intent-guards/identityIntentGuards.js";
+
+/** [RÉFÉRENTS INTERNES] — liste figée, 3 entrées. */
+export const INTERNAL_REFERENTS = Object.freeze([
+  "Nexxus Studio",
+  "La Citadelle",
+  "Nexxus",
+]);
+
+/** Une phrase par référent — ce que c'est, pas une présentation d'identité. */
+const INTERNAL_REFERENT_REPLIES = Object.freeze({
+  "La Citadelle":
+    "La Citadelle, c'est la plateforme, NEXXUS est l'assistant IA qui y vit, exécute les tâches et prend les décisions.",
+  Nexxus:
+    "NEXXUS, c'est l'assistant IA de La Citadelle. La Citadelle, c'est la plateforme.",
+  "Nexxus Studio":
+    "Nexxus Studio, c'est le studio (produit / dépôt). La Citadelle est le nom visible de la plateforme dans l'interface. NEXXUS est l'assistant qui y tourne.",
+});
+
+function normalizeReferentQuery(query = "") {
+  return String(query || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Terme pivot = nom propre de la liste, tel qu’il apparaît dans la requête.
+ * @param {string} query
+ * @returns {"Nexxus Studio"|"La Citadelle"|"Nexxus"|null}
+ */
+export function matchInternalReferent(query = "") {
+  const q = normalizeReferentQuery(query);
+  if (!q) return null;
+  if (/\bnexxus\s+studio\b/.test(q)) return "Nexxus Studio";
+  if (/\bla\s+citadelle\b/.test(q)) return "La Citadelle";
+  if (/\bnexxus\b/.test(q)) return "Nexxus";
+  return null;
+}
+
+/**
+ * Nom de la plateforme d’opération, sans « La Citadelle » dans la phrase.
+ * Ex. « comment s’appelle la plateforme sur laquelle tu opères ».
+ * @param {string} query
+ */
+export function isOperatingPlatformNameAsk(query = "") {
+  const q = normalizeReferentQuery(query);
+  if (!q || !/\b(?:plateforme|plate[- ]forme)\b/.test(q)) return false;
+  const asksName =
+    /\b(?:comment\s+s['']?appelle|quel\s+est\s+le\s+nom(?:\s+de)?)\b/.test(q);
+  if (!asksName) return false;
+  return (
+    /\bsur\s+laquelle\s+tu\b/.test(q) ||
+    /\btu\s+(?:operes?|tournes?|vis|fonctionnes?)\b/.test(q)
+  );
+}
+
+/**
+ * Identité interne sans nom propre dans la phrase
+ * (nom / qui-es-tu / nom de la plateforme d’opération).
+ * @param {string} query
+ * @returns {{ referent: string, reply: string }|null}
+ */
+export function resolveUnnamedInternalIdentityHit(query = "") {
+  if (matchInternalReferent(query)) return null;
+  if (isOperatingPlatformNameAsk(query)) {
+    return {
+      referent: "La Citadelle",
+      reply: INTERNAL_REFERENT_REPLIES["La Citadelle"],
+    };
+  }
+  if (isIdentityNameIntent(query) || isIdentityWhoIntent(query)) {
+    return {
+      referent: "Nexxus",
+      reply: INTERNAL_REFERENT_REPLIES.Nexxus,
+    };
+  }
+  return null;
+}
+
+/**
+ * Court-circuit local si le pivot est un référent interne,
+ * ou une question d’identité interne sans nom propre.
+ * @param {string} query
+ * @returns {{ referent: string, reply: string }|null}
+ */
+export function resolveInternalReferentAuthorityHit(query = "") {
+  const named = matchInternalReferent(query);
+  if (named) {
+    return { referent: named, reply: INTERNAL_REFERENT_REPLIES[named] };
+  }
+  return resolveUnnamedInternalIdentityHit(query);
+}

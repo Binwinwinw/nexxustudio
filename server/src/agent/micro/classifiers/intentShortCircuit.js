@@ -167,7 +167,21 @@ import {
   isNamedDefinitionRequest,
   isExplicitInformationOrDefinitionRequest,
 } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
-import { resolveInternalReferentAuthorityHit } from "../../policies/routing/internalReferentsAuthorityGate.js";
+import { resolveInternalReferentAuthorityHit, resolveUnnamedInternalIdentityHit } from "../../policies/routing/internalReferentsAuthorityGate.js";
+
+function emitInternalReferentAuthorityHit(emit, hit) {
+  if (!hit?.reply) return null;
+  return emit({
+    path: "general_knowledge_deterministic",
+    mode: RESPONSE_MODES.INSTANT,
+    reply: hit.reply,
+    preferWebResearch: false,
+    internalReferentAuthority: true,
+    internalReferent: hit.referent,
+    step: "🏛️ Référent interne — autorité locale (sans web)...",
+    enforce: { allowRefusal: false },
+  });
+}
 import {
   resolveSubjectTypingFromQuery,
   buildSubjectTypeClarifyReply,
@@ -1359,6 +1373,15 @@ export async function runConversationShortCircuit(query, options = {}) {
       return emit(identityBeforeG46);
     }
   }
+
+  // Identité interne / nom de plateforme — avant G46, simple_factual et simple_fast.
+  // Filet si le rail social identité a été bloqué (turnComprehension workPresent).
+  // Noms propres : restent sur le branchement information_seeking (pas ici).
+  const unnamedInternalIdentity = emitInternalReferentAuthorityHit(
+    emit,
+    resolveUnnamedInternalIdentityHit(effectiveQuery),
+  );
+  if (unnamedInternalIdentity) return unnamedInternalIdentity;
 
   // Réparation de ton / critique check-in : avant G46 meta_critique (sinon essai UX long).
   if (
@@ -3185,19 +3208,11 @@ export async function runConversationShortCircuit(query, options = {}) {
   }
 
   if (isInformationSeekingWithTarget(effectiveQuery) || isNamedDefinitionRequest(effectiveQuery)) {
-    const internalReferentHit = resolveInternalReferentAuthorityHit(effectiveQuery);
-    if (internalReferentHit) {
-      return emit({
-        path: "general_knowledge_deterministic",
-        mode: RESPONSE_MODES.INSTANT,
-        reply: internalReferentHit.reply,
-        preferWebResearch: false,
-        internalReferentAuthority: true,
-        internalReferent: internalReferentHit.referent,
-        step: "🏛️ Référent interne — autorité locale (sans web)...",
-        enforce: { allowRefusal: false },
-      });
-    }
+    const internalReferentLate = emitInternalReferentAuthorityHit(
+      emit,
+      resolveInternalReferentAuthorityHit(effectiveQuery),
+    );
+    if (internalReferentLate) return internalReferentLate;
     const subjectTyping = resolveSubjectTypingFromQuery(effectiveQuery);
     if (subjectTyping?.requires_subject_disambiguation) {
       const clarifyReply = buildSubjectTypeClarifyReply(subjectTyping);

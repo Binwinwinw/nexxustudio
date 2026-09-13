@@ -203,3 +203,8 @@
 
 - **Decision**: « X, tu connais » avec NP nommé ≠ peer-assistant (DeepSeek chat) et ≠ refus épistémique long. Réponse courte + option de recherche, web seulement si mandat explicite. « tu connais ? » sans NP = clarification courte. Pack 1 `sur le X` inchangé.
 - **Impact**: `familiarityIntentGuards.js` (`resolveSocialFamiliarityProbeShortCircuit`), `isMetaKnownPeerProductQuery`, hook SC avant épistémique.
+
+## [2026-09-12] Identité interne → gate référents (pas factual générique)
+
+- **Decision**: Questions d’identité interne sans nom propre (comment t’appelles-tu, qui es-tu, nom de la plateforme d’opération) passent le gate référents figés **avant** simple_factual_lookup / simple_fast. Réponses courtes : Nexxus = assistant, La Citadelle = plateforme, Nexxus Studio = studio/dépôt. Pas de web, pas de nouvelle classe d’intention. Noms propres « c’est quoi X » restent sur le branchement information_seeking.
+- **Impact**: `internalReferentsAuthorityGate.js` (`resolveUnnamedInternalIdentityHit`), hook SC après `identityBeforeG46`.

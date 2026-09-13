@@ -1,0 +1,166 @@
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
+import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
+import { getIdentityDeterministicReply } from "../src/agent/utils/intent-guards/identityIntentGuards.js";
+import { buildTurnComprehension } from "../src/agent/policies/conversation/turnComprehension.js";
+import {
+  matchInternalReferent,
+  resolveInternalReferentAuthorityHit,
+  resolveUnnamedInternalIdentityHit,
+  isOperatingPlatformNameAsk,
+} from "../src/agent/policies/routing/internalReferentsAuthorityGate.js";
+
+const scOpts = {
+  getDeterministicSocialResponse: (q) => getIdentityDeterministicReply(q),
+};
+
+const CITADELLE_REPLY =
+  "La Citadelle, c'est la plateforme, NEXXUS est l'assistant IA qui y vit, exécute les tâches et prend les décisions.";
+const NEXXUS_REPLY =
+  "NEXXUS, c'est l'assistant IA de La Citadelle. La Citadelle, c'est la plateforme.";
+
+function liveOpts(query) {
+  return {
+    ...scOpts,
+    turnComprehension: buildTurnComprehension(query, []),
+    turnLoop: {},
+  };
+}
+
+function assertDirectReferent(sc, referent) {
+  assert.ok(sc?.reply, "réponse directe attendue");
+  assert.equal(sc.internalReferent, referent);
+  assert.equal(sc.internalReferentAuthority, true);
+  assert.equal(sc.preferWebResearch, false);
+  assert.notEqual(sc.path, "simple_factual_lookup");
+  assert.notEqual(sc.path, "information_seeking_full_pipeline");
+  assert.doesNotMatch(sc.reply, /piste|destination/i);
+}
+
+describe("internal referents authority gate", () => {
+  it("match : La Citadelle / Nexxus / Nexxus Studio ; pas le nom commun", () => {
+    assert.equal(matchInternalReferent("C'est quoi la Citadelle ?"), "La Citadelle");
+    assert.equal(matchInternalReferent("C'est quoi Nexxus ?"), "Nexxus");
+    assert.equal(matchInternalReferent("C'est quoi Nexxus Studio ?"), "Nexxus Studio");
+    assert.equal(matchInternalReferent("C'est quoi une citadelle ?"), null);
+    assert.equal(matchInternalReferent("Explique-moi la féodalité."), null);
+    assert.equal(resolveInternalReferentAuthorityHit("C'est quoi une citadelle ?"), null);
+  });
+
+  it("C'est quoi la Citadelle ? — plateforme, pas la fiche qui-es-tu", async () => {
+    const sc = await runConversationShortCircuit("C'est quoi la citadelle ??", scOpts);
+    assert.notEqual(sc?.path, "information_seeking_full_pipeline");
+    assert.equal(sc?.preferWebResearch, false);
+    assert.equal(sc?.internalReferent, "La Citadelle");
+    assert.equal(sc.reply, CITADELLE_REPLY);
+  });
+
+  it("Qui es-tu ? — identité locale, pas de web", async () => {
+    const sc = await runConversationShortCircuit("Qui es-tu ?", scOpts);
+    assert.equal(sc?.path, "social_deterministic");
+    assert.notEqual(sc?.path, "information_seeking_full_pipeline");
+    assert.ok(!sc?.preferWebResearch);
+    assert.match(sc.reply, /NEXXUS/i);
+  });
+
+  it("Dans quel environnement tu tournes ? — pas information_seeking web", async () => {
+    const sc = await runConversationShortCircuit(
+      "Dans quel environnement tu tournes ?",
+      scOpts,
+    );
+    assert.notEqual(sc?.path, "information_seeking_full_pipeline");
+    assert.ok(!sc?.preferWebResearch);
+  });
+
+  it("C'est quoi Nexxus ? — pas de web", async () => {
+    const sc = await runConversationShortCircuit("C'est quoi Nexxus ?", scOpts);
+    assert.notEqual(sc?.path, "information_seeking_full_pipeline");
+    assert.equal(sc?.preferWebResearch, false);
+    assert.ok(sc?.reply);
+    assert.match(sc.reply, /assistant/i);
+    assert.doesNotMatch(sc.reply, /^Salut !/i);
+    assert.equal(sc?.internalReferent, "Nexxus");
+  });
+
+  it("C'est quoi une citadelle ? — inchangé, pipeline info", async () => {
+    const sc = await runConversationShortCircuit("C'est quoi une citadelle ?", scOpts);
+    assert.equal(sc?.path, "information_seeking_full_pipeline");
+    assert.equal(sc?.preferWebResearch, true);
+    assert.ok(!sc?.internalReferentAuthority);
+  });
+
+  it("Explique-moi la féodalité. — pas capturé par le gate", async () => {
+    const sc = await runConversationShortCircuit("Explique-moi la féodalité.", scOpts);
+    assert.ok(!sc?.internalReferentAuthority);
+    assert.notEqual(sc?.path, "information_seeking_full_pipeline");
+  });
+
+  it("Quelle heure est-il ? — datetime, pas de web", async () => {
+    const sc = await runConversationShortCircuit("Quelle heure est-il ?", scOpts);
+    assert.equal(sc?.path, "datetime_deterministic");
+    assert.ok(!sc?.preferWebResearch);
+    assert.ok(!sc?.internalReferentAuthority);
+  });
+
+  it("Résume-moi cet article. — synthèse, pas de web", async () => {
+    const sc = await runConversationShortCircuit("Résume-moi cet article.", scOpts);
+    assert.equal(sc?.path, "document_synthesis_clarify");
+    assert.ok(!sc?.preferWebResearch);
+    assert.ok(!sc?.internalReferentAuthority);
+  });
+
+  it("plateforme d’opération sans nom propre → La Citadelle", () => {
+    const q = "comment s'appelle la plateforme sur laquelle tu opères";
+    assert.equal(isOperatingPlatformNameAsk(q), true);
+    assert.equal(matchInternalReferent(q), null);
+    assert.equal(resolveUnnamedInternalIdentityHit(q)?.referent, "La Citadelle");
+    assert.equal(resolveInternalReferentAuthorityHit(q)?.referent, "La Citadelle");
+    assert.equal(isOperatingPlatformNameAsk("comment s'appelle la plateforme Steam"), false);
+  });
+});
+
+describe("FIX-IDENTITY-QUESTIONS-DIRECT-ANSWER — live TC", () => {
+  const battery = [
+    {
+      q: "comment t'appelles tu ??",
+      referent: "Nexxus",
+      reply: NEXXUS_REPLY,
+    },
+    {
+      q: "comment s'appelle la plateforme sur laquelle tu opères",
+      referent: "La Citadelle",
+      reply: CITADELLE_REPLY,
+    },
+    {
+      q: "c'est quoi la Citadelle ?",
+      referent: "La Citadelle",
+      reply: CITADELLE_REPLY,
+    },
+    {
+      q: "c'est quoi Nexxus ?",
+      referent: "Nexxus",
+      reply: NEXXUS_REPLY,
+    },
+    {
+      q: "c'est quoi Nexxus Studio ?",
+      referent: "Nexxus Studio",
+    },
+    {
+      q: "qui es-tu ?",
+      referent: "Nexxus",
+      reply: NEXXUS_REPLY,
+    },
+  ];
+
+  for (const { q, referent, reply } of battery) {
+    it(`${q} → gate référents, pas factual générique`, async () => {
+      const sc = await runConversationShortCircuit(q, liveOpts(q));
+      assertDirectReferent(sc, referent);
+      assert.match(sc.reply, /NEXXUS/i);
+      if (reply) assert.equal(sc.reply, reply);
+      if (referent === "Nexxus Studio") {
+        assert.match(sc.reply, /studio/i);
+      }
+    });
+  }
+});
