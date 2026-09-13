@@ -167,7 +167,8 @@ import {
   isNamedDefinitionRequest,
   isExplicitInformationOrDefinitionRequest,
 } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
-import { resolveInternalReferentAuthorityHit, resolveUnnamedInternalIdentityHit } from "../../policies/routing/internalReferentsAuthorityGate.js";
+import { resolveInternalReferentAuthorityHit, resolveUnnamedInternalIdentityHit, resolveInternalReferentConfirmationCheck } from "../../policies/routing/internalReferentsAuthorityGate.js";
+import { isConfirmationCheckArticulation, resolveGenericConfirmationCheck } from "../../policies/conversation/confirmationCheckArticulation.js";
 
 function emitInternalReferentAuthorityHit(emit, hit) {
   if (!hit?.reply) return null;
@@ -179,6 +180,21 @@ function emitInternalReferentAuthorityHit(emit, hit) {
     internalReferentAuthority: true,
     internalReferent: hit.referent,
     step: "🏛️ Référent interne — autorité locale (sans web)...",
+    enforce: { allowRefusal: false },
+  });
+}
+
+function emitConfirmationCheckHit(emit, hit) {
+  if (!hit?.reply) return null;
+  return emit({
+    path: "general_knowledge_deterministic",
+    mode: RESPONSE_MODES.INSTANT,
+    reply: hit.reply,
+    preferWebResearch: false,
+    confirmationCheck: true,
+    internalReferentAuthority: Boolean(hit.referent),
+    internalReferent: hit.referent || null,
+    step: "✅ Validation de proposition...",
     enforce: { allowRefusal: false },
   });
 }
@@ -439,6 +455,9 @@ function buildSocialDeterministicShortCircuit(
   options = {},
 ) {
   if (isExplicitInformationOrDefinitionRequest(effectiveQuery)) {
+    return null;
+  }
+  if (isConfirmationCheckArticulation(effectiveQuery)) {
     return null;
   }
   if (shouldBypassLocalDatetimeShortCircuit(effectiveQuery)) {
@@ -1349,6 +1368,15 @@ export async function runConversationShortCircuit(query, options = {}) {
   };
 
   // P0 identity_questions — avant G46 meta_capabilities (FP « quel est ton … »)
+  const referentConfirmation = emitConfirmationCheckHit(
+    emit,
+    resolveInternalReferentConfirmationCheck(effectiveQuery) ||
+      resolveInternalReferentConfirmationCheck(query) ||
+      resolveGenericConfirmationCheck(effectiveQuery) ||
+      resolveGenericConfirmationCheck(query),
+  );
+  if (referentConfirmation) return referentConfirmation;
+
   const identityBeforeG46 = buildSocialDeterministicShortCircuit(
     effectiveQuery,
     getDeterministicSocialResponse,

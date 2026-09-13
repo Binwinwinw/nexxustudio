@@ -8,6 +8,7 @@ import {
   resolveInternalReferentAuthorityHit,
   resolveUnnamedInternalIdentityHit,
   isOperatingPlatformNameAsk,
+  resolveInternalReferentConfirmationCheck,
 } from "../src/agent/policies/routing/internalReferentsAuthorityGate.js";
 
 const scOpts = {
@@ -116,6 +117,87 @@ describe("internal referents authority gate", () => {
     assert.equal(resolveUnnamedInternalIdentityHit(q)?.referent, "La Citadelle");
     assert.equal(resolveInternalReferentAuthorityHit(q)?.referent, "La Citadelle");
     assert.equal(isOperatingPlatformNameAsk("comment s'appelle la plateforme Steam"), false);
+  });
+});
+
+const CONFIRM_REPLY =
+  "Oui. NEXXUS, c'est l'assistant. La Citadelle, c'est la plateforme. Il ne faut pas les confondre.";
+const REJECT_REPLY =
+  "Non. NEXXUS, c'est l'assistant. La Citadelle, c'est la plateforme.";
+
+describe("si j'ai bien compris — validation référents", () => {
+  it("suffixe : ne pas confondre nexxus et la citadelle → oui", async () => {
+    const q =
+      "haaaa ok donc il ne faut pas confondre nexxus et la citadelle si j'ai bien compris?";
+    const hit = resolveInternalReferentConfirmationCheck(q);
+    assert.equal(hit?.reply, CONFIRM_REPLY);
+    const sc = await runConversationShortCircuit(q, liveOpts(q));
+    assert.equal(sc?.path, "general_knowledge_deterministic");
+    assert.equal(sc.reply, CONFIRM_REPLY);
+    assert.doesNotMatch(sc.reply, /papoter|piste|destination/i);
+    assert.equal(sc.preferWebResearch, false);
+  });
+
+  it("préfixe : même proposition → oui", async () => {
+    const q =
+      "si j'ai bien compris il ne faut pas confondre nexxus et la citadelle";
+    const sc = await runConversationShortCircuit(q, liveOpts(q));
+    assert.equal(sc?.reply, CONFIRM_REPLY);
+  });
+
+  it("nexxus c'est la plateforme → non", async () => {
+    const q = "si j'ai bien compris nexxus c'est la plateforme ?";
+    assert.equal(resolveInternalReferentConfirmationCheck(q)?.reply, REJECT_REPLY);
+    const sc = await runConversationShortCircuit(q, liveOpts(q));
+    assert.equal(sc?.reply, REJECT_REPLY);
+  });
+
+  it("sans marqueur de validation → pas ce rail", () => {
+    assert.equal(
+      resolveInternalReferentConfirmationCheck(
+        "donc nexxus c'est l'assistant et la citadelle c'est la plateforme",
+      ),
+      null,
+    );
+  });
+
+  it("copule simple Nexxus = assistant, tête ou queue", async () => {
+    for (const q of [
+      "Nexxus c'est l'assistant, si j'ai bien compris",
+      "Si j'ai bien compris, Nexxus c'est l'assistant",
+    ]) {
+      assert.equal(resolveInternalReferentConfirmationCheck(q)?.reply, CONFIRM_REPLY);
+      const sc = await runConversationShortCircuit(q, liveOpts(q));
+      assert.equal(sc?.reply, CONFIRM_REPLY);
+      assert.equal(sc?.path, "general_knowledge_deterministic");
+      assert.doesNotMatch(sc.reply, /papoter|piste|destination|Salut/i);
+    }
+  });
+
+  it("copule simple Citadelle = plateforme, tête ou queue", async () => {
+    for (const q of [
+      "La Citadelle c'est la plateforme, si j'ai bien compris",
+      "Si j'ai bien compris, La Citadelle c'est la plateforme",
+    ]) {
+      assert.equal(resolveInternalReferentConfirmationCheck(q)?.reply, CONFIRM_REPLY);
+      const sc = await runConversationShortCircuit(q, liveOpts(q));
+      assert.equal(sc?.reply, CONFIRM_REPLY);
+    }
+  });
+
+  it("swap Nexxus = plateforme / Citadelle = assistant → non", async () => {
+    const platform = "Nexxus c'est la plateforme, si j'ai bien compris";
+    const assistant = "Si j'ai bien compris, La Citadelle c'est l'assistant";
+    assert.equal(resolveInternalReferentConfirmationCheck(platform)?.reply, REJECT_REPLY);
+    assert.equal(resolveInternalReferentConfirmationCheck(assistant)?.reply, REJECT_REPLY);
+    assert.equal(
+      (await runConversationShortCircuit(platform, liveOpts(platform)))?.reply,
+      REJECT_REPLY,
+    );
+    assert.equal(
+      (await runConversationShortCircuit(assistant, liveOpts(assistant)))?.reply,
+      REJECT_REPLY,
+    );
   });
 });
 

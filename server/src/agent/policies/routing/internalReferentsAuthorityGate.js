@@ -23,6 +23,7 @@ import {
   isIdentityNameIntent,
   isIdentityWhoIntent,
 } from "../../utils/intent-guards/identityIntentGuards.js";
+import { extractConfirmationProposition } from "../conversation/confirmationCheckArticulation.js";
 
 /** [RÉFÉRENTS INTERNES] — liste figée, 3 entrées. */
 export const INTERNAL_REFERENTS = Object.freeze([
@@ -40,6 +41,11 @@ const INTERNAL_REFERENT_REPLIES = Object.freeze({
   "Nexxus Studio":
     "Nexxus Studio, c'est le studio (produit / dépôt). La Citadelle est le nom visible de la plateforme dans l'interface. NEXXUS est l'assistant qui y tourne.",
 });
+
+const REFERENT_CONFIRM_REPLY =
+  "Oui. NEXXUS, c'est l'assistant. La Citadelle, c'est la plateforme. Il ne faut pas les confondre.";
+const REFERENT_REJECT_REPLY =
+  "Non. NEXXUS, c'est l'assistant. La Citadelle, c'est la plateforme.";
 
 function normalizeReferentQuery(query = "") {
   return String(query || "")
@@ -79,6 +85,69 @@ export function isOperatingPlatformNameAsk(query = "") {
     /\bsur\s+laquelle\s+tu\b/.test(q) ||
     /\btu\s+(?:operes?|tournes?|vis|fonctionnes?)\b/.test(q)
   );
+}
+
+function hasStudio(q) {
+  return /\bnexxus\s+studio\b/.test(q);
+}
+function hasCitadelle(q) {
+  return /\bla\s+citadelle\b/.test(q);
+}
+function hasNexxusAssistant(q) {
+  return /\bnexxus\b/.test(q.replace(/\bnexxus\s+studio\b/g, " "));
+}
+
+function swappedReferentRoles(q) {
+  return (
+    (hasNexxusAssistant(q) &&
+      /\bnexxus\b.{0,48}\b(?:c['']est|est)\s+(?:la\s+)?plateforme\b/.test(q)) ||
+    (hasCitadelle(q) &&
+      /\bcitadelle\b.{0,48}\b(?:c['']est|est)\s+(?:l['']?)?assistant\b/.test(q))
+  );
+}
+
+function trueReferentRole(q) {
+  const nexxusAssistant =
+    hasNexxusAssistant(q) &&
+    /\bnexxus\b.{0,48}\b(?:c['']est|est)\s+(?:l['']?)?assistant\b/.test(q);
+  const citadellePlatform =
+    hasCitadelle(q) &&
+    /\bcitadelle\b.{0,48}\b(?:c['']est|est)\s+(?:la\s+)?plateforme\b/.test(q);
+  return nexxusAssistant || citadellePlatform;
+}
+
+/**
+ * « si j'ai bien compris » + proposition sur les référents internes.
+ * Confirme ou invalide. Pas un greeting, pas un lookup générique.
+ * @param {string} query
+ * @returns {{ referent: string, reply: string }|null}
+ */
+export function resolveInternalReferentConfirmationCheck(query = "") {
+  const proposition = extractConfirmationProposition(query);
+  if (!proposition) return null;
+  const q = normalizeReferentQuery(proposition);
+  if (!q) return null;
+
+  if (swappedReferentRoles(q)) {
+    return { referent: "Nexxus", reply: REFERENT_REJECT_REPLY };
+  }
+
+  const twoReferents =
+    [hasNexxusAssistant(q), hasCitadelle(q), hasStudio(q)].filter(Boolean)
+      .length >= 2;
+  const negatedConfondre = /\bne\s+(?:faut\s+)?pas\s+confondre\b|\bpas\s+confondre\b/.test(
+    q,
+  );
+  const alignedRoles =
+    hasNexxusAssistant(q) &&
+    hasCitadelle(q) &&
+    /\bassistant\b/.test(q) &&
+    /\bplateforme\b/.test(q);
+
+  if ((twoReferents && negatedConfondre) || alignedRoles || trueReferentRole(q)) {
+    return { referent: "Nexxus", reply: REFERENT_CONFIRM_REPLY };
+  }
+  return null;
 }
 
 /**

@@ -1,5 +1,5 @@
 /**
- * Batterie permanente — Packs 1/2/3 + identité interne.
+ * Batterie permanente — Packs 1/2/3/4 + identité + Pack 5 validation FR.
  * Preuve : cd server && npm run premerge
  * Fiche : docs/CONVERSATIONAL_REGRESSIONS.md
  *
@@ -21,6 +21,12 @@ import { resolveMetaFeedbackShortCircuit } from "../src/agent/micro/replies/meta
 import { lookupRoutingCase } from "../src/agent/policies/routing/routingCaseDictionary.js";
 import { isMetaKnownPeerProductQuery } from "../src/agent/policies/meta/metaCapabilitiesPolicy.js";
 import { resolveSocialFamiliarityProbeShortCircuit } from "../src/agent/utils/intent-guards/familiarityIntentGuards.js";
+import {
+  extractConfirmationProposition,
+  isConfirmationCheckArticulation,
+  resolveGenericConfirmationCheck,
+} from "../src/agent/policies/conversation/confirmationCheckArticulation.js";
+import { resolveInternalReferentConfirmationCheck } from "../src/agent/policies/routing/internalReferentsAuthorityGate.js";
 
 const scOpts = {
   getDeterministicSocialResponse: (q) => getIdentityDeterministicReply(q),
@@ -260,4 +266,96 @@ describe("Identité interne — gate référents", () => {
       if (referent === "Nexxus Studio") assert.match(sc.reply, /studio/i);
     });
   }
+
+  it("si j'ai bien compris + ne pas confondre nexxus / citadelle → validation", async () => {
+    const q =
+      "haaaa ok donc il ne faut pas confondre nexxus et la citadelle si j'ai bien compris?";
+    const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+    assert.equal(sc?.path, "general_knowledge_deterministic");
+    assert.equal(sc.preferWebResearch, false);
+    assert.match(sc.reply, /^Oui\./);
+    assert.match(sc.reply, /NEXXUS/i);
+    assert.match(sc.reply, /Citadelle/i);
+    assert.doesNotMatch(sc.reply, PISTE);
+    assert.doesNotMatch(sc.reply, /papoter/i);
+  });
+});
+
+const CONFIRM_REPLY =
+  "Oui. NEXXUS, c'est l'assistant. La Citadelle, c'est la plateforme. Il ne faut pas les confondre.";
+const REJECT_REPLY =
+  "Non. NEXXUS, c'est l'assistant. La Citadelle, c'est la plateforme.";
+const PYTHON_CONFIRM_REPLY =
+  "Oui. Python est bien un langage de programmation.";
+
+describe("Pack 5 — articulations FR de validation", () => {
+  it("dictionnaire : marqueur en tête ou queue, virgule strippée", () => {
+    assert.equal(
+      isConfirmationCheckArticulation("Nexxus c'est l'assistant, si j'ai bien compris"),
+      true,
+    );
+    assert.equal(
+      extractConfirmationProposition(
+        "Si j'ai bien compris, Nexxus c'est l'assistant",
+      ),
+      "nexxus c'est l'assistant",
+    );
+    assert.equal(
+      extractConfirmationProposition(
+        "Nexxus c'est l'assistant, si j'ai bien compris",
+      ),
+      "nexxus c'est l'assistant",
+    );
+  });
+
+  it("Nexxus = assistant, tête et queue → Oui + distinguo", async () => {
+    for (const q of [
+      "Nexxus c'est l'assistant, si j'ai bien compris",
+      "Si j'ai bien compris, Nexxus c'est l'assistant",
+    ]) {
+      assert.equal(resolveInternalReferentConfirmationCheck(q)?.reply, CONFIRM_REPLY);
+      const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+      assert.equal(sc?.reply, CONFIRM_REPLY);
+      assert.equal(sc?.path, "general_knowledge_deterministic");
+      assert.equal(sc.preferWebResearch, false);
+      assert.doesNotMatch(sc.reply, /Salut|papoter|piste|destination/i);
+    }
+  });
+
+  it("Citadelle = plateforme, tête et queue → Oui + distinguo", async () => {
+    for (const q of [
+      "La Citadelle c'est la plateforme, si j'ai bien compris",
+      "Si j'ai bien compris, La Citadelle c'est la plateforme",
+    ]) {
+      const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+      assert.equal(sc?.reply, CONFIRM_REPLY);
+    }
+  });
+
+  it("Python = langage, tête et queue → Oui générique", async () => {
+    for (const q of [
+      "Python c'est un langage de programmation, si j'ai bien compris",
+      "Si j'ai bien compris, Python c'est un langage de programmation",
+    ]) {
+      assert.equal(resolveGenericConfirmationCheck(q)?.reply, PYTHON_CONFIRM_REPLY);
+      const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+      assert.equal(sc?.reply, PYTHON_CONFIRM_REPLY);
+      assert.equal(sc?.confirmationCheck, true);
+      assert.ok(!sc?.internalReferentAuthority);
+      assert.doesNotMatch(sc.reply, /Salut|papoter|piste|destination/i);
+    }
+  });
+
+  it("swap référents → Non + distinguo", async () => {
+    const platform = "Nexxus c'est la plateforme, si j'ai bien compris";
+    const assistant = "Si j'ai bien compris, La Citadelle c'est l'assistant";
+    assert.equal(
+      (await runConversationShortCircuit(platform, liveTcOpts(platform)))?.reply,
+      REJECT_REPLY,
+    );
+    assert.equal(
+      (await runConversationShortCircuit(assistant, liveTcOpts(assistant)))?.reply,
+      REJECT_REPLY,
+    );
+  });
 });

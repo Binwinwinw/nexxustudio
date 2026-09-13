@@ -137,3 +137,5 @@
 - [identity-tc-blocks-social] « comment t'appelles-tu » / « qui es-tu » : `turnComprehension.workPresent` (intent `general`) bloque `social_deterministic` → `simple_factual_lookup` / piste. Filet : `resolveUnnamedInternalIdentityHit` avant G46. « comment s'appelle la plateforme sur laquelle tu opères » (pas de nom propre) → La Citadelle. Noms propres restent sur le branchement information_seeking.
 
 - [conversational-regressions-no-agent] La batterie `conversational-regressions.test.js` ne doit pas importer `agent.js` (hang Ollama). SC déterministe seulement. Gate : `cd server && npm run premerge`.
+
+- [french-validation-not-filler] « si j'ai bien compris » n’est pas un greeting. Dictionnaire `server/src/agent/policies/conversation/linguistic_markers_fr.json` ; extraction tête/queue (`confirmationCheckArticulation.js`) ; gate référents pour Nexxus/Citadelle ; faits copule fermés (Python). Virgules à stripper sinon hit null. `server/data/` est gitignoré via `data/` — ne pas y mettre de source.

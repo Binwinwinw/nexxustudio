@@ -1,0 +1,26 @@
+{
+  "rule": "linguistic_markers_fr_v1",
+  "validation_markers": [
+    "si j'ai bien compris",
+    "si je comprends bien",
+    "en gros tu dis que",
+    "si je ne me trompe pas"
+  ],
+  "invalidation_markers": [
+    "ce n'est pas ça",
+    "pas vraiment",
+    "non ce n'est pas"
+  ],
+  "clarification_markers": [
+    "qu'est-ce que tu veux dire par",
+    "tu peux préciser",
+    "tu veux dire"
+  ],
+  "known_copula_facts": [
+    {
+      "subject": "python",
+      "predicates": ["langage de programmation"],
+      "confirm_reply": "Oui. Python est bien un langage de programmation."
+    }
+  ]
+}

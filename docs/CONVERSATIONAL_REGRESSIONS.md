@@ -1,6 +1,6 @@
 # Régressions conversationnelles
 
-Batterie permanente des lots Pack 1 / 2 / 3 + identité interne.
+Batterie permanente des lots Pack 1 / 2 / 3 / 4 + identité interne + Pack 5.
 
 Preuve runtime : `server/tests/conversational-regressions.test.js`  
 Gate : `cd server && npm run premerge` (étape `test:conversational-regressions`, **avant** le gate skills).
@@ -55,3 +55,13 @@ Ne pas recopier le canon input ici. Comportement : [`docs/governance/citadelle-i
 
 - **Lot** : `FIX-CONVERSATIONAL-REGRESSIONS-HARNESS`
 - **Rôle** : figer les quatre lots ci-dessus dans premerge. Aucun changement de routing.
+
+---
+
+## Pack 5 — articulations FR de validation / invalidation
+
+- **Lot** : `FIX-FRENCH-VALIDATION-ARTICULATION-GENERAL`
+- **Scénario** : « si j'ai bien compris » (tête ou queue) + proposition, n’importe quel sujet.
+- **Erreur** : marqueur traité comme filler / greeting ; copule simple Nexxus/Citadelle ignorée ; virgule laissée dans la proposition extraite.
+- **Correction** : dictionnaire `server/src/agent/policies/conversation/linguistic_markers_fr.json` ; extraction tête/queue ; gate référents pour Nexxus / Citadelle / Studio ; faits copule fermés (Python). Oui + contexte si vrai ; Non + correction si faux.
+- **Cas dans la batterie** : Nexxus = assistant ; Citadelle = plateforme ; Python = langage ; Nexxus = plateforme (non) ; Citadelle = assistant (non).

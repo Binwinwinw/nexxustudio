@@ -23,7 +23,7 @@ function run(label, args) {
   console.log(`✓ ${label} — PASS`);
 }
 
-run('test:conversational-regressions (Packs 1–3 + identité)', [
+run('test:conversational-regressions (Packs 1–5 + identité)', [
   '--test',
   'tests/conversational-regressions.test.js',
 ]);
