@@ -139,3 +139,5 @@
 - [conversational-regressions-no-agent] La batterie `conversational-regressions.test.js` ne doit pas importer `agent.js` (hang Ollama). SC déterministe seulement. Gate : `cd server && npm run premerge`.
 
 - [french-validation-not-filler] « si j'ai bien compris » n’est pas un greeting. Dictionnaire `server/src/agent/policies/conversation/linguistic_markers_fr.json` ; extraction tête/queue (`confirmationCheckArticulation.js`) ; gate référents pour Nexxus/Citadelle ; faits copule fermés (Python). Virgules à stripper sinon hit null. `server/data/` est gitignoré via `data/` — ne pas y mettre de source.
+
+- [social-phatic-raconter-nouveau] « tu racontes quoi / de beau », « qu'est ce tu » (sans que), « il y a du nouveau », « qu'y a-t-il de nouveau » = `social/phatic_checkin`, pas `simple_fast` ni web. « du nouveau sur X » reste info.

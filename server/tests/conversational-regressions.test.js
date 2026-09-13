@@ -1,5 +1,5 @@
 /**
- * Batterie permanente — Packs 1/2/3/4 + identité + Pack 5 validation FR.
+ * Batterie permanente — Packs 1/2/3/4/5/6 + identité interne.
  * Preuve : cd server && npm run premerge
  * Fiche : docs/CONVERSATIONAL_REGRESSIONS.md
  *
@@ -357,5 +357,38 @@ describe("Pack 5 — articulations FR de validation", () => {
       (await runConversationShortCircuit(assistant, liveTcOpts(assistant)))?.reply,
       REJECT_REPLY,
     );
+  });
+});
+
+describe("Pack 6 — questions sociales / conversationnelles", () => {
+  const PISTE_OR_WEB = /piste|destination/i;
+  const phatic = [
+    "qu'est ce tu racontes de beau?",
+    "quoi de neuf ?",
+    "qu'y a-t-il de nouveau ?",
+    "tu racontes quoi ?",
+    "il y a du nouveau ?",
+  ];
+
+  for (const q of phatic) {
+    it(`${q} → rail social, pas factuel générique`, async () => {
+      const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+      assert.ok(sc?.reply);
+      assert.equal(sc.path, "social_deterministic");
+      assert.equal(sc.socialPatternName, "social/phatic_checkin");
+      assert.notEqual(sc.path, "simple_factual_lookup");
+      assert.notEqual(sc.path, "epistemic_verify_external");
+      assert.ok(!sc.preferWebResearch);
+      assert.doesNotMatch(sc.reply, PISTE_OR_WEB);
+    });
+  }
+
+  it("salut, comment ca va ? → check-in social", async () => {
+    const q = "salut, comment ca va ?";
+    const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+    assert.equal(sc?.path, "social_deterministic");
+    assert.ok(!sc?.preferWebResearch);
+    assert.match(sc.reply, /va bien|Tout va bien/i);
+    assert.doesNotMatch(sc.reply, PISTE_OR_WEB);
   });
 });

@@ -185,6 +185,37 @@ const CONVERSATION_CASES = [
     mustNotFactual: true,
     mustNotHeavyPipeline: true,
   },
+  {
+    query: "qu'est ce tu racontes de beau?",
+    patternName: "social/phatic_checkin",
+    mustNotClarify: true,
+    mustNotFactual: true,
+    mustNotGeneralKnowledge: true,
+  },
+  {
+    query: "quoi de neuf ?",
+    patternName: "social/phatic_checkin",
+    mustNotClarify: true,
+    mustNotFactual: true,
+  },
+  {
+    query: "qu'y a-t-il de nouveau ?",
+    patternName: "social/phatic_checkin",
+    mustNotClarify: true,
+    mustNotFactual: true,
+  },
+  {
+    query: "tu racontes quoi ?",
+    patternName: "social/phatic_checkin",
+    mustNotClarify: true,
+    mustNotFactual: true,
+  },
+  {
+    query: "il y a du nouveau ?",
+    patternName: "social/phatic_checkin",
+    mustNotClarify: true,
+    mustNotFactual: true,
+  },
 ];
 
 describe("G35 open_prompt — JUST social + variantes", () => {
@@ -248,6 +279,10 @@ describe("G35 social_pattern_hardening — classification", () => {
     );
     assert.equal(
       isPhaticSocialCheckinIntent("qu'est-ce que tu fais pour corriger ce bug ?"),
+      false,
+    );
+    assert.equal(
+      isPhaticSocialCheckinIntent("il y a du nouveau sur python"),
       false,
     );
     assert.equal(

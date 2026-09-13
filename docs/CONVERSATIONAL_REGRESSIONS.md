@@ -1,6 +1,6 @@
 # Régressions conversationnelles
 
-Batterie permanente des lots Pack 1 / 2 / 3 / 4 + identité interne + Pack 5.
+Batterie permanente des lots Pack 1 / 2 / 3 / 4 / 5 + identité interne + Pack 6.
 
 Preuve runtime : `server/tests/conversational-regressions.test.js`  
 Gate : `cd server && npm run premerge` (étape `test:conversational-regressions`, **avant** le gate skills).
@@ -65,3 +65,13 @@ Ne pas recopier le canon input ici. Comportement : [`docs/governance/citadelle-i
 - **Erreur** : marqueur traité comme filler / greeting ; copule simple Nexxus/Citadelle ignorée ; virgule laissée dans la proposition extraite.
 - **Correction** : dictionnaire `server/src/agent/policies/conversation/linguistic_markers_fr.json` ; extraction tête/queue ; gate référents pour Nexxus / Citadelle / Studio ; faits copule fermés (Python). Oui + contexte si vrai ; Non + correction si faux.
 - **Cas dans la batterie** : Nexxus = assistant ; Citadelle = plateforme ; Python = langage ; Nexxus = plateforme (non) ; Citadelle = assistant (non).
+
+---
+
+## Pack 6 — questions sociales / conversationnelles
+
+- **Lot** : `FIX-SOCIAL-QUESTIONS-DIRECT-ANSWER`
+- **Scénario** : « qu'est ce tu racontes de beau ? », « quoi de neuf ? », « qu'y a-t-il de nouveau ? », « tu racontes quoi ? », « il y a du nouveau ? » vs check-in « salut, comment ca va ? ».
+- **Erreur** : `general/explain` + `clarify_then_build` → `simple_fast` / `epistemic_verify_external` → « piste / destination » ou web.
+- **Correction** : élargir `social/phatic_checkin` (`raconter`, `que` oral omis, `du nouveau`) ; pas de nouvelle classe d’intention ; sujet collé (`sur python`) reste info.
+- **Cas dans la batterie** : les cinq questions sociales + salut comment ça va.

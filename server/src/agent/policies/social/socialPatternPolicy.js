@@ -64,11 +64,29 @@ const WELLBEING_CONDITIONAL_RE =
 const PAPOTER_CITADELLE_RE =
   /\b(?:on\s+)?papot(?:e|er|ons)(?:\s+un\s+peu)?\b.{0,50}\b(?:citadelle|nexxus)\b/i;
 
-const PHATIC_CHECKIN_RE =
-  /\bqu['\u2019]?\s*est[- ]?ce\s+que\s+(?:tu|vous)\s+fais(?:es|ez)?\b|\b(?:(?:qu['\u2019]?\s*est[- ]?ce\s+que\s+)?(?:tu|vous)\s+)?fais(?:es|ez)?\s+quoi(?:\s+de\s+(?:beau|bon|chouette|neuf))?\b|\bquoi\s+de\s+(?:beau|bon|chouette|neuf)\b|\b(?:tu|vous)\s+bosses?\s+sur\s+quoi\b/i;
+const PHATIC_ACTIVITY_VERB = String.raw`(?:fais(?:es|ez)?|racontes?|racontez)`;
+const PHATIC_NEWS_FLAVOR = String.raw`(?:beau|bon|chouette|neuf|nouveau)`;
 
-const PHATIC_BARE_ACTIVITY_RE =
-  /^(?:salut|bonjour|hello|coucou|hey|bonsoir)\b.{0,40}\b(?:qu['\u2019]?\s*est[- ]ce que\s+)?(?:tu|vous)\s+fais(?:es|ez)?(?:\s+de\s+(?:beau|bon|chouette|neuf))?\s*[?!.…]*$|^(?:qu['\u2019]?\s*est[- ]ce que\s+)?(?:tu|vous)\s+fais(?:es|ez)?(?:\s+de\s+(?:beau|bon|chouette|neuf))?\s*[?!.…]*$|^(?:tu|vous)\s+fais\s+quoi\s*[?!.…]*$/i;
+const PHATIC_CHECKIN_RE = new RegExp(
+  [
+    String.raw`\bqu['\u2019]?\s*est[- ]?ce(?:\s+que)?\s+(?:tu|vous)\s+${PHATIC_ACTIVITY_VERB}\b`,
+    String.raw`\b(?:(?:qu['\u2019]?\s*est[- ]?ce(?:\s+que)?\s+)?(?:tu|vous)\s+)?${PHATIC_ACTIVITY_VERB}\s+quoi(?:\s+de\s+${PHATIC_NEWS_FLAVOR})?\b`,
+    String.raw`\bquoi\s+de\s+${PHATIC_NEWS_FLAVOR}\b`,
+    String.raw`\b(?:tu|vous)\s+bosses?\s+sur\s+quoi\b`,
+    String.raw`\bqu(?:['\u2019]|\s+)\s*y\s+a[- ]?t[- ]?il\s+de\s+nouveau\b`,
+    String.raw`\bil\s+y\s+a\s+du\s+nouveau\b`,
+  ].join("|"),
+  "i",
+);
+
+const PHATIC_BARE_ACTIVITY_RE = new RegExp(
+  [
+    String.raw`^(?:salut|bonjour|hello|coucou|hey|bonsoir)\b.{0,40}\b(?:qu['\u2019]?\s*est[- ]?ce(?:\s+que)?\s+)?(?:tu|vous)\s+${PHATIC_ACTIVITY_VERB}(?:\s+de\s+${PHATIC_NEWS_FLAVOR})?\s*[?!.…]*$`,
+    String.raw`^(?:qu['\u2019]?\s*est[- ]?ce(?:\s+que)?\s+)?(?:tu|vous)\s+${PHATIC_ACTIVITY_VERB}(?:\s+de\s+${PHATIC_NEWS_FLAVOR})?\s*[?!.…]*$`,
+    String.raw`^(?:tu|vous)\s+${PHATIC_ACTIVITY_VERB}\s+quoi\s*[?!.…]*$`,
+  ].join("|"),
+  "i",
+);
 
 /** « que fais-tu / que faites-vous » — inversion, pas « tu fais ». */
 const PHATIC_INVERSION_RE =
@@ -76,7 +94,11 @@ const PHATIC_INVERSION_RE =
 
 /** « qu'est-ce que tu fais pour corriger… » — pas un check-in phatique. */
 const PHATIC_TASK_OBJECT_RE =
-  /\bfais(?:es|ez)?\s+(?:pour|avec|sur|ce|cet|cette|le|la|les|un|une|mon|ton|ma|ta|du|de\s+la|l['\u2019])/i;
+  /\b(?:fais(?:es|ez)?|racontes?|racontez)\s+(?:pour|avec|sur|ce|cet|cette|le|la|les|un|une|mon|ton|ma|ta|du|de\s+la|l['\u2019])/i;
+
+/** « il y a du nouveau sur X » = info, pas small talk. */
+const PHATIC_NEWS_TOPIC_RE =
+  /\b(?:de\s+nouveau|du\s+nouveau|de\s+neuf)\s+(?:sur|dans|pour|avec|chez)\b/i;
 
 /**
  * Préambule de tâche dans un tour encore social.
@@ -350,6 +372,7 @@ export function isPhaticSocialCheckinIntent(query = "") {
   if (suppressesKnownSocialPattern(query)) return false;
   if (isSocialTurnWithTaskPreamble(query)) return false;
   if (PHATIC_TASK_OBJECT_RE.test(q)) return false;
+  if (PHATIC_NEWS_TOPIC_RE.test(q)) return false;
   return (
     PHATIC_CHECKIN_RE.test(q) ||
     PHATIC_BARE_ACTIVITY_RE.test(q) ||
