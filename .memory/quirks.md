@@ -143,3 +143,5 @@
 - [french-validation-not-filler] « si j'ai bien compris » n’est pas un greeting. Dictionnaire `server/src/agent/policies/conversation/linguistic_markers_fr.json` ; extraction tête/queue (`confirmationCheckArticulation.js`) ; gate référents pour Nexxus/Citadelle ; faits copule fermés (Python). Virgules à stripper sinon hit null. `server/data/` est gitignoré via `data/` — ne pas y mettre de source.
 
 - [identity-self-attr-not-factual] « ta date de naissance / quel âge / qui t'a créé / organisation » = attribut assistant (`isAssistantSelfAttributeIntent`), pas `simple_factual_lookup`. Tiers : `date de naissance de X`. Nom manner : La Citadelle, jamais « Nexxus Studio ».
+
+- [identity-who-is-nexxus-named] « qui est NEXXUS / c'est qui NEXXUS » = `isIdentityExternalIntent` + référent Nexxus → `INTERNAL_REFERENT_REPLIES.Nexxus` dans le filet unnamed (avant lookup). Pas « qui est » générique. Pas Pack 8.

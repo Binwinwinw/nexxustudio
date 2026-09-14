@@ -118,6 +118,19 @@ describe("internal referents authority gate", () => {
     assert.equal(resolveInternalReferentAuthorityHit(q)?.referent, "La Citadelle");
     assert.equal(isOperatingPlatformNameAsk("comment s'appelle la plateforme Steam"), false);
   });
+
+  it("qui est NEXXUS → filet unnamed ; tiers exclus", () => {
+    assert.equal(
+      resolveUnnamedInternalIdentityHit("qui est nexxus ??")?.reply,
+      NEXXUS_REPLY,
+    );
+    assert.equal(
+      resolveUnnamedInternalIdentityHit("c'est qui NEXXUS ?")?.reply,
+      NEXXUS_REPLY,
+    );
+    assert.equal(resolveUnnamedInternalIdentityHit("qui est Victor Hugo ?"), null);
+    assert.equal(resolveUnnamedInternalIdentityHit("qui est cette personne ?"), null);
+  });
 });
 
 const CONFIRM_REPLY =
@@ -229,6 +242,16 @@ describe("FIX-IDENTITY-QUESTIONS-DIRECT-ANSWER — live TC", () => {
     },
     {
       q: "qui es-tu ?",
+      referent: "Nexxus",
+      reply: NEXXUS_REPLY,
+    },
+    {
+      q: "qui est nexxus ??",
+      referent: "Nexxus",
+      reply: NEXXUS_REPLY,
+    },
+    {
+      q: "c'est qui NEXXUS ?",
       referent: "Nexxus",
       reply: NEXXUS_REPLY,
     },

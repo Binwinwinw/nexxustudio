@@ -98,6 +98,18 @@ Ne pas recopier le canon input ici. Comportement : [`docs/governance/citadelle-i
 
 ---
 
+## Follow-up — qui est NEXXUS (référent nommé)
+
+- **Commit** : à poser — `fix(identity): resolve named Nexxus who-is queries`
+- **Pas Pack 8.** Pack 7 (`bfea630`) reste fermé.
+- **Scénario** : « qui est nexxus ?? », « qui est NEXXUS ? », « c'est qui NEXXUS ? ».
+- **Erreur** : nom propre → unnamed = null ; « qui est » n’est pas un shell `c'est quoi` → `simple_factual_lookup` + fallback contrat.
+- **Correction** : `isIdentityExternalIntent` + référent `Nexxus` → `INTERNAL_REFERENT_REPLIES.Nexxus` dans `resolveUnnamedInternalIdentityHit`, avant lookup. Tiers exclus.
+- **Cas dans la batterie** : T1–T3 who-is ; T4/T5 Pack 7 ; Victor Hugo / cette personne.
+- **Effet** : même contrat que « c'est quoi Nexxus ? ».
+
+---
+
 ## Règle permanente
 
 Pour tout futur lot conversationnel :
@@ -126,3 +138,4 @@ Ne pas importer `agent.js` dans cette batterie (hang Ollama). SC déterministe s
 | Pack 5 | `6557a02` | fix(french-validation): add linguistic markers dictionary for validation/invalidation |
 | Pack 6 | `a77e097` | fix(social-questions): answer conversational questions directly in social rail |
 | Pack 7 | *(ce commit)* | fix(identity): route assistant attributes to deterministic identity rail |
+| Follow-up who-is | à poser | fix(identity): resolve named Nexxus who-is queries |

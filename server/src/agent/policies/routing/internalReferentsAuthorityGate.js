@@ -20,6 +20,7 @@
  */
 
 import {
+  isIdentityExternalIntent,
   isIdentityNameIntent,
   isIdentityWhoIntent,
   resolveAssistantSelfAttributeHit,
@@ -158,6 +159,17 @@ export function resolveInternalReferentConfirmationCheck(query = "") {
  * @returns {{ referent: string, reply: string }|null}
  */
 export function resolveUnnamedInternalIdentityHit(query = "") {
+  // « qui est NEXXUS / c'est qui NEXXUS » : nom propre, mais pas un shell « c'est quoi ».
+  // Tiers (« qui est Victor Hugo ») exclus : isIdentityExternalIntent exige nexxus.
+  if (
+    isIdentityExternalIntent(query) &&
+    matchInternalReferent(query) === "Nexxus"
+  ) {
+    return {
+      referent: "Nexxus",
+      reply: INTERNAL_REFERENT_REPLIES.Nexxus,
+    };
+  }
   if (matchInternalReferent(query)) return null;
   const selfAttr = resolveAssistantSelfAttributeHit(query);
   if (selfAttr) {

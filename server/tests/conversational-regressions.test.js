@@ -474,3 +474,51 @@ describe("Pack 7 — attributs identité assistant", () => {
     assert.notEqual(sc?.path, "social_deterministic");
   });
 });
+
+describe("Follow-up — qui est NEXXUS (référent nommé)", () => {
+  const whoQs = [
+    "qui est nexxus ??",
+    "qui est NEXXUS ?",
+    "c'est qui NEXXUS ?",
+  ];
+  for (const q of whoQs) {
+    it(`${q} → référent Nexxus, pas lookup`, async () => {
+      const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+      assert.equal(sc?.internalReferent, "Nexxus");
+      assert.equal(sc.internalReferentAuthority, true);
+      assert.equal(sc.reply, NEXXUS_REPLY);
+      assert.notEqual(sc.path, "simple_factual_lookup");
+      assert.ok(!sc.deferToLlm);
+      assert.ok(!sc.preferWebResearch);
+      assert.doesNotMatch(sc.reply, IDENTITY_LEAK);
+    });
+  }
+
+  it("Pack 7 T4 naissance inchangé", async () => {
+    const q = "quelle est ta date de naissance ?";
+    const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+    assert.equal(sc?.path, "general_knowledge_deterministic");
+    assert.match(sc.reply, /pas de date de naissance/i);
+  });
+
+  it("Pack 7 T5 nom inchangé", async () => {
+    const q = "comment t'appelles-tu ?";
+    const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+    assert.equal(sc?.path, "general_knowledge_deterministic");
+    assert.match(sc.reply, /NEXXUS/i);
+    assert.match(sc.reply, /La Citadelle/i);
+    assert.doesNotMatch(sc.reply, /Nexxus Studio/i);
+  });
+
+  const thirdParty = [
+    "qui est Victor Hugo ?",
+    "qui est cette personne ?",
+  ];
+  for (const q of thirdParty) {
+    it(`${q} → pas le référent NEXXUS`, async () => {
+      const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+      assert.notEqual(sc?.internalReferent, "Nexxus");
+      assert.notEqual(sc?.reply, NEXXUS_REPLY);
+    });
+  }
+});
