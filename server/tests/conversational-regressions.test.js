@@ -45,7 +45,7 @@ const LIVE_SALUT_REPLY =
 const CITADELLE_REPLY =
   "La Citadelle, c'est la plateforme, NEXXUS est l'assistant IA qui y vit, exécute les tâches et prend les décisions.";
 const NEXXUS_REPLY =
-  "NEXXUS, c'est l'assistant IA de La Citadelle. La Citadelle, c'est la plateforme.";
+  "NEXXUS, c'est moi : l'assistant IA de La Citadelle.";
 
 const EPISTEMIC_LONG =
   /n'ai pas assez d'éléments|piste.*destination|Je n'ai pas assez d'éléments fiables/i;

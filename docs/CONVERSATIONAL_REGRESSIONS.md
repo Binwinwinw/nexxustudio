@@ -107,6 +107,7 @@ Ne pas recopier le canon input ici. Comportement : [`docs/governance/citadelle-i
 - **Correction** : `isIdentityExternalIntent` + référent `Nexxus` → `INTERNAL_REFERENT_REPLIES.Nexxus` dans `resolveUnnamedInternalIdentityHit`, avant lookup. Tiers exclus.
 - **Cas dans la batterie** : T1–T3 who-is ; T4/T5 Pack 7 ; Victor Hugo / cette personne.
 - **Effet** : même contrat que « c'est quoi Nexxus ? ».
+- **Formulation (GO first-person)** : `INTERNAL_REFERENT_REPLIES.Nexxus` = « NEXXUS, c'est moi : l'assistant IA de La Citadelle. » Contrat partagé : « qui est / c'est qui / c'est quoi Nexxus » et le filet unnamed nom/qui-es-tu. Routage `94caa2c` inchangé.
 
 ---
 

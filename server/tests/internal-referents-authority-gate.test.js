@@ -18,7 +18,7 @@ const scOpts = {
 const CITADELLE_REPLY =
   "La Citadelle, c'est la plateforme, NEXXUS est l'assistant IA qui y vit, exécute les tâches et prend les décisions.";
 const NEXXUS_REPLY =
-  "NEXXUS, c'est l'assistant IA de La Citadelle. La Citadelle, c'est la plateforme.";
+  "NEXXUS, c'est moi : l'assistant IA de La Citadelle.";
 
 function liveOpts(query) {
   return {

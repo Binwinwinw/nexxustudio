@@ -39,7 +39,7 @@ const INTERNAL_REFERENT_REPLIES = Object.freeze({
   "La Citadelle":
     "La Citadelle, c'est la plateforme, NEXXUS est l'assistant IA qui y vit, exécute les tâches et prend les décisions.",
   Nexxus:
-    "NEXXUS, c'est l'assistant IA de La Citadelle. La Citadelle, c'est la plateforme.",
+    "NEXXUS, c'est moi : l'assistant IA de La Citadelle.",
   "Nexxus Studio":
     "Nexxus Studio, c'est le studio (produit / dépôt). La Citadelle est le nom visible de la plateforme dans l'interface. NEXXUS est l'assistant qui y tourne.",
 });

@@ -144,4 +144,4 @@
 
 - [identity-self-attr-not-factual] « ta date de naissance / quel âge / qui t'a créé / organisation » = attribut assistant (`isAssistantSelfAttributeIntent`), pas `simple_factual_lookup`. Tiers : `date de naissance de X`. Nom manner : La Citadelle, jamais « Nexxus Studio ».
 
-- [identity-who-is-nexxus-named] « qui est NEXXUS / c'est qui NEXXUS » = `isIdentityExternalIntent` + référent Nexxus → `INTERNAL_REFERENT_REPLIES.Nexxus` dans le filet unnamed (avant lookup). Pas « qui est » générique. Pas Pack 8.
+- [identity-who-is-nexxus-named] « qui est NEXXUS / c'est qui NEXXUS » = `isIdentityExternalIntent` + référent Nexxus → `INTERNAL_REFERENT_REPLIES.Nexxus` dans le filet unnamed (avant lookup). Pas « qui est » générique. Pas Pack 8. Formulation : « NEXXUS, c'est moi : l'assistant IA de La Citadelle. » (contrat partagé avec « c'est quoi Nexxus »).
