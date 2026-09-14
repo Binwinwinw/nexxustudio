@@ -29,6 +29,7 @@ import {
   isAgentStateAnthropomorphicIntent,
   isWellbeingCheckinIntent,
 } from "../social/socialPatternPolicy.js";
+import { isAssistantSelfAttributeIntent } from "../../utils/intent-guards/identityIntentGuards.js";
 
 function isSubstantiveWorkRequest(query = "") {
   if (isExplicitTextCreationRequest(query)) return true;
@@ -205,7 +206,10 @@ function detectSocialAxis(q, taskAxis) {
   const checkin = detectWellbeingCheckin(q);
   const shortSocial = q.length <= 25 && SHORT_SOCIAL_ONLY_RE.test(q);
   const socialRetraction = detectSocialRetraction(q, taskAxis);
-  const identity = IDENTITY_RE.test(q) || /^nexxus\s*\?+$/i.test(q);
+  const identity =
+    IDENTITY_RE.test(q) ||
+    /^nexxus\s*\?+$/i.test(q) ||
+    isAssistantSelfAttributeIntent(q);
   const asksTime =
     TIME_RE.test(q) && !shouldBypassLocalDatetimeShortCircuit(q);
   const asksDate =

@@ -8,6 +8,7 @@ import { isCasualSocialCheckInQuery } from "../../utils/conversation/genericGree
 import { isKnownSocialPattern, isWellbeingCheckinIntent } from "../social/index.js";
 import { isOpenExplorationFrame } from "../conversation/openExplorationFramePolicy.js";
 import { isIdeationIntent } from "../../utils/intent-guards/ideationIntentGuards.js";
+import { isAssistantSelfAttributeIntent } from "../../utils/intent-guards/identityIntentGuards.js";
 import { isInformationSeekingWithTarget } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import {
   isMultiTargetTranslationRequest,
@@ -90,6 +91,7 @@ export function isSimpleFactualQuestion(query = "") {
   if (isKnownSocialPattern(raw)) return false;
   if (isCasualSocialCheckInQuery(raw)) return false;
   if (isIdeationIntent(raw)) return false;
+  if (isAssistantSelfAttributeIntent(raw)) return false;
 
   let q = normalizeFamiliarityQuery(query);
   if (!q) return false;

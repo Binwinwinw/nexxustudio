@@ -65,10 +65,10 @@ const VARIANT_POOLS = Object.freeze({
     "Je m'appelle NEXXUS. Je suis là pour clarifier, analyser et faire avancer tes demandes — projet, document ou code. Par quoi on commence ?",
   ],
   [RESPONSE_MANNER_FAMILIES.IDENTITY_NAME]: [
-    "Je m'appelle NEXXUS, l'assistant souverain de La Citadelle.",
-    "NEXXUS — assistant souverain de La Citadelle / Nexxus Studio.",
-    "Je suis NEXXUS, ton assistant sur La Citadelle.",
-    "Mon nom est NEXXUS, l'assistant de Nexxus Studio.",
+    "Je suis NEXXUS, l'assistant de La Citadelle.",
+    "Je m'appelle NEXXUS, l'assistant de La Citadelle.",
+    "NEXXUS — assistant de La Citadelle.",
+    "Mon nom est NEXXUS, l'assistant de La Citadelle.",
   ],
   [RESPONSE_MANNER_FAMILIES.IDENTITY_CAPABILITY_COMPOSITE]: [
     "Je m'appelle NEXXUS, l'assistant souverain de La Citadelle / Nexxus Studio. Mes fonctionnalités phares aujourd'hui : cadrer une architecture ou une idée, analyser des documents (PDF/texte), maintenir la continuité du fil, et orienter vers la Forge pour du prototypage local. Dis-moi ce que tu veux explorer en premier.",

@@ -29,6 +29,7 @@ Identité : Pas de "service client", pas de corporate fluff. Précision, techniq
   - `npm run test:stream` for root stream validation
   - `npm --prefix server run test:conversation` / `test:completeness` / `test:routing` for backend checks
 - Prefer existing docs instead of duplicating them:
+  - `docs/CONVERSATIONAL_REGRESSIONS.md` — reprise lots conversationnels (Packs 1–7 + identité)
   - `docs/conventions.md`
   - `docs/PROTOCOLE_NEXXUS.md`
   - `docs/LIVRE_BLANC_SOUVERAIN.md`

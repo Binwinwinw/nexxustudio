@@ -1,5 +1,5 @@
 /**
- * Batterie permanente — Packs 1/2/3/4/5/6 + identité interne.
+ * Batterie permanente — Packs 1/2/3/4/5/6/7 + identité interne.
  * Preuve : cd server && npm run premerge
  * Fiche : docs/CONVERSATIONAL_REGRESSIONS.md
  *
@@ -390,5 +390,87 @@ describe("Pack 6 — questions sociales / conversationnelles", () => {
     assert.ok(!sc?.preferWebResearch);
     assert.match(sc.reply, /va bien|Tout va bien/i);
     assert.doesNotMatch(sc.reply, PISTE_OR_WEB);
+  });
+});
+
+const IDENTITY_LEAK =
+  /Pour répondre à|donnée factuelle directe|reformulation préalable|Nexxus Studio/i;
+const IDENTITY_NAME_CANON = /NEXXUS/i;
+const CITADELLE_ORG = /La Citadelle/i;
+
+describe("Pack 7 — attributs identité assistant", () => {
+  it("salut salut, comment t'appelles tu ??? → Citadelle, pas Studio", async () => {
+    const q = "salut salut, comment t'appelles tu ???";
+    const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+    assert.ok(sc?.reply);
+    assert.equal(sc.path, "social_deterministic");
+    assert.match(sc.reply, IDENTITY_NAME_CANON);
+    assert.match(sc.reply, CITADELLE_ORG);
+    assert.doesNotMatch(sc.reply, /Nexxus Studio/i);
+    assert.doesNotMatch(sc.reply, IDENTITY_LEAK);
+  });
+
+  const birthQs = [
+    "quelle est ta date de naissance ??",
+    "quand es-tu né ?",
+  ];
+  for (const q of birthQs) {
+    it(`${q} → identité, pas lookup`, async () => {
+      const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+      assert.ok(sc?.reply);
+      assert.notEqual(sc.path, "simple_factual_lookup");
+      assert.ok(!sc.deferToLlm);
+      assert.ok(!sc.preferWebResearch);
+      assert.match(sc.reply, /pas de date de naissance/i);
+      assert.doesNotMatch(sc.reply, IDENTITY_LEAK);
+    });
+  }
+
+  it("quelle est ta date de naissance ?? — 2e fois, même rail", async () => {
+    const q = "quelle est ta date de naissance ??";
+    const a = await runConversationShortCircuit(q, liveTcOpts(q));
+    const b = await runConversationShortCircuit(q, liveTcOpts(q));
+    assert.equal(a?.path, b?.path);
+    assert.equal(a?.reply, b?.reply);
+    assert.doesNotMatch(b.reply, /Pour répondre à|donnée factuelle/i);
+  });
+
+  it("quel âge as-tu ? → pas d'âge biologique", async () => {
+    const q = "quel âge as-tu ?";
+    const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+    assert.notEqual(sc?.path, "simple_factual_lookup");
+    assert.match(sc.reply, /âge biologique|age biologique/i);
+    assert.doesNotMatch(sc.reply, IDENTITY_LEAK);
+  });
+
+  it("qui t'a créé ? → indisponibilité, pas d'invention", async () => {
+    const q = "qui t'a créé ?";
+    const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+    assert.ok(sc?.reply);
+    assert.notEqual(sc.path, "simple_factual_lookup");
+    assert.match(sc.reply, /Je ne dispose pas de cette information/i);
+    assert.doesNotMatch(sc.reply, IDENTITY_LEAK);
+  });
+
+  it("pour quelle organisation travailles-tu ? → La Citadelle", async () => {
+    const q = "pour quelle organisation travailles-tu ?";
+    const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+    assert.notEqual(sc?.path, "simple_factual_lookup");
+    assert.match(sc.reply, CITADELLE_ORG);
+    assert.doesNotMatch(sc.reply, /Nexxus Studio/i);
+  });
+
+  it("date de naissance de Victor Hugo → pas le rail identité", async () => {
+    const q = "quelle est la date de naissance de Victor Hugo ?";
+    const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+    assert.doesNotMatch(sc?.reply || "", /pas de date de naissance réelle/i);
+    assert.notEqual(sc?.path, "social_deterministic");
+  });
+
+  it("date de naissance de mon enfant → pas le rail identité", async () => {
+    const q = "quelle est la date de naissance de mon enfant ?";
+    const sc = await runConversationShortCircuit(q, liveTcOpts(q));
+    assert.doesNotMatch(sc?.reply || "", /pas de date de naissance réelle/i);
+    assert.notEqual(sc?.path, "social_deterministic");
   });
 });

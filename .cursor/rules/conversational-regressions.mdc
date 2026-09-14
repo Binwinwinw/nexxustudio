@@ -1,0 +1,14 @@
+---
+description: Reprise lots conversationnels — lire la fiche avant tout lot routing/SC social.
+alwaysApply: true
+---
+
+# Régressions conversationnelles
+
+Source : `docs/CONVERSATIONAL_REGRESSIONS.md`
+
+Au début de session, et avant tout lot conversationnel (routing, SC, policies sociales, identité, validation FR) : **lire cette fiche**.
+
+Ne pas recopier. Ne pas rouvrir un pack fermé. Un cas rouge de `server/tests/conversational-regressions.test.js` échoue le lot en cours.
+
+Divergence mémoire / règle IDE vs fiche : la fiche gagne. Pointer, ne pas redéfinir.

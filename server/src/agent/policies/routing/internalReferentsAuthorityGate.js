@@ -22,6 +22,7 @@
 import {
   isIdentityNameIntent,
   isIdentityWhoIntent,
+  resolveAssistantSelfAttributeHit,
 } from "../../utils/intent-guards/identityIntentGuards.js";
 import { extractConfirmationProposition } from "../conversation/confirmationCheckArticulation.js";
 
@@ -158,6 +159,10 @@ export function resolveInternalReferentConfirmationCheck(query = "") {
  */
 export function resolveUnnamedInternalIdentityHit(query = "") {
   if (matchInternalReferent(query)) return null;
+  const selfAttr = resolveAssistantSelfAttributeHit(query);
+  if (selfAttr) {
+    return { referent: selfAttr.referent, reply: selfAttr.reply };
+  }
   if (isOperatingPlatformNameAsk(query)) {
     return {
       referent: "La Citadelle",

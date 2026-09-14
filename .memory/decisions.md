@@ -211,5 +211,10 @@
 
 ## [2026-09-12] Batterie conversationnelle permanente (Pack 4)
 
-- **Decision**: Packs 1/2/3 + identité sont figés dans `server/tests/conversational-regressions.test.js`, inclus dans `npm run premerge`. Fiche `docs/CONVERSATIONAL_REGRESSIONS.md`. Un cas rouge de cette batterie échoue le lot en cours.
-- **Impact**: `premerge.js`, `package.json` (root + server).
+- **Decision**: Packs 1–7 + identité sont figés dans `server/tests/conversational-regressions.test.js`, inclus dans `npm run premerge`. Fiche de reprise : `docs/CONVERSATIONAL_REGRESSIONS.md`. Un cas rouge de cette batterie échoue le lot en cours.
+- **Impact**: `premerge.js`, `package.json` (root + server), `.cursor/rules/conversational-regressions.mdc`.
+
+## [2026-09-14] Attributs identité assistant (Pack 7)
+
+- **Decision**: Naissance / âge / organisation / créateur adressés à NEXXUS = rail identité déterministe, avant `simple_factual_lookup`. Organisation canonique = La Citadelle. Tiers (`date de naissance de X`) exclus. Pas de web, pas d’invention, pas de fuite de consigne.
+- **Impact**: `identityIntentGuards.js`, `internalReferentsAuthorityGate.js`, `justIntentDetectionPolicy.js` (`isSimpleFactualQuestion` false), panel `IDENTITY_NAME`.

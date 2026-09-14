@@ -29,7 +29,18 @@ export const IDENTITY_ROLE_PATTERN =
   /\b(?:quel\s+est\s+ton\s+role|c\s*est\s+quoi\s+ton\s+role|ton\s+role(?:\s+(?:exact|ici|dans\s+la\s+citadelle))?)\b/;
 
 export const IDENTITY_NAME_REPLY =
-  "Je m'appelle NEXXUS, l'assistant souverain de La Citadelle.";
+  "Je suis NEXXUS, l'assistant de La Citadelle.";
+
+const IDENTITY_BIRTH_REPLY =
+  "Je n'ai pas de date de naissance réelle : je suis un assistant logiciel conçu pour La Citadelle.";
+
+const IDENTITY_AGE_REPLY =
+  "Je n'ai pas d'âge biologique : je suis un assistant logiciel.";
+
+const IDENTITY_ORG_REPLY =
+  "Je suis NEXXUS, l'assistant de La Citadelle.";
+
+const IDENTITY_UNKNOWN_ATTR_REPLY = "Je ne dispose pas de cette information.";
 
 export const IDENTITY_WHO_REPLY =
   "Salut ! Je suis NEXXUS, l'assistant souverain de La Citadelle / Nexxus Studio. Je peux t'aider à cadrer un projet, analyser des documents, explorer du code ou préparer un passage vers la Forge. Comment puis-je t'aider ?";
@@ -114,6 +125,80 @@ export function isIdentityRoleIntent(query = "") {
   return true;
 }
 
+function isThirdPartyIdentityAttributeAsk(query = "") {
+  const q = normalizeIdentityQuery(query);
+  if (!q) return false;
+  if (/\bdate\s+de\s+naissance\s+de\b/.test(q)) return true;
+  if (
+    /\bnaissance\b/.test(q) &&
+    /\b(?:mon|ma|mes|son|sa|ses|leur|cette|cet|ce)\s+(?:fils|fille|enfant|bebe|pere|mere|personne)\b/.test(
+      q,
+    )
+  ) {
+    return true;
+  }
+  return false;
+}
+
+const SELF_BIRTH_RE =
+  /\b(?:ta\s+date\s+de\s+naissance|as[- ]?tu\s+(?:une\s+)?date\s+de\s+naissance|as\s+tu\s+(?:une\s+)?date\s+de\s+naissance|quand\s+(?:es[- ]?tu|es\s+tu|tu\s+es)\s+ne|tu\s+es\s+ne\s+quand)\b/i;
+
+const SELF_AGE_RE =
+  /\b(?:quel\s+age\s+(?:as[- ]?tu|as\s+tu|tu\s+as)|tu\s+as\s+quel\s+age|ton\s+age)\b/i;
+
+const SELF_ORG_RE =
+  /\b(?:pour\s+quelle\s+organisation|pour\s+qui\s+travailles(?:[- ]?tu|\s+tu)|tu\s+travailles\s+pour\s+qui|quelle\s+est\s+ton\s+organisation)\b/i;
+
+const SELF_CREATOR_RE =
+  /\bqui\s+t\s+a\s+(?:cree|concu|fait)\b/i;
+
+/**
+ * Attribut interne de l’assistant (naissance, âge, org, créateur).
+ * Pas un tiers, pas une lookup factuelle.
+ * @param {string} query
+ */
+export function isAssistantSelfAttributeIntent(query = "") {
+  if (isThirdPartyIdentityAttributeAsk(query)) return false;
+  const q = normalizeIdentityQuery(query);
+  if (!q || q.length < 8 || q.length > 120) return false;
+  return (
+    SELF_BIRTH_RE.test(q) ||
+    SELF_AGE_RE.test(q) ||
+    SELF_ORG_RE.test(q) ||
+    SELF_CREATOR_RE.test(q)
+  );
+}
+
+/**
+ * @param {string} query
+ * @returns {{ referent: string, reply: string, attribute: string }|null}
+ */
+export function resolveAssistantSelfAttributeHit(query = "") {
+  if (!isAssistantSelfAttributeIntent(query)) return null;
+  const q = normalizeIdentityQuery(query);
+  if (SELF_BIRTH_RE.test(q)) {
+    return { referent: "Nexxus", reply: IDENTITY_BIRTH_REPLY, attribute: "birth_date" };
+  }
+  if (SELF_AGE_RE.test(q)) {
+    return { referent: "Nexxus", reply: IDENTITY_AGE_REPLY, attribute: "age" };
+  }
+  if (SELF_ORG_RE.test(q)) {
+    return { referent: "Nexxus", reply: IDENTITY_ORG_REPLY, attribute: "organization" };
+  }
+  if (SELF_CREATOR_RE.test(q)) {
+    return {
+      referent: "Nexxus",
+      reply: IDENTITY_UNKNOWN_ATTR_REPLY,
+      attribute: "creator",
+    };
+  }
+  return {
+    referent: "Nexxus",
+    reply: IDENTITY_UNKNOWN_ATTR_REPLY,
+    attribute: "unknown",
+  };
+}
+
 export function isIdentityIntent(query = "") {
   return (
     isIdentityNameIntent(query) ||
@@ -121,18 +206,18 @@ export function isIdentityIntent(query = "") {
     isIdentityExternalIntent(query) ||
     isIdentityNatureIntent(query) ||
     isIdentitySpecialtiesIntent(query) ||
-    isIdentityRoleIntent(query)
+    isIdentityRoleIntent(query) ||
+    isAssistantSelfAttributeIntent(query)
   );
 }
 
 export function getIdentityDeterministicReply(query = "", options = {}) {
   let reply = null;
-  if (isIdentityNameIntent(query)) {
-    reply = composeMannerReply({
-      family: RESPONSE_MANNER_FAMILIES.IDENTITY_NAME,
-      history: options.history || [],
-      salt: query,
-    });
+  const attr = resolveAssistantSelfAttributeHit(query);
+  if (attr?.reply) {
+    reply = attr.reply;
+  } else if (isIdentityNameIntent(query)) {
+    reply = IDENTITY_NAME_REPLY;
   } else if (isIdentitySpecialtiesIntent(query)) {
     reply = IDENTITY_SPECIALTIES_REPLY;
   } else if (isIdentityRoleIntent(query)) {

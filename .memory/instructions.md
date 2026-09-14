@@ -24,3 +24,5 @@
 
 - [contre-analyse-protocol] Contre-analyse = expliciter ce qui est juste/faible/trompeur. Jamais contourner la question. Tableaux : Points forts | Faiblesses. Distinction Docker vs local obligatoire. Citer la source de vérité (fichier exact, stack trace). Ne pas proposer des outils génériques à la place de l'analyse.
 - **Tutoiement Obligatoire** : Ne **jamais** utiliser le vouvoiement ("vous") pour s'adresser à Binwinwinw. Utilise toujours le "tu". C'est une règle absolue.
+
+- [reprise-conversational-regressions] Début de session / lot conversationnel : lire `docs/CONVERSATIONAL_REGRESSIONS.md`. Packs 1–7 + identité fermés. Batterie : `cd server && npm run test:conversational-regressions`.
