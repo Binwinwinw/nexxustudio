@@ -9,11 +9,19 @@ import { isResearchThenSummarizeRequest } from "../../policies/routing/researchT
 const ANALYSIS_VERB_RE =
   /\b(?:analys(?:e|er|e)|audite(?:r)?|review|revue|inspecte(?:r)?|examine(?:r)?|évalue|evalue|evaluer|critique(?:r)?)\b/i;
 
+/** Résumé verbal — pas fusionné dans ANALYSIS_VERB_RE (trop large sans locator GitHub). */
+const REPO_SUMMARY_SHELL_RE =
+  /\b(?:r[eé]sum(?:e|er)|un\s+r[eé]sum[eé])\b/i;
+
 const REPO_NOUN_RE =
   /\b(?:d[eé]p[oô]t|repo(?:sitory)?|codebase|projet\s+git)\b/i;
 
 const GITHUB_URL_RE =
   /\bhttps?:\/\/(?:www\.)?github\.com\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)(?:\.git)?(?:\/[^\s]*)?/i;
+
+/** owner/repo uniquement (pas blob/tree/issues/pull). */
+const GITHUB_REPO_ROOT_URL_RE =
+  /\bhttps?:\/\/(?:www\.)?github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+(?:\.git)?\/?(?=[\s?#,]|$)/i;
 
 const GITHUB_OWNER_REPO_RE =
   /\bgithub\.com\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)\b/i;
@@ -65,6 +73,24 @@ function hasExplicitRepoLocator(query) {
     GITHUB_OWNER_REPO_RE.test(query) ||
     PROJECTS_DIR_RE.test(query)
   );
+}
+
+function isGithubRepositoryRootLocator(query = "") {
+  const raw = String(query || "");
+  if (GITHUB_REPO_ROOT_URL_RE.test(raw)) return true;
+  const m = raw.match(
+    /\bgithub\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+(?:\.git)?(\/[^\s]*)?/i,
+  );
+  if (!m) return false;
+  const tail = m[1] || "";
+  return !tail || tail === "/";
+}
+
+function isGithubRepoSummaryRequest(query, q) {
+  if (!REPO_SUMMARY_SHELL_RE.test(q)) return false;
+  if (!REPO_NOUN_RE.test(q)) return false;
+  if (/\bfichiers?\b/i.test(q)) return false;
+  return isGithubRepositoryRootLocator(query);
 }
 
 const DOCUMENTATION_SUBJECT_RE =
@@ -201,7 +227,9 @@ export function isRepoAnalysisRequest(query = "", options = {}) {
   const q = normalizeFamiliarityQuery(query);
   if (!q) return false;
   if (CREATE_VERB_RE.test(q) && !ANALYSIS_VERB_RE.test(q)) return false;
-  if (!ANALYSIS_VERB_RE.test(q)) return false;
+  if (!ANALYSIS_VERB_RE.test(q)) {
+    return isGithubRepoSummaryRequest(query, q);
+  }
   if (isDocumentationSubjectWithoutRepoLocator(query)) return false;
 
   if (hasExplicitRepoLocator(query) || /github\.com\//i.test(query)) {

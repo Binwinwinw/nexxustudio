@@ -117,6 +117,40 @@ describe("REPO_ANALYSIS_V1 — intent", () => {
       false,
     );
   });
+
+  const GH_HY4 = "https://github.com/Tencent-Hunyuan/Hy4-preview";
+
+  it("résumé + dépôt + URL GitHub racine → revue de dépôt", () => {
+    assert.equal(
+      isRepoAnalysisRequest(`fait un résumé du dépôt : ${GH_HY4}`),
+      true,
+    );
+    assert.equal(isRepoAnalysisRequest(`résume ce dépôt ${GH_HY4}`), true);
+    assert.equal(
+      isRepoAnalysisRequest(`fais un résumé de ce repo ${GH_HY4}`),
+      true,
+    );
+  });
+
+  it("résumé de page / fichier GitHub / répertoire ≠ revue de dépôt", () => {
+    assert.equal(
+      isRepoAnalysisRequest("fais un résumé de cette page : https://example.com"),
+      false,
+    );
+    assert.equal(
+      isRepoAnalysisRequest(`résume le fichier README ${GH_HY4}`),
+      false,
+    );
+    assert.equal(
+      isRepoAnalysisRequest(`résume ce répertoire ${GH_HY4}`),
+      false,
+    );
+    assert.equal(
+      isRepoAnalysisRequest(`résume ce dépôt ${GH_HY4}/blob/main/README.md`),
+      false,
+    );
+    assert.equal(isRepoAnalysisRequest("salut quoi de neuf ?"), false);
+  });
 });
 
 describe("REPO_ANALYSIS_V1 — routing", () => {
@@ -155,6 +189,24 @@ describe("REPO_ANALYSIS_V1 — routing", () => {
     assert.equal(hit?.deferToLlm, true);
     assert.equal(hit?.forcedIntentContractId, "REPO_ANALYSIS");
     assert.ok(hit?.webQueryOverride);
+  });
+
+  it("résumé du dépôt GitHub → REPO_ANALYSIS, pas WEB_SUMMARY", async () => {
+    const q =
+      "fait un résumé du dépôt : https://github.com/Tencent-Hunyuan/Hy4-preview";
+    const hit = await runConversationShortCircuit(q);
+    assert.equal(hit?.path, "repo_analysis_llm");
+    assert.equal(hit?.forcedIntentContractId, "REPO_ANALYSIS");
+    assert.notEqual(hit?.path, "document_synthesis_llm");
+    assert.ok(!hit?.webSummary);
+  });
+
+  it("résumé de page générique → pas REPO_ANALYSIS", async () => {
+    const hit = await runConversationShortCircuit(
+      "fais un résumé de cette page : https://example.com",
+    );
+    assert.notEqual(hit?.path, "repo_analysis_llm");
+    assert.notEqual(hit?.forcedIntentContractId, "REPO_ANALYSIS");
   });
 
   it("brief Spec Kit ne short-circuit pas vers REPO_ANALYSIS", async () => {
