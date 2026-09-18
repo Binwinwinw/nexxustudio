@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { OTEL_ATTRIBUTES, SPAN_NAMES } from './otelSemanticMap.js';
 import { logTraceEvent } from './traceLogger.js';
 import traceStore from './traceStore.js';
+import { projectRoutingResultMetadata } from './routingResultMetadata.js';
 
 function newSpanId() {
   return crypto.randomBytes(8).toString('hex');
@@ -227,16 +228,20 @@ class TurnTelemetry {
     this.recordEvent('pipeline.route', {
       path,
       status: 'ok',
-      ...extra,
+      ...projectRoutingResultMetadata(extra),
     });
   }
 
   /** Dernier chemin enregistré pour ce tour (diagnostic runtime / SSE). */
   getLastPipelinePath() {
     if (this._lastPipelinePath) return this._lastPipelinePath;
-    const routes = this.events.filter((e) => e.event === 'pipeline.route');
-    const last = routes[routes.length - 1];
+    const last = this.getLastRouteRecord();
     return last?.path || null;
+  }
+
+  getLastRouteRecord() {
+    const routes = this.events.filter((e) => e.event === 'pipeline.route');
+    return routes.length ? routes[routes.length - 1] : null;
   }
 
   markLayer(layer) {

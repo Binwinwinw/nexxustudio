@@ -4,6 +4,7 @@ import sessionRepository from '../db/repositories/sessionRepository.js';
 import eventRepository from '../db/repositories/eventRepository.js';
 import validationService from './validationService.js';
 import sessionAccessService from './sessionAccessService.js';
+import { composeAssistantEventMetadata } from '../agent/telemetry/routingResultMetadata.js';
 
 export class RuntimeService {
   /**
@@ -27,7 +28,7 @@ export class RuntimeService {
       actor: 'assistant',
       family,
       payload: { content },
-      metadata
+      metadata: composeAssistantEventMetadata(metadata),
     }, browserId);
 
     // Déclencher la validation après la réponse.

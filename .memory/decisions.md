@@ -218,3 +218,42 @@
 
 - **Decision**: Naissance / âge / organisation / créateur adressés à NEXXUS = rail identité déterministe, avant `simple_factual_lookup`. Organisation canonique = La Citadelle. Tiers (`date de naissance de X`) exclus. Pas de web, pas d’invention, pas de fuite de consigne.
 - **Impact**: `identityIntentGuards.js`, `internalReferentsAuthorityGate.js`, `justIntentDetectionPolicy.js` (`isSimpleFactualQuestion` false), panel `IDENTITY_NAME`.
+
+## [2026-09-14] Next move conversationnel — attente de GO
+
+- **Decision**: Packs 1–7 et follow-ups who-is / formulation 1re personne restent fermés. Pack 8 fermé, sans GO. Le prochain choix n’est pas arrêté. Attendre un GO explicite parmi : conserver l’état local ; commit documentaire séparé ; traiter l’arbre sale indépendant ; préparer l’ouverture contrôlée du Pack 8. Source de reprise : `docs/CONVERSATIONAL_REGRESSIONS.md`.
+- **Impact**: aucun code. Pointeur seulement.
+
+## [2026-09-16] Matrice de routage — décisions produit M3/M7/M8/T9
+
+- **Decision**: Lot 2 accepté. M3 = social disponibilité, pas d’action. M7 = continuation seulement si contexte actif, sinon clarify. M8 = create seulement si nom+contenu+contexte, sinon clarify. T9 = état dépôt, pas social ni REPO_ANALYSIS. Pronom `tu` n’élit pas le rail. Clarify = prérequis interruptible à tout rang. Cible hors `entities` / hors champ `task` immédiat. T2 écart runtime ouvert. Pas de Lot 3, pas d’`assistant_availability`.
+- **Impact**: `docs/governance/routing-decision-matrix-v1.md`, `server/tests/fixtures/routing-decision-matrix-v1.js`, `server/tests/routing-decision-matrix-v1.spec.test.js`. Runtime inchangé.
+
+## [2026-09-16] Siège cible Option C provisoire
+
+- **Decision**: Cible hors frame (Option C, provisoire, réversible). Projections A = labels diagnostic/politique, non autoritaires. Pas de `targetDetector`. Signal absent → `unknown`. Contexte actif M7 = 5 critères en conjonction ; historique insuffisant. T2 futur = shadow « factual coûteux vs assistant-directed », pas `availability_check`. Lot 3 shadow non ouvert.
+- **Impact**: mêmes artefacts Lot 2 + ce pointeur. Runtime inchangé.
+
+## [2026-09-16] Lot 3 shadow — T2 suspect + M7 contexte actif
+
+- **Decision**: Option C. Télémétrie `routing_observe` enrichie (champs `*_shadow` uniquement). T2 `simple_factual_lookup` marqué `suspect` sans changer la route. M7 tri-état. Labels A non autoritaires. `shadow_consumed=false`. Pas d’`assistant_availability`. Consume interdit tant qu’un GO dédié n’existe pas.
+- **Impact**: `routingObserveTelemetry.js`, `intentShortCircuit.js` (passage de contexte existant seulement), `server/tests/routing-observe-lot3-shadow.test.js`. Routes inchangées.
+
+## [2026-09-17] M7 — NO_CONTEXT / ACTIVE_CONTEXT / CONTEXT_AMBIGUOUS
+
+- **Decision**: Trois états diagnostiques hors frame. ACTIVE_CONTEXT = cinq critères `true`, dont un résultat **exploitable** (pipeline identifiable, acte associé, non social/méta, non interrompu). Dernier message assistant non vide insuffisant. Pas de fenêtre en minutes. T2 `suspect` observé, non consommé. TU_DATETIME exclusion incomplète = sujet séparé. M4 hors lot.
+- **Impact**: `docs/governance/routing-decision-matrix-v1.md`, fixture + spec tests Lot 2. Runtime inchangé.
+
+## [2026-09-17] ALIGN-LOT3-RESULT-USABILITY — mesure shadow
+
+- **Decision**: Remplacer « dernier assistant non vide » par six critères tri-état (`pipeline_identifiable`, `act_or_task_associated`, `not_interrupted`, `not_social`, `not_meta`, `continuation_compatible`) → `result_usability_shadow`. `unknown` jamais converti. M7 `open_task_or_recent_result` = `task_open` OU `exploitable`. Historique `{role,content}` seul → `unknown`. Non consommé. Pas d’`assistant_availability`. T2 toujours suspect non consommé.
+- **Impact**: `routingObserveTelemetry.js`, `routing-observe-lot3-shadow.test.js`, fixture/spec RESULT_USABILITY. Routes inchangées. Pas de commit avant revue.
+
+## [2026-09-17] REVIEW-LOT3-RESULT-USABILITY — shadow validé
+
+- **Impact**: plan spec `PERSIST_ROUTING_METADATA_V1.opened=false`. Runtime inchangé. Pas de commit.
+
+## [2026-09-17] PERSIST-ROUTING-METADATA-V1 — allowlist historique
+
+- **Decision**: Propager path / contrat / interruption / resultStatus / turnId via `ai_response.metadata_json` (projection explicite). Reconstruction T+1 dans `mapEventsToConversationHistory`. Cache `lastRoutingResult` un slot, non autoritaire. Legacy sans allowlist → `unknown`. Pas de consume shadow. Routes inchangées. T2 toujours suspect non consommé.
+- **Impact**: `routingResultMetadata.js`, `sessionHistoryService.js`, `runtimeService.js`, `sessionWorkMemory.js`, persist HTTP/job, tests `persist-routing-metadata.test.js`. Pas de commit avant revue.

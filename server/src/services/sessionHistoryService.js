@@ -2,8 +2,10 @@
  * Historique conversationnel session — source DB (event store) avec fallback client.
  */
 import eventRepository from '../db/repositories/eventRepository.js';
+import { projectRoutingResultMetadata } from '../agent/telemetry/routingResultMetadata.js';
 
-const DEFAULT_LIMIT = 40;
+export const SESSION_CONVERSATION_HISTORY_LIMIT = 40;
+const DEFAULT_LIMIT = SESSION_CONVERSATION_HISTORY_LIMIT;
 
 /** Métriques de continuité — activer avec SESSION_HISTORY_METRICS=1 */
 export function isSessionHistoryMetricsEnabled() {
@@ -59,6 +61,37 @@ export function logSessionHistoryResolution(sessionId, stats) {
   );
 }
 
+function historyEntryKey(message = {}) {
+  return `${message.role}::${message.content}`;
+}
+
+function withRoutingMetadata(role, content, source = {}) {
+  const base = { role, content };
+  if (role !== "assistant") return base;
+  const routing = projectRoutingResultMetadata(source);
+  return Object.keys(routing).length ? { ...base, ...routing } : base;
+}
+
+function overlayDbRoutingMetadata(chosen = [], dbHistory = []) {
+  const byKey = new Map();
+  for (const message of dbHistory) {
+    if (message?.role !== "assistant") continue;
+    const routing = projectRoutingResultMetadata(message);
+    if (Object.keys(routing).length) {
+      byKey.set(historyEntryKey(message), routing);
+    }
+  }
+  if (byKey.size === 0) return chosen;
+  return chosen.map((message) => {
+    const routing = byKey.get(historyEntryKey(message));
+    if (!routing) return message;
+    return withRoutingMetadata(message.role, message.content, {
+      ...message,
+      ...routing,
+    });
+  });
+}
+
 /**
  * @param {Array<object>} events
  * @param {number} [limit]
@@ -68,13 +101,14 @@ export function mapEventsToConversationHistory(events = [], limit = DEFAULT_LIMI
   const messages = (Array.isArray(events) ? events : [])
     .filter(
       (event) =>
-        event?.event_family === 'CONVERSATION' &&
-        (event.event_type === 'user_message' || event.event_type === 'ai_response'),
+        event?.event_family === "CONVERSATION" &&
+        (event.event_type === "user_message" || event.event_type === "ai_response"),
     )
-    .map((event) => ({
-      role: event.event_type === 'user_message' ? 'user' : 'assistant',
-      content: String(event.payload_json?.content || '').trim(),
-    }))
+    .map((event) => {
+      const role = event.event_type === "user_message" ? "user" : "assistant";
+      const content = String(event.payload_json?.content || "").trim();
+      return withRoutingMetadata(role, content, event.metadata_json || {});
+    })
     .filter((message) => message.content);
 
   return messages.slice(-limit);
@@ -97,17 +131,12 @@ export async function loadSessionConversationHistory(
 
 function sanitizeClientHistory(clientHistory = [], limit = DEFAULT_LIMIT) {
   return (Array.isArray(clientHistory) ? clientHistory : [])
-    .filter((m) => m?.content && (m.role === 'user' || m.role === 'assistant'))
-    .map((m) => ({
-      role: m.role,
-      content: String(m.content).trim(),
-    }))
+    .filter((m) => m?.content && (m.role === "user" || m.role === "assistant"))
+    .map((m) =>
+      withRoutingMetadata(m.role, String(m.content).trim(), m),
+    )
     .filter((m) => m.content)
     .slice(-limit);
-}
-
-function historyEntryKey(message = {}) {
-  return `${message.role}::${message.content}`;
 }
 
 /**
@@ -136,7 +165,8 @@ export function mergeConversationHistories(
     lastDb?.content === lastClient?.content;
 
   if (tailsAligned) {
-    return (client.length >= db.length ? client : db).slice(-limit);
+    const chosen = (client.length >= db.length ? client : db).slice(-limit);
+    return overlayDbRoutingMetadata(chosen, db);
   }
 
   const merged = [];
@@ -147,7 +177,7 @@ export function mergeConversationHistories(
     seen.add(key);
     merged.push(message);
   }
-  return merged.slice(-limit);
+  return overlayDbRoutingMetadata(merged.slice(-limit), db);
 }
 
 /**
@@ -203,6 +233,7 @@ export async function resolveSessionConversationHistory(
 }
 
 export default {
+  SESSION_CONVERSATION_HISTORY_LIMIT,
   mapEventsToConversationHistory,
   loadSessionConversationHistory,
   mergeConversationHistories,

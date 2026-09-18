@@ -285,6 +285,7 @@ import {
   beginSessionWorkTurn,
   commitSessionWorkTurn,
 } from "./memory/sessionWorkMemory.js";
+import { collectRoutingResultFromTelemetry } from "./telemetry/routingResultMetadata.js";
 import {
   resolvePosture,
   buildPosturePromptAddon,
@@ -2013,6 +2014,7 @@ class AgentPipeline {
         turnLoop,
         languagePolicy: pipelineTelemetryCtx?.languagePolicy || null,
         response_commitment: requestWorkup?.response_commitment || null,
+        turnTelemetry,
       });
 
       // WorkloadSignal + WorkUnitCountAndPlan — count→reconcile→normalize→plan (verrou avant exécution)
@@ -2197,7 +2199,10 @@ class AgentPipeline {
         if (shortCircuit.segmentPlan) {
           pipelineTelemetryCtx.segmentPlan = shortCircuit.segmentPlan;
         }
-        turnTelemetry.recordPipelinePath(shortCircuit.path);
+        turnTelemetry.recordPipelinePath(shortCircuit.path, {
+          forcedIntentContractId: shortCircuit.forcedIntentContractId,
+          socialPatternName: shortCircuit.socialPatternName,
+        });
         recordRequestIntentFrameTelemetry(query, {
           pipelinePath: shortCircuit.path,
           shortCircuitPath: shortCircuit.path,
@@ -4254,6 +4259,11 @@ class AgentPipeline {
           intent: intentTriageResult?.top_intent || null,
           confidence: intentTriageResult?.confidence || null,
           pipelinePath: turnTelemetry.getLastPipelinePath(),
+          lastRoutingResult: collectRoutingResultFromTelemetry(turnTelemetry, {
+            failed: pipelineTelemetryCtx?.success === false,
+            status: pipelineTelemetryCtx?.success === false ? "error" : "ok",
+            error: Boolean(pipelineTelemetryCtx?.error) || Boolean(turnTelemetry.error),
+          }),
           attachmentRefs,
           attachments: attachedFiles,
           sessionMode: postureDecision?.nextState || null,
@@ -4604,7 +4614,9 @@ class AgentPipeline {
       turnTelemetry,
     });
 
-    turnTelemetry?.recordPipelinePath?.(pipelinePath);
+    turnTelemetry?.recordPipelinePath?.(pipelinePath, {
+      forcedIntentContractId: pipelineTelemetryCtx?.intent_contract_id,
+    });
     markPipelineTurn(pipelineTelemetryCtx, pipelinePath, status, reason);
     recordTurn(
       pipelinePath,

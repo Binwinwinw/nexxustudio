@@ -8,6 +8,7 @@ import telemetryPersistor from "../agent/telemetry/telemetryPersistor.js";
 import turnTelemetry from "../agent/telemetry/turnTelemetry.js";
 import crypto from "crypto";
 import { resolveSessionConversationHistory } from "./sessionHistoryService.js";
+import { collectRoutingResultFromTelemetry } from "../agent/telemetry/routingResultMetadata.js";
 import { buildForgePhasePrompt, isForgeIdeationLeakOutput } from "../forge/forgePhasePrompt.js";
 import { FORGE_WEBAPP_BUILD_CONTRACT_ID } from "../forge/forgeProductionContract.js";
 
@@ -263,7 +264,16 @@ export class ProductionJobManager {
         effectiveSessionId,
         result,
         "CONVERSATION",
-        { tps, duration, expertKey: expert },
+        {
+          tps,
+          duration,
+          expertKey: expert,
+          ...collectRoutingResultFromTelemetry(turnTelemetry, {
+            aborted: Boolean(job.abortController?.signal?.aborted),
+            interrupted: Boolean(job.abortController?.signal?.aborted),
+            status: "ok",
+          }),
+        },
         browserId
       );
 

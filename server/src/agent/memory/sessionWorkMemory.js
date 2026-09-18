@@ -7,6 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { extractFilePathsFromText } from "../policies/guards/index.js";
 import { classifyErrorCategory } from "../policies/code/codeErrorPriorityPolicy.js";
+import { projectRoutingResultMetadata } from "../telemetry/routingResultMetadata.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SERVER_ROOT = path.resolve(__dirname, "../../..");
@@ -54,6 +55,7 @@ export function createEmptySessionWorkMemory(sessionId = "default-session") {
     corrections: [],
     sessionMode: null,
     activeGoal: null,
+    lastRoutingResult: null,
     stalenessScore: 0,
     updatedAt: now,
   };
@@ -81,6 +83,12 @@ export function pruneSessionWorkMemory(state = {}) {
   next.intentions = pruneList(next.intentions, SESSION_WORK_MEMORY_LIMITS.intentions);
   next.openErrors = pruneList(next.openErrors, SESSION_WORK_MEMORY_LIMITS.openErrors);
   next.corrections = pruneList(next.corrections, SESSION_WORK_MEMORY_LIMITS.corrections);
+  if (next.lastRoutingResult) {
+    const routing = projectRoutingResultMetadata(next.lastRoutingResult);
+    next.lastRoutingResult = Object.keys(routing).length ? routing : null;
+  } else {
+    next.lastRoutingResult = null;
+  }
   next.stalenessScore = computeStalenessScore(next.lastTurnTimestamp);
   next.updatedAt = new Date().toISOString();
   return next;
@@ -216,6 +224,7 @@ export function commitSessionWorkTurn({
   intent = null,
   confidence = null,
   pipelinePath = null,
+  lastRoutingResult = undefined,
   attachmentRefs = [],
   openErrors = [],
   corrections = [],
@@ -271,6 +280,13 @@ export function commitSessionWorkTurn({
   if (activeGoal !== undefined) {
     next.activeGoal = activeGoal;
   }
+
+  const routing = projectRoutingResultMetadata(
+    lastRoutingResult !== undefined
+      ? lastRoutingResult || {}
+      : { path: pipelinePath, pipelinePath },
+  );
+  next.lastRoutingResult = Object.keys(routing).length ? routing : null;
 
   return saveSessionWorkMemory(next);
 }

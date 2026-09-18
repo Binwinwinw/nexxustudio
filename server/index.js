@@ -23,6 +23,7 @@ import sessionRepository from "./src/db/repositories/sessionRepository.js";
 import eventRepository from "./src/db/repositories/eventRepository.js";
 import runtimeService from "./src/services/runtimeService.js";
 import { resolveSessionConversationHistory } from "./src/services/sessionHistoryService.js";
+import { collectRoutingResultFromTelemetry } from "./src/agent/telemetry/routingResultMetadata.js";
 import snapshotRepository from "./src/db/repositories/snapshotRepository.js";
 import sessionAccessService from "./src/services/sessionAccessService.js";
 import {
@@ -1475,6 +1476,11 @@ app.post(
           tps,
           totalTokens: tokenCount,
           duration,
+          ...collectRoutingResultFromTelemetry(turnTelemetry, {
+            aborted: Boolean(req.aborted),
+            interrupted: Boolean(req.aborted),
+            status: streamStatus,
+          }),
         },
         req.browserId,
       );
@@ -2061,6 +2067,11 @@ app.post(
           tps,
           duration,
           expertKey,
+          ...collectRoutingResultFromTelemetry(turnTelemetry, {
+            aborted: Boolean(req.aborted),
+            interrupted: Boolean(req.aborted),
+            status: "ok",
+          }),
         },
         req.browserId,
       );
