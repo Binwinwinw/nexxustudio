@@ -120,6 +120,7 @@ import {
   isCausalWhyExplainRequest,
 } from "../../policies/posture/index.js";
 import { recordSocialPatternTelemetry } from "../../telemetry/socialPatternTelemetry.js";
+import { recordRoutingObserveTelemetry } from "../../telemetry/routingObserveTelemetry.js";
 import { isExplicitDocumentAttachmentTurn } from "../../policies/routing/routingLatencyContracts.js";
 import { isConversationMemoryRecallRequest, isAttachedVisionRequest, isTaskCapabilityAskWithoutPayload, buildTaskCapabilityAskReply } from "../../utils/conversation/conversationGuards.js";
 import { resolveGeneralKnowledgeShortCircuit } from "../replies/generalKnowledgeComposerContract.js";
@@ -994,7 +995,7 @@ export function assertPreEmitCoherence({
  *   enforce?: { allowRefusal: boolean },
  * }|null}
  */
-export async function runConversationShortCircuit(query, options = {}) {
+async function runConversationShortCircuitBody(query, options = {}) {
   const {
     wantsAnalysis = false,
     history = [],
@@ -3552,6 +3553,24 @@ export async function runConversationShortCircuit(query, options = {}) {
   }
 
   return null;
+}
+
+export async function runConversationShortCircuit(query, options = {}) {
+  const hit = await runConversationShortCircuitBody(query, options);
+  recordRoutingObserveTelemetry(query, {
+    hit,
+    justIntent: options.justIntent || null,
+    requestFrame: options.queryUnderstanding?.requestFrame || null,
+    expectedTargetShadow: options.expectedTargetShadow ?? null,
+    history: options.history,
+    turnTelemetry: options.turnTelemetry || null,
+    costObservedMs: options.costObservedMs ?? null,
+    turnLoop: options.turnLoop || null,
+    turnComprehension: options.turnComprehension || null,
+    queryUnderstanding: options.queryUnderstanding || null,
+    priorState: options.priorState || null,
+  });
+  return hit;
 }
 
 export async function classifyShortCircuitIntent(query, options = {}) {
