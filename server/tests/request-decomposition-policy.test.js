@@ -27,6 +27,11 @@ import {
   enforceModeContract,
   RESPONSE_MODES,
 } from "../src/agent/config/modeResponseContracts.js";
+import { runAgentUnderstandingPhase } from "../src/agent/nexxusAgentCycle.js";
+import { gateSocialFinalize } from "../src/agent/policies/conversation/turnComprehension.js";
+import { classifySocialPattern } from "../src/agent/policies/social/index.js";
+import { shouldRunWordGuardSimpleFast } from "../src/agent/paths/simpleFastPath.js";
+import { resolveIntentComposition } from "../src/agent/policies/intent/intentCompositionPolicy.js";
 
 const multiLangQuery =
   "je veux traduire la phrase suivante en espagnol, en allemand, en arabe et en chinois : Suivez la progression de votre enfant en toute sérénité merci par avance";
@@ -278,6 +283,144 @@ describe("Social multi-signal v1 — short-circuit après composition", () => {
       assert.doesNotMatch(
         hit.reply || "",
         /^Salut ! Si tu veux on peut papoter/i,
+      );
+    }
+  });
+});
+
+const CASUAL_STATUS_T2 = "okok c'est cool si tout va bien pour toi";
+const SOCIAL_T1_HISTORY = [
+  { role: "user", content: "bonjour comment vas tu ?" },
+  { role: "assistant", content: "Ça va bien, merci." },
+];
+
+async function runDecompSocialChain(query, history = []) {
+  const justIntent = evaluateJustIntent(query);
+  const requestDecomposition = decomposeRequest(query, history);
+  const { turnComprehension, turnLoop, understanding } =
+    runAgentUnderstandingPhase(query, history);
+  const composition = resolveIntentComposition(query, {
+    history,
+    justIntent,
+    requestDecomposition,
+  });
+  const gated = gateSocialFinalize(turnComprehension, turnLoop, {
+    action: "finalize_social",
+    rail: "social_deterministic",
+    source: "test",
+  });
+  const hit = await runConversationShortCircuit(query, {
+    history,
+    justIntent,
+    requestDecomposition,
+    queryUnderstanding: understanding,
+    turnComprehension,
+    turnLoop,
+  });
+  const wordGuardWouldRun =
+    !hit &&
+    shouldRunWordGuardSimpleFast({
+      shortCircuitEvaluated: true,
+      simpleFastConsumed: false,
+      wordsCount: String(query).trim().split(/\s+/).length,
+      query,
+      attachments: [],
+    });
+  return {
+    justIntent,
+    composition,
+    requestDecomposition,
+    turnComprehension,
+    gated,
+    hit,
+    wordGuardWouldRun,
+    pattern: classifySocialPattern(query, history)?.patternName || null,
+  };
+}
+
+describe("Projection catalogue social → unité absorbable (avant general)", () => {
+  it("T2 casual_status → unité sociale absorbable, SC social, pas simple_fast", async () => {
+    const chain = await runDecompSocialChain(CASUAL_STATUS_T2, SOCIAL_T1_HISTORY);
+    assert.equal(`${chain.justIntent.domain}/${chain.justIntent.action}`, "social/social_checkin");
+    assert.equal(chain.composition.primary_action, "social_checkin");
+    assert.equal(chain.pattern, "social/casual_status");
+    assert.equal(chain.requestDecomposition.units.length, 1);
+    const unit = chain.requestDecomposition.units[0];
+    assert.equal(unit.unitType, "social_pattern");
+    assert.equal(unit.absorbable, true);
+    assert.equal(unit.taskKind, "social");
+    assert.equal(
+      chain.requestDecomposition.units.filter((u) => !u.absorbable).length,
+      0,
+    );
+    assert.equal(chain.turnComprehension.dominance.workPresent, false);
+    assert.equal(chain.turnComprehension.responseExpectations.mayFinalizeSocial, true);
+    assert.equal(chain.gated.allow, true);
+    assert.ok(!(chain.gated.loop?.verification?.failures || []).includes("social_over_work"));
+    assert.equal(chain.hit?.path, "social_deterministic");
+    assert.equal(chain.hit?.socialPatternName, "social/casual_status");
+    assert.ok(!chain.hit?.deferToLlm);
+    assert.equal(chain.wordGuardWouldRun, false);
+    assert.doesNotMatch(chain.hit?.reply || "", /Je vois la piste/i);
+  });
+
+  it("wellbeing / confirmation courte / work_ready restent sains", async () => {
+    for (const query of [
+      "bonjour comment vas tu ?",
+      "oui ça va",
+      "ok t'es prêt à tafer ?",
+    ]) {
+      const chain = await runDecompSocialChain(query, SOCIAL_T1_HISTORY);
+      assert.equal(chain.hit?.path, "social_deterministic", query);
+      assert.equal(chain.turnComprehension.dominance.workPresent, false, query);
+      assert.equal(chain.gated.allow, true, query);
+      assert.equal(chain.wordGuardWouldRun, false, query);
+      assert.ok(
+        chain.requestDecomposition.units.every(
+          (u) => u.absorbable && u.unitType !== "general",
+        ),
+        query,
+      );
+    }
+  });
+
+  it("clauses hors pattern social restent general ou rails existants", async () => {
+    const horsSocial = [
+      "ok, c'est cool",
+      "tu peux m'aider ?",
+      "le serveur est dispo ?",
+      "le dépôt est disponible ?",
+    ];
+    for (const query of horsSocial) {
+      const chain = await runDecompSocialChain(query, SOCIAL_T1_HISTORY);
+      assert.notEqual(chain.hit?.path, "social_deterministic", query);
+      assert.notEqual(chain.pattern, "social/casual_status", query);
+      assert.ok(
+        !chain.requestDecomposition.units.some((u) => u.unitType === "social_pattern"),
+        query,
+      );
+    }
+  });
+
+  it("négatifs mixtes social + action → pas d'unité sociale absorbable unique", async () => {
+    const mixed = [
+      "tout va bien, crée maintenant un fichier",
+      "tout va bien, crée un fichier",
+      "tout va bien, analyse ce dépôt GitHub",
+      "tu peux lancer les tests ?",
+      "résume ce dépôt https://github.com/example/demo",
+      "résume cette page https://example.com/docs",
+    ];
+    for (const query of mixed) {
+      const chain = await runDecompSocialChain(query, []);
+      const socialAbsorbableOnly =
+        chain.requestDecomposition.units.length > 0 &&
+        chain.requestDecomposition.units.every((u) => u.absorbable);
+      assert.equal(socialAbsorbableOnly, false, query);
+      assert.notEqual(chain.hit?.path, "social_deterministic", query);
+      assert.ok(
+        chain.requestDecomposition.units.some((u) => !u.absorbable),
+        query,
       );
     }
   });

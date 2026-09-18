@@ -2,6 +2,7 @@
  * Décomposition gouvernée des requêtes — avant routage métier.
  * Distingue single | multi_target (même cadre) | multi_unit (cadres hétérogènes).
  * Social multi-signal v1 : inventaire greeting / checkin / chat_invite / work_ready + composition.
+ * Projection clause : pattern catalogue déjà reconnu → unité sociale absorbable, pas `general`.
  */
 import { analyzeConversationIntentFrame } from "../intent/conversationIntentFrame.js";
 import { isInformationSeekingWithTarget } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
@@ -16,7 +17,10 @@ import {
   HOW_TO_QUALIFICATIONS,
 } from "../qualification/howToQualificationPolicy.js";
 import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/intent-guards/externalCalendarLookupIntentGuards.js";
+import { isRepoAnalysisRequest } from "../../utils/intent-guards/repoAnalysisIntentGuards.js";
+import { isResearchThenSummarizeRequest } from "./researchThenSummarizePolicy.js";
 import {
+  classifySocialPattern,
   hasSocialChatInviteSignal,
   hasSocialWorkReadySignal,
   isWellbeingCheckinIntent,
@@ -304,6 +308,20 @@ function buildUnitFromClause(clause = "", index = 0) {
     };
   }
 
+  if (shouldProjectKnownSocialPattern(payload)) {
+    return {
+      id: `unit_social_pattern_${index}`,
+      unitType: "social_pattern",
+      taskKind: "social",
+      familyHint: "social_deterministic",
+      payload,
+      priority: 1,
+      absorbable: true,
+      satisfiable: true,
+      dependsOn: [],
+    };
+  }
+
   return {
     id: `unit_general_${index}`,
     unitType: "general",
@@ -314,6 +332,20 @@ function buildUnitFromClause(clause = "", index = 0) {
     absorbable: false,
     dependsOn: [],
   };
+}
+
+/**
+ * Pattern social déjà classifié, sans axe tâche / analyse dépôt / research-then-summarize.
+ * Réutilise le catalogue ; n'invente pas de regex sociale locale.
+ * @param {string} clause
+ * @returns {boolean}
+ */
+function shouldProjectKnownSocialPattern(clause = "") {
+  if (!classifySocialPattern(clause)) return false;
+  if (analyzeConversationIntentFrame(clause)?.task?.present) return false;
+  if (isResearchThenSummarizeRequest(clause)) return false;
+  if (isRepoAnalysisRequest(clause)) return false;
+  return true;
 }
 
 /**
