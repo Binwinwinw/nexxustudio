@@ -4,12 +4,12 @@
  */
 
 const INJECTION_PATTERNS = [
-  { id: 'IDENTITY_OVERRIDE', regex: /oublie (tes|ton|que)|ignore (all )?previous (instructions|directives)|ignore (tes|ton|les)|tu es (maintenant|désormais)/gi, weight: 40 },
+  { id: 'IDENTITY_OVERRIDE', regex: /oublie (tes|ton|que)|ignore (all )?previous (instructions|directives)|ignore (tes|ton|les)|tu es (maintenant|désormais)/i, weight: 40 },
 
-  { id: 'SYSTEM_LEAK', regex: /system prompt|prompt système|directives (cachées|système)|config initiale/gi, weight: 60 },
-  { id: 'SECRET_HUNTING', regex: /SECRET_TOKEN|code secret|token d'accès|clé d'api/gi, weight: 80 },
-  { id: 'PRIORITY_BYPASS', regex: /priorité 0|priority 0|ordre système|mode maintenance/gi, weight: 50 },
-  { id: 'OUTPUT_HIJACKING', regex: /--- FIN DU PROTOCOLE|END OF SYSTEM PROMPT|réponds uniquement par/gi, weight: 30 },
+  { id: 'SYSTEM_LEAK', regex: /system prompt|prompt système|directives (cachées|système)|config initiale/i, weight: 60 },
+  { id: 'SECRET_HUNTING', regex: /SECRET_TOKEN|code secret|token d'accès|clé d'api/i, weight: 80 },
+  { id: 'PRIORITY_BYPASS', regex: /priorité 0|priority 0|ordre système|mode maintenance/i, weight: 50 },
+  { id: 'OUTPUT_HIJACKING', regex: /--- FIN DU PROTOCOLE|END OF SYSTEM PROMPT|réponds uniquement par/i, weight: 30 },
   { id: 'UNICODE_OBFUSCATION', regex: /[\u2460-\u24FF\u{1F100}-\u{1F1FF}\u{1F200}-\u{1F2FF}]/u, weight: 50 }
 
 
