@@ -257,3 +257,9 @@
 
 - **Decision**: Propager path / contrat / interruption / resultStatus / turnId via `ai_response.metadata_json` (projection explicite). Reconstruction T+1 dans `mapEventsToConversationHistory`. Cache `lastRoutingResult` un slot, non autoritaire. Legacy sans allowlist → `unknown`. Pas de consume shadow. Routes inchangées. T2 toujours suspect non consommé.
 - **Impact**: `routingResultMetadata.js`, `sessionHistoryService.js`, `runtimeService.js`, `sessionWorkMemory.js`, persist HTTP/job, tests `persist-routing-metadata.test.js`. Pas de commit avant revue.
+
+## [2026-09-18] SPEC-RAW-COMPREHENSION-EXECUTION-CONTRACT-V1 — rôles d’input
+
+- **Decision**: Figer `rawQuery` / `comprehensionQuery` / `executionValue`. Classe A fermée (vue conversationnelle seulement). B = pas d’autocorrect. C = raw only. `pipelineQuery` / P4 `canonicalQuery` / `effectiveQuery` / `enrichedQuery` ne sont pas des rôles automatiques. `runtimeWired=false`. Pas de 2e packet, pas de sanitizer unique, pas de consume. Hazard : `sanitizeQuery("supprime /prod")` ≠ exécution.
+- **Impact**: `docs/governance/raw-comprehension-execution-contract-v1.md`, fixture + spec tests. Runtime inchangé. Pointeur seulement — le canon reste `citadelle-input-invariants.md`.
+
