@@ -69,7 +69,7 @@ const PHATIC_NEWS_FLAVOR = String.raw`(?:beau|bon|chouette|neuf|nouveau)`;
 
 const PHATIC_CHECKIN_RE = new RegExp(
   [
-    String.raw`\bqu['\u2019]?\s*est[- ]?ce(?:\s+que)?\s+(?:tu|vous)\s+${PHATIC_ACTIVITY_VERB}\b`,
+    String.raw`\bqu['\u2019]?\s*est[- ]?(?:ce(?:\s+que)?|que)\s+(?:tu|vous)\s+${PHATIC_ACTIVITY_VERB}\b`,
     String.raw`\b(?:(?:qu['\u2019]?\s*est[- ]?ce(?:\s+que)?\s+)?(?:tu|vous)\s+)?${PHATIC_ACTIVITY_VERB}\s+quoi(?:\s+de\s+${PHATIC_NEWS_FLAVOR})?\b`,
     String.raw`\bquoi\s+de\s+${PHATIC_NEWS_FLAVOR}\b`,
     String.raw`\b(?:tu|vous)\s+bosses?\s+sur\s+quoi\b`,
@@ -94,7 +94,7 @@ const PHATIC_INVERSION_RE =
 
 /** « qu'est-ce que tu fais pour corriger… » — pas un check-in phatique. */
 const PHATIC_TASK_OBJECT_RE =
-  /\b(?:fais(?:es|ez)?|racontes?|racontez)\s+(?:pour|avec|sur|ce|cet|cette|le|la|les|un|une|mon|ton|ma|ta|du|de\s+la|l['\u2019])/i;
+  /\b(?:fais(?:es|ez)?|racontes?|racontez)\s+(?:pour|avec|sur|ce|cet|cette|le|la|les|un|une|mon|ton|ma|ta|du|de\s+la|l['\u2019]|quand\s+(?:cette|cet|ce|les|le|la|une|un|l['\u2019]|de\s+la|du|il\s+faut|on\s+lance))/i;
 
 /** « il y a du nouveau sur X » = info, pas small talk. */
 const PHATIC_NEWS_TOPIC_RE =

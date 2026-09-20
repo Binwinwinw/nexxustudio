@@ -6,6 +6,7 @@ import {
   classifySocialPattern,
   isKnownSocialPattern,
   isPhaticSocialCheckinIntent,
+  isWellbeingCheckinIntent,
   resolveSocialPatternShortCircuit,
   SOCIAL_PATTERN_BLOCKED_PATHS,
 } from "../src/agent/policies/social/index.js";
@@ -22,6 +23,8 @@ import {
 import { shouldAllowClarifyThenBuild } from "../src/agent/utils/context/deliverableMandateGuards.js";
 import { isConversationSocialOnlyQuery } from "../src/agent/policies/intent/conversationIntentFrame.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
+import { lookupRoutingCase } from "../src/agent/policies/routing/routingCaseDictionary.js";
+import { runAgentUnderstandingPhase } from "../src/agent/nexxusAgentCycle.js";
 import { isGeneralKnowledgeRequest } from "../src/agent/utils/intent-guards/generalKnowledgeIntentGuards.js";
 import { classifyMetaConversationIntent } from "../src/agent/utils/intent-guards/metaConversationIntentGuards.js";
 import { INTENT_DOMAINS } from "../../shared/justIntentCatalog.js";
@@ -334,6 +337,98 @@ describe("G35 social_pattern_hardening — frontière phatique / invite / travai
     const workHit = await runConversationShortCircuit(work);
     assert.notEqual(workHit?.socialPatternName, "social/phatic_checkin");
     assert.doesNotMatch(workHit?.reply || "", /Tu mentionnes|clarifier de quoi/i);
+  });
+});
+
+describe("G35 social_pattern_hardening — qu'est que oral (sans ce)", () => {
+  const ORAL_PHATIC = [
+    "qu'est-ce que tu fais ?",
+    "qu'est ce que tu fais ?",
+    "qu'est que tu fais ?",
+    "qu'est que tu fais de beau ?",
+    "qu’est-ce que tu fais ?",
+    "qu’est ce que tu fais ?",
+    "qu’est que tu fais ?",
+    "qu’est que tu fais de beau ?",
+  ];
+
+  const LIVE_PHRASE =
+    "content d'entendre que tu vas bien mais à part ça qu'est que tu fais de beau ?";
+
+  async function assertPhaticRail(query) {
+    assert.equal(isPhaticSocialCheckinIntent(query), true, query);
+    assert.equal(isWellbeingCheckinIntent(query), false, query);
+    assert.equal(classifySocialPattern(query)?.patternName, "social/phatic_checkin", query);
+    assert.equal(lookupRoutingCase(query).winning_rule || null, null, query);
+    const justIntent = evaluateJustIntent(query);
+    const { turnComprehension, turnLoop, understanding } =
+      runAgentUnderstandingPhase(query, [], {});
+    const hit = await runConversationShortCircuit(query, {
+      history: [],
+      justIntent,
+      queryUnderstanding: understanding,
+      turnComprehension,
+      turnLoop,
+    });
+    assert.equal(hit?.path, "social_deterministic", query);
+    assert.equal(hit?.socialPatternName, "social/phatic_checkin", query);
+    assert.ok(!hit?.deferToLlm, query);
+    assert.doesNotMatch(hit?.reply || "", /Tout va bien ici/i, query);
+    assert.doesNotMatch(hit?.reply || "", /Je vois la piste/i, query);
+  }
+
+  for (const query of ORAL_PHATIC) {
+    it(`phatique « ${query} »`, async () => {
+      await assertPhaticRail(query);
+    });
+  }
+
+  it("phrase live exacte → phatique, pas État/Santé", async () => {
+    await assertPhaticRail(LIVE_PHRASE);
+  });
+
+  it("quand + sujet assistant reste phatique", async () => {
+    for (const query of [
+      "qu'est que tu fais quand tu n'aides personne ?",
+      "qu'est que tu fais quand tu veux souffler ?",
+      "qu'est que tu fais quand on ne te pose pas de question ?",
+    ]) {
+      await assertPhaticRail(query);
+    }
+  });
+
+  it("frontières : objet métier / action explicite restent hors phatique", async () => {
+    const negatives = [
+      "est-ce que tu peux créer un fichier ?",
+      "est-ce que tu peux lancer les tests ?",
+      "qu'est-ce que le serveur fait ?",
+      "qu'est-ce que ce script fait ?",
+      "qu'est que le dépôt fait ?",
+      "qu'est que la fonction fait ?",
+      "qu'est que tu fais quand le serveur tombe ?",
+      "qu'est que tu fais quand les tests échouent ?",
+      "qu'est que tu fais quand le dépôt GitHub est inaccessible ?",
+      "qu'est que tu fais quand on lance le déploiement ?",
+      "qu'est que tu fais quand il faut analyser un fichier ?",
+      "qu'est que tu fais quand cette API tombe ?",
+      "qu'est que tu fais quand un test échoue ?",
+      "qu'est que tu fais quand de la mémoire manque ?",
+      "le serveur est disponible ?",
+      "le dépôt est disponible ?",
+      "crée-moi une page d'accueil",
+      "résume ce dépôt https://github.com/example/demo",
+      "tout va bien, crée un fichier",
+    ];
+    for (const query of negatives) {
+      assert.equal(isPhaticSocialCheckinIntent(query), false, query);
+      assert.notEqual(
+        classifySocialPattern(query)?.patternName,
+        "social/phatic_checkin",
+        query,
+      );
+      const hit = await runConversationShortCircuit(query);
+      assert.notEqual(hit?.socialPatternName, "social/phatic_checkin", query);
+    }
   });
 });
 
