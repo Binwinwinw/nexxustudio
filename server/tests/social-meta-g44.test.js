@@ -200,6 +200,11 @@ describe("priorité bruit conversationnel vs demande explicite", () => {
   it("terme nommé vs placeholder — la classe, pas un libellé", () => {
     assert.equal(isNamedDefinitionRequest("saurais tu définir un mot ?"), false);
     assert.equal(isNamedDefinitionRequest("c'est quoi un pull request"), true);
+    assert.equal(isNamedDefinitionRequest("la citadelle c'est quoi ?"), false);
+    assert.equal(isNamedDefinitionRequest("Ce truc, c'est quoi ?"), false);
+    assert.equal(isNamedDefinitionRequest("Cette erreur, c'est quoi ?"), false);
+    assert.equal(isNamedDefinitionRequest("La meilleure option, c'est quoi ?"), false);
+    assert.equal(isNamedDefinitionRequest("Ce mot, c'est quoi ?"), false);
     assert.equal(
       isNamedDefinitionRequest("qu'est ce que tu fais de beau ???"),
       false,

@@ -236,6 +236,16 @@ describe("Identité interne — gate référents", () => {
       reply: CITADELLE_REPLY,
     },
     {
+      q: "la citadelle c'est quoi ?",
+      referent: "La Citadelle",
+      reply: CITADELLE_REPLY,
+    },
+    {
+      q: "La Citadelle, c'est quoi ?",
+      referent: "La Citadelle",
+      reply: CITADELLE_REPLY,
+    },
+    {
       q: "c'est quoi Nexxus ?",
       referent: "Nexxus",
       reply: NEXXUS_REPLY,

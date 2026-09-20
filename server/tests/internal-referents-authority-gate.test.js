@@ -1,6 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
+import { isNamedDefinitionRequest } from "../src/agent/utils/intent-guards/informationSeekingIntentGuards.js";
 import { getIdentityDeterministicReply } from "../src/agent/utils/intent-guards/identityIntentGuards.js";
 import { buildTurnComprehension } from "../src/agent/policies/conversation/turnComprehension.js";
 import {
@@ -54,6 +55,43 @@ describe("internal referents authority gate", () => {
     assert.equal(sc?.preferWebResearch, false);
     assert.equal(sc?.internalReferent, "La Citadelle");
     assert.equal(sc.reply, CITADELLE_REPLY);
+  });
+
+  it("la citadelle c'est quoi ? — même referent, pas simple_fast vide", async () => {
+    const sc = await runConversationShortCircuit("la citadelle c'est quoi ?", liveOpts("la citadelle c'est quoi ?"));
+    assertDirectReferent(sc, "La Citadelle");
+    assert.equal(sc.path, "general_knowledge_deterministic");
+    assert.equal(sc.reply, CITADELLE_REPLY);
+    assert.notEqual(sc?.path, "simple_fast");
+    assert.equal(isNamedDefinitionRequest("la citadelle c'est quoi ?"), false);
+  });
+
+  it("La Citadelle, c'est quoi ? — virgule, même referent", async () => {
+    const q = "La Citadelle, c'est quoi ?";
+    const sc = await runConversationShortCircuit(q, liveOpts(q));
+    assertDirectReferent(sc, "La Citadelle");
+    assert.equal(sc.path, "general_knowledge_deterministic");
+    assert.equal(sc.reply, CITADELLE_REPLY);
+    assert.equal(isNamedDefinitionRequest(q), false);
+  });
+
+  it("X c'est quoi générique — pas de référent, pas de définition nommée", async () => {
+    const generics = [
+      "Ce truc, c'est quoi ?",
+      "Cette erreur, c'est quoi ?",
+      "La meilleure option, c'est quoi ?",
+      "Ce mot, c'est quoi ?",
+    ];
+    for (const q of generics) {
+      assert.equal(isNamedDefinitionRequest(q), false, q);
+      const sc = await runConversationShortCircuit(q, liveOpts(q));
+      assert.ok(!sc?.internalReferentAuthority, q);
+      assert.notEqual(sc?.internalReferent, "La Citadelle", q);
+      assert.notEqual(sc?.internalReferent, "Nexxus", q);
+      assert.notEqual(sc?.path, "information_seeking_full_pipeline", q);
+      assert.notEqual(sc?.reply, CITADELLE_REPLY, q);
+      assert.notEqual(sc?.reply, NEXXUS_REPLY, q);
+    }
   });
 
   it("Qui es-tu ? — identité locale, pas de web", async () => {

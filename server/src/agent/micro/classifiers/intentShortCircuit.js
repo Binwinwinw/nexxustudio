@@ -168,8 +168,34 @@ import {
   isNamedDefinitionRequest,
   isExplicitInformationOrDefinitionRequest,
 } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
-import { resolveInternalReferentAuthorityHit, resolveUnnamedInternalIdentityHit, resolveInternalReferentConfirmationCheck } from "../../policies/routing/internalReferentsAuthorityGate.js";
+import { resolveInternalReferentAuthorityHit, resolveUnnamedInternalIdentityHit, resolveInternalReferentConfirmationCheck, matchInternalReferent } from "../../policies/routing/internalReferentsAuthorityGate.js";
 import { isConfirmationCheckArticulation, resolveGenericConfirmationCheck } from "../../policies/conversation/confirmationCheckArticulation.js";
+
+/** « X c'est quoi » — forme seule, sans classer X comme définition nommée globale. */
+const INVERTED_REFERENT_DEFINITION_RE =
+  /^(.{2,64}?)\s+(?:c['']?est\s+quoi|c est quoi)\s*$/i;
+
+function extractInvertedDefinitionCandidate(query = "") {
+  const q = String(query || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[?!.…]+$/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const hit = q.match(INVERTED_REFERENT_DEFINITION_RE);
+  return hit?.[1]?.trim() || "";
+}
+
+/** Inversé + registre interne. Pas de liste locale. */
+function resolveInvertedInternalReferentHit(query = "") {
+  const candidate = extractInvertedDefinitionCandidate(query);
+  if (!candidate) return null;
+  if (!matchInternalReferent(candidate) && !matchInternalReferent(query)) {
+    return null;
+  }
+  return resolveInternalReferentAuthorityHit(query);
+}
 
 function emitInternalReferentAuthorityHit(emit, hit) {
   if (!hit?.reply) return null;
@@ -1405,12 +1431,24 @@ async function runConversationShortCircuitBody(query, options = {}) {
 
   // Identité interne / nom de plateforme — avant G46, simple_factual et simple_fast.
   // Filet si le rail social identité a été bloqué (turnComprehension workPresent).
-  // Noms propres : restent sur le branchement information_seeking (pas ici).
+  // Noms propres : filet si shell « c'est quoi X » déjà nommé, ou inversé référent-only.
   const unnamedInternalIdentity = emitInternalReferentAuthorityHit(
     emit,
     resolveUnnamedInternalIdentityHit(effectiveQuery),
   );
   if (unnamedInternalIdentity) return unnamedInternalIdentity;
+  if (isNamedDefinitionRequest(effectiveQuery)) {
+    const namedInternalIdentity = emitInternalReferentAuthorityHit(
+      emit,
+      resolveInternalReferentAuthorityHit(effectiveQuery),
+    );
+    if (namedInternalIdentity) return namedInternalIdentity;
+  }
+  const invertedInternalIdentity = emitInternalReferentAuthorityHit(
+    emit,
+    resolveInvertedInternalReferentHit(effectiveQuery),
+  );
+  if (invertedInternalIdentity) return invertedInternalIdentity;
 
   // Réparation de ton / critique check-in : avant G46 meta_critique (sinon essai UX long).
   if (
