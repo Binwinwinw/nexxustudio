@@ -33,7 +33,10 @@ function shouldRunInterpreter(raw = "", normalized = "") {
   if (needsRequestInterpretation(normalized)) return true;
   if (parseFamiliarityQuery(raw)) return true;
   if (/\b(truc|je sais pas comment dire|tu vois)\b/.test(normalized)) return true;
-  if (/\b(ca|cela|ce truc)\b/.test(normalized)) return true;
+  if (/\b(cela|ce truc|pour ca)\b/.test(normalized)) return true;
+  // « ça » noyau (« ça ? ») peut anaphoriser un sujet valide.
+  // « ça fait plaisir » / « content de savoir ça » : pronom noyé, pas un trigger.
+  if (/^(?:et\s+)?ca(?:\s*\?)?$/.test(normalized)) return true;
   return false;
 }
 

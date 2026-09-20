@@ -877,6 +877,17 @@ function lexiconKeyMatchesText(text = "", key = "") {
   return new RegExp(`(^|\\s)${escaped}(\\s|$)`).test(text);
 }
 
+/**
+ * « qu'est-ce que tu fais de bon » n'est pas une définition du NP « tu fais de bon ».
+ * Clause d'activité 2e personne, pas un terme à clarifier.
+ */
+const PHATIC_ACTIVITY_SUBJECT_RE =
+  /^(?:tu|vous)\s+(?:fais(?:es|ez)?|faites|racontes?|racontez)\b/;
+
+function isPhaticActivitySubject(rawSubject = "") {
+  return PHATIC_ACTIVITY_SUBJECT_RE.test(String(rawSubject || "").trim());
+}
+
 export function parseFamiliarityQuery(query = "") {
   const q = normalizeFamiliarityQuery(query);
   if (!q) return null;
@@ -886,6 +897,7 @@ export function parseFamiliarityQuery(query = "") {
     if (!match?.[1]) continue;
     const rawSubject = cleanSubjectTail(match[1]);
     if (!rawSubject || rawSubject.length < 2) continue;
+    if (isPhaticActivitySubject(rawSubject)) continue;
     return { kind: rule.kind, rawSubject };
   }
 
