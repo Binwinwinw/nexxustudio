@@ -7,7 +7,7 @@ import { isExistingSourceAnalysisRequest } from "./localFileUriIntentGuards.js";
 import { isResearchThenSummarizeRequest } from "../../policies/routing/researchThenSummarizePolicy.js";
 
 const ANALYSIS_VERB_RE =
-  /\b(?:analys(?:e|er|e)|audite(?:r)?|review|revue|inspecte(?:r)?|examine(?:r)?|évalue|evalue|evaluer|critique(?:r)?)\b/i;
+  /\b(?:analys(?:e|er|e)|audite(?:r)?|review|revue|inspecte(?:r)?|examine(?:r)?|évalue|evalue|evaluer|critique(?:r)?|fouill(?:e|es|er)|explor(?:e|es|er)|regard(?:e|es|er)|etudi(?:e|es|er)|étudi(?:e|es|er))\b/i;
 
 /** Résumé verbal — pas fusionné dans ANALYSIS_VERB_RE (trop large sans locator GitHub). */
 const REPO_SUMMARY_SHELL_RE =
@@ -226,6 +226,7 @@ export function isRepoAnalysisRequest(query = "", options = {}) {
 
   const q = normalizeFamiliarityQuery(query);
   if (!q) return false;
+  // Finalité aval « créer / construire » n'invalide pas une exploration de source.
   if (CREATE_VERB_RE.test(q) && !ANALYSIS_VERB_RE.test(q)) return false;
   if (!ANALYSIS_VERB_RE.test(q)) {
     return isGithubRepoSummaryRequest(query, q);

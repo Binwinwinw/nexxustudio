@@ -151,6 +151,45 @@ describe("REPO_ANALYSIS_V1 — intent", () => {
     );
     assert.equal(isRepoAnalysisRequest("salut quoi de neuf ?"), false);
   });
+
+  const GH_LLM = "https://github.com/rasbt/LLMs-from-scratch";
+
+  it("REPO-FOUILLER-01 — fouiller + URL GitHub → revue de dépôt", () => {
+    const q = `Je veux fouiller ce dépôt :\n${GH_LLM}`;
+    assert.equal(isRepoAnalysisRequest(q), true);
+    assert.equal(extractRepoTarget(q)?.url, GH_LLM);
+    assert.equal(extractRepoTarget(q)?.label, "rasbt/LLMs-from-scratch");
+  });
+
+  it("REPO-FOUILLER-CREATE-02 — fouiller + créer aval + URL → revue, pas create terminal", () => {
+    const q =
+      `Je veux fouiller ce dépôt pour trouver de bonnes bases pour créer un système similaire :\n${GH_LLM}`;
+    assert.equal(isRepoAnalysisRequest(q), true);
+    const evaluation = evaluateJustIntent(q);
+    assert.equal(evaluation.domain, INTENT_DOMAINS.ANALYSIS);
+    assert.ok(evaluation.signals.includes("preempt:repo_analysis"));
+    assert.equal(extractRepoTarget(q)?.url, GH_LLM);
+  });
+
+  it("REPO-ANALYSIS-VERB-04 — verbes d'exploration + URL", () => {
+    for (const verb of ["explore", "regarde", "étudie", "analyse"]) {
+      const q = `${verb} ce dépôt : ${GH_LLM}`;
+      assert.equal(isRepoAnalysisRequest(q), true, verb);
+      assert.equal(extractRepoTarget(q)?.url, GH_LLM, verb);
+    }
+  });
+
+  it("NEGATIVE-CREATE-05 — create sans locator ≠ revue de dépôt", () => {
+    assert.equal(
+      isRepoAnalysisRequest("Crée un système similaire à un chatbot."),
+      false,
+    );
+  });
+
+  it("NEGATIVE-GITHUB-CREATE-06 — créer un README + URL ≠ revue de dépôt", () => {
+    const q = `Crée un README pour ce projet GitHub :\nhttps://github.com/org/repo`;
+    assert.equal(isRepoAnalysisRequest(q), false);
+  });
 });
 
 describe("REPO_ANALYSIS_V1 — routing", () => {
@@ -234,6 +273,75 @@ describe("REPO_ANALYSIS_V1 — routing", () => {
     assert.equal(hit?.deferToLlm, undefined);
     assert.match(hit?.reply || "", /cible non confirmée/i);
     assert.match(hit?.reply || "", /pas de rapport de revue/i);
+  });
+
+  const GH_LLM_SC = "https://github.com/rasbt/LLMs-from-scratch";
+
+  it("REPO-FOUILLER-01 SC — pas de multi_segment ni stub", async () => {
+    const q = `Je veux fouiller ce dépôt :\n${GH_LLM_SC}`;
+    const hit = await runConversationShortCircuit(q);
+    assert.equal(hit?.path, "repo_analysis_llm");
+    assert.equal(hit?.forcedIntentContractId, "REPO_ANALYSIS");
+    assert.equal(hit?.deferToLlm, true);
+    assert.equal(hit?.preferWebResearch, true);
+    assert.match(hit?.webQueryOverride || "", /github\.com\/rasbt\/LLMs-from-scratch/);
+    assert.notEqual(hit?.path, "multi_segment_composite");
+    assert.doesNotMatch(hit?.reply || "", /poursuis sur le c(?:œ|oe)ur/i);
+  });
+
+  it("REPO-FOUILLER-CREATE-02 SC — création aval n'élit pas create", async () => {
+    const q =
+      `Je veux fouiller ce dépôt pour trouver de bonnes bases pour créer un système similaire :\n${GH_LLM_SC}`;
+    const hit = await runConversationShortCircuit(q);
+    assert.equal(hit?.path, "repo_analysis_llm");
+    assert.equal(hit?.forcedIntentContractId, "REPO_ANALYSIS");
+    assert.equal(hit?.repoTarget?.url, GH_LLM_SC);
+    assert.equal(hit?.preferWebResearch, true);
+    assert.notEqual(hit?.path, "multi_segment_composite");
+    assert.doesNotMatch(hit?.reply || "", /poursuis sur le c(?:œ|oe)ur/i);
+  });
+
+  it("REPO-WEB-MANDATE-03 — après choix menu 3, URL = cible de recherche", async () => {
+    const history = [
+      { role: "user", content: "qu'est ce qu'on devrait faire maintenant ?" },
+      {
+        role: "assistant",
+        content:
+          "Tu as le choix — on peut partir là-dessus :\n\n1. discussion libre\n2. brainstorm léger\n3. recherche web sur un thème\n4. petit livrable tech\n5. apprendre un sujet",
+      },
+      { role: "user", content: "3" },
+      {
+        role: "assistant",
+        content:
+          "Ça marche — recherche web. Je peux chercher dès que le thème est clair.\nTu veux fouiller quoi exactement ?",
+      },
+    ];
+    const q =
+      `Je veux fouiller ce dépôt pour trouver de bonnes bases pour créer un système similaire :\n${GH_LLM_SC}`;
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.equal(hit?.path, "repo_analysis_llm");
+    assert.equal(hit?.forcedIntentContractId, "REPO_ANALYSIS");
+    assert.equal(hit?.preferWebResearch, true);
+    assert.equal(hit?.repoTarget?.url, GH_LLM_SC);
+    assert.match(hit?.webQueryOverride || "", /LLMs-from-scratch/);
+    assert.notEqual(hit?.path, "guided_choice_deterministic");
+    assert.notEqual(hit?.path, "multi_segment_composite");
+  });
+
+  it("NEGATIVE-CREATE-05 SC — create nu hors REPO_ANALYSIS", async () => {
+    const hit = await runConversationShortCircuit(
+      "Crée un système similaire à un chatbot.",
+    );
+    assert.notEqual(hit?.path, "repo_analysis_llm");
+    assert.notEqual(hit?.forcedIntentContractId, "REPO_ANALYSIS");
+  });
+
+  it("NEGATIVE-GITHUB-CREATE-06 SC — README GitHub hors revue de dépôt", async () => {
+    const hit = await runConversationShortCircuit(
+      "Crée un README pour ce projet GitHub :\nhttps://github.com/org/repo",
+    );
+    assert.notEqual(hit?.path, "repo_analysis_llm");
+    assert.notEqual(hit?.forcedIntentContractId, "REPO_ANALYSIS");
   });
 
   it("recadrage documentation nomme le vrai sujet", () => {
