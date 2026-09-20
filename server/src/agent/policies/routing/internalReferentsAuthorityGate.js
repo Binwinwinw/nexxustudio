@@ -37,7 +37,7 @@ export const INTERNAL_REFERENTS = Object.freeze([
 /** Une phrase par référent — ce que c'est, pas une présentation d'identité. */
 const INTERNAL_REFERENT_REPLIES = Object.freeze({
   "La Citadelle":
-    "La Citadelle, c'est la plateforme, NEXXUS est l'assistant IA qui y vit, exécute les tâches et prend les décisions.",
+    "La Citadelle, c'est la plateforme. NEXXUS est l'assistant IA qui y tourne.",
   Nexxus:
     "NEXXUS, c'est moi : l'assistant IA de La Citadelle.",
   "Nexxus Studio":

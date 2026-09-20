@@ -43,7 +43,7 @@ const LIVE_SALUT_REPLY =
   "Salut ! Rien de fou de mon côté — prêt à t'aider sur ton chantier. On attaque quoi ?";
 
 const CITADELLE_REPLY =
-  "La Citadelle, c'est la plateforme, NEXXUS est l'assistant IA qui y vit, exécute les tâches et prend les décisions.";
+  "La Citadelle, c'est la plateforme. NEXXUS est l'assistant IA qui y tourne.";
 const NEXXUS_REPLY =
   "NEXXUS, c'est moi : l'assistant IA de La Citadelle.";
 
