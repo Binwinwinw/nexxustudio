@@ -167,8 +167,11 @@ import {
   isInformationSeekingWithTarget,
   isNamedDefinitionRequest,
   isExplicitInformationOrDefinitionRequest,
+  isCreateMandateRequest,
 } from "../../utils/intent-guards/informationSeekingIntentGuards.js";
 import { resolveInternalReferentAuthorityHit, resolveUnnamedInternalIdentityHit, resolveInternalReferentConfirmationCheck, matchInternalReferent } from "../../policies/routing/internalReferentsAuthorityGate.js";
+import { isDebugDiagnosticRequest } from "../../utils/intent-guards/debugDiagnosticIntentGuards.js";
+import { classifySelectiveDecisionIntent } from "../../utils/intent-guards/selectiveDecisionIntentGuards.js";
 import { isConfirmationCheckArticulation, resolveGenericConfirmationCheck } from "../../policies/conversation/confirmationCheckArticulation.js";
 
 /** « X c'est quoi » — forme seule, sans classer X comme définition nommée globale. */
@@ -187,13 +190,83 @@ function extractInvertedDefinitionCandidate(query = "") {
   return hit?.[1]?.trim() || "";
 }
 
+const REFERENT_EXPLANATION_INTENT_RE =
+  /\b(?:c['']?est\s+quoi|c est quoi|qu['']?est[- ]ce qu|qu est ce qu|que signifie|signification|d[eé]finis(?:[- ]moi)?|d[eé]finir|d[eé]finition|a quoi sert|sert a quoi|qui es[- ]tu|ton r[oô]le)\b/i;
+
+const REFERENT_EXPLANATION_ACTION_RE =
+  /\b(?:supprime|supprimer|delete|efface|effacer|cree|cr[eé]er|patch|commit)\b/i;
+
+const REFERENT_EXPLANATION_CAPABILITY_RE =
+  /\b(?:a une api|as une api|\bapi\b|permission|as[- ]tu le droit|peut[- ]on)\b/i;
+
+const REFERENT_FOCUS_FILLER_RE =
+  /^(?:mais|au|juste|donc|alors|enfin|bref|ca|cela|ceci|c|est|quoi|qu|que|ce|definis|definir|definition|sert|a|le|la|les|un|une|de|du|des|d|dans)$/;
+
+function normalizeReferentFocusQuery(query = "") {
+  return String(query || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[?!.…,;:'’]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function stripMatchedReferentTokens(normalized = "", referent = "") {
+  if (referent === "Nexxus Studio") {
+    return normalized.replace(/\bnexxus\s+studio\b/g, " ").replace(/\s+/g, " ").trim();
+  }
+  if (referent === "La Citadelle") {
+    return normalized.replace(/\bla\s+citadelle\b/g, " ").replace(/\s+/g, " ").trim();
+  }
+  if (referent === "Nexxus") {
+    return normalized.replace(/\bnexxus\b/g, " ").replace(/\s+/g, " ").trim();
+  }
+  return normalized;
+}
+
+/** Cible = le référent, un déictique, ou rien. Pas « erreur / API / projet ». */
+function isInternalReferentExplanationFocus(query = "", referent = "") {
+  const leftover = stripMatchedReferentTokens(
+    normalizeReferentFocusQuery(query),
+    referent,
+  );
+  if (!leftover) return true;
+  return leftover.split(" ").every((token) => REFERENT_FOCUS_FILLER_RE.test(token));
+}
+
+function hasInternalReferentExplanationVeto(query = "") {
+  if (isDebugDiagnosticRequest(query)) return true;
+  if (isCausalWhyExplainRequest(query)) return true;
+  if (isCreateMandateRequest(query)) return true;
+  if (isHowToRequestShell(query)) return true;
+  if (classifySelectiveDecisionIntent(query).detected) return true;
+  if (resolveSelfModificationRoute(query)) return true;
+  if (isCapabilityOverviewRequest(query)) return true;
+  const q = normalizeReferentFocusQuery(query);
+  return REFERENT_EXPLANATION_ACTION_RE.test(q) || REFERENT_EXPLANATION_CAPABILITY_RE.test(q);
+}
+
 /** Inversé + registre interne. Pas de liste locale. */
 function resolveInvertedInternalReferentHit(query = "") {
   const candidate = extractInvertedDefinitionCandidate(query);
   if (!candidate) return null;
-  if (!matchInternalReferent(candidate) && !matchInternalReferent(query)) {
+  const named = matchInternalReferent(candidate) || matchInternalReferent(query);
+  if (!named) return null;
+  if (hasInternalReferentExplanationVeto(query)) return null;
+  if (!isInternalReferentExplanationFocus(query, named)) return null;
+  return resolveInternalReferentAuthorityHit(query);
+}
+
+/** Définition / finalité / identité, référent unique, hors parser named global. */
+function resolveInternalReferentExplanationHit(query = "") {
+  const named = matchInternalReferent(query);
+  if (!named) return null;
+  if (!REFERENT_EXPLANATION_INTENT_RE.test(query) && !REFERENT_EXPLANATION_INTENT_RE.test(normalizeReferentFocusQuery(query))) {
     return null;
   }
+  if (hasInternalReferentExplanationVeto(query)) return null;
+  if (!isInternalReferentExplanationFocus(query, named)) return null;
   return resolveInternalReferentAuthorityHit(query);
 }
 
@@ -1449,6 +1522,11 @@ async function runConversationShortCircuitBody(query, options = {}) {
     resolveInvertedInternalReferentHit(effectiveQuery),
   );
   if (invertedInternalIdentity) return invertedInternalIdentity;
+  const explainedInternalIdentity = emitInternalReferentAuthorityHit(
+    emit,
+    resolveInternalReferentExplanationHit(effectiveQuery),
+  );
+  if (explainedInternalIdentity) return explainedInternalIdentity;
 
   // Réparation de ton / critique check-in : avant G46 meta_critique (sinon essai UX long).
   if (

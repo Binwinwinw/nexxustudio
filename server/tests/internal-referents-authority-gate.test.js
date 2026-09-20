@@ -75,6 +75,54 @@ describe("internal referents authority gate", () => {
     assert.equal(isNamedDefinitionRequest(q), false);
   });
 
+  it("la citadelle, mais c'est quoi ça ? — explication, pas CHAT_LIGHT", async () => {
+    const q = "la citadelle, mais c'est quoi ça ?";
+    const sc = await runConversationShortCircuit(q, liveOpts(q));
+    assertDirectReferent(sc, "La Citadelle");
+    assert.equal(sc.path, "general_knowledge_deterministic");
+    assert.equal(sc.reply, CITADELLE_REPLY);
+    assert.notEqual(sc?.path, "CHAT_LIGHT");
+    assert.notEqual(sc?.path, "simple_fast");
+    assert.notEqual(sc?.path, "empty_composer_render");
+    assert.ok(!sc?.deferToLlm);
+    assert.equal(isNamedDefinitionRequest(q), false);
+  });
+
+  it("paraphrases explication référent — au juste / à quoi sert / définis", async () => {
+    const paraphrases = [
+      "La Citadelle, au juste, c'est quoi ?",
+      "À quoi sert La Citadelle ?",
+      "Définis La Citadelle.",
+    ];
+    for (const q of paraphrases) {
+      const sc = await runConversationShortCircuit(q, liveOpts(q));
+      assertDirectReferent(sc, "La Citadelle");
+      assert.equal(sc.path, "general_knowledge_deterministic", q);
+      assert.equal(sc.reply, CITADELLE_REPLY, q);
+      assert.notEqual(sc?.path, "CHAT_LIGHT", q);
+      assert.ok(!sc?.deferToLlm, q);
+    }
+  });
+
+  it("veto explication — pas de copy identité", async () => {
+    const vetos = [
+      "Cette erreur dans La Citadelle, c'est quoi ?",
+      "Pourquoi La Citadelle est lente ?",
+      "La Citadelle crée un projet comment ?",
+      "La Citadelle, supprime ce fichier.",
+      "Quelle option choisir dans La Citadelle ?",
+      "Est-ce que La Citadelle a une API ?",
+    ];
+    for (const q of vetos) {
+      const sc = await runConversationShortCircuit(q, liveOpts(q));
+      assert.ok(!sc?.internalReferentAuthority, q);
+      assert.notEqual(sc?.internalReferent, "La Citadelle", q);
+      assert.notEqual(sc?.internalReferent, "Nexxus", q);
+      assert.notEqual(sc?.reply, CITADELLE_REPLY, q);
+      assert.notEqual(sc?.reply, NEXXUS_REPLY, q);
+    }
+  });
+
   it("X c'est quoi générique — pas de référent, pas de définition nommée", async () => {
     const generics = [
       "Ce truc, c'est quoi ?",
