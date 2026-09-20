@@ -21,8 +21,10 @@ import { isRepoAnalysisRequest } from "../../utils/intent-guards/repoAnalysisInt
 import { isResearchThenSummarizeRequest } from "./researchThenSummarizePolicy.js";
 import {
   classifySocialPattern,
+  hasAffectiveSocialAckSignal,
   hasSocialChatInviteSignal,
   hasSocialWorkReadySignal,
+  isPhaticSocialCheckinIntent,
   isWellbeingCheckinIntent,
 } from "../social/socialPatternPolicy.js";
 
@@ -103,6 +105,26 @@ const INVENTORY_SIGNALS = Object.freeze([
   {
     unitType: "social_work_ready",
     test: (normalized) => hasSocialWorkReadySignal(normalized),
+    absorbable: true,
+    satisfiable: true,
+    familyHint: "social_deterministic",
+    priority: 1,
+  },
+  {
+    unitType: "social_ack",
+    test: (normalized) =>
+      hasAffectiveSocialAckSignal(normalized) &&
+      isPhaticSocialCheckinIntent(normalized),
+    absorbable: true,
+    satisfiable: true,
+    familyHint: "social_deterministic",
+    priority: 0,
+  },
+  {
+    unitType: "social_phatic",
+    test: (normalized) =>
+      isPhaticSocialCheckinIntent(normalized) &&
+      hasAffectiveSocialAckSignal(normalized),
     absorbable: true,
     satisfiable: true,
     familyHint: "social_deterministic",

@@ -243,6 +243,10 @@ export function resolveInternalLeakFallback(pipelinePath = "") {
 const CASUAL_STATUS_RE =
   /\b(?:tout va bien|ça va bien|ca va bien|de mon c[oô]t[eé]|de ton c[oô]t[eé]|ben je ne sais pas|je ne sais pas trop|je sais pas trop|pas grand chose|rien de sp[eé]cial|on peut discuter|papoter un peu|discut(?:e|er) un peu)\b/i;
 
+/** Réaction affective à un check-in — pas un wellbeing « comment ça va ». */
+const AFFECTIVE_ACK_RE =
+  /\b(?:c['']?\s*est\s+gentil|tant mieux|ca\s+fait\s+plaisir|content(?:e)?\s+(?:de\s+savoir|quand|que))\b/i;
+
 /** Mise en route phatique — pas un livrable (« prêt à tafer », « t'es prêt ? »). */
 const WORK_READY_RE =
   /\b(?:t['’]es|tu\s+es|tu\s+est|tes)\s+pr[eê]t(?:e)?s?(?:\s+[àa]\s+(?:tafer|taf(?:er)?|bosser|travailler|y\s+aller))?\b|\bpr[eê]t(?:e)?s?\s+[àa]\s+(?:tafer|taf(?:er)?|bosser|travailler)\b/i;
@@ -378,6 +382,25 @@ export function isPhaticSocialCheckinIntent(query = "") {
     PHATIC_BARE_ACTIVITY_RE.test(q) ||
     PHATIC_INVERSION_RE.test(q)
   );
+}
+
+/**
+ * Ack affectif (gentil / tant mieux / content de savoir…), y compris à côté d’un phatique.
+ * @param {string} query
+ */
+export function hasAffectiveSocialAckSignal(query = "") {
+  const q = normalizeFamiliarityQuery(query);
+  if (!q) return false;
+  if (isSubstantiveWorkRequest(query)) return false;
+  return AFFECTIVE_ACK_RE.test(q) || CASUAL_STATUS_RE.test(q);
+}
+
+/**
+ * Même tour : ack affectif + question phatique.
+ * @param {string} query
+ */
+export function isSocialAckPhaticDualAct(query = "") {
+  return hasAffectiveSocialAckSignal(query) && isPhaticSocialCheckinIntent(query);
 }
 
 /** Small talk « que fais-tu » — rôle Nexxus, pas la phrase piste / destination. */
@@ -760,6 +783,20 @@ export function classifySocialPattern(query = "", history = [], priorState = nul
     };
   }
 
+  // Relance / frame : avant suppress (sinon « on devrait faire » classé définition).
+  if (q.length <= 200 && isSocialLeisureRelance(query, history)) {
+    return {
+      patternName: "social/leisure_relance",
+      reply: buildSocialPatternReply("social/leisure_relance", query),
+    };
+  }
+  if (q.length <= 200 && isOpenExplorationFrame(query, history)) {
+    return {
+      patternName: "social/open_prompt",
+      reply: buildSocialPatternReply("social/open_prompt"),
+    };
+  }
+
   if (suppressesKnownSocialPattern(query)) return null;
 
   // Engage humour / jeu : avant le plafond 200 (souvent long).
@@ -857,20 +894,6 @@ export function classifySocialPattern(query = "", history = [], priorState = nul
       reply: buildWhoDrivesContinuityReply(inferActiveGoal(history, priorState)),
     };
   }
-  // Relance loisir / après check-in — avant open_exploration (sinon menu chantier).
-  if (isSocialLeisureRelance(query, history)) {
-    return {
-      patternName: "social/leisure_relance",
-      reply: buildSocialPatternReply("social/leisure_relance", query),
-    };
-  }
-  // Frame open_exploration (slots) — pas un match lexical sur le modal
-  if (isOpenExplorationFrame(query, history)) {
-    return {
-      patternName: "social/open_prompt",
-      reply: buildSocialPatternReply("social/open_prompt"),
-    };
-  }
   if (CASUAL_STATUS_RE.test(q)) {
     return {
       patternName: "social/casual_status",
@@ -901,14 +924,18 @@ export function buildSocialPatternReply(patternName = "", query = "") {
     case "social/phatic_checkin": {
       const q = normalizeFamiliarityQuery(query);
       if (PHATIC_INVERSION_RE.test(q)) {
-        return withLeadingGreetingMirror(query, SOCIAL_AGENT_ACTIVITY_REPLY);
+        const inversion = withLeadingGreetingMirror(query, SOCIAL_AGENT_ACTIVITY_REPLY);
+        return isSocialAckPhaticDualAct(query)
+          ? `C'est gentil. ${inversion}`
+          : inversion;
       }
       const core = composeMannerReply({
         family: RESPONSE_MANNER_FAMILIES.SOCIAL_PHATIC_CONTINUITY,
         history: [],
         salt: query || patternName,
       });
-      return withLeadingGreetingMirror(query, core);
+      const phatic = withLeadingGreetingMirror(query, core);
+      return isSocialAckPhaticDualAct(query) ? `C'est gentil. ${phatic}` : phatic;
     }
     case "social/mood_checkin":
       return (

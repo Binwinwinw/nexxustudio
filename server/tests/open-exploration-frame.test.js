@@ -189,6 +189,22 @@ describe("relance sociale loisir — pas open_exploration", () => {
     );
   });
 
+  it("après phatique, « qu'est-ce qu'on devrait faire maintenant » reste social", () => {
+    const q = "qu'est-ce qu'on devrait faire maintenant ?";
+    const history = [
+      { role: "user", content: "comment ca va ?" },
+      { role: "assistant", content: "Tout va bien ici." },
+      { role: "user", content: "tu fais quoi de beau ?" },
+      { role: "assistant", content: "Je suis là." },
+    ];
+    assert.equal(isSocialLeisureRelance(q, history), true);
+    assert.equal(isOpenExplorationFrame(q, history), false);
+    assert.equal(
+      classifySocialPattern(q, history)?.patternName,
+      "social/leisure_relance",
+    );
+  });
+
   it("sans historique, « qu'est-ce qu'on pourrait faire?? » reste exploration", () => {
     const q = "qu'est-ce qu'on pourrait faire??";
     assert.equal(isOpenExplorationFrame(q), true);

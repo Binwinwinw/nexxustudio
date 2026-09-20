@@ -56,7 +56,7 @@ const PROJECT_INTENT_RE =
   /\b(?:projet|livrable|forge|handoff|agent|code|script|audit|d[eé]p[oô]t|depot|repo|atelier|feature|ticket|sprint|backlog|architecture|\brag\b)\b/i;
 
 const SOCIAL_OPENING_RE =
-  /(?:comment\s+(?:(?:ça|ca)\s+)?(?:va|se\s+passe|roule)|(?:^|\s)(?:salut|bonjour|hello|coucou|hey|yop|yo)\b|(?:^|\s)(?:ça|ca)\s+roule|(?:^|\s)tout\s+roule)/i;
+  /(?:comment\s+(?:(?:ça|ca)\s+)?(?:va|se\s+passe|roule)|(?:^|\s)(?:salut|bonjour|hello|coucou|hey|yop|yo)\b|(?:^|\s)(?:ça|ca)\s+roule|(?:^|\s)tout\s+roule|tu\s+fais\s+quoi|qu\s+est[- ]ce\s+qu(?:e\s+)?tu\s+fais|que\s+fais[- ]?tu|c['']?est\s+gentil|tant mieux|content(?:e)?\s+de\s+savoir)/i;
 
 /** « qu'est-ce qu'on fait » nu = statut projet, pas loisir / menu exploration. */
 const PROJECT_STATUS_ON_FAIT_RE =
@@ -74,6 +74,23 @@ function lastUserText(history = []) {
     }
   }
   return "";
+}
+
+function recentUserTexts(history = [], limit = 3) {
+  const out = [];
+  if (!Array.isArray(history)) return out;
+  for (let i = history.length - 1; i >= 0 && out.length < limit; i -= 1) {
+    if (history[i]?.role === "user" && String(history[i]?.content || "").trim()) {
+      out.push(String(history[i].content).trim());
+    }
+  }
+  return out;
+}
+
+function hasRecentSocialContinuity(history = []) {
+  return recentUserTexts(history, 3).some((text) =>
+    SOCIAL_OPENING_RE.test(normalizeFamiliarityQuery(text)),
+  );
 }
 
 /**
@@ -98,7 +115,8 @@ export function isSocialLeisureRelance(query = "", history = []) {
   if (SOCIAL_RELANCE_LEAD_RE.test(q)) return true;
 
   const previous = normalizeFamiliarityQuery(lastUserText(history));
-  return Boolean(previous && SOCIAL_OPENING_RE.test(previous));
+  if (previous && SOCIAL_OPENING_RE.test(previous)) return true;
+  return hasRecentSocialContinuity(history);
 }
 
 /**
