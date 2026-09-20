@@ -5,7 +5,11 @@
 import { isGeneralKnowledgeRequest } from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
 import { suppressesBuildIntentForTechnicalLearning } from "../../utils/intent-guards/technicalLearningPathIntentGuards.js";
 import { isCasualSocialCheckInQuery } from "../../utils/conversation/genericGreetingGuards.js";
-import { isKnownSocialPattern, isWellbeingCheckinIntent } from "../social/index.js";
+import {
+  isKnownSocialPattern,
+  isPhaticSocialCheckinIntent,
+  isWellbeingCheckinIntent,
+} from "../social/index.js";
 import { isOpenExplorationFrame } from "../conversation/openExplorationFramePolicy.js";
 import { isIdeationIntent } from "../../utils/intent-guards/ideationIntentGuards.js";
 import { isAssistantSelfAttributeIntent } from "../../utils/intent-guards/identityIntentGuards.js";
@@ -408,6 +412,11 @@ export function resolveIntentAction(
 
   if (domain === INTENT_DOMAINS.META) {
     return INTENT_ACTIONS.DELIVERABLE_TYPES;
+  }
+
+  // Phatique « tu fais / que fais tu » : \bfais\b ≠ CREATE. Shadow only.
+  if (domain === INTENT_DOMAINS.SOCIAL && isPhaticSocialCheckinIntent(query)) {
+    return INTENT_ACTIONS.SOCIAL_CHECKIN;
   }
 
   if (isUiNavigationRestructureFeedback(query)) {

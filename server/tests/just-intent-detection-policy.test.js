@@ -217,4 +217,28 @@ describe("justIntentDetectionPolicy - micro-signaux", () => {
     assert.equal(ev.strategy, EXECUTION_STRATEGIES.BUILD_V1);
     // Le domaine dépend des règles existantes, mais la stratégie doit bypasser la clarification
   });
+
+  it("P1-C — phatique « fais » n'est pas social/create", () => {
+    for (const q of [
+      "qu'est ce que tu fais de bon ?",
+      "tu fais quoi de beau ?",
+      "bonjour que fais tu ?",
+      "sinon, tu fais quoi de beau ?",
+    ]) {
+      const ev = evaluateJustIntent(q);
+      assert.equal(ev.domain, INTENT_DOMAINS.SOCIAL, q);
+      assert.equal(ev.action, INTENT_ACTIONS.SOCIAL_CHECKIN, q);
+      assert.notEqual(ev.action, INTENT_ACTIONS.CREATE, q);
+    }
+  });
+
+  it("P1-C — CREATE réel conservé (CV / html)", () => {
+    const cv = evaluateJustIntent("Fais-moi un CV moderne");
+    assert.equal(cv.domain, INTENT_DOMAINS.DOCUMENT);
+    assert.equal(cv.action, INTENT_ACTIONS.CREATE);
+
+    const html = evaluateJustIntent("fais une page html");
+    assert.equal(html.domain, INTENT_DOMAINS.WEB_HTML);
+    assert.equal(html.action, INTENT_ACTIONS.CREATE);
+  });
 });
