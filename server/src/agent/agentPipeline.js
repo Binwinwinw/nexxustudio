@@ -96,6 +96,7 @@ import {
   PARTIAL_INTERRUPT_MARKER,
 } from "./policies/document/index.js";
 import { compressComposerFinalPass } from "./utils/quality-safety/qualityGuards.js";
+import { sanitizeUnverifiedCapabilityClaim } from "./utils/quality-safety/unverifiedCapabilityClaimGuard.js";
 import { requiresStructuredContentComposerBudget } from "./policies/delivery/constructiveDeliveryPolicy.js";
 import { synthesizeConversationRecall } from "./utils/conversation/conversationRecallSynthesizer.js";
 import { resolvePipelineFallback, resolveLocalDeterministicFallback } from "./utils/conversation/genericGreetingGuards.js";
@@ -4605,6 +4606,23 @@ class AgentPipeline {
         );
         console.warn(
           `[OutputLanguage] expected=${langPolicyForGate.outputLanguage} path=${pipelinePath} preserved=${langGate.preserved}`,
+        );
+      }
+    }
+
+    if (deliveryMode === DELIVERY_MODES.BUFFERED_FINAL) {
+      const gated = sanitizeUnverifiedCapabilityClaim(finalText, {
+        query: effectiveQuery,
+        history: effectiveHistory,
+      });
+      if (gated !== finalText) {
+        finalText = gated;
+        turnTelemetry?.setMetric?.("unverified_capability_claim", true);
+        if (onStep) {
+          onStep("🛡️ Claim opérationnelle non vérifiée — fallback déterministe");
+        }
+        console.warn(
+          `[UnverifiedCapabilityClaim] path=${pipelinePath} buffered=true`,
         );
       }
     }
