@@ -330,6 +330,7 @@ import {
   resolveExploratoryConversationShortCircuit,
   resolveShortGeneralAnswerShortCircuit,
   resolveNamedCreateStartShortCircuit,
+  resolveDocumentaryDeliverableFirstAct,
   resolveActiveGoalContinuationShortCircuit,
 } from "../../policies/conversation/index.js";
 import {
@@ -1310,6 +1311,18 @@ async function runConversationShortCircuitBody(query, options = {}) {
       informationSeeking: Boolean(subjectAngleFollowHit.preferWebResearch),
       continuityEffectiveQuery: subjectAngleFollowHit.effectiveQuery,
       continuitySubject: subjectAngleFollowHit.continuitySubject,
+    });
+  }
+
+  const documentaryFirstActHit =
+    resolveDocumentaryDeliverableFirstAct(effectiveQuery);
+  if (documentaryFirstActHit?.reply) {
+    return emit({
+      path: documentaryFirstActHit.path,
+      mode: RESPONSE_MODES.SIMPLE_FAST,
+      reply: documentaryFirstActHit.reply,
+      step: "📄 Livrable documentaire — premier acte (sans idéation, sans plan)...",
+      enforce: { allowRefusal: false },
     });
   }
 

@@ -12,6 +12,7 @@ export * from "./queryUnderstandingDomainRegistry.js";
 export * from "./queryUnderstandingCoverageMatrix.js";
 export * from "./openExplorationFramePolicy.js";
 export * from "./currentTurnAnchoringPolicy.js";
+export * from "./documentaryDeliverableFirstAct.js";
 export * from "./activeGoalPolicy.js";
 export * from "./conversationFramingPolicy.js";
 export * from "./existenceScopeGuardPolicy.js";

@@ -197,6 +197,7 @@ export const SUFFICIENCY_BYPASS_PATHS = new Set([
   "lexicon_science_takeaway_deterministic",
   "ideation_deterministic",
   "named_create_start",
+  "documentary_deliverable_first_act",
   "open_prompt_continuity",
   "social_composite_deterministic",
   "code_concept_glossary_direct",
