@@ -74,6 +74,11 @@ export function isGenericReadyGreeting(text = "") {
   return String(text).includes("Tout est prêt. Sur quoi travaillons-nous");
 }
 
+function isGenericPisteRefusal(text = "") {
+  const t = String(text || "").trim();
+  return /^Je vois la piste, mais pas encore/i.test(t);
+}
+
 /**
  * Détecte une intention de travail claire (livrable, contraintes, format).
  */
@@ -207,14 +212,14 @@ export function resolvePipelineFallback({
   attachments = [],
 } = {}) {
   const fromStream = recoverVisibleFromFullResponse(rawResponse);
-  if (fromStream) return fromStream;
+  if (fromStream && !isGenericPisteRefusal(fromStream)) return fromStream;
 
   const recovered = pickRecoverableCandidate(
     rawResponse,
     ...(Array.isArray(expertOutputs) ? expertOutputs.map((o) => o?.content) : []),
     quickAnswer,
   );
-  if (recovered) return recovered;
+  if (recovered && !isGenericPisteRefusal(recovered)) return recovered;
 
   const localDeterministic = resolveLocalDeterministicFallback(query);
   if (localDeterministic) {
@@ -377,9 +382,10 @@ export function resolvePipelineFallback({
  */
 export function recoverVisibleFromFullResponse(fullResponse = "") {
   const raw = String(fullResponse || "").trim();
-  if (!raw) return "";
+  if (!raw || isGenericPisteRefusal(raw)) return "";
 
   const cleaned = responseThinkingCleaner.clean(raw).trim();
+  if (isGenericPisteRefusal(cleaned)) return "";
   if (
     cleaned.length > 40 &&
     !isGenericReadyGreeting(cleaned) &&
@@ -389,6 +395,8 @@ export function recoverVisibleFromFullResponse(fullResponse = "") {
     if (/(function |class |const |import |export |def |#include|<!DOCTYPE)/i.test(cleaned)) {
       return cleaned;
     }
+    // TODO: seuil 80 car. + accents FR = acceptation laxiste. Contourné pour le
+    // piste via isGenericPisteRefusal. Autres consommateurs non audités.
     if (/[àâäéèêëïîôùûüç]/i.test(cleaned) && cleaned.length > 80) {
       return cleaned;
     }

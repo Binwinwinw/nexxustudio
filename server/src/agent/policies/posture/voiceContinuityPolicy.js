@@ -6,6 +6,7 @@
 import { TUTOIEMENT_COMPOSER_LINE } from "./addressingPolicy.js";
 import { POSTURES } from "./sessionModeState.js";
 import { isHowToRequestShell } from "../../utils/intent-guards/howToRequestIntentGuards.js";
+import { hasExplicitDeliverableAndSubject } from "../../utils/context/deliverableMandateGuards.js";
 
 export const VOICE_CONTINUITY_CONTRACT = "VOICE_CONTINUITY_V1";
 export const VOICE_CONTINUITY_RULE = "voice_continuity_policy_v1";
@@ -98,6 +99,7 @@ export function shouldBlockGenericInsufficientRefusal(query = "", flags = {}) {
   ) {
     return true;
   }
+  if (hasExplicitDeliverableAndSubject(query)) return true;
   return Boolean(subjectAnchored || formatAnchored);
 }
 

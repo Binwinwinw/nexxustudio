@@ -27,8 +27,14 @@ import {
 } from "../src/agent/config/modeResponseContracts.js";
 import { POSTURES } from "../src/agent/policies/posture/index.js";
 import { buildPostureDeliveryAddon } from "../src/agent/policies/posture/index.js";
-import { resolveSimpleFastAllowRefusal } from "../src/agent/paths/simpleFastPath.js";
+import {
+  resolveSimpleFastAllowRefusal,
+  applySimpleFastDeliveryPipeline,
+  shouldRunWordGuardSimpleFast,
+} from "../src/agent/paths/simpleFastPath.js";
 import { enforceSimpleFactualDirectness } from "../src/agent/micro/replies/simpleFactualComposer.js";
+import { buildSubstantiveRecoveryMessage } from "../src/agent/utils/conversation/genericGreetingGuards.js";
+import { hasExplicitDeliverableAndSubject } from "../src/agent/utils/context/deliverableMandateGuards.js";
 
 describe("VOICE_CONTINUITY_V1", () => {
   it("sujet/format ancré → bloque refus générique + addon l’interdit", () => {
@@ -171,5 +177,121 @@ describe("VOICE_CONTINUITY_V1", () => {
     const c = resolveIntentComposition(work);
     assert.equal(c.social_weight, "deferred_to_response");
     assert.equal(shouldDeferSocialRouting("bonjour"), false);
+  });
+
+  const INCIDENT_FICHES =
+    "je veux faire des fiches à propos de l'utilisation du logiciel Hermes Agent";
+
+  it("A — fiches + Hermes Agent : bloque piste, texte final non vide", async () => {
+    assert.equal(hasExplicitDeliverableAndSubject(INCIDENT_FICHES), true);
+    assert.equal(shouldBlockGenericInsufficientRefusal(INCIDENT_FICHES), true);
+    assert.equal(resolveSimpleFastAllowRefusal({ query: INCIDENT_FICHES }), false);
+    const stripped = enforceModeContract(
+      RESPONSE_MODES.SIMPLE_FAST,
+      INSUFFICIENT_SIGNAL_REFUSAL,
+      { query: INCIDENT_FICHES, allowRefusal: true },
+    );
+    assert.equal(stripped, "");
+    const delivery = await applySimpleFastDeliveryPipeline({
+      query: INCIDENT_FICHES,
+      rawResult: INSUFFICIENT_SIGNAL_REFUSAL,
+    });
+    assert.ok(String(delivery.text || "").trim().length > 0);
+    assert.doesNotMatch(delivery.text, /Je vois la piste|pas encore la destination/i);
+  });
+
+  it("B — documentation sur X : piste absente, texte non vide", async () => {
+    const q = "je veux créer une documentation sur React";
+    assert.equal(hasExplicitDeliverableAndSubject(q), true);
+    assert.equal(shouldBlockGenericInsufficientRefusal(q), true);
+    assert.equal(resolveSimpleFastAllowRefusal({ query: q }), false);
+    const delivery = await applySimpleFastDeliveryPipeline({
+      query: q,
+      rawResult: INSUFFICIENT_SIGNAL_REFUSAL,
+    });
+    assert.ok(String(delivery.text || "").trim().length > 0);
+    assert.doesNotMatch(delivery.text, /Je vois la piste/i);
+  });
+
+  it("C — aide-moi : refus piste encore possible", () => {
+    const q = "aide-moi";
+    assert.equal(hasExplicitDeliverableAndSubject(q), false);
+    assert.equal(shouldBlockGenericInsufficientRefusal(q), false);
+    const out = enforceModeContract(RESPONSE_MODES.SIMPLE_FAST, "", {
+      query: q,
+      allowRefusal: true,
+    });
+    assert.equal(out, INSUFFICIENT_SIGNAL_REFUSAL);
+  });
+
+  it("D — fiches sans sujet : ancrage combo inactif", () => {
+    const q = "je veux faire des fiches";
+    assert.equal(hasExplicitDeliverableAndSubject(q), false);
+    assert.equal(shouldBlockGenericInsufficientRefusal(q), false);
+  });
+
+  it("E — sujet seul : ancrage combo inactif", () => {
+    const q = "Hermes Agent";
+    assert.equal(hasExplicitDeliverableAndSubject(q), false);
+    assert.equal(shouldBlockGenericInsufficientRefusal(q), false);
+  });
+
+  it("F — ambigu court sans livrable ni sujet : piste conservée", () => {
+    const q = "fais un truc";
+    assert.equal(hasExplicitDeliverableAndSubject(q), false);
+    assert.equal(shouldBlockGenericInsufficientRefusal(q), false);
+    const out = enforceModeContract(RESPONSE_MODES.SIMPLE_FAST, "", {
+      query: q,
+      allowRefusal: true,
+    });
+    assert.equal(out, INSUFFICIENT_SIGNAL_REFUSAL);
+  });
+
+  it("G — recovery vide après blocage : fallback existant, pas le piste", async () => {
+    const recovery = buildSubstantiveRecoveryMessage(
+      INCIDENT_FICHES,
+      "empty_simple_fast",
+    );
+    assert.ok(recovery.trim().length > 0);
+    assert.doesNotMatch(recovery, /Je vois la piste|pas encore la destination/i);
+    const delivery = await applySimpleFastDeliveryPipeline({
+      query: INCIDENT_FICHES,
+      rawResult: "",
+    });
+    assert.ok(String(delivery.text || "").trim().length > 0);
+    assert.doesNotMatch(delivery.text, /Je vois la piste|pas encore la destination/i);
+    assert.equal(delivery.usedRecoveryFallback, true);
+  });
+
+  it("H — word_guard inchangé ; ancrage voix existant intact", () => {
+    assert.equal(
+      shouldRunWordGuardSimpleFast({ wordsCount: 13, query: INCIDENT_FICHES }),
+      true,
+    );
+    assert.equal(shouldRunWordGuardSimpleFast({ wordsCount: 15 }), false);
+    const anchored =
+      "explique le cycle de la lune sous forme de tableau avec des détails";
+    assert.equal(shouldBlockGenericInsufficientRefusal(anchored), true);
+    assert.equal(shouldBlockGenericInsufficientRefusal("documentation"), false);
+    assert.equal(shouldBlockGenericInsufficientRefusal("je veux une fiche"), false);
+  });
+
+  it("A′ — jumeau sans accents : fiches a propos de X", () => {
+    const q =
+      "je veux faire des fiches a propos de l utilisation du logiciel Hermes Agent";
+    assert.equal(hasExplicitDeliverableAndSubject(q), true);
+    assert.equal(shouldBlockGenericInsufficientRefusal(q), true);
+    assert.equal(resolveSimpleFastAllowRefusal({ query: q }), false);
+  });
+
+  it("A″ — pédagogiques / pedagogiques hors combo, ancrage inchangé", () => {
+    const withAccent =
+      "je veux faire des fiches pédagogiques à propos de l'utilisation du logiciel Hermes Agent";
+    const withoutAccent =
+      "je veux faire des fiches pedagogiques a propos de l utilisation du logiciel Hermes Agent";
+    assert.equal(hasExplicitDeliverableAndSubject(withAccent), true);
+    assert.equal(hasExplicitDeliverableAndSubject(withoutAccent), true);
+    assert.equal(shouldBlockGenericInsufficientRefusal(withAccent), true);
+    assert.equal(shouldBlockGenericInsufficientRefusal(withoutAccent), true);
   });
 });
