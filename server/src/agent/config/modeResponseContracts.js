@@ -35,6 +35,7 @@ import { evaluateRefusalSufficiency } from "../micro/parsing/refusalSufficiencyE
 import { isExploitableProcedureIntent } from "../utils/intent-guards/procedureIntentGuards.js";
 import { sanitizeUnverifiedSkillExecutionClaims } from "../utils/quality-safety/skillExecutionClaimGuard.js";
 import { sanitizeInternalEnvironmentDisclosure } from "../utils/quality-safety/environmentDisclosureGuard.js";
+import { sanitizeInternalContractVerbalization } from "../utils/quality-safety/internalContractVerbalizationGuard.js";
 import {
   buildCodeDeliveryAddon,
   isCodeGenerationRequest,
@@ -809,6 +810,10 @@ export function enforceModeContract(mode, rawText, options = {}) {
   const mayEmitPisteRefusal = allowRefusal && !blockPisteRefusal;
 
   let cleaned = cleanVisible(rawText);
+  cleaned = sanitizeInternalContractVerbalization(cleaned, {
+    query,
+    history: options.history,
+  });
 
   if (codeDelivery && isDefensiveDeliveryRefusal(cleaned)) {
     return "";
