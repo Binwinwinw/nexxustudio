@@ -55,6 +55,7 @@ export function createEmptySessionWorkMemory(sessionId = "default-session") {
     corrections: [],
     sessionMode: null,
     activeGoal: null,
+    documentaryMandate: null,
     lastRoutingResult: null,
     stalenessScore: 0,
     updatedAt: now,
@@ -230,6 +231,7 @@ export function commitSessionWorkTurn({
   corrections = [],
   sessionMode = undefined,
   activeGoal = undefined,
+  documentaryMandate = undefined,
 } = {}) {
   const key = normalizeSessionId(sessionId);
   const state = loadSessionWorkMemory(key);
@@ -279,6 +281,9 @@ export function commitSessionWorkTurn({
   }
   if (activeGoal !== undefined) {
     next.activeGoal = activeGoal;
+  }
+  if (documentaryMandate !== undefined) {
+    next.documentaryMandate = documentaryMandate;
   }
 
   const routing = projectRoutingResultMetadata(

@@ -28,6 +28,7 @@ describe("sessionWorkMemory — cycle de tour", () => {
     assert.equal(empty.lastTurnTimestamp, null);
     assert.equal(empty.turnCount, 0);
     assert.equal(empty.activeGoal, null);
+    assert.equal(empty.documentaryMandate, null);
     assert.equal(empty.lastRoutingResult, null);
     assert.deepEqual(empty.filesSeen, []);
   });
