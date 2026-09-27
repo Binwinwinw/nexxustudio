@@ -25,6 +25,7 @@ import {
   isInsufficientSignalRefusal
 } from "./config/modeResponseContracts.js";
 import { shouldBypassSimpleFast } from "./config/intentContractRegistry.js";
+import { CODE_INTENT_KINDS } from "../../../shared/codeIntentCatalog.js";
 import {
   resolvePipelineCavemanLevel,
   isLowTokenModeEnabled,
@@ -210,10 +211,8 @@ import {
   listInternalPromptLeakMarkers,
   resolveInternalLeakFallback,
   withLeadingGreetingMirror,
-  classifySocialPattern,
 } from "./policies/social/index.js";
 import { recordSocialPatternTelemetry } from "./telemetry/socialPatternTelemetry.js";
-import { recordRoutingAuthorityConflictTelemetry } from "./telemetry/routingObserveTelemetry.js";
 import {
   classifySummaryContract,
   extractSummaryUrl,
@@ -1248,6 +1247,7 @@ class AgentPipeline {
           structuredRequest,
           interpreterLock,
           pipelinePath: "just_intent_detection",
+          codeIntent: justIntent.codeIntentKind || undefined,
           codeIntentLabel: justIntent.actionLabel,
           codeIntentConfidence: justIntent.confidence,
           tiebreak: intentTriage.tiebreak,
@@ -1271,12 +1271,17 @@ class AgentPipeline {
 
     const toolHeavyTurn =
       guidedIntentContractId === "REPO_ANALYSIS" ||
-      Boolean(requestWorkup.action_decision?.capabilities?.code);
+      Boolean(requestWorkup.action_decision?.capabilities?.code) ||
+      Boolean(
+        justIntent.codeIntentKind &&
+          justIntent.codeIntentKind !== CODE_INTENT_KINDS.EXPLAIN,
+      );
 
     const capabilityContext = composeCapabilityContext({
       query: pipelineQuery,
       history: orchestrationHistory,
       intentContractId: guidedIntentContractId || null,
+      justIntent,
       conversationMove,
       orchestratorMode: requestWorkup.action_decision?.orchestratorMode || null,
       cavemanLevel: effectiveCavemanLevel,
@@ -2136,7 +2141,6 @@ class AgentPipeline {
         history: orchestrationHistory,
         socialPatternName: shortCircuit?.socialPatternName || null,
         justIntent,
-        shortCircuitPath: shortCircuit?.path ?? null,
       });
       if (pipelineTelemetryCtx) {
         pipelineTelemetryCtx.deliverableContract =
@@ -2890,26 +2894,6 @@ class AgentPipeline {
       query,
       attachments: attachedFiles,
     })) {
-      recordRoutingAuthorityConflictTelemetry({
-        justIntent,
-        composedPrimary:
-          pipelineTelemetryCtx?.intentComposition?.primary_action || null,
-        socialPattern: classifySocialPattern(query)?.patternName || null,
-        decompositionUnit: requestDecomposition?.units?.[0]?.unitType || null,
-        workPresent: Boolean(turnComprehension?.dominance?.workPresent),
-        socialGateDecision:
-          turnLoop?.verification?.failures?.[0] ||
-          (turnComprehension?.dominance?.workPresent && !shortCircuit
-            ? "social_over_work"
-            : null),
-        shortCircuitSelected: shortCircuit?.path || null,
-        downstreamPipeline: "simple_fast",
-        downstreamReason: SIMPLE_FAST_ORIGINS.WORD_GUARD,
-        responseContract: "INSUFFICIENT_SIGNAL_REFUSAL",
-        runtimeAligned:
-          pipelineTelemetryCtx?.deliverableContract?.runtimeAligned ?? false,
-        turnTelemetry,
-      });
       turnTelemetry.recordPipelinePath("simple_fast");
       console.log("[PIPELINE] SIMPLE_FAST détecté → simpleFast (word_guard)");
       try {
