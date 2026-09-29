@@ -10,6 +10,11 @@ import {
 } from "../../utils/intent-guards/compareChooseIntentGuards.js";
 import { isMetaDeliverableTypesIntent } from "../../utils/intent-guards/metaConversationIntentGuards.js";
 import { resolveWebSearchThreadMaintenanceShortCircuit } from "../web/index.js";
+import {
+  DOCUMENTARY_MANDATE_KIND,
+  readDocumentaryMandate,
+} from "../conversation/documentaryMandatePolicy.js";
+import { DOCUMENTARY_WEB_COLLECTION_CONTRACT_ID } from "../../micro/replies/documentaryWebCollectionComposer.js";
 
 export const EXPLICIT_WEB_SEARCH_REQUEST_RULE = "explicit_web_search_request_v1";
 
@@ -482,9 +487,37 @@ export function extractWebSearchFollowUpTopic(query = "") {
  * @param {string} topic
  * @returns {object}
  */
-function buildWebPipelineHit(topic, kind = "web_help_with_topic", fullQuery = "") {
-  const guidedProduct =
-    fullQuery && hasExplicitWebProductRecoSignals(fullQuery);
+const DOCUMENTARY_WEB_HELP_KINDS = new Set([
+  "web_help_with_topic",
+  "web_help_followup_topic",
+  "web_help_thread_continuation",
+]);
+
+function hasActiveDocumentaryMandate(priorState = null) {
+  const mandate = readDocumentaryMandate(priorState);
+  return Boolean(mandate && mandate.kind === DOCUMENTARY_MANDATE_KIND);
+}
+
+function resolveWebPipelineContractId(kind, fullQuery = "", priorState = null) {
+  if (fullQuery && hasExplicitWebProductRecoSignals(fullQuery)) {
+    return "GUIDED_PRODUCT_RECOMMENDATION";
+  }
+  if (
+    kind !== "web_citations_structured_report_cluster" &&
+    DOCUMENTARY_WEB_HELP_KINDS.has(kind) &&
+    hasActiveDocumentaryMandate(priorState)
+  ) {
+    return DOCUMENTARY_WEB_COLLECTION_CONTRACT_ID;
+  }
+  return "FACTUAL_RESEARCH";
+}
+
+function buildWebPipelineHit(
+  topic,
+  kind = "web_help_with_topic",
+  fullQuery = "",
+  priorState = null,
+) {
   return {
     path: "information_seeking_full_pipeline",
     kind,
@@ -494,9 +527,7 @@ function buildWebPipelineHit(topic, kind = "web_help_with_topic", fullQuery = ""
     preferWebResearch: true,
     informationSeeking: true,
     webQuery: topic,
-    forcedIntentContractId: guidedProduct
-      ? "GUIDED_PRODUCT_RECOMMENDATION"
-      : "FACTUAL_RESEARCH",
+    forcedIntentContractId: resolveWebPipelineContractId(kind, fullQuery, priorState),
     step: "🔍 Recherche web — pipeline information...",
   };
 }
@@ -516,6 +547,7 @@ function buildWebPipelineHit(topic, kind = "web_help_with_topic", fullQuery = ""
  */
 export function resolveExplicitWebSearchHelpShortCircuit(query = "", options = {}) {
   const history = options.history || [];
+  const priorState = options.priorState || null;
 
   // P1 — catalogue livrables / meta formats : jamais re-route web/FACTUAL
   if (isMetaDeliverableTypesIntent(query)) return null;
@@ -530,7 +562,7 @@ export function resolveExplicitWebSearchHelpShortCircuit(query = "", options = {
     const followTopic =
       extractWebSearchTopic(query) || extractWebSearchFollowUpTopic(query);
     if (followTopic) {
-      return buildWebPipelineHit(followTopic, "web_help_followup_topic", query);
+      return buildWebPipelineHit(followTopic, "web_help_followup_topic", query, priorState);
     }
   }
 
@@ -543,7 +575,12 @@ export function resolveExplicitWebSearchHelpShortCircuit(query = "", options = {
     const followTopic =
       extractWebSearchTopic(query) || extractWebSearchFollowUpTopic(query);
     if (followTopic) {
-      return buildWebPipelineHit(followTopic, "web_help_thread_continuation", query);
+      return buildWebPipelineHit(
+        followTopic,
+        "web_help_thread_continuation",
+        query,
+        priorState,
+      );
     }
   }
 
@@ -561,6 +598,7 @@ export function resolveExplicitWebSearchHelpShortCircuit(query = "", options = {
         clusterTopic,
         "web_citations_structured_report_cluster",
         query,
+        priorState,
       );
     }
   }
@@ -577,7 +615,7 @@ export function resolveExplicitWebSearchHelpShortCircuit(query = "", options = {
     };
   }
 
-  return buildWebPipelineHit(topic, "web_help_with_topic", query);
+  return buildWebPipelineHit(topic, "web_help_with_topic", query, priorState);
 }
 
 /**

@@ -1409,6 +1409,7 @@ async function runConversationShortCircuitBody(query, options = {}) {
   // Inclut le follow-up sujet (« sur la mixtrack Pro 2 ») après clarify.
   const webHelpEarly = resolveExplicitWebSearchHelpShortCircuit(effectiveQuery, {
     history,
+    priorState: options.priorState,
   });
   if (webHelpEarly?.reply) {
     return emit({
