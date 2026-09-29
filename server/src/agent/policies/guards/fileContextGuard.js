@@ -17,6 +17,7 @@ import {
   isDocumentAttachmentTask,
   evaluateAttachmentReadMandate,
   buildAttachmentMandateRepairReply,
+  hasAttachmentPresent,
 } from "../attachment/index.js";
 
 export const INLINE_CONTEXT_LABEL = "snippet fourni dans la requête";
@@ -389,15 +390,16 @@ export function evaluateFileContextGuard(input = {}) {
     };
   }
 
+  const files = attachments.length ? attachments : attachmentRefs;
   const mandate = evaluateAttachmentReadMandate({
     query,
-    attachments: attachments.length ? attachments : attachmentRefs,
+    attachments: files,
     ingestedText,
     reply: response,
     task: attachmentTask,
     htmlViews,
   });
-  if (mandate.applies && !mandate.ok) {
+  if (mandate.applies && !mandate.ok && hasAttachmentPresent(files)) {
     return {
       ok: false,
       action: "blocked",
@@ -408,7 +410,7 @@ export function evaluateFileContextGuard(input = {}) {
       mandate,
       blockedMessage: buildAttachmentMandateRepairReply({
         query,
-        attachments: attachments.length ? attachments : attachmentRefs,
+        attachments: files,
         ingestedText,
         defects: mandate.defects,
         htmlViews,

@@ -16,7 +16,11 @@ import {
   ATTACHMENT_READ_MANDATE_RULE,
   ATTACHMENT_READ_MANDATE_CONTRACT,
 } from "../src/agent/policies/attachment/index.js";
-import { evaluateFileContextGuard } from "../src/agent/policies/guards/fileContextGuard.js";
+import {
+  evaluateFileContextGuard,
+  enforceFileContextGuard,
+} from "../src/agent/policies/guards/fileContextGuard.js";
+import { isCodeIntentRequest } from "../src/agent/policies/code/codeIntentPolicy.js";
 import { evaluateClarificationDecision } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 import { INSUFFICIENT_SIGNAL_REFUSAL } from "../src/agent/config/modeResponseContracts.js";
 import { isImageOnlyAttachments } from "../src/agent/utils/conversation/conversationGuards.js";
@@ -371,5 +375,62 @@ describe("attachmentReadMandate — image raster ≠ document vide", () => {
       assert.doesNotMatch(repair, /trop court pour une analyse/i, file.mimetype);
       assert.match(repair, /renvoyer|recadrer|décrire/i);
     }
+  });
+});
+
+const EXCEL_QUERY =
+  "oui je voudrais améliorer un fichier excel dans lequel la première page est une zone de texte";
+const EXCEL_REPLY =
+  "On peut lier la zone de recherche aux feuilles d'adhérents avec RECHERCHEX.";
+
+describe("attachmentReadMandate — sans pièce réelle", () => {
+  it("excel sans joint : le Composer passe, pas d'arrêt fichier vide", () => {
+    const input = {
+      query: EXCEL_QUERY,
+      response: EXCEL_REPLY,
+      attachments: [],
+      ingestedText: "",
+    };
+    const guard = evaluateFileContextGuard(input);
+    const enforced = enforceFileContextGuard(input);
+    assert.equal(guard.ok, true);
+    assert.equal(guard.action, "pass");
+    assert.equal(guard.blockedMessage, undefined);
+    assert.equal(enforced.blocked, false);
+    assert.equal(enforced.delivered, EXCEL_REPLY);
+    assert.doesNotMatch(enforced.delivered, /Lecture obligatoire/i);
+    assert.equal(isAttachmentWorkRequest(EXCEL_QUERY, []), true);
+  });
+
+  it("excel avec xlsx vide : REPLACE, nom du fichier", () => {
+    const guard = evaluateFileContextGuard({
+      query: EXCEL_QUERY,
+      response: EXCEL_REPLY,
+      attachments: [{ originalname: "adherents.xlsx" }],
+      ingestedText: "",
+    });
+    assert.equal(guard.ok, false);
+    assert.equal(guard.action, "blocked");
+    assert.equal(guard.guardMode, "replace");
+    assert.match(guard.blockedMessage, /Lecture obligatoire/i);
+    assert.match(guard.blockedMessage, /adherents\.xlsx/);
+  });
+
+  it("caractérisation : intention code sans pièce — plus de REPLACE mandat", () => {
+    const query =
+      "améliore mon fichier utils.py et explique ce code python qui ne démarre pas";
+    const reply = "Le démarrage échoue avant d'atteindre la boucle principale.";
+    assert.equal(isCodeIntentRequest(query), true);
+    assert.equal(isAttachmentWorkRequest(query, []), true);
+    const guard = evaluateFileContextGuard({
+      query,
+      response: reply,
+      attachments: [],
+      ingestedText: "",
+    });
+    assert.equal(guard.ok, true);
+    assert.equal(guard.action, "pass");
+    assert.equal(guard.preservedMessage, reply);
+    assert.doesNotMatch(String(guard.blockedMessage || ""), /Lecture obligatoire/i);
   });
 });
