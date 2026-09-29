@@ -176,6 +176,59 @@ describe("informationSeekingIntentGuards", () => {
     assert.doesNotMatch(hit?.reply || "", /lancer ou d[eé]marrer/i);
   });
 
+  const EXCEL_WORK_REQUEST =
+    "oui je voudrais améliorer un fichier excel dans lequel la première page est une zone de texte (de recherche ayant comme entrée le nom et prénom) et d'autres feuilles contenant les noms, prénoms et date d'adhésion des adhérents. tu comprends bien. au prochain message je te donne encore d'autres précisions";
+
+  async function assertNotInformationSeekingWeb(q) {
+    assert.equal(isInformationSeekingWithTarget(q), false);
+    assert.equal(buildInformationSeekingWebQuery(q), null);
+    const hit = await runConversationShortCircuit(q);
+    assert.notEqual(hit?.path, "information_seeking_full_pipeline");
+    assert.notEqual(hit?.preferWebResearch, true);
+  }
+
+  it("je voudrais améliorer un fichier excel — pas cible web", async () => {
+    await assertNotInformationSeekingWeb(EXCEL_WORK_REQUEST);
+  });
+
+  it("je voudrais améliorer mon site — pas cible web", async () => {
+    await assertNotInformationSeekingWeb("je voudrais améliorer mon site");
+  });
+
+  it("limite de mot — codex n'est pas le verbe code", () => {
+    const q = "je voudrais codex de la galaxie";
+    assert.equal(isInformationSeekingWithTarget(q), true);
+    assert.equal(isInformationSeekingWithTarget("je voudrais code de la galaxie"), false);
+  });
+
+  it("je voudrais des informations sur Hermès Desktop — withTarget", () => {
+    assert.equal(
+      isInformationSeekingWithTarget("je voudrais des informations sur Hermès Desktop"),
+      true,
+    );
+  });
+
+  it("je voudrais en savoir plus — withTarget", () => {
+    assert.equal(
+      isInformationSeekingWithTarget("je voudrais en savoir plus sur le tableur"),
+      true,
+    );
+  });
+
+  it("je voudrais savoir ce qu'est un tableur — reste hors cible", () => {
+    assert.equal(
+      isInformationSeekingWithTarget("je voudrais savoir ce qu'est un tableur"),
+      false,
+    );
+  });
+
+  it("je voudrais modifier un fichier de ventes — résidu, withTarget reste vrai", () => {
+    assert.equal(
+      isInformationSeekingWithTarget("je voudrais modifier un fichier de ventes"),
+      true,
+    );
+  });
+
   it("j'aimerais + pour quelle raison — pas web Terre, simple_factual", async () => {
     const q =
       "j'aimerais savoir pour quelle raison la lune est aussi loin de la terre ??";

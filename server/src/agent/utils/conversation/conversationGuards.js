@@ -9,6 +9,7 @@ import { isAnalyticalCritiqueIntent } from "../intent-guards/analyticalCritiqueI
 import { isCodeIntentRequest } from "../../policies/code/codeIntentPolicy.js";
 import { isMetaConversationIntent } from "../intent-guards/metaConversationIntentGuards.js";
 import { isMetaCapabilitiesIntent } from "../../policies/meta/metaCapabilitiesPolicy.js";
+import { ANALYTICAL_TECHNICAL_VERB_RE } from "../intent-guards/analyticalTechnicalVerb.js";
 
 export function isPureSocial(query = "", isDiscussion = false) {
   const q = normalizeText(query).toLowerCase();
@@ -454,11 +455,7 @@ export function isAnalyticalTechnicalRequest(query = "") {
   if (isArchitectureDesignIntent(query)) return false;
   if (isTaskCapabilityAskWithoutPayload(query)) return false;
 
-  return (
-    /\banalyse\b|\banalyser\b|\bameliore\b|\baméliore\b|\bameliorer\b|\baméliorer\b|\bamelioration\b|\bamélioration\b|\bameliorations\b|\baméliorations\b|\bcorrige\b|\bcorriger\b|\baudit\b|\bauditer\b|\brefactor\b|\brefactoriser\b|\bcode\b|\barchitecture\b|\bdiagnostic\b|\bdebug\b|\berreur\b|\bbug\b/.test(
-      q,
-    )
-  );
+  return ANALYTICAL_TECHNICAL_VERB_RE.test(q);
 }
 
 /**

@@ -10,6 +10,7 @@ import {
 import { isFormalLetterTemplateRequest } from "../../policies/delivery/index.js";
 import { buildExistenceScopedWebQuery } from "../../policies/conversation/existenceScopeGuardPolicy.js";
 import { isCausalWhyExplainRequest } from "../../policies/posture/voiceContinuityPolicy.js";
+import { ANALYTICAL_TECHNICAL_VERB_RE } from "./analyticalTechnicalVerb.js";
 
 const INFORMATION_SEEKING_SHELL_RE =
   /\b(?:je cherche|j cherche|chercher|je voudrais|j aimerais|j'aimerais|besoin d(?:e|'|)?\s*(?:infos?|informations?|renseignements?)|j ai besoin d(?:e|'|)?\s*(?:infos?|informations?|renseignements?)|tu peux me dire|peux[- ]?tu me dire|dis[- ]?moi ce que tu sais|explique[- ]?moi|m['']?expliquer|m['']?informer|informe[- ]?moi)\b/i;
@@ -42,6 +43,12 @@ const LEARNING_PREEMPT_INFO_SEEKING_RE =
 /** « je voudrais créer X » = mandat de création, pas fiche / recherche web. */
 const CREATE_PREEMPT_INFO_SEEKING_RE =
   /\b(?:je (?:voudrais|veux|souhaite)|j[' ]?aimerais)\s+(?:creer|créer|construire|developper|développer|fabriquer|mettre en place|concevoir)\b/i;
+
+/** « je voudrais améliorer X » = verbe de travail collé, pas une cible « de X ». */
+const DESIRE_ANALYTICAL_VERB_PREEMPT_RE = new RegExp(
+  `\\b(?:je (?:voudrais|veux|souhaite)|j[' ]?aimerais)\\s+(?:${ANALYTICAL_TECHNICAL_VERB_RE.source})`,
+  "i",
+);
 
 const CREATE_HELP_MANDATE_RE =
   /\b(?:peux|pourrais|pourras)[- ]?tu\s+m[' ]?aider.{0,48}\b(?:creer|créer|construire|developper|développer|concevoir)\b/i;
@@ -289,6 +296,7 @@ export function isInformationSeekingWithTarget(query = "") {
   const q = normalizeQuery(query);
   if (LEARNING_PREEMPT_INFO_SEEKING_RE.test(q)) return false;
   if (isCreateMandateRequest(query)) return false;
+  if (DESIRE_ANALYTICAL_VERB_PREEMPT_RE.test(q)) return false;
   if (isExplicitTextCreationRequest(query)) return false;
   if (isIncompleteDefinitionAsk(query)) return false;
   return Boolean(extractInformationSeekingTarget(query));
