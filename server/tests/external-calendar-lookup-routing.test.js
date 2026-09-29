@@ -106,3 +106,46 @@ test("pleine lune avant un HTML collé reste un lookup calendaire", () => {
   const q = `${FULL_MOON_Q}\n<!DOCTYPE html><html><body>ok</body></html>`;
   assert.equal(isExternalCalendarLookupRequest(q), true);
 });
+
+const EXCEL_MEMBERSHIP_Q =
+  "oui je voudrais améliorer un fichier excel dans lequel la première page est une zone de texte (de recherche ayant comme entrée le nom et prénom) et d'autres feuilles contenant les noms, prénoms et date d'adhésion des adhérents. tu comprends bien. au prochain message je te donne encore d'autres précisions";
+
+test("excel adhérents — nom « recherche » ≠ calendrier externe", async () => {
+  assert.equal(isExternalDateLookupRequest(EXCEL_MEMBERSHIP_Q), false);
+  assert.equal(resolveExternalCalendarLookupShortCircuit(EXCEL_MEMBERSHIP_Q), null);
+  const hit = await runConversationShortCircuit(EXCEL_MEMBERSHIP_Q);
+  assert.notEqual(hit?.externalCalendarLookup, true);
+  assert.doesNotMatch(String(hit?.step || ""), /Calendrier externe/i);
+});
+
+test("au prochain message seul ≠ date externe", () => {
+  assert.equal(
+    isExternalDateLookupRequest(
+      "au prochain message je te donne encore d'autres précisions",
+    ),
+    false,
+  );
+});
+
+test("zone de texte de recherche ≠ date externe", () => {
+  assert.equal(isExternalDateLookupRequest("zone de texte de recherche"), false);
+});
+
+test("nom « une/la recherche » ≠ date externe", () => {
+  assert.equal(
+    isExternalDateLookupRequest("une recherche par date d'adhésion"),
+    false,
+  );
+  assert.equal(isExternalDateLookupRequest("la recherche par nom"), false);
+});
+
+test("je recherche la date de la prochaine pleine lune reste un lookup", () => {
+  const q = "je recherche la date de la prochaine pleine lune";
+  assert.equal(isExternalDateLookupRequest(q), true);
+  assert.equal(isExternalDateLookupRequest("Recherche la date de la prochaine pleine lune"), true);
+  assert.equal(isExternalDateLookupRequest("rechercher la date de la prochaine pleine lune"), true);
+});
+
+test("caractérisation : cherche la date d'adhésion reste un lookup", () => {
+  assert.equal(isExternalDateLookupRequest("cherche la date d'adhésion"), true);
+});

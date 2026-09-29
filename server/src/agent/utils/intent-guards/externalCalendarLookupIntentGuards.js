@@ -16,7 +16,7 @@ const EXPLICIT_WEB_TOOL_RE =
   /\b(?:utilise(?:z|r)?\s+(?:ton|votre|l['']?)\s*(?:outil\s+)?(?:de\s+)?(?:navigation\s+)?(?:web|internet)|va\s+sur\s+(?:le\s+)?(?:web|internet)|cherche(?:z|r)?\s+(?:sur\s+)?(?:le\s+)?(?:web|internet)|recherche\s+sur\s+(?:le\s+)?(?:web|internet)|fais\s+une\s+recherche\s+web|outil\s+de\s+navigation\s+web|navigation\s+web)\b/i;
 
 const EXTERNAL_LOOKUP_VERB_RE =
-  /\b(?:cherche(?:z|r)?|recherche(?:z|r)?|trouve(?:z|r)?|va\s+chercher|look\s+up)\b/i;
+  /\b(?:cherche(?:z|r)?|(?<!\b(?:de|la|une|cette|ma|ta|votre|notre)\s+|\bd['’]\s*)recherche(?:z|r)?|trouve(?:z|r)?|va\s+chercher|look\s+up)\b/i;
 
 const LOCAL_DATETIME_RE =
   /\b(?:quelle\s+heure|heure\s+est[- ]?il|il\s+est\s+quelle\s+heure|heure\s+actuelle|date\s+du\s+jour|date\s+sommes[- ]?nous|jour\s+sommes[- ]?nous|nous\s+sommes\s+quel\s+jour|on\s+est\s+quel\s+jour|quelle\s+est\s+la\s+date\s+(?:du\s+jour|aujourd)|aujourd['']?hui\s+on\s+est|quel\s+jour\s+sommes)\b/i;
