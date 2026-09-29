@@ -77,6 +77,10 @@ import {
   buildFactualResearchSystemAddon,
   buildFactualResearchComposerUserPrompt,
 } from "../micro/replies/factualResearchComposerContract.js";
+import {
+  requiresDocumentaryWebCollectionComposerContract,
+  buildDocumentaryWebCollectionSystemAddon,
+} from "../micro/replies/documentaryWebCollectionComposer.js";
 import { buildFactualResearchDeterministicReport } from "../policies/web/factualResearchDeterministicBuilder.js";
 import {
   resolveFactualResearchOutputShape,
@@ -323,6 +327,9 @@ export const finalRendererAgent = {
       }
       if (composerOptions.factualResearch) {
         systemPrompt += `\n\n${buildFactualResearchSystemAddon(packet.user_query || "", packet)}`;
+      }
+      if (composerOptions.documentaryWebCollection) {
+        systemPrompt += `\n\n${buildDocumentaryWebCollectionSystemAddon(packet)}`;
       }
       const htmlFacts =
         packet?.meta?.html_analyzer_facts ||
@@ -1028,6 +1035,11 @@ export const finalRendererAgent = {
       packet.user_query || "",
       packet,
     );
+    const documentaryWebCollection =
+      requiresDocumentaryWebCollectionComposerContract(
+        packet.user_query || "",
+        packet,
+      );
     const codeDelivery =
       isCodeProjectLightRequest(packet.user_query || "") ||
       isCodeGenerationRequest(packet.user_query || "") ||
@@ -1081,6 +1093,7 @@ export const finalRendererAgent = {
       researchThenSummarize,
       repoAnalysis,
       factualResearch,
+      documentaryWebCollection,
       codeDelivery,
       structuredContent,
       volumeTier,

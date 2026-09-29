@@ -765,6 +765,28 @@ export const INTENT_CONTRACT_REGISTRY = [
     adrRef: "ADR-20260527-Intent-Contract-Registry",
   },
   {
+    id: "DOCUMENTARY_WEB_COLLECTION",
+    version: "1.0.0",
+    label: "Collecte web documentaire",
+    description:
+      "Recherche web sous mandat documentaire déjà actif — étape transitoire, pas un rapport FACTUAL.",
+    orchestratorIntents: [],
+    responseMode: RESPONSE_MODES.COMPOSER,
+    priority: 405,
+    routing: {
+      bypassSimpleFast: true,
+      skipWebSearch: false,
+      maxActiveExperts: 1,
+      orchestratorMode: "EPISTEMIC",
+      webSearchMaxSources: 5,
+    },
+    observability: {
+      logTag: "documentaryWebCollection",
+      recordFallbackIncident: true,
+    },
+    adrRef: "ADR-20260527-Intent-Contract-Registry",
+  },
+  {
     id: "CODE_INTENT",
     version: "1.0.0",
     label: "Intention code (revue, debug, explication, refactor)",

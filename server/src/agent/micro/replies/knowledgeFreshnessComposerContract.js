@@ -30,6 +30,7 @@ export const KNOWLEDGE_FRESHNESS_COMPOSER_RULE =
 const CODE_DELIVERY_FRESHNESS_SKIP = new Set([
   "CODE_DELIVERY_V1",
   "CODE_PROJECT_LIGHT",
+  "DOCUMENTARY_WEB_COLLECTION",
 ]);
 
 export function requiresKnowledgeFreshnessComposerContract(query = "", packet = {}) {

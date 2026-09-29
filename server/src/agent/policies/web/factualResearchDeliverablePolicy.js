@@ -24,6 +24,9 @@ const ZERO_SOURCE_FAILURE_MODES = new Set([
  * @returns {boolean}
  */
 export function isFactualResearchSourcedReportPath(query = "", packet = {}) {
+  if (packet?.meta?.intent_contract_id === "DOCUMENTARY_WEB_COLLECTION") {
+    return false;
+  }
   if (packet?.meta?.intent_contract_id === "FACTUAL_RESEARCH") return true;
   if (isWebCitationsStructuredReportCluster(query)) return true;
   return false;
