@@ -270,6 +270,104 @@ function resolveInternalReferentExplanationHit(query = "") {
   return resolveInternalReferentAuthorityHit(query);
 }
 
+const ASSISTANT_PHRASE_GLOSS_FORM_RE =
+  /\b(?:qu est ce que tu entends par|que veux tu dire par)\b/;
+
+const ASSISTANT_PHRASE_GLOSS_AFTER_PAR_RE =
+  /(?:qu['’]est[- ]ce\s+que\s+tu\s+entends\s+par|que\s+veux[- ]tu\s+dire\s+par)\s+(.+)$/i;
+
+const ASSISTANT_PHRASE_GLOSS_STOPWORDS = new Set([
+  "le",
+  "la",
+  "les",
+  "un",
+  "une",
+  "des",
+  "de",
+  "du",
+  "d",
+  "ce",
+  "cet",
+  "cette",
+  "ces",
+  "et",
+  "ou",
+  "a",
+  "au",
+  "aux",
+  "en",
+  "y",
+  "ca",
+  "cela",
+  "ceci",
+  "que",
+  "qui",
+  "quoi",
+  "par",
+  "tu",
+  "je",
+]);
+
+function normalizeAssistantPhraseGlossText(text = "") {
+  return String(text || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[?!.…,;:'’"«»“”„‟—–-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractAssistantPhraseGlossTarget(query = "") {
+  const raw = String(query || "").trim();
+  if (!raw) return "";
+  if (!ASSISTANT_PHRASE_GLOSS_FORM_RE.test(normalizeAssistantPhraseGlossText(raw))) {
+    return "";
+  }
+  const quoted = raw.match(/[«“"]\s*([^»”"]{2,80}?)\s*[»”"]/);
+  if (quoted?.[1]) return quoted[1].trim();
+  const afterPar = raw.match(ASSISTANT_PHRASE_GLOSS_AFTER_PAR_RE);
+  if (!afterPar?.[1]) return "";
+  return afterPar[1]
+    .replace(/[?!.…]+$/g, "")
+    .replace(/^[\s"'«»“”]+|[\s"'«»“”]+$/g, "")
+    .trim();
+}
+
+function isAssistantPhraseGlossTargetSubstantial(target = "") {
+  const tokens = normalizeAssistantPhraseGlossText(target).split(" ").filter(Boolean);
+  return tokens.some(
+    (token) => token.length >= 3 && !ASSISTANT_PHRASE_GLOSS_STOPWORDS.has(token),
+  );
+}
+
+function findImmediateLastAssistantContent(history = []) {
+  if (!Array.isArray(history)) return "";
+  for (let i = history.length - 1; i >= 0; i -= 1) {
+    const role = history[i]?.role;
+    if (role === "assistant" || role === "model") {
+      return String(history[i].content || "").trim();
+    }
+  }
+  return "";
+}
+
+function resolveAssistantPhraseGlossShortCircuit(query = "", history = []) {
+  const target = extractAssistantPhraseGlossTarget(query);
+  if (!isAssistantPhraseGlossTargetSubstantial(target)) return null;
+  const lastAssistant = findImmediateLastAssistantContent(history);
+  if (!lastAssistant) return null;
+  const normTarget = normalizeAssistantPhraseGlossText(target);
+  const normLast = normalizeAssistantPhraseGlossText(lastAssistant);
+  if (!normTarget || !normLast.includes(normTarget)) return null;
+  return {
+    reply:
+      `Par « ${target} », j'entendais une activité simple et rapide : ` +
+      "par exemple un petit défi, un jeu de mots ou une discussion courte, " +
+      "sans lancer un gros projet.",
+  };
+}
+
 function emitInternalReferentAuthorityHit(emit, hit) {
   if (!hit?.reply) return null;
   return emit({
@@ -2948,6 +3046,23 @@ async function runConversationShortCircuitBody(query, options = {}) {
         ? "🌐 Summary contract — WEB_SUMMARY (G38)..."
         : "📄 Summary contract — TEXT_SUMMARY (G38)...",
       enforce: { allowRefusal: false },
+    });
+  }
+
+  const assistantPhraseGlossHit =
+    resolveAssistantPhraseGlossShortCircuit(effectiveQuery, history) ||
+    resolveAssistantPhraseGlossShortCircuit(query, history);
+  if (assistantPhraseGlossHit?.reply) {
+    return emit({
+      path: "social_deterministic",
+      mode: RESPONSE_MODES.INSTANT,
+      reply: assistantPhraseGlossHit.reply,
+      step: "💬 Glose de phrase assistant — réponse locale...",
+      enforce: { allowRefusal: false },
+      assistantPhraseGloss: true,
+      ...LOCAL_SOCIAL_RAIL_FLAGS,
+      deferToLlm: false,
+      deferToFullPipeline: false,
     });
   }
 
