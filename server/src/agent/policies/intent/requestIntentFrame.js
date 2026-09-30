@@ -39,11 +39,37 @@ import {
   isTranslationRequest,
 } from "../../utils/intent-guards/translationIntentGuards.js";
 import { buildTranslationRequestPlan } from "../../utils/parsing-normalization/translationRequestPlan.js";
+import { isDebugDiagnosticRequest } from "../../utils/intent-guards/debugDiagnosticIntentGuards.js";
+import { classifySelectiveDecisionIntent } from "../../utils/intent-guards/selectiveDecisionIntentGuards.js";
+import { isExploitableProcedureIntent } from "../../utils/intent-guards/procedureIntentGuards.js";
+import { isHowToRequestShell } from "../../utils/intent-guards/howToRequestIntentGuards.js";
+import { isAdminProcedureRequest } from "../../utils/intent-guards/adminProcedureIntentGuards.js";
 
 export const REQUEST_INTENT_FRAME_VERSION = "1.1";
 
-/** @typedef {'learn'|'explain'|'career_path'|'translate'|'debug'|'compare'|'procedure'|'build'|null} TaskKind */
+/** @typedef {'learn'|'explain'|'career_path'|'translate'|'debug'|'compare'|'advise'|'procedure'|'build'|null} TaskKind */
 /** @typedef {'technical'|'career'|'pedagogical'|'social'|'general'|null} DomainKind */
+
+/** Valeurs de SELECTIVE_DECISION_TASKS — littéraux pour éviter un TDZ sur cycle d'import. */
+const ADVISE_DECISION_TASKS = new Set([
+  "recommendation",
+  "constrained_choice",
+  "ranking",
+  "arbitration",
+]);
+
+/**
+ * Acte décisionnel via le sélecteur existant — pas un lexicon local.
+ * @param {string} query
+ * @returns {'advise'|'compare'|null}
+ */
+function detectDecisionTaskKind(query) {
+  const sel = classifySelectiveDecisionIntent(query);
+  if (!sel.detected) return null;
+  if (sel.primaryTask === "comparative") return "compare";
+  if (ADVISE_DECISION_TASKS.has(sel.primaryTask)) return "advise";
+  return "compare";
+}
 
 /**
  * @param {string} query
@@ -54,8 +80,18 @@ export function detectTaskKind(query = "") {
   if (isTechnicalLearningPathRequest(query)) return "learn";
   if (isCareerLearningPathRequest(query)) return "career_path";
   if (isLearningRequestWithTarget(query)) return "learn";
+  if (isDebugDiagnosticRequest(query)) return "debug";
+  const decisionKind = detectDecisionTaskKind(query);
+  if (decisionKind) return decisionKind;
   if (isTechnicalOverviewRequest(query)) return "explain";
   if (isInformationSeekingWithTarget(query)) return "explain";
+  if (
+    isExploitableProcedureIntent(query) ||
+    isHowToRequestShell(query) ||
+    isAdminProcedureRequest(query)
+  ) {
+    return "procedure";
+  }
   return null;
 }
 
@@ -79,7 +115,18 @@ export function detectDomainKind(query, taskKind, conversation) {
     }
     if (isLearningRequestWithTarget(query)) return "general";
   }
-  if (taskKind === "explain") return "technical";
+  if (taskKind === "explain" || taskKind === "debug") {
+    return "technical";
+  }
+  if (taskKind === "advise" || taskKind === "compare") {
+    return extractTechnicalSubject(query) ? "technical" : "general";
+  }
+  if (taskKind === "procedure") {
+    if (isExploitableProcedureIntent(query) || isAdminProcedureRequest(query)) {
+      return "technical";
+    }
+    return "general";
+  }
   if (isCareerLearningPathSignal(query)) return "career";
   if (isTechnicalLearningPathSignal(query) || extractTechnicalSubject(query)) {
     return "technical";
