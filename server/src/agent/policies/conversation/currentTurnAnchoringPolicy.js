@@ -347,6 +347,34 @@ function buildAnchoringRepair(anchors, foreignFamily) {
   return `Ta demande porte sur ${label}. La réponse prête recyclait un cadre hors sujet${family}. Je ne la sors pas — reformule l'angle si tu veux que je reparte dessus.`;
 }
 
+/** Label utile : évite « initiation à cours d'initiation à … ». */
+function presentBeginnerOverviewTopic(anchors) {
+  const span = String(anchors?.spans?.[0] || "").trim();
+  const fallback =
+    (anchors?.tokens || [])
+      .filter((token) => String(token).length >= 4)
+      .slice(0, 2)
+      .join(" ") || "le sujet demandé";
+  const raw = span || fallback;
+  const stripped = raw
+    .replace(
+      /^(?:cours|atelier|formation|module|stage)\s+(?:d['’]?initiation\s+)?(?:à|a|au|aux|sur|de|du|des)\s+/i,
+      "",
+    )
+    .replace(/^initiation\s+(?:à|a|au|aux|sur|de|du|des)\s+/i, "")
+    .trim();
+  return stripped || raw;
+}
+
+function buildBeginnerTopicOverviewRecovery(anchors) {
+  const topic = presentBeginnerOverviewTopic(anchors);
+  return (
+    `Pour une initiation à ${topic}, on peut commencer par les bases, ` +
+    "puis avancer avec quelques exercices simples et progressifs. " +
+    "Je peux ensuite te proposer une première séance structurée."
+  );
+}
+
 /**
  * Livrable nommé (« je veux créer une carte de visite ») — démarrer dessus,
  * sans matrice d'idéation ouverte ni COMPOSER à vide.
@@ -492,8 +520,12 @@ export function enforceCurrentTurnAnchoring(input = {}) {
       text: buildVisionAnalysisError(verdict.signals),
     };
   }
+  const repairText =
+    String(input.pipelinePath || "") === "beginner_topic_overview"
+      ? buildBeginnerTopicOverviewRecovery(verdict.anchors)
+      : buildAnchoringRepair(verdict.anchors, verdict.foreignFamily);
   return {
     ...verdict,
-    text: buildAnchoringRepair(verdict.anchors, verdict.foreignFamily),
+    text: repairText,
   };
 }

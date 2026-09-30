@@ -360,3 +360,106 @@ describe("currentTurnAnchoring — exemption Vision attachée", () => {
     assert.ok(!verdict.signals.includes("entity_miss"));
   });
 });
+
+const BEGINNER_PHOTO_QUERY =
+  "Je pense à un cours d'initiation à la photographie";
+const BEGINNER_EXCEL_QUERY = "Je pense à un cours d'initiation sur Excel";
+const GENERIC_UNANCHORED_REPLY =
+  "Voici un cadre général, sans entrer dans un domaine précis.";
+
+describe("currentTurnAnchoring — récupération beginner_topic_overview", () => {
+  it("P1 — beginner non technique : entity_miss + récupération ancrée", () => {
+    const evaluated = evaluateCurrentTurnAnchoring({
+      query: BEGINNER_PHOTO_QUERY,
+      reply: GENERIC_UNANCHORED_REPLY,
+      pipelinePath: "beginner_topic_overview",
+    });
+    assert.equal(evaluated.ok, false);
+    assert.ok(evaluated.signals.includes("entity_miss"));
+    assert.equal(evaluated.text, GENERIC_UNANCHORED_REPLY);
+
+    const enforced = enforceCurrentTurnAnchoring({
+      query: BEGINNER_PHOTO_QUERY,
+      reply: GENERIC_UNANCHORED_REPLY,
+      pipelinePath: "beginner_topic_overview",
+    });
+    assert.equal(enforced.ok, false);
+    assert.ok(enforced.signals.includes("entity_miss"));
+    assert.notEqual(enforced.text, GENERIC_UNANCHORED_REPLY);
+    assert.match(enforced.text, /photographie/i);
+    assert.doesNotMatch(
+      enforced.text,
+      /recyclait|reformule|entity_miss|hors sujet/i,
+    );
+    assert.doesNotMatch(
+      enforced.text,
+      /https?:\/\/|Tu parles de|Ta demande porte sur/i,
+    );
+    assert.ok(enforced.text.length < 400);
+  });
+
+  it("P2 — beginner technique : même règle, ancrée sur Excel", () => {
+    const evaluated = evaluateCurrentTurnAnchoring({
+      query: BEGINNER_EXCEL_QUERY,
+      reply: GENERIC_UNANCHORED_REPLY,
+      pipelinePath: "beginner_topic_overview",
+    });
+    assert.equal(evaluated.ok, false);
+    assert.ok(evaluated.signals.includes("entity_miss"));
+
+    const enforced = enforceCurrentTurnAnchoring({
+      query: BEGINNER_EXCEL_QUERY,
+      reply: GENERIC_UNANCHORED_REPLY,
+      pipelinePath: "beginner_topic_overview",
+    });
+    assert.equal(enforced.ok, false);
+    assert.ok(enforced.signals.includes("entity_miss"));
+    assert.match(enforced.text, /excel/i);
+    assert.doesNotMatch(
+      enforced.text,
+      /recyclait|reformule|entity_miss|hors sujet/i,
+    );
+  });
+
+  it("NR1 — réponse déjà ancrée : candidate préservée", () => {
+    const reply =
+      "Pour la photographie, on commence par l'exposition, la composition et la lumière.";
+    const evaluated = evaluateCurrentTurnAnchoring({
+      query: BEGINNER_PHOTO_QUERY,
+      reply,
+      pipelinePath: "beginner_topic_overview",
+    });
+    assert.equal(evaluated.ok, true, evaluated.signals.join(","));
+    const enforced = enforceCurrentTurnAnchoring({
+      query: BEGINNER_PHOTO_QUERY,
+      reply,
+      pipelinePath: "beginner_topic_overview",
+    });
+    assert.equal(enforced.ok, true);
+    assert.equal(enforced.text, reply);
+  });
+
+  it("NR2 — autre local_generative : repair générique inchangé", () => {
+    const enforced = enforceCurrentTurnAnchoring({
+      query: BEGINNER_PHOTO_QUERY,
+      reply: GENERIC_UNANCHORED_REPLY,
+      pipelinePath: "simple_fast",
+    });
+    assert.equal(enforced.ok, false);
+    assert.ok(enforced.signals.includes("entity_miss"));
+    assert.match(enforced.text, /recyclait/);
+    assert.doesNotMatch(enforced.text, /premi[eè]re s[eé]ance structur[eé]e/i);
+  });
+
+  it("NR3 — architecture_design_deterministic : pas de capture beginner", () => {
+    const enforced = enforceCurrentTurnAnchoring({
+      query: BEGINNER_PHOTO_QUERY,
+      reply: GENERIC_UNANCHORED_REPLY,
+      pipelinePath: "architecture_design_deterministic",
+    });
+    assert.equal(enforced.ok, false);
+    assert.ok(enforced.signals.includes("entity_miss"));
+    assert.match(enforced.text, /recyclait/);
+    assert.doesNotMatch(enforced.text, /premi[eè]re s[eé]ance structur[eé]e/i);
+  });
+});
