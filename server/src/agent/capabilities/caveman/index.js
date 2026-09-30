@@ -1,4 +1,5 @@
 import { CODE_INTENT_KINDS } from "../../../../../shared/codeIntentCatalog.js";
+import { classifyCodeIntent } from "../../policies/code/codeIntentPolicy.js";
 import { CAPABILITY_IDS, CAPABILITY_PRIORITY } from "../capabilityTypes.js";
 import {
   assessCavemanInstructionCompatibility,
@@ -22,8 +23,8 @@ export function match(input) {
     return { active: false, why: ["caveman_level_normal"] };
   }
 
-  const codeKind = input.justIntent?.codeIntentKind || null;
-  if (codeKind === CODE_INTENT_KINDS.EXPLAIN) {
+  const query = String(input.query || "");
+  if (classifyCodeIntent(query)?.kind === CODE_INTENT_KINDS.EXPLAIN) {
     return { active: false, why: ["excluded:code_explain_pedagogy"] };
   }
 

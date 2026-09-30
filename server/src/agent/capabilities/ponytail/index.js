@@ -1,4 +1,5 @@
 import { CODE_INTENT_KINDS } from "../../../../../shared/codeIntentCatalog.js";
+import { classifyCodeIntent } from "../../policies/code/codeIntentPolicy.js";
 import { CAPABILITY_IDS, CAPABILITY_PRIORITY } from "../capabilityTypes.js";
 import {
   isPedagogicalOrSupportContext,
@@ -10,14 +11,6 @@ import { PONYTAIL_INSTRUCTION_BLOCK } from "./instructions.js";
 export const id = CAPABILITY_IDS.PONYTAIL;
 export const priority = CAPABILITY_PRIORITY[id];
 
-const PONYTAIL_CODE_KINDS = new Set([
-  CODE_INTENT_KINDS.REFACTOR,
-  CODE_INTENT_KINDS.CORRECTION,
-  CODE_INTENT_KINDS.DEBUG,
-  CODE_INTENT_KINDS.REVIEW,
-  CODE_INTENT_KINDS.AUDIT,
-]);
-
 const CODE_WRITE_RE =
   /\b(?:ecris|écris|crée|créer|cree|creer|generer|générer|genere|patch|impl[eé]mente|implemente|ajoute\s+(?:une\s+)?fonction|refactor)\b/i;
 
@@ -28,8 +21,7 @@ const CODE_WRITE_RE =
 export function match(input) {
   const query = String(input.query || "");
   const why = [];
-  const codeKind = input.justIntent?.codeIntentKind || null;
-  if (codeKind === CODE_INTENT_KINDS.EXPLAIN) {
+  if (classifyCodeIntent(query)?.kind === CODE_INTENT_KINDS.EXPLAIN) {
     return { active: false, why: ["excluded:code_explain_pedagogy"] };
   }
 
@@ -49,10 +41,6 @@ export function match(input) {
 
   if (requiresGenerousComposerResponse(query)) {
     return { active: false, why: ["excluded:generous_composer"] };
-  }
-
-  if (codeKind && PONYTAIL_CODE_KINDS.has(codeKind)) {
-    why.push(`code_intent:${codeKind}`);
   }
 
   if (contractId && PONYTAIL_ALLOWED_CONTRACT_IDS.has(contractId)) {

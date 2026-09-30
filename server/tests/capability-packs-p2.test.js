@@ -9,13 +9,16 @@ import {
   resolvePipelineCavemanLevel,
   formatLowTokenModeObservabilityStep,
 } from "../src/agent/capabilities/caveman/pipelineLevel.js";
+import { classifyCodeIntent } from "../src/agent/policies/code/codeIntentPolicy.js";
 import { CODE_INTENT_KINDS } from "../../shared/codeIntentCatalog.js";
+
+const EXPLAIN_CODE_Q =
+  "Explique ce code Python : def addition(a, b): return a + b\nprint(addition(1,2))";
 
 const baseInput = {
   query: "",
   history: [],
   intentContractId: null,
-  justIntent: {},
   conversationMove: {},
   cavemanLevel: "NORMAL",
   toolHeavyTurn: false,
@@ -59,26 +62,29 @@ describe("capability packs P2 — caveman instruction lite", () => {
     assert.equal(hit.active, false);
   });
 
-  it("FULL explicite + patch code → actif", () => {
+  it("FULL explicite + patch code → actif via toolHeavyTurn, sans JUST", () => {
     const hit = matchCaveman({
       ...baseInput,
       query: "mode caveman full — corrige ce script",
       cavemanLevel: "FULL",
-      justIntent: { codeIntentKind: CODE_INTENT_KINDS.CORRECTION },
       toolHeavyTurn: true,
+      capabilities: { code: true },
     });
     assert.equal(hit.active, true);
   });
 
-  it("exclut code_explain même en FULL", () => {
+  it("exclut code_explain même en FULL + toolHeavy + cap.code", () => {
+    assert.equal(classifyCodeIntent(EXPLAIN_CODE_Q)?.kind, CODE_INTENT_KINDS.EXPLAIN);
     const hit = matchCaveman({
       ...baseInput,
-      query: "mode caveman full — explique ce code",
+      query: EXPLAIN_CODE_Q,
       cavemanLevel: "FULL",
-      justIntent: { codeIntentKind: CODE_INTENT_KINDS.EXPLAIN },
+      toolHeavyTurn: true,
+      capabilities: { code: true },
     });
     assert.equal(hit.active, false);
     assert.ok(hit.why.some((w) => w.includes("code_explain")));
+    assert.equal(hit.why.some((w) => w.startsWith("code_intent:")), false);
   });
 
   it("exclut présentation pédagogique même en ULTRA", () => {

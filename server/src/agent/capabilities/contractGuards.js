@@ -90,11 +90,6 @@ export function assessCavemanInstructionCompatibility(input = {}) {
     why.push("tool_heavy_turn");
   }
 
-  const codeKind = input.justIntent?.codeIntentKind || null;
-  if (codeKind && codeKind !== "code_explain") {
-    why.push(`code_intent:${codeKind}`);
-  }
-
   if (why.length === 0) {
     return { ok: false, why: ["no_caveman_contract_signal"] };
   }

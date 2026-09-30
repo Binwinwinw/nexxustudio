@@ -5,13 +5,19 @@ import { CAPABILITY_IDS, composeCapabilityContext } from "../src/agent/capabilit
 import { match as matchPonytail } from "../src/agent/capabilities/ponytail/index.js";
 import { match as matchCaveman } from "../src/agent/capabilities/caveman/index.js";
 import { match as matchGraphify } from "../src/agent/capabilities/graphify/index.js";
+import { assessGraphifyGraphAvailability } from "../src/agent/capabilities/graphify/graphifyPaths.js";
+import { classifyCodeIntent } from "../src/agent/policies/code/codeIntentPolicy.js";
 import { CODE_INTENT_KINDS } from "../../shared/codeIntentCatalog.js";
+
+const EXPLAIN_CODE_Q =
+  "Explique ce code Python : def addition(a, b): return a + b\nprint(addition(1,2))";
+const CREATE_CODE_Q = "ecris un script python pour lister les fichiers csv";
+const REFACTOR_CODE_Q = "refactor ce script python sans changer le comportement";
 
 const baseInput = {
   query: "",
   history: [],
   intentContractId: null,
-  justIntent: {},
   conversationMove: {},
   cavemanLevel: "NORMAL",
   capabilities: {},
@@ -19,21 +25,36 @@ const baseInput = {
 };
 
 describe("capability packs P0 — ponytail", () => {
-  it("actif sur refactor code", () => {
+  it("actif sur CREATE via capabilities.code + verbe write, sans JUST", () => {
+    assert.equal(classifyCodeIntent(CREATE_CODE_Q), null);
     const hit = matchPonytail({
       ...baseInput,
-      query: "refactorise cette fonction sans changer le comportement",
-      justIntent: { codeIntentKind: CODE_INTENT_KINDS.REFACTOR },
+      query: CREATE_CODE_Q,
+      capabilities: { code: true },
     });
     assert.equal(hit.active, true);
-    assert.ok(hit.why.some((w) => w.includes("code_intent")));
+    assert.ok(hit.why.some((w) => w === "capability_code_write"));
   });
 
-  it("inactif sur code_explain (pédagogie code)", () => {
+  it("actif sur refactor via capabilities.code + verbe write, sans JUST", () => {
+    assert.equal(classifyCodeIntent(REFACTOR_CODE_Q)?.kind, CODE_INTENT_KINDS.REFACTOR);
     const hit = matchPonytail({
       ...baseInput,
-      query: "explique ce code ligne par ligne",
-      justIntent: { codeIntentKind: CODE_INTENT_KINDS.EXPLAIN },
+      query: REFACTOR_CODE_Q,
+      capabilities: { code: true },
+    });
+    assert.equal(hit.active, true);
+    assert.ok(hit.why.some((w) => w === "capability_code_write"));
+    assert.equal(hit.why.some((w) => w.startsWith("code_intent:")), false);
+  });
+
+  it("inactif sur code_explain même si capabilities.code", () => {
+    assert.equal(classifyCodeIntent(EXPLAIN_CODE_Q)?.kind, CODE_INTENT_KINDS.EXPLAIN);
+    const hit = matchPonytail({
+      ...baseInput,
+      query: EXPLAIN_CODE_Q,
+      capabilities: { code: true },
+      toolHeavyTurn: true,
     });
     assert.equal(hit.active, false);
     assert.ok(hit.why.some((w) => w.includes("code_explain")));
@@ -56,6 +77,26 @@ describe("capability packs P0 — ponytail", () => {
       intentContractId: "CODE_DELIVERY_V1",
     });
     assert.equal(hit.active, true);
+  });
+
+  it("REPO_ANALYSIS n'active pas ponytail même avec capabilities.code", () => {
+    const hit = matchPonytail({
+      ...baseInput,
+      query: "analyse ce dépôt et l'architecture du code python",
+      intentContractId: "REPO_ANALYSIS",
+      capabilities: { code: true },
+    });
+    assert.equal(hit.active, false);
+    assert.ok(hit.why.some((w) => w.includes("REPO_ANALYSIS")));
+  });
+
+  it("non-code / vocab technique sans cap.code → inactif", () => {
+    const hit = matchPonytail({
+      ...baseInput,
+      query: "fais un composant api pour le dashboard",
+      capabilities: {},
+    });
+    assert.equal(hit.active, false);
   });
 });
 
@@ -88,7 +129,12 @@ describe("capability packs P0 — graphify match (tools P1)", () => {
       query: "analyse ce dépôt et l'architecture",
       intentContractId: "REPO_ANALYSIS",
     });
-    assert.equal(hit.active, true);
+    const avail = assessGraphifyGraphAvailability();
+    if (avail.ok) {
+      assert.equal(hit.active, true);
+    } else {
+      assert.ok(hit.why.some((w) => w.startsWith("graph_unavailable")));
+    }
   });
 
   it("actif sur requête impact / call flow", () => {
@@ -96,7 +142,12 @@ describe("capability packs P0 — graphify match (tools P1)", () => {
       ...baseInput,
       query: "quel est l'impact si je change cette fonction, qui l'appelle ?",
     });
-    assert.equal(hit.active, true);
+    const avail = assessGraphifyGraphAvailability();
+    if (avail.ok) {
+      assert.equal(hit.active, true);
+    } else {
+      assert.ok(hit.why.some((w) => w.startsWith("graph_unavailable")));
+    }
   });
 
   it("inactif sur chat généraliste", () => {
@@ -110,11 +161,10 @@ describe("capability packs P0 — graphify match (tools P1)", () => {
 });
 
 describe("composeCapabilityContext — priorité registre", () => {
-  it("injecte ponytail seul sur patch code", () => {
+  it("injecte ponytail seul sur patch code via contrat, sans JUST", () => {
     const ctx = composeCapabilityContext({
       ...baseInput,
       query: "corrige ce script python",
-      justIntent: { codeIntentKind: CODE_INTENT_KINDS.CORRECTION },
       intentContractId: "CODE_INTENT",
     });
     const active = ctx.telemetry.filter((t) => t.active).map((t) => t.id);
