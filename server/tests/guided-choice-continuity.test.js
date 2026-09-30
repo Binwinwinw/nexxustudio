@@ -53,8 +53,17 @@ describe("guided_choice après open_prompt", () => {
     assert.equal(hit, null);
   });
 
-  it("contrat deliverable runtimeAligned=true", () => {
+  it("contrat deliverable runtimeAligned=unknown sans preuve SC", () => {
     const c = resolveDeliverableContract("4", { history: PANEL_HISTORY });
+    assert.equal(c.promisedValue, PROMISED_VALUES.GUIDED_CHOICE);
+    assert.equal(c.runtimeAligned, "unknown");
+  });
+
+  it("contrat deliverable runtimeAligned=true avec short-circuit guided_choice", () => {
+    const c = resolveDeliverableContract("4", {
+      history: PANEL_HISTORY,
+      shortCircuitPath: GUIDED_CHOICE_PIPELINE_PATH,
+    });
     assert.equal(c.promisedValue, PROMISED_VALUES.GUIDED_CHOICE);
     assert.equal(c.runtimeAligned, true);
   });

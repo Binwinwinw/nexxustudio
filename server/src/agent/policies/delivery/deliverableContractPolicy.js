@@ -48,6 +48,52 @@ export const REPLY_SHAPES = Object.freeze({
   UNKNOWN: "unknown",
 });
 
+/** Rails qui réalisent déjà le promisedValue — preuve SC obligatoire. */
+const ALIGNED_SHORT_CIRCUIT_PATHS = Object.freeze({
+  [PROMISED_VALUES.SOCIAL_CONTINUITY]: Object.freeze([
+    "social_deterministic",
+    "exploratory_conversation_light",
+  ]),
+  [PROMISED_VALUES.EXPLORATION_PROPOSAL]: Object.freeze([
+    "social_deterministic",
+  ]),
+  [PROMISED_VALUES.CARE_ACK]: Object.freeze(["social_deterministic"]),
+  [PROMISED_VALUES.GUIDED_CHOICE]: Object.freeze([
+    "guided_choice_deterministic",
+  ]),
+  [PROMISED_VALUES.CLARIFY]: Object.freeze([
+    "request_interpreter_clarify",
+    "how_to_clarify",
+    "launcher_guide_clarify",
+    "document_synthesis_clarify",
+    "web_project_scoping_clarify",
+    "translation_clarify",
+  ]),
+});
+
+/**
+ * Preuve télémétrique uniquement — ne change pas le promisedValue.
+ * true = pattern/contrat observé ET short-circuit hit sur un rail compatible.
+ * false = preuve de mismatch (SC null ou path incompatible).
+ * unknown = pas de preuve SC fournie.
+ * @param {string|null} promisedValue
+ * @param {{ shortCircuitPath?: string|null, shortCircuitHit?: { path?: string|null } }} [options]
+ * @returns {true|false|"unknown"}
+ */
+export function resolveObserveRuntimeAligned(promisedValue, options = {}) {
+  if (promisedValue == null) return false;
+  const hasProof =
+    Object.prototype.hasOwnProperty.call(options, "shortCircuitPath") ||
+    Object.prototype.hasOwnProperty.call(options, "shortCircuitHit");
+  if (!hasProof) return "unknown";
+  const path =
+    options.shortCircuitHit?.path ?? options.shortCircuitPath ?? null;
+  if (!path) return false;
+  const allowed = ALIGNED_SHORT_CIRCUIT_PATHS[promisedValue];
+  if (!allowed) return false;
+  return allowed.includes(path);
+}
+
 /** Continuité sociale — pas le mal-être corporel. */
 const SOCIAL_CONTINUITY_PATTERNS = new Set([
   "social/chat_invite",
@@ -126,8 +172,9 @@ export function isGuidedChoiceSurface(query = "", history = []) {
 
 /**
  * @param {object} partial
+ * @param {{ shortCircuitPath?: string|null, shortCircuitHit?: { path?: string|null } }} [options]
  */
-function buildContract(partial = {}) {
+function buildContract(partial = {}, options = {}) {
   const promisedValue =
     partial.promisedValue === undefined ? null : partial.promisedValue;
   const clarificationRequired = Boolean(partial.clarificationRequired);
@@ -144,8 +191,7 @@ function buildContract(partial = {}) {
 
   const replyShape = partial.replyShape || REPLY_SHAPES.UNKNOWN;
   /** true seulement si un couloir runtime exécute déjà cette shape */
-  const runtimeAligned =
-    partial.runtimeAligned != null ? Boolean(partial.runtimeAligned) : false;
+  const runtimeAligned = resolveObserveRuntimeAligned(promisedValue, options);
 
   return {
     contract: DELIVERABLE_CONTRACT_ID,
@@ -183,6 +229,8 @@ function buildContract(partial = {}) {
  *   history?: object[],
  *   socialPatternName?: string|null,
  *   justIntent?: object|null,
+ *   shortCircuitPath?: string|null,
+ *   shortCircuitHit?: { path?: string|null }|null,
  * }} [options]
  */
 export function resolveDeliverableContract(query = "", options = {}) {
@@ -194,68 +242,78 @@ export function resolveDeliverableContract(query = "", options = {}) {
 
   // Frame slots prime — même si le bridge social/open_prompt n’est pas encore posé
   if (isOpenExplorationFrame(query, history)) {
-    return buildContract({
-      promisedValue: PROMISED_VALUES.EXPLORATION_PROPOSAL,
-      clarificationRequired: false,
-      gateSuppressed: true,
-      replyShape: REPLY_SHAPES.MENU_PLUS_QUESTION,
-      structureHint: "ack+menu_3_5+open_question",
-      source: "open_exploration_frame",
-      socialPatternName: patternHit || "social/open_prompt",
-      runtimeAligned: true,
-    });
+    return buildContract(
+      {
+        promisedValue: PROMISED_VALUES.EXPLORATION_PROPOSAL,
+        clarificationRequired: false,
+        gateSuppressed: true,
+        replyShape: REPLY_SHAPES.MENU_PLUS_QUESTION,
+        structureHint: "ack+menu_3_5+open_question",
+        source: "open_exploration_frame",
+        socialPatternName: patternHit || "social/open_prompt",
+      },
+      options,
+    );
   }
 
   if (patternHit === "social/personal_discomfort") {
-    return buildContract({
-      promisedValue: PROMISED_VALUES.CARE_ACK,
-      clarificationRequired: false,
-      gateSuppressed: true,
-      replyShape: REPLY_SHAPES.CARE_LIMITS,
-      structureHint: "empathy+limits+redirect",
-      source: "social_pattern",
-      socialPatternName: patternHit,
-      runtimeAligned: true,
-    });
+    return buildContract(
+      {
+        promisedValue: PROMISED_VALUES.CARE_ACK,
+        clarificationRequired: false,
+        gateSuppressed: true,
+        replyShape: REPLY_SHAPES.CARE_LIMITS,
+        structureHint: "empathy+limits+redirect",
+        source: "social_pattern",
+        socialPatternName: patternHit,
+      },
+      options,
+    );
   }
 
   if (patternHit && EXPLORATION_PATTERNS.has(patternHit)) {
-    return buildContract({
-      promisedValue: PROMISED_VALUES.EXPLORATION_PROPOSAL,
-      clarificationRequired: false,
-      gateSuppressed: true,
-      replyShape: REPLY_SHAPES.MENU_PLUS_QUESTION,
-      structureHint: "ack+menu_3_5+open_question",
-      source: "social_pattern",
-      socialPatternName: patternHit,
-      runtimeAligned: true,
-    });
+    return buildContract(
+      {
+        promisedValue: PROMISED_VALUES.EXPLORATION_PROPOSAL,
+        clarificationRequired: false,
+        gateSuppressed: true,
+        replyShape: REPLY_SHAPES.MENU_PLUS_QUESTION,
+        structureHint: "ack+menu_3_5+open_question",
+        source: "social_pattern",
+        socialPatternName: patternHit,
+      },
+      options,
+    );
   }
 
   if (patternHit && SOCIAL_CONTINUITY_PATTERNS.has(patternHit)) {
-    return buildContract({
-      promisedValue: PROMISED_VALUES.SOCIAL_CONTINUITY,
-      clarificationRequired: false,
-      gateSuppressed: true,
-      replyShape: REPLY_SHAPES.SHORT_OPEN,
-      structureHint: "1_2_phrases+ouverture",
-      source: "social_pattern",
-      socialPatternName: patternHit,
-      runtimeAligned: true,
-    });
+    return buildContract(
+      {
+        promisedValue: PROMISED_VALUES.SOCIAL_CONTINUITY,
+        clarificationRequired: false,
+        gateSuppressed: true,
+        replyShape: REPLY_SHAPES.SHORT_OPEN,
+        structureHint: "1_2_phrases+ouverture",
+        source: "social_pattern",
+        socialPatternName: patternHit,
+      },
+      options,
+    );
   }
 
   if (isGuidedChoiceSurface(query, history)) {
-    return buildContract({
-      promisedValue: PROMISED_VALUES.GUIDED_CHOICE,
-      clarificationRequired: false,
-      gateSuppressed: true,
-      replyShape: REPLY_SHAPES.CHOICE_HELP,
-      structureHint: "narrow_options+help_choose",
-      source: "guided_choice_surface",
-      socialPatternName: null,
-      runtimeAligned: true,
-    });
+    return buildContract(
+      {
+        promisedValue: PROMISED_VALUES.GUIDED_CHOICE,
+        clarificationRequired: false,
+        gateSuppressed: true,
+        replyShape: REPLY_SHAPES.CHOICE_HELP,
+        structureHint: "narrow_options+help_choose",
+        source: "guided_choice_surface",
+        socialPatternName: null,
+      },
+      options,
+    );
   }
 
   if (
@@ -263,40 +321,46 @@ export function resolveDeliverableContract(query = "", options = {}) {
     isSoftSocialChatFollowup(query) &&
     !isSubstantiveWorkRequest(query)
   ) {
-    return buildContract({
-      promisedValue: PROMISED_VALUES.SOCIAL_CONTINUITY,
-      clarificationRequired: false,
-      gateSuppressed: true,
-      replyShape: REPLY_SHAPES.SHORT_OPEN,
-      structureHint: "soft_chat_continuity",
-      source: "social_chat_thread",
-      runtimeAligned: true,
-    });
+    return buildContract(
+      {
+        promisedValue: PROMISED_VALUES.SOCIAL_CONTINUITY,
+        clarificationRequired: false,
+        gateSuppressed: true,
+        replyShape: REPLY_SHAPES.SHORT_OPEN,
+        structureHint: "soft_chat_continuity",
+        source: "social_chat_thread",
+      },
+      options,
+    );
   }
 
   const just = options.justIntent || null;
   if (just?.strategy === "clarify_then_build") {
-    return buildContract({
-      promisedValue: PROMISED_VALUES.CLARIFY,
-      clarificationRequired: true,
-      gateSuppressed: false,
-      replyShape: REPLY_SHAPES.STRUCTURED_ANSWER,
-      structureHint: "just_clarify_then_build",
-      source: "just_intent_observe",
-      runtimeAligned: true,
-    });
+    return buildContract(
+      {
+        promisedValue: PROMISED_VALUES.CLARIFY,
+        clarificationRequired: true,
+        gateSuppressed: false,
+        replyShape: REPLY_SHAPES.STRUCTURED_ANSWER,
+        structureHint: "just_clarify_then_build",
+        source: "just_intent_observe",
+      },
+      options,
+    );
   }
 
   // Hors cas connus : unknown propre (pas de faux explanation)
-  return buildContract({
-    promisedValue: null,
-    clarificationRequired: false,
-    gateSuppressed: false,
-    replyShape: REPLY_SHAPES.UNKNOWN,
-    structureHint: "unclassified_observe",
-    source: "default_unknown",
-    runtimeAligned: false,
-  });
+  return buildContract(
+    {
+      promisedValue: null,
+      clarificationRequired: false,
+      gateSuppressed: false,
+      replyShape: REPLY_SHAPES.UNKNOWN,
+      structureHint: "unclassified_observe",
+      source: "default_unknown",
+    },
+    options,
+  );
 }
 
 /**
@@ -313,6 +377,10 @@ export function formatDeliverableContractSummary(contract = null) {
     ` shape=${contract.replyShape}` +
     ` mode=${contract.mode}` +
     ` enforce=no` +
-    (contract.runtimeAligned === false ? ` runtimeAligned=no` : "")
+    (contract.runtimeAligned === false
+      ? ` runtimeAligned=no`
+      : contract.runtimeAligned === "unknown"
+        ? ` runtimeAligned=unknown`
+        : "")
   );
 }

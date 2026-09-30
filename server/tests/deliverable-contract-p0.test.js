@@ -33,7 +33,7 @@ describe("DeliverableContractPolicy P0.1 — observe", () => {
     assert.equal(c.gateSuppressed, true);
   });
 
-  it("sélection après panel structurel → guided_choice (runtimeAligned=true)", () => {
+  it("sélection après panel structurel → guided_choice (preuve SC séparée)", () => {
     const history = [
       {
         role: "user",
@@ -55,8 +55,17 @@ describe("DeliverableContractPolicy P0.1 — observe", () => {
     assert.equal(c.promisedValue, PROMISED_VALUES.GUIDED_CHOICE);
     assert.equal(c.replyShape, REPLY_SHAPES.CHOICE_HELP);
     assert.equal(c.clarificationRequired, false);
-    assert.equal(c.runtimeAligned, true);
-    assert.doesNotMatch(formatDeliverableContractSummary(c), /runtimeAligned=no/);
+    assert.equal(c.runtimeAligned, "unknown");
+    assert.match(formatDeliverableContractSummary(c), /runtimeAligned=unknown/);
+    const aligned = resolveDeliverableContract("2", {
+      history,
+      shortCircuitPath: "guided_choice_deterministic",
+    });
+    assert.equal(aligned.runtimeAligned, true);
+    assert.doesNotMatch(
+      formatDeliverableContractSummary(aligned),
+      /runtimeAligned=no/,
+    );
   });
 
   it("après personal_discomfort, soft followup ≠ guided_choice", () => {
@@ -114,5 +123,31 @@ describe("DeliverableContractPolicy P0.1 — observe", () => {
       ].sort(),
     );
     assert.equal(c.telemetry.enforcement, false);
+  });
+
+  it("casual_status sans preuve SC → runtimeAligned unknown, promisedValue inchangé", () => {
+    const q = "okok c'est cool si tout va bien pour toi";
+    const c = resolveDeliverableContract(q);
+    assert.equal(c.promisedValue, PROMISED_VALUES.SOCIAL_CONTINUITY);
+    assert.equal(c.enforcement, false);
+    assert.equal(c.runtimeAligned, "unknown");
+    assert.equal(c.telemetry.runtimeAligned, "unknown");
+  });
+
+  it("casual_status + shortCircuitPath null → runtimeAligned false", () => {
+    const q = "okok c'est cool si tout va bien pour toi";
+    const c = resolveDeliverableContract(q, { shortCircuitPath: null });
+    assert.equal(c.promisedValue, PROMISED_VALUES.SOCIAL_CONTINUITY);
+    assert.equal(c.runtimeAligned, false);
+    assert.match(formatDeliverableContractSummary(c), /runtimeAligned=no/);
+  });
+
+  it("casual_status + social_deterministic → runtimeAligned true", () => {
+    const q = "okok c'est cool si tout va bien pour toi";
+    const c = resolveDeliverableContract(q, {
+      shortCircuitPath: "social_deterministic",
+    });
+    assert.equal(c.promisedValue, PROMISED_VALUES.SOCIAL_CONTINUITY);
+    assert.equal(c.runtimeAligned, true);
   });
 });
