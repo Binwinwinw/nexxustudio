@@ -87,6 +87,34 @@ describe("C4_RESPONSE_TYPE_GOVERNS_EMIT_V1", () => {
     assert.equal(/overview/i.test(blocked?.path || ""), false);
   });
 
+  it("beginner overview : emit si job overview, bloqué si direct", async () => {
+    const query =
+      "que doit apprendre un débutant qui veut se lancer dans la cryptomonnaie";
+    assert.equal(
+      shouldEmitForResponseType("beginner_topic_overview", {
+        responseType: "overview",
+      }),
+      true,
+    );
+    assert.equal(
+      shouldEmitForResponseType("beginner_topic_overview", {
+        responseType: "direct",
+      }),
+      false,
+    );
+
+    const allowed = await runConversationShortCircuit(query, {
+      response_commitment: { responseType: "overview" },
+    });
+    assert.equal(allowed?.path, "beginner_topic_overview");
+
+    const blocked = await runConversationShortCircuit(query, {
+      response_commitment: { responseType: "direct" },
+    });
+    assert.notEqual(blocked?.path, "beginner_topic_overview");
+    assert.equal(/overview/i.test(blocked?.path || ""), false);
+  });
+
   it("phpMyAdmin + job direct : pas de rail scoping", async () => {
     const hit = await runConversationShortCircuit(PHPMYADMIN, {
       response_commitment: { renderMode: "llm_direct", responseType: "direct" },
