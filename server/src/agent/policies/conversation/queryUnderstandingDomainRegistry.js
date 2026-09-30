@@ -12,6 +12,7 @@ import { isInformationSeekingWithTarget } from "../../utils/intent-guards/inform
 import { isDebugDiagnosticRequest } from "../../utils/intent-guards/debugDiagnosticIntentGuards.js";
 import { isGeneralKnowledgeRequest } from "../../utils/intent-guards/generalKnowledgeIntentGuards.js";
 import { isPedagogicalOverviewRequest } from "../../utils/intent-guards/pedagogicalOverviewIntentGuards.js";
+import { isBeginnerTopicOverviewRequest } from "../../utils/intent-guards/beginnerTopicOverviewIntentGuards.js";
 import { shouldBypassLocalDatetimeShortCircuit } from "../../utils/intent-guards/externalCalendarLookupIntentGuards.js";
 import { detectGovernanceExplainIntent } from "../meta/governanceExplainPolicy.js";
 import { detectDocumentAnalysisIntent } from "../document/index.js";
@@ -321,6 +322,25 @@ function detectPedagogicalIntent(segment = "") {
  * @param {string} segment
  * @returns {SegmentIntent|null}
  */
+function detectBeginnerTopicOverviewIntent(segment = "") {
+  if (!isBeginnerTopicOverviewRequest(segment)) return null;
+  return {
+    domain: QUERY_DOMAINS.PEDAGOGICAL,
+    familyId: "beginner_topic_overview",
+    path: "beginner_topic_overview",
+    label: "Aperçu d'initiation",
+    reply: null,
+    satisfiable: false,
+    strategy: RESPONSE_STRATEGIES.LLM_EXPLAIN,
+    segment,
+    priority: 46,
+  };
+}
+
+/**
+ * @param {string} segment
+ * @returns {SegmentIntent|null}
+ */
 function detectGeneralKnowledgeIntent(segment = "") {
   if (!isGeneralKnowledgeRequest(segment)) return null;
   return {
@@ -351,6 +371,7 @@ const SEGMENT_DETECTORS = [
   detectDebugIntent,
   detectInfoSeekingIntent,
   detectPedagogicalIntent,
+  detectBeginnerTopicOverviewIntent,
   detectGeneralKnowledgeIntent,
 ];
 
