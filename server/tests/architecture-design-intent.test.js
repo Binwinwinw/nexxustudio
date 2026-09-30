@@ -9,6 +9,8 @@ import {
   classifyArchitectureDesignSignal,
   getArchitectureDesignDeterministicReply,
   extractArchitectureTopic,
+  buildArchitectureDesignFramingReply,
+  isCodeReviewArchitectureTemplateLicensed,
 } from "../src/agent/utils/intent-guards/architectureDesignIntentGuards.js";
 import { buildArchitectureDesignReply } from "../src/agent/micro/replies/architectureDesignReplyBuilder.js";
 import { isAnalyticalTechnicalRequest } from "../src/agent/utils/conversation/conversationGuards.js";
@@ -29,7 +31,11 @@ import {
   isProjectIdeaCritiqueRequest,
   isIdeationIntent,
 } from "../src/agent/utils/intent-guards/ideationIntentGuards.js";
-import { resolveNamedCreateStartShortCircuit } from "../src/agent/policies/conversation/currentTurnAnchoringPolicy.js";
+import {
+  resolveNamedCreateStartShortCircuit,
+  evaluateCurrentTurnAnchoring,
+  enforceCurrentTurnAnchoring,
+} from "../src/agent/policies/conversation/currentTurnAnchoringPolicy.js";
 import { resolveConversationTurnFamilyShortCircuit } from "../src/agent/policies/conversation/conversationTurnRoutingPolicy.js";
 import { resolvePosture } from "../src/agent/policies/posture/posturePolicy.js";
 import { POSTURES } from "../src/agent/policies/posture/sessionModeState.js";
@@ -74,6 +80,114 @@ describe("architectureDesignIntentGuards", () => {
   it("extrait le sujet code-reviewer", () => {
     const topic = extractArchitectureTopic(CODE_REVIEWER_QUERY);
     assert.match(topic, /code[- ]?reviewer/i);
+  });
+});
+
+const LIVE_CALCULATOR_BRIEF =
+  'aide-moi à concevoir une calculatrice en langage Python avec clavier numérique, affichage digital, addition, soustraction, multiplication, division, bouton "=" et bouton "."';
+
+const CALCULATOR_SPAN_FALLBACK =
+  "merci de concevoir une calculatrice en langage Python avec clavier numérique affichage digital addition et soustraction";
+
+const SOCIAL_THEN_CALCULATOR_HISTORY = [
+  { role: "user", content: "salut salut" },
+  { role: "assistant", content: "Salut !" },
+  { role: "user", content: "comment ca va ?" },
+  { role: "assistant", content: "Tout va bien ici." },
+];
+
+describe("architecture framing — calculatrice Python ancrée", () => {
+  it("aide-moi à concevoir une calculatrice Python — brief déterministe ancré", async () => {
+    assert.equal(isArchitectureDesignIntent(LIVE_CALCULATOR_BRIEF), true);
+    assert.equal(isCodeReviewArchitectureTemplateLicensed(LIVE_CALCULATOR_BRIEF), false);
+    assert.equal(resolveNamedCreateStartShortCircuit(LIVE_CALCULATOR_BRIEF), null);
+
+    const topic = extractArchitectureTopic(LIVE_CALCULATOR_BRIEF);
+    assert.notEqual(topic, "ce composant");
+    assert.match(topic, /calculatrice/i);
+    assert.match(topic, /python/i);
+
+    const hit = await runConversationShortCircuit(LIVE_CALCULATOR_BRIEF, {
+      history: SOCIAL_THEN_CALCULATOR_HISTORY,
+    });
+    assert.equal(hit?.path, "architecture_design_deterministic");
+    assert.ok(hit?.reply);
+    assert.equal(hit?.skipSovereign, true);
+    assert.equal(hit?.skipPlanner, true);
+    assert.equal(hit?.skipComposer, true);
+    assert.ok(!hit?.deferToLlm);
+    assert.match(hit.reply, /calculatrice/);
+    assert.match(hit.reply, /Python/);
+    assert.match(hit.reply, /Tkinter/);
+    assert.match(hit.reply, /addition/);
+    assert.match(hit.reply, /soustraction/);
+    assert.match(hit.reply, /multiplication/);
+    assert.match(hit.reply, /division/);
+    assert.match(hit.reply, /affichage digital/);
+    assert.match(hit.reply, /clavier numérique/);
+    assert.match(hit.reply, /"\."/);
+    assert.match(hit.reply, /"="/);
+    assert.doesNotMatch(hit.reply, /ce composant/i);
+    assert.doesNotMatch(hit.reply, /prototype rapide/i);
+    assert.doesNotMatch(hit.reply, /figer le périmètre/i);
+    assert.doesNotMatch(hit.reply, /3 approches/i);
+    assert.doesNotMatch(hit.reply, /un calculatrice/i);
+    assert.doesNotMatch(hit.reply, /recyclait/i);
+    assert.doesNotMatch(hit.reply, /reformule/i);
+
+    const verdict = evaluateCurrentTurnAnchoring({
+      query: LIVE_CALCULATOR_BRIEF,
+      reply: hit.reply,
+      history: SOCIAL_THEN_CALCULATOR_HISTORY,
+      pipelinePath: hit.path,
+    });
+    assert.equal(verdict.ok, true);
+    assert.ok(!verdict.signals.includes("entity_miss"));
+
+    const enforced = enforceCurrentTurnAnchoring({
+      query: LIVE_CALCULATOR_BRIEF,
+      reply: hit.reply,
+      history: SOCIAL_THEN_CALCULATOR_HISTORY,
+      pipelinePath: hit.path,
+    });
+    assert.equal(enforced.text, hit.reply);
+    assert.doesNotMatch(enforced.text, /recyclait|reformule/i);
+  });
+
+  it("fallback span nommé si topic initial = ce composant", () => {
+    assert.equal(isArchitectureDesignIntent(CALCULATOR_SPAN_FALLBACK), true);
+    assert.equal(extractArchitectureTopic(CALCULATOR_SPAN_FALLBACK), "ce composant");
+
+    const framing = buildArchitectureDesignFramingReply(CALCULATOR_SPAN_FALLBACK);
+    assert.match(framing, /calculatrice en langage Python/i);
+    assert.match(framing, /python/i);
+    assert.doesNotMatch(framing, /ce composant/i);
+    assert.doesNotMatch(framing, /recyclait|reformule/i);
+    assert.doesNotMatch(framing, /Tkinter/);
+
+    const deterministic = getArchitectureDesignDeterministicReply(CALCULATOR_SPAN_FALLBACK);
+    assert.match(deterministic || "", /prototype rapide|figer le périmètre/i);
+    assert.doesNotMatch(deterministic || "", /Tkinter/);
+
+    const verdict = evaluateCurrentTurnAnchoring({
+      query: CALCULATOR_SPAN_FALLBACK,
+      reply: framing,
+      pipelinePath: "architecture_design_deterministic",
+    });
+    assert.equal(verdict.ok, true);
+    assert.ok(!verdict.signals.includes("entity_miss"));
+  });
+
+  it("créer + python guidé — pas le brief calculatrice", async () => {
+    const q =
+      "j'aimerais créer un agent IA en langage python tu pourrais m'aider à le faire ?";
+    const hit = await runConversationShortCircuit(q);
+    assert.equal(hit?.path, "guided_creation_scoping");
+    assert.doesNotMatch(hit?.reply || "", /Tkinter/);
+    assert.doesNotMatch(
+      getArchitectureDesignDeterministicReply(q) || "",
+      /brief pour une calculatrice/i,
+    );
   });
 });
 

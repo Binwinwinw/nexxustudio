@@ -4,7 +4,11 @@ import assert from "node:assert/strict";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { isArchitectureDesignIntent } from "../src/agent/utils/intent-guards/architectureDesignIntentGuards.js";
 import { extractArchitectureTopic } from "../src/agent/utils/intent-guards/architectureDesignIntentGuards.js";
-import { resolveNamedCreateStartShortCircuit } from "../src/agent/policies/conversation/currentTurnAnchoringPolicy.js";
+import {
+  evaluateCurrentTurnAnchoring,
+  enforceCurrentTurnAnchoring,
+  resolveNamedCreateStartShortCircuit,
+} from "../src/agent/policies/conversation/currentTurnAnchoringPolicy.js";
 import {
   isInformationSeekingWithTarget,
   isCreateMandateRequest,
@@ -48,6 +52,8 @@ describe("PROJECT_BUILD_INTENT_ROUTING — architecture_design_deterministic", (
     assert.equal(hit?.skipWeb, true);
     assert.equal(hit?.skipComposer, true);
     assert.match(hit?.reply || "", /syst[eè]me d['']?exploitation|interface graphique/i);
+    assert.doesNotMatch(hit?.reply || "", /Tkinter/);
+    assert.doesNotMatch(hit?.reply || "", /brief pour une calculatrice/i);
     assert.doesNotMatch(hit?.reply || "", /preuves ancr[eé]es/i);
     assert.doesNotMatch(hit?.reply || "", /Recto/i);
     assert.doesNotMatch(hit?.reply || "", /lancer ou d[eé]marrer/i);
@@ -127,5 +133,49 @@ describe("PROJECT_BUILD_INTENT_ROUTING — architecture_design_deterministic", (
     const named = resolveNamedCreateStartShortCircuit(q);
     assert.equal(named?.path, "named_create_start");
     assert.equal(isArchitectureDesignIntent(q), false);
+  });
+
+  it("social → calculatrice Python : brief déterministe, pas entity_miss", async () => {
+    const q =
+      'aide-moi à concevoir une calculatrice en langage Python avec clavier numérique, affichage digital, addition, soustraction, multiplication, division, bouton "=" et bouton "."';
+    const history = [
+      { role: "user", content: "salut salut" },
+      { role: "assistant", content: "Salut !" },
+    ];
+    assert.equal(isArchitectureDesignIntent(q), true);
+    assert.notEqual(extractArchitectureTopic(q), "ce composant");
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.equal(hit?.path, "architecture_design_deterministic");
+    assert.ok(hit?.reply);
+    assert.equal(hit?.skipSovereign, true);
+    assert.equal(hit?.skipPlanner, true);
+    assert.equal(hit?.skipComposer, true);
+    assert.ok(!hit?.deferToLlm);
+    assert.match(hit.reply, /calculatrice/);
+    assert.match(hit.reply, /Python/);
+    assert.match(hit.reply, /Tkinter/);
+    assert.match(hit.reply, /addition/);
+    assert.match(hit.reply, /soustraction/);
+    assert.match(hit.reply, /multiplication/);
+    assert.match(hit.reply, /division/);
+    assert.match(hit.reply, /affichage digital/);
+    assert.match(hit.reply, /clavier numérique/);
+    assert.doesNotMatch(hit.reply, /ce composant|recyclait|reformule/i);
+    assert.doesNotMatch(hit.reply, /prototype rapide|figer le périmètre|3 approches/i);
+    const verdict = evaluateCurrentTurnAnchoring({
+      query: q,
+      reply: hit.reply,
+      history,
+      pipelinePath: hit.path,
+    });
+    assert.equal(verdict.ok, true);
+    assert.ok(!verdict.signals.includes("entity_miss"));
+    const enforced = enforceCurrentTurnAnchoring({
+      query: q,
+      reply: hit.reply,
+      history,
+      pipelinePath: hit.path,
+    });
+    assert.equal(enforced.text, hit.reply);
   });
 });

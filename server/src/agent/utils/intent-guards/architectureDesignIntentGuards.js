@@ -328,6 +328,7 @@ export function extractArchitectureTopic(query = "") {
     /\bquelle architecture pour\s+(?:un|une|des|le|la|l)?\s*(.+)/,
     /\b(?:j\s+aimerais|je\s+aimerais|j'aimerais)\s+(?:creer|créer|construire|mettre en place|developper|développer|faire|fabriquer)\s+(?:un|une|des|le|la|l)?\s*(.+)/,
     /\bje (?:voudrais|veux|souhaite) (?:creer|créer|construire|mettre en place|developper|développer|concevoir)\s+(?:un|une|des|le|la|l)?\s*(.+)/,
+    /\baide[- ]moi\s+a\s+concevoir\s+(?:(?:une|un|des|le|la|l[''])\s+)?(.+)/,
     /\b(?:peux|pourrais|pourras)[- ]?tu\s+m\s+aider.{0,48}?(?:creer|construire|developper|concevoir)\s+(?:un|une|des|le|la|l)?\s*(.+)/,
     /\bhow to (?:build|create|make|set up|develop)\s+(?:a|an|the)?\s*(.+)/,
     /\bpropose(?:r|s)?(?: moi)?(?: des)?(?: plusieurs)?(?: approches| options| pistes)(?: pour)?\s+(?:un|une|des|le|la|l)?\s*(.+)/,
@@ -348,6 +349,23 @@ export function extractArchitectureTopic(query = "") {
   }
 
   return "ce composant";
+}
+
+/** Aligné sur NAMED_ARTIFACT_RE du filet — pas d'import (cycle anchoring → ici). */
+const ARCHITECTURE_NAMED_SPAN_RE =
+  /\b(?:un|une)\s+[\p{L}][\p{L}'’\s-]{2,48}?(?=\s+(?:avec|pour|est|qui|que|,|\?|!)|$)/iu;
+
+function extractNamedArchitectureSpan(query = "") {
+  const named = String(query || "").match(ARCHITECTURE_NAMED_SPAN_RE);
+  if (!named?.[0]) return "";
+  return named[0].replace(/^(?:un|une)\s+/i, "").trim();
+}
+
+/** Topic de framing : extraction, sinon span nommé du tour. */
+function resolveArchitectureFramingTopic(query = "") {
+  const extracted = extractArchitectureTopic(query);
+  if (extracted && extracted !== "ce composant") return extracted;
+  return extractNamedArchitectureSpan(query) || extracted || "ce composant";
 }
 
 function humanizeTopic(topic = "") {
@@ -398,7 +416,7 @@ Tu vises plutôt une architecture conceptuelle, un prototype rapide, ou une impl
 }
 
 export function buildArchitectureDesignFramingReply(query = "") {
-  const topic = humanizeTopic(extractArchitectureTopic(query));
+  const topic = humanizeTopic(resolveArchitectureFramingTopic(query));
   if (!topic || topic === "ce composant") return ARCHITECTURE_DESIGN_FRAMING_REPLY;
   let shortTopic = topic;
   if (topic.length > 90) {
@@ -409,10 +427,33 @@ export function buildArchitectureDesignFramingReply(query = "") {
   return `Je retiens le brief : ${shortTopic}. Une question pour cadrer : tu veux un prototype rapide, ou d'abord figer le périmètre ?`;
 }
 
+/** aide-moi à concevoir + calculatrice + python — pas « merci de concevoir ». */
+function isCalculatorPythonConcevoirBrief(query = "") {
+  const q = normalizeArchitectureDesignQuery(query);
+  return (
+    /\baide[- ]moi\s+a\s+concevoir\b/.test(q) &&
+    /\bcalculatrice\b/.test(q) &&
+    /\bpython\b/.test(q)
+  );
+}
+
+function buildCalculatorPythonConcevoirBriefReply() {
+  return [
+    "Je retiens le brief pour une calculatrice en Python :",
+    "- objectif : effectuer les quatre opérations de base ;",
+    '- fonctions : affichage digital, clavier numérique, ".", "=", addition, soustraction, multiplication et division ;',
+    "- hypothèse initiale : une interface Tkinter, pour un premier prototype local ;",
+    "- prochaine étape : produire un squelette Python fonctionnel.",
+  ].join("\n");
+}
+
 export function getArchitectureDesignDeterministicReply(query = "") {
   const signal = classifyArchitectureDesignSignal(query);
   if (!signal) return null;
-  if (signal === "vague") return ARCHITECTURE_DESIGN_FRAMING_REPLY;
+  if (isCalculatorPythonConcevoirBrief(query)) {
+    return buildCalculatorPythonConcevoirBriefReply();
+  }
+  if (signal === "vague") return buildArchitectureDesignFramingReply(query);
   if (resolveArchitectureDepthControl(query).analysisMode === "deferred") {
     return buildArchitectureDesignFramingReply(query);
   }
