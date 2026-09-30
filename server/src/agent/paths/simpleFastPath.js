@@ -51,6 +51,20 @@ export const SIMPLE_FAST_ORIGINS = Object.freeze({
   WORD_GUARD: "word_guard",
 });
 
+function isSimpleFactualInternalCanvas(text = "") {
+  return /donnée factuelle directe|pas de reformulation préalable/i.test(
+    String(text || ""),
+  );
+}
+
+function composeExploratorySocialContinuityReply(query = "", history = []) {
+  return composeMannerReply({
+    family: RESPONSE_MANNER_FAMILIES.SOCIAL_PHATIC_CONTINUITY,
+    history,
+    salt: query,
+  });
+}
+
 /**
  * @param {{
  *   simpleFactual?: boolean,
@@ -250,9 +264,13 @@ export async function applySimpleFastDeliveryPipeline({
   metaAssistantTrust = false,
   documentSynthesis = false,
   culturalContentSummary = false,
+  exploratoryConversation = false,
+  socialChatContinuity = false,
   scAllowRefusal,
   fallbackReason = "empty_simple_fast",
 } = {}) {
+  const exploratorySocialContinuity =
+    Boolean(exploratoryConversation) || Boolean(socialChatContinuity);
   const overviewMode =
     pedagogicalOverview ||
     beginnerTopicOverview ||
@@ -326,9 +344,16 @@ export async function applySimpleFastDeliveryPipeline({
     fastOut = enforceHowToProceduralDirectness(fastOut, query);
   }
 
-  if (simpleFactual) {
+  if (simpleFactual && !exploratorySocialContinuity) {
     fastOut = finalizeSimpleFactualAnswer(fastOut, query);
     fastOut = enforceSimpleFactualDirectness(fastOut, query);
+  }
+
+  if (
+    exploratorySocialContinuity &&
+    isSimpleFactualInternalCanvas(fastOut)
+  ) {
+    fastOut = "";
   }
 
   if (debugDiagnostic) {
@@ -493,6 +518,15 @@ export async function applySimpleFastDeliveryPipeline({
         fastOut = resolveCodeCreateLocalFallback(query) || "";
       }
     }
+  }
+
+  if (!String(fastOut || "").trim() && exploratorySocialContinuity) {
+    fastOut = composeExploratorySocialContinuityReply(query, history);
+    return {
+      text: applySurfaceMicroContract(query, fastOut),
+      usedRecoveryFallback: true,
+      fallbackReason,
+    };
   }
 
   if (!String(fastOut || "").trim()) {
@@ -670,6 +704,8 @@ export async function invokeSimpleFastLlm({
     metaAssistantTrust: shortCircuit?.metaSubKind === "assistant_trust",
     documentSynthesis: Boolean(shortCircuit?.documentSynthesis),
     culturalContentSummary: Boolean(shortCircuit?.culturalContentSummary),
+    exploratoryConversation: Boolean(shortCircuit?.exploratoryConversation),
+    socialChatContinuity: Boolean(shortCircuit?.socialChatContinuity),
     scAllowRefusal: shortCircuit?.enforce?.allowRefusal,
     fallbackReason,
   });
@@ -686,13 +722,10 @@ export async function invokeSimpleFastLlm({
     adaptedFastOut = responseThinkingCleaner.clean(adaptedFastOut);
     if (
       !String(adaptedFastOut || "").trim() ||
-      responseThinkingCleaner.hasEscapedThinking(adaptedFastOut)
+      responseThinkingCleaner.hasEscapedThinking(adaptedFastOut) ||
+      isSimpleFactualInternalCanvas(adaptedFastOut)
     ) {
-      adaptedFastOut = composeMannerReply({
-        family: RESPONSE_MANNER_FAMILIES.SOCIAL_PHATIC_CONTINUITY,
-        history,
-        salt: query,
-      });
+      adaptedFastOut = composeExploratorySocialContinuityReply(query, history);
     }
   }
   if (

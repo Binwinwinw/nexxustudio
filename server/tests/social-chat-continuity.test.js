@@ -25,6 +25,12 @@ import {
   CLARIFICATION_DECISIONS,
   evaluateClarificationDecision,
 } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
+import { applySimpleFastDeliveryPipeline } from "../src/agent/paths/simpleFastPath.js";
+import { buildSimpleFactualDirectFallback } from "../src/agent/micro/replies/simpleFactualComposer.js";
+import {
+  composeMannerReply,
+  RESPONSE_MANNER_FAMILIES,
+} from "../src/agent/policies/posture/index.js";
 
 const CHAT_HISTORY = [
   { role: "user", content: "yop yop" },
@@ -595,5 +601,75 @@ describe("social chat continuity — sujet court après chat_invite", () => {
     assert.equal(hit?.path, "attached_vision_full_pipeline");
     assert.equal(hit?.deferToFullPipeline, true);
     assert.notEqual(hit?.socialChatContinuity, true);
+  });
+});
+
+describe("exploratory_conversation_light — fallback livraison (P3)", () => {
+  const P3_LEAK_RE =
+    /Pour répondre à|donnée factuelle directe|pas de reformulation préalable/;
+  const PHATIC_RE =
+    /Je suis là, je surveille La Citadelle|Rien de fou de mon côté|Je suis dispo|Pas grand-chose ici/;
+
+  it("LLM vide + continuité exploratoire → pas de canevas factuel P3", async () => {
+    const q = "alors quel sujet voudrais tu développer ?";
+    const delivery = await applySimpleFastDeliveryPipeline({
+      query: q,
+      rawResult: "",
+      simpleFactual: true,
+      exploratoryConversation: true,
+      socialChatContinuity: true,
+      scAllowRefusal: false,
+    });
+    assert.ok(String(delivery.text || "").trim());
+    assert.doesNotMatch(delivery.text, P3_LEAK_RE);
+    assert.match(delivery.text, PHATIC_RE);
+    const expected = composeMannerReply({
+      family: RESPONSE_MANNER_FAMILIES.SOCIAL_PHATIC_CONTINUITY,
+      salt: q,
+    });
+    assert.match(expected, PHATIC_RE);
+    assert.notEqual(
+      delivery.text,
+      buildSimpleFactualDirectFallback(q),
+    );
+  });
+
+  it("canevas P3 déjà présent → remplacé par continuité sociale existante", async () => {
+    const q = "alors quel sujet voudrais tu développer ?";
+    const leaked = buildSimpleFactualDirectFallback(q);
+    assert.match(leaked, P3_LEAK_RE);
+    const delivery = await applySimpleFastDeliveryPipeline({
+      query: q,
+      rawResult: leaked,
+      simpleFactual: true,
+      exploratoryConversation: true,
+      socialChatContinuity: true,
+      scAllowRefusal: false,
+    });
+    assert.ok(String(delivery.text || "").trim());
+    assert.doesNotMatch(delivery.text, P3_LEAK_RE);
+    assert.match(delivery.text, PHATIC_RE);
+  });
+
+  it("route factuelle hors continuité exploratoire → fallback P3 inchangé", async () => {
+    const q = "Quelle est la capitale de la Zambie ?";
+    const p3 = buildSimpleFactualDirectFallback(q);
+    assert.match(p3, P3_LEAK_RE);
+    const delivery = await applySimpleFastDeliveryPipeline({
+      query: q,
+      rawResult: "",
+      simpleFactual: true,
+    });
+    assert.match(delivery.text, P3_LEAK_RE);
+    assert.doesNotMatch(delivery.text, PHATIC_RE);
+  });
+
+  it("salutation existante reste social_deterministic, hors garde", async () => {
+    const hit = await runConversationShortCircuit("bonjour monsieur");
+    assert.equal(hit?.path, "social_deterministic");
+    assert.notEqual(hit?.deferToLlm, true);
+    assert.notEqual(hit?.path, "exploratory_conversation_light");
+    assert.ok(hit?.reply);
+    assert.doesNotMatch(hit?.reply || "", P3_LEAK_RE);
   });
 });
