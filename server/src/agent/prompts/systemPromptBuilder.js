@@ -9,7 +9,6 @@ import fs from 'fs';
 import path from 'path';
 import { SKILLS_DIR } from '../utils/runtime/skillLoader.js';
 import { buildCodeDeliveryAddon, buildCodeIntentAddon } from '../policies/code/index.js';
-import { buildJustIntentAddon } from '../policies/intent/index.js';
 import { buildStructuredRequestPromptAddon } from '../interpreter/RequestInterpreter.js';
 import { TUTOIEMENT_RULE } from '../policies/posture/index.js';
 
@@ -164,7 +163,6 @@ ${behavior.constraints.map(c => `- ${c}`).join('\n')}`,
     briefing ? `[SECTION: RÉFLEXION STRATÉGIQUE]\n${briefing}` : null,
 
     buildStructuredRequestPromptAddon(query) || null,
-    buildJustIntentAddon(query) || null,
     buildCodeIntentAddon(query) || null,
     buildCodeDeliveryAddon(query) || null,
 

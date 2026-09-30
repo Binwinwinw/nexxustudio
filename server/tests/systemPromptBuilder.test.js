@@ -73,6 +73,32 @@ describe("systemPromptBuilder - Caractérisation", () => {
     it("11. Social mode should be brief and friendly", () => {
       const prompt = buildSystemPrompt([], false, {}, "BALANCED", "", {}, true, false, null, "NORMAL", true);
       assert.ok(prompt.includes("IDENTITÉ : Tu es NEXXUS") && prompt.includes("complice"));
+      assert.equal(prompt.includes("INTENTION JUSTE"), false);
+    });
+  });
+
+  describe("JUST n'est plus un addon décisionnel", () => {
+    const codeReview =
+      "Fais une revue de code Python de ce snippet. Commence par les erreurs bloquantes.\ndef broken(): pass";
+
+    it("12. prompt opérationnel sans INTENTION JUSTE, addon code officiel conservé", () => {
+      const prompt = buildSystemPrompt(
+        [],
+        false,
+        { phase: "DISCOVERY", score: 0 },
+        "BALANCED",
+        "",
+        {},
+        true,
+        false,
+        null,
+        "NORMAL",
+        false,
+        null,
+        codeReview,
+      );
+      assert.equal(prompt.includes("INTENTION JUSTE"), false);
+      assert.ok(prompt.includes("REVUE DE CODE"));
     });
   });
 });

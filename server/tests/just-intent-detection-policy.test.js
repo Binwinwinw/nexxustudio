@@ -15,6 +15,7 @@ import {
 } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
 import { resolveAiVerificationNotice } from "../src/agent/policies/epistemic/index.js";
 import { buildJustIntentTelemetryEvent } from "../src/agent/telemetry/justIntentTelemetry.js";
+import { buildSystemPrompt } from "../src/agent/prompts/systemPromptBuilder.js";
 
 const CODE_REVIEW_Q =
   "Fais une revue de code Python de ce snippet. Commence par les erreurs bloquantes.\ndef broken(): pass";
@@ -131,10 +132,24 @@ describe("justIntentDetectionPolicy", () => {
     assert.equal(shouldApplyJustIntentClarification(q, ev, null), false);
   });
 
-  it("injecte addon pour intention actionnable", () => {
-    const addon = buildJustIntentAddon(CODE_REVIEW_Q);
-    assert.match(addon, /INTENTION JUSTE/);
-    assert.match(addon, /Domaine : Code/);
+  it("n'injecte plus INTENTION JUSTE dans le prompt opérationnel", () => {
+    const prompt = buildSystemPrompt(
+      [],
+      false,
+      { phase: "DISCOVERY", score: 0 },
+      "BALANCED",
+      "",
+      {},
+      true,
+      false,
+      null,
+      "NORMAL",
+      false,
+      null,
+      CODE_REVIEW_Q,
+    );
+    assert.doesNotMatch(prompt, /INTENTION JUSTE/);
+    assert.match(prompt, /REVUE DE CODE/);
   });
 
   it("expose télémétrie structurée", () => {
