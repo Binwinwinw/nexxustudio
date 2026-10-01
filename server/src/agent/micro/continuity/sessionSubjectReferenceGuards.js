@@ -56,7 +56,7 @@ const SUBJECT_REFERENCE_EXTRACTION_RULES = [
     shell: "revenir_a",
     kind: "subject_reference",
     pattern:
-      /(?:^|\b)(?:on\s+peut\s+)?reven(?:ir|ons)\s+(?:a|à)\s+(.+?)(?:\s*\?|\s*$)/,
+      /(?:^|\b)(?:on\s+peut\s+)?reven(?:ir|ons)\s+(?:a|à|sur)\s+(.+?)(?:\s*\?|\s*$)/,
   },
   {
     shell: "a_propos_de",

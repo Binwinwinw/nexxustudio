@@ -23,7 +23,9 @@ import {
   SUBJECT_REFERENCE_RESOLUTION,
   subjectsMatch,
   applyVirginSessionResumeGuard,
+  extractSubjectCandidate,
 } from "../src/agent/micro/continuity/sessionSubjectReferenceGuards.js";
+import { isInformationSeekingWithTarget } from "../src/agent/utils/intent-guards/informationSeekingIntentGuards.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolvePipelineFallback } from "../src/agent/utils/conversation/genericGreetingGuards.js";
 import { FAMILIARITY_DOMAIN_CANONICAL_POLITIQUE_QUERY } from "../src/agent/policies/familiarity/index.js";
@@ -169,6 +171,40 @@ describe("subjectReferenceResumePolicy — batterie #34b", () => {
     );
     assert.equal(hit?.path, "subject_reference_resume_deterministic");
     assert.match(hit?.reply, /repren(?:dre|ons) sur.*Italie/i);
+  });
+
+  it("et je voudrais revenir sur teams 365 → disponibilité, pas web", async () => {
+    const q = "et je voudrais revenir sur teams 365";
+    const parsed = extractSubjectCandidate(q);
+    assert.equal(parsed?.shell, "revenir_a");
+    assert.match(parsed?.rawSubject || "", /teams\s*365/i);
+    assert.equal(isInformationSeekingWithTarget(q), true);
+
+    const resolved = resolveSubjectReferenceResumeShortCircuit(q);
+    assert.ok(resolved?.reply);
+    assert.equal(resolved.contextual_resume, false);
+    assert.match(resolved.reply, /Teams/i);
+    assert.doesNotMatch(resolved.reply, /https?:\/\//i);
+    assert.doesNotMatch(resolved.reply, /source/i);
+
+    const hit = await runConversationShortCircuit(q, {
+      history: [
+        { role: "user", content: "salut comment vas tu ?" },
+        { role: "assistant", content: "Salut ! Tout va bien ici." },
+      ],
+    });
+    assert.ok(hit?.reply);
+    assert.notEqual(hit.path, "information_seeking_full_pipeline");
+    assert.ok(
+      hit.path === "familiarity_domain_overview_deterministic" ||
+        hit.path === "subject_reference_resume_deterministic",
+    );
+    assert.ok(!hit.preferWebResearch);
+    assert.ok(!hit.deferToLlm);
+    assert.ok(!hit.deferToFullPipeline);
+    assert.match(hit.reply, /Teams/i);
+    assert.doesNotMatch(hit.reply, /https?:\/\//i);
+    assert.doesNotMatch(hit.reply, /learn\.microsoft|support\.microsoft/i);
   });
 
   it("clarification gate — can_answer_now pour sujet explicite", () => {
