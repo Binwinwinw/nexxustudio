@@ -86,6 +86,43 @@ describe("guidedCreationScopingPolicy", () => {
     assert.ok(!fallback.includes("aperçu localement"));
   });
 
+  it("isCodeCreateRequest — positifs code-create sans JUST", () => {
+    const snippetCreate =
+      "crée une version de ce script :\n```python\ndef foo():\n  return 1\n```";
+    const positives = [
+      "crée un script Python",
+      "Écris une fonction JavaScript",
+      "écris une fonction JavaScript",
+      "développe une API PHP",
+      "génère un script Python",
+      PYTHON_AGENT_QUERY,
+      snippetCreate,
+    ];
+    for (const q of positives) {
+      assert.equal(isCodeCreateRequest(q), true, q);
+    }
+    const accentFallback = resolveCodeCreateLocalFallback(
+      "Écris une fonction JavaScript",
+    );
+    assert.ok(accentFallback);
+    assert.match(accentFallback, /créer ce code/i);
+  });
+
+  it("isCodeCreateRequest — négatifs hors code-create", () => {
+    const negatives = [
+      "corrige ce script python",
+      "crée un CV moderne",
+      "génère une page HTML",
+      HTML_MEMBER_QUERY,
+      "explique Python aux débutants",
+    ];
+    for (const q of negatives) {
+      assert.equal(isCodeCreateRequest(q), false, q);
+    }
+    // Figé : verbe create + contexte code — déjà vrai via la branche officielle.
+    assert.equal(isCodeCreateRequest("crée une revue de ce code"), true);
+  });
+
   it("explique Redis reste technical_overview", () => {
     assert.equal(isTechnicalOverviewRequest("explique Redis"), true);
     assert.equal(isGuidedCreationScopingRequest("explique Redis"), false);

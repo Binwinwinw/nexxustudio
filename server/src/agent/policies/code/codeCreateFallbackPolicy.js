@@ -2,11 +2,7 @@
  * Fallback métier code/create — dégradation utile quand l'aperçu local échoue.
  * Doctrine : ne pas exposer l'erreur technique ; clarifier ou proposer un starter.
  */
-import {
-  INTENT_DOMAINS,
-  INTENT_ACTIONS,
-} from "../../../../../shared/justIntentCatalog.js";
-import { evaluateJustIntent } from "../intent/justIntentDetectionPolicy.js";
+import { normalizeFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
 import { hasCodeContext } from "./codeIntentPolicy.js";
 
 export const CODE_CREATE_FALLBACK_RULE = "code_create_text_fallback";
@@ -19,14 +15,7 @@ const CREATE_RE =
  * @returns {boolean}
  */
 export function isCodeCreateRequest(query = "") {
-  const evaluation = evaluateJustIntent(query);
-  if (
-    evaluation.domain === INTENT_DOMAINS.CODE &&
-    evaluation.action === INTENT_ACTIONS.CREATE
-  ) {
-    return true;
-  }
-  const q = String(query || "").trim();
+  const q = normalizeFamiliarityQuery(query);
   return Boolean(q) && hasCodeContext(q) && CREATE_RE.test(q);
 }
 
