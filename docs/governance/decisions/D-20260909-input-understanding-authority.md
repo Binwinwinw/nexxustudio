@@ -2,7 +2,8 @@
 
 **ID** : `D-20260909-input-understanding-authority`  
 **Date** : 2026-09-09  
-**Statut** : `proposed`  
+**Statut** : `accepted`  
+**Accepted** : 2026-09-10 (GO texte ; V collé FAIL). Les trois D-* de [`../decision-trace.md`](../decision-trace.md) font foi. Cette page reste le cadrage long, pas un 4e ID.  
 **Supersède** : —  
 **Remplacée par** : —
 

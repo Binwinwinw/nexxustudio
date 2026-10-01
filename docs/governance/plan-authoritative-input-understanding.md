@@ -2,7 +2,7 @@
 
 **Nature** : plan opératoire. Pas une ADR. Pas un diagnostic. Pas un GO.  
 **Date** : 2026-09-09  
-**Décision** : [D-20260909](decisions/D-20260909-input-understanding-authority.md) (`proposed`)  
+**Décision** : [D-20260909](decisions/D-20260909-input-understanding-authority.md) (cadrage long ; les 3 D-* de l’index sont `accepted`)  
 **Diagnostic** : [`from-input-understanding-to-authoritative-routing.md`](from-input-understanding-to-authoritative-routing.md)  
 **Index** : [`decision-trace.md`](decision-trace.md)
 
@@ -22,9 +22,9 @@ Faire F3 avant F1, ou un patch téléphone, = faux progrès.
 
 ```
 0   Mémoire        index + D-* proposed          ← fait (GO doc)
-V   Validations de cadrage (5 axes) — pas du runtime
-0b  Accepter       D-* → accepted                ← V collé + GO texte ; pas F1
-F1  Frame          task.kind tenu                ← seulement après 0b
+V   Validations de cadrage (5 axes) — pas du runtime  ← fait (FAIL)
+0b  Accepter       D-* → accepted                ← fait (GO texte 2026-09-10)
+F1  Frame          task.kind tenu                ← **fait** — ebc1dd0 (2026-09-30) ; GO texte accepted le 2026-09-10 (create non câblé)
 F2  Contrats       plus d’auteur de classe
 F3  Emit           rails non typés respectent l’acte
 F4  Incomplétude   slot utile ≠ vide d’acte
@@ -59,11 +59,11 @@ Norme : [`decision-trace.md`](decision-trace.md) § V. Cette page ne duplique pa
 
 Porte **hors runtime**. Objectif : paraphrases + télémétrie **avant** `accepted` et **avant** F1.
 
-Règle courte : V non collé → D-* `proposed`. V collé + GO texte → `accepted`. F1 fermé tant que cette séquence n’est pas tenue. FAIL = résultat. V n’est pas F1.
+Règle courte : V non collé → D-* `proposed`. V collé + GO texte → `accepted`. F1 fermé tant que cette séquence n’est pas tenue. GO de lot F1 donné par l’utilisateur le 2026-09-30 (livré dans ebc1dd0) ; F2 à F4 restent sans GO de lot. FAIL = résultat. V n’est pas F1.
 
-V collé 2026-09-09 : FAIL 5 axes, batterie advise / compare / currentItem / budget / usage + voisins. Voir la trace. Pas `accepted`. Pas F1.
+V collé 2026-09-09 : FAIL 5 axes, batterie advise / compare / currentItem / budget / usage + voisins. Voir la trace.
 
-Porte suivante (pas ouverte) : GO texte → `accepted` → F1.
+GO texte 2026-09-10 : D-* `accepted`. F1 **livré** (ebc1dd0) ; F2 à F4 non ouverts.
 
 ---
 
@@ -86,9 +86,9 @@ Le **path** n’est pas la vérité. Un `guided_*` ou un pipeline + web peuvent 
 ## Ce qu’il faut faire en premier
 
 1. Relire [Interdits](decision-trace.md#interdits-actifs).
-2. **V collé** (FAIL 5 axes) — fait. Pas du runtime.
-3. GO **texte** `proposed` → `accepted` seulement si V est collé (**tenu** : V collé ; GO texte **non**).
-4. **Puis** fiche 5 champs F1 si GO de lot. Pas F1 tant que `proposed`.
+2. **V collé** (FAIL 5 axes) — fait.
+3. GO **texte** → `accepted` — **fait** 2026-09-10.
+4. **F1 fait** — ebc1dd0 (2026-09-30) ; GO texte accepted le 2026-09-10. F2 seulement si GO de lot.
 
 ---
 
@@ -125,7 +125,7 @@ S’arrêter (pas de code, pas d’étape suivante) si :
 - la solution proposée figure dans les Interdits ;
 - V n’est pas collé (5 axes) ;
 - on passe `accepted` sans V ;
-- F1 (ou autre lot) tant que les D-* sont `proposed` ;
+- F1 (ou autre lot) sans GO de lot nommé ;
 - le lot n’a pas les 5 champs + `Décision: D-20260909` (ou successeur) ;
 - un rouge gelé du canon est « réparé au passage » ;
 - F3 ou F4 est tenté avant la dépendance ;
@@ -135,7 +135,7 @@ S’arrêter (pas de code, pas d’étape suivante) si :
 
 ## Découpage futur en lots (sans GO)
 
-Candidats. **Aucun n’est ouvert.**
+Candidats. **F1 fait** (commité : ebc1dd0 ; create resté hors). F2–F4 non ouverts.
 
 | Candidat | Objectif | Périmètre probable | Preuve | Hors périmètre |
 |----------|----------|--------------------|--------|----------------|
@@ -160,9 +160,9 @@ Sain : sert D-20260909, tests de famille, pas d’interdit.
 | Élément | État |
 |---------|------|
 | Diagnostic | écrit |
-| ADR | `proposed` |
+| ADR / 3 D-* index | `accepted` (GO texte 2026-09-10) |
 | Index + interdits | écrit |
-| GO texte D-* `accepted` | **non** — bloqué tant que V n’est pas collé |
+| GO texte D-* `accepted` | **fait** |
 | V — validations de cadrage | **collé FAIL** 2026-09-09 (batterie 19 paraphrases) |
-| Lots F1–F4 | **non ouverts** |
-| Runtime | **inchangé** |
+| Lots F1–F4 | **F1 fait** (commité : ebc1dd0). F2–F4 **non ouverts** |
+| Runtime | **modifié par F1 seulement** (ebc1dd0, `detectTaskKind` ; `accepted` ≠ lot) ; F2 à F4 non ouverts |

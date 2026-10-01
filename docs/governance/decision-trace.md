@@ -8,7 +8,8 @@ Mémoire d’architecture consultable **avant d’agir**. Couche manquante, pas 
 | Décisions `proposed` / `accepted` / `superseded` | Le **PLAN** (quoi exécuter après GO de lot) |
 | Append-only | Changelog, journal `.memory/`, vault ADR patrimoine |
 
-**GO 2026-09-09** : cette page seulement. Pas de runtime. Pas de lots F1–F4. `.memory/` n’est pas une source normative. V collé le même jour (FAIL batterie) — pas `accepted`.
+**GO 2026-09-09** : cette page. Pas de runtime. Pas de lots. `.memory/` n’est pas une source normative.  
+**GO texte 2026-09-10** : les trois D-* passent `accepted`. V reste FAIL. Pas de lot. Pas de runtime.
 
 ---
 
@@ -31,9 +32,9 @@ Porte **séparée de toute étape runtime**. Lecture / probe. Pas F1. Pas un lot
 
 **Objectif.** Valider que la direction retenue tient réellement sur les paraphrases et sur la télémétrie, **avant** toute acceptation normative et **avant** F1.
 
-**Règle (courte).** Tant que V n’est pas collé et lisible sur les 5 axes, les trois D-* restent `proposed`. Après V collé et GO texte, elles passent `accepted`. F1 reste fermé tant que cette séquence n’est pas tenue.
+**Règle (courte).** Tant que V n’est pas collé et lisible sur les 5 axes, les trois D-* restent `proposed`. Après V collé et GO texte, elles passent `accepted`. F1 reste fermé tant que cette séquence n’est pas tenue. **Tenu 2026-09-10** : V collé + GO texte → `accepted`. F1 livré dans ebc1dd0 ; F2 à F4 non ouverts.
 
-**État.** Collé 2026-09-09. **FAIL** sur les 5 axes. Probe lecture seule (pas un test, pas F1). D-* restent `proposed`. Runtime inchangé.
+**État.** Collé 2026-09-09. **FAIL** sur les 5 axes. Probe lecture seule (pas un test, pas F1). D-* `accepted` (GO texte 2026-09-10). Runtime inchangé par l’acceptation elle-même. F1 livré dans ebc1dd0 ; F2 à F4 non ouverts.
 
 **Échantillon live (inclus dans la batterie, pas un cas produit).** Fil Nothing Phone 3a ~12:58 / ~18:44 / ~18:55 / ~20:01. Même chaîne. Confirmé par paraphrase sœurs hors lexicon.
 
@@ -77,9 +78,9 @@ Paraphrase vs shell (ce que F1 devra tenir, pas une regex à coller) : `conseils
 
 Voisins : social deterministic **tient** hors IntentStage. Explain a un domaine G29. Code a un guard. Aucun des trois n’a `task.kind`. Une correction advise ne doit pas les casser ; elle ne doit pas non plus les prendre pour modèle d’autorité d’acte.
 
-Interdit après ce constat : patch produit, regex locale, cas live seul, ouvrir F1, réécrire le pipeline, `accepted` sans GO texte.
+Interdit après ce constat : patch produit, regex locale, cas live seul, ouvrir F1 sans GO de lot, réécrire le pipeline.
 
-**Porte suivante (pas ouverte).** GO **texte** → D-* `accepted` → F1. V collé **n’est pas** `accepted`. V FAIL **n’ouvre pas** F1.
+**Porte suivante (pas ouverte).** F2 si GO de lot nommé. F1 ne câble pas les contrats. Live advise hors lexicon reste `task.kind=null`.
 
 ### Cinq axes
 
@@ -105,7 +106,7 @@ Pas un 4e ID. Les trois D-* ci-dessous portent ça.
 4. COMPOSER / rendu ne requalifient plus la demande.
 5. Contrat métier écrit par une classe aval = illégitime si le guard de l’acte ne le permet pas.
 
-Verrous : D-* `proposed` tant que V n’est pas collé (**tenu** : V collé FAIL, toujours `proposed` jusqu’au GO texte). Correction recevable seulement si paraphrases de **famille** passent ensemble. Si le frame dit `advise` et qu’il n’y a pas de guard code, **aucun** runtime ne doit pouvoir écrire `CODE_INTENT`.
+Verrous : V collé + GO texte **tenus** (2026-09-10). `accepted` ≠ lot. Correction recevable seulement si paraphrases de **famille** passent ensemble. Si le frame dit `advise` et qu’il n’y a pas de guard code, **aucun** runtime ne doit pouvoir écrire `CODE_INTENT`.
 
 Critère de réussite (après lots, pas maintenant) : live Nothing Phone **et** ses paraphrases ; voisins explain / social / code sans régression ; aucun fallback aval ne réintroduit `CODE_INTENT` sur un acte `advise`.
 
@@ -148,13 +149,14 @@ Une tâche qui reproduit une ligne s’arrête, même « pour ce cas ».
 
 ## Table des décisions actives
 
-Aucune n’est `accepted`. Aucune n’est runtime.
+Trois `accepted` (GO texte 2026-09-10). Runtime inchangé hors F1 (`task.kind` seulement). F2–F4 non ouverts.
 
 | ID | Statut | Décision (une phrase) | Supersède |
 |----|--------|------------------------|-----------|
-| D-20260909-frame-acte-autorite | **proposed** | `requestFrame.task.kind` est l’acte ; le cycle est le seul scripteur ; silence de domaine ≠ silence d’acte | — |
-| D-20260909-commitment-derive-du-frame | **proposed** | `response_commitment` se dérive du frame par tables ; trou utile → `direct` + slot, pas `unknown` | — |
-| D-20260909-aval-consommateur | **proposed** | IntentStage, `orchestrator:*`, SC emit, COMPOSER consomment ; contrats métier = guard only | — |
+| D-20260909-frame-acte-autorite | **accepted** | `requestFrame.task.kind` est l’acte ; le cycle est le seul scripteur ; silence de domaine ≠ silence d’acte | — |
+| D-20260909-commitment-derive-du-frame | **accepted** | `response_commitment` se dérive du frame par tables ; trou utile → `direct` + slot, pas `unknown` | — |
+| D-20260909-aval-consommateur | **accepted** | IntentStage, `orchestrator:*`, SC emit, COMPOSER consomment ; contrats métier = guard only | — |
+| D-20260922-just-shadow-operational-authority | **accepted** | JUST reste shadow ; signaux opérationnels vers contrats officiels (C → B) ; aucun nouveau consommateur JUST autoritaire | — |
 
 Cadrage long (diagnostic / plan / ADR unique) : **compagnons**, pas un 4e ID — § Pointeurs.
 
@@ -166,7 +168,8 @@ Cadrage long (diagnostic / plan / ADR unique) : **compagnons**, pas un 4e ID —
 |-------|--------|
 | **ID** | D-20260909-frame-acte-autorite |
 | **Date** | 2026-09-09 |
-| **Statut** | proposed |
+| **Statut** | accepted |
+| **Accepted** | 2026-09-10 (GO texte ; V collé FAIL) |
 | **Supersède** | — |
 | **Domaine** | understanding |
 
@@ -176,7 +179,7 @@ Cadrage long (diagnostic / plan / ADR unique) : **compagnons**, pas un 4e ID —
 
 **Pourquoi.** Probe 2026-09-09 : silence G29 → `unknown` + `task.kind = null` alors que l’humain demandait une orientation. JUST a étiqueté `explain`. Ce n’est pas l’autorité.
 
-**Conséquence (futur lot, pas maintenant).** F1 — `detectTaskKind`. Hors périmètre : contrats, SC, JUST consume.
+**Conséquence.** F1 fait — ebc1dd0 (2026-09-30) ; GO texte accepted le 2026-09-10 (`detectTaskKind` via guards existants). Hors périmètre restant : contrats, SC, JUST consume, create/build.
 
 **Rejected (conservé).** Frame JSON consommateur / scores 0.92 comme 2e packet.
 
@@ -188,7 +191,8 @@ Cadrage long (diagnostic / plan / ADR unique) : **compagnons**, pas un 4e ID —
 |-------|--------|
 | **ID** | D-20260909-commitment-derive-du-frame |
 | **Date** | 2026-09-09 |
-| **Statut** | proposed |
+| **Statut** | accepted |
+| **Accepted** | 2026-09-10 (GO texte ; V collé FAIL) |
 | **Supersède** | — |
 | **Domaine** | commitment |
 
@@ -208,7 +212,8 @@ Cadrage long (diagnostic / plan / ADR unique) : **compagnons**, pas un 4e ID —
 |-------|--------|
 | **ID** | D-20260909-aval-consommateur |
 | **Date** | 2026-09-09 |
-| **Statut** | proposed |
+| **Statut** | accepted |
+| **Accepted** | 2026-09-10 (GO texte ; V collé FAIL) |
 | **Supersède** | — |
 | **Domaine** | routing |
 
@@ -222,6 +227,129 @@ Cadrage long (diagnostic / plan / ADR unique) : **compagnons**, pas un 4e ID —
 
 ---
 
+## D-20260922-just-shadow-operational-authority
+
+| Champ | Valeur |
+|-------|--------|
+| **ID** | D-20260922-just-shadow-operational-authority |
+| **Titre** | JUST shadow only et autorité opérationnelle |
+| **Date** | 2026-09-22 |
+| **Statut** | accepted |
+| **Accepted** | 2026-09-22 |
+| **Supersède** | — |
+| **Domaine** | understanding |
+| **Fichier** | [`decisions/D-20260922-just-shadow-operational-authority.md`](decisions/D-20260922-just-shadow-operational-authority.md) |
+
+**Décision.** JUST reste shadow diagnostique. Les signaux opérationnels migrent vers des contrats officiels selon la trajectoire C → B. Aucun nouveau consommateur JUST autoritaire n’est autorisé.
+
+**Interdit.** Nouveau consommateur JUST autoritaire sans D-* qui supersede explicitement cette décision et l’invariant 6. Migration big-bang des six familles historiques.
+
+### Clôture famille code-fallback (2026-09-23)
+
+Trace opérationnelle, pas une nouvelle décision. Lots clos :
+`RECON-JUST-CODE-FALLBACK-20260922-OFFICIAL-CREATE-SURFACE-V1`,
+`PATCH-JUST-CODE-FALLBACK-REMOVAL-V1`,
+`RECON-JUST-CODE-FALLBACK-GUARD-CLEANUP-V1`,
+`PATCH-JUST-CODE-FALLBACK-GUARD-CLEANUP-V1`,
+`PRECONDITION-GIT-BASELINE-BEFORE-CONVERSATION-RECON-V1`.
+
+**Faits mis en œuvre.** `isCodeCreateRequest` ne consomme plus `evaluateJustIntent`, `JUST.domain`, `JUST.action`, `justIntent` ni le catalogue JUST. Gate unique :
+
+```text
+const q = normalizeFamiliarityQuery(query);
+return Boolean(q) && hasCodeContext(q) && CREATE_RE.test(q);
+```
+
+L’entrée ALLOWLIST `id: "code-fallback"` a été retirée du garde statique JUST. Une réintroduction de `evaluateJustIntent` dans `codeCreateFallbackPolicy.js` doit être détectée par le garde. Clarify, move et guided restent des familles legacy distinctes, non migrées ici.
+
+**Validations exécutées.** `guided-creation-scoping` + garde JUST : 18/18 après retrait runtime (constat du 2026-09-22, non revérifié le 2026-09-30). Garde seul après retrait allowlist : 5/5.
+
+**Risque résiduel (hors périmètre).** Un contexte code porté exclusivement par des fences Markdown que `normalizeFamiliarityQuery` retire peut être insuffisant pour `hasCodeContext`. Non corrigé. Pas un incident constaté.
+
+**Artefact Git préexistant protégé.** Baseline `PRECONDITION-GIT-BASELINE-BEFORE-CONVERSATION-RECON-V1` : branche `wip/checkpoint-20260824-0117`, HEAD `eb212d77b43af823d1e176109fc2ff0452b5f28c`, index vide. `server/tests/just-shadow-authority-guard.test.js` est non suivi, préexistant, hors périmètre de tout chantier conversationnel ; `git diff` n’atteste pas son historique. Cette clôture n’attribue pas les autres fichiers dirty ou untracked du worktree à la famille code-fallback.
+
+**Prochaine étape autorisable.** Reconnaissance conversationnelle distincte, sans runtime, après GO séparé. Pas un patch conversationnel depuis cette trace.
+
+---
+
+## Clôture correctifs conversationnels V1 (2026-09-23)
+
+Trace opérationnelle, pas une nouvelle décision. Lots clos :
+
+```text
+RECON-CONVERSATION-CONTINUITY-AND-FACTUAL-GROUNDING-V1
+RECON-ACTE-CONVERSATIONNEL-AUTORITAIRE-AVANT-CONTRAT-V1
+RECON-EXPLORATORY-CONVERSATION-LIGHT-DELIVERY-LEAK-V1
+PATCH-ACTE-CONVERSATIONNEL-AUTORITAIRE-AVANT-CONTRAT-V1
+PATCH-EXPLORATORY-CONVERSATION-LIGHT-DELIVERY-LEAK-V1
+```
+
+Cette clôture n’attribue pas les autres fichiers dirty ou untracked du worktree à ces deux patches. Index vide. HEAD `eb212d77b43af823d1e176109fc2ff0452b5f28c`. Branche `wip/checkpoint-20260824-0117`.
+
+### 1. Décisions / portée mise en œuvre
+
+Deux familles d’acte seulement : `non_task` et `definition`. Aucune nouvelle couche ni moteur général d’actes.
+
+**`non_task`.** Fiche de routing existante, priorité 350, path `social_deterministic`, `forbidPiste` et `forbidComposer`. Détecteur `isNonTaskConversationalAct` : échange court sans tâche utile, hors identité, code, travail substantiel, info ciblée, définition explicite et open exploration.
+
+**`definition`.** Early return prioritaire dans `resolveIntentContract` :
+
+```text
+isExplicitInformationOrDefinitionRequest(query)
+&& !isCodeIntentRequest(query)
+→ DIRECT_EXPLANATION
+```
+
+Empêche le vol `expert_task` → fallback de classe → `CODE_INTENT` sur une définition nommée. `conversationTurnType.js` a reçu le marqueur méta `/\btu\s+ne\s+comprends\b/i` dans le même lot ; ce n’est pas une troisième famille d’acte.
+
+**Fuite P3 / continuité exploratoire.** Cause : avec `exploratoryConversation` ou `socialChatContinuity`, `isSimpleFactualQuestion` pouvait enchaîner `finalizeSimpleFactualAnswer` / `enforceSimpleFactualDirectness` puis `buildSimpleFactualDirectFallback`. Le canevas interne (« Pour répondre à… donnée factuelle directe… pas de reformulation préalable ») étant non vide, l’ancien filet post-livraison ne le remplaçait pas.
+
+Portée : dans `applySimpleFastDeliveryPipeline` seulement, si l’un des deux flags est actif :
+
+- `finalizeSimpleFactualAnswer` et `enforceSimpleFactualDirectness` ne s’appliquent pas ;
+- sortie vide, non livrable ou contenant le canevas P3 → `composeMannerReply({ family: SOCIAL_PHATIC_CONTINUITY })` ;
+- le fallback factuel P3 reste disponible hors ces flags.
+
+Fichiers de ces patches :
+
+```text
+server/src/agent/policies/routing/routingCaseDictionary.js
+server/src/agent/config/intentContractRegistry.js
+server/src/agent/micro/classifiers/conversationTurnType.js
+server/tests/routing-case-dictionary.test.js
+server/tests/intent-contract-registry.test.js
+server/src/agent/paths/simpleFastPath.js
+server/tests/social-chat-continuity.test.js
+```
+
+### 2. Validations effectivement exécutées
+
+- Acte V1 : 27/27 tests ciblés verts (`routing-case-dictionary` + cas V1 de `intent-contract-registry`). Le registry complet avait déjà des échecs préexistants (`g44_sil_meta_ideation_block`, fallback `technical_diagnostic` → `CODE_INTENT`) : non modifiés, non attribués à ce lot. Un vert ciblé n’est pas une régression globale.
+- Fuite P3 : `node --test tests/social-chat-continuity.test.js` → 35/35 pass, 0 fail.
+
+### 3. Préservations prouvées
+
+- Rails `social_deterministic` existants (salutation / check-in) hors du garde livraison P3.
+- Fallback factuel P3 inchangé sur une route factuelle légitime sans flags exploratoires.
+- `forbidPiste` / `forbidComposer` tenus sur `non_task`.
+- Définition nommée : `DIRECT_EXPLANATION`, pas `CODE_INTENT` via `expert_task`.
+
+### 4. Exclusions intactes
+
+Hors périmètre de ces lots : capability, URL, commande, audit, mémoire, historique, CPE, grounding institutionnel, créole, « pas grave », JUST (clarify / move / guided), code-fallback, Composer global, détection `extractSocialChatTopic` / `resolveSocialChatContinuityShortCircuit`. Ces sujets ne sont ni résolus ni ouverts ici.
+
+### 5. Risques résiduels
+
+Un autre chemin de livraison peut encore appeler `buildSimpleFactualDirectFallback` s’il n’a ni `exploratoryConversation` ni `socialChatContinuity`. Non couvert. Non traité.
+
+### 6. Prochaine étape autorisable
+
+Reconnaissance distincte à décider :
+capacités annoncées non vérifiées
+(URL, commande, audit, mémoire ou historique).
+
+---
+
 ## Plan de travail dérivé
 
 Pas un GO. Pas dans `dev/PLAN.md` tant qu’un lot n’est pas nommé.
@@ -229,16 +357,16 @@ Pas un GO. Pas dans `dev/PLAN.md` tant qu’un lot n’est pas nommé.
 | Étape | Quoi | Condition | Ne pas faire trop tôt |
 |-------|------|-----------|------------------------|
 | 0 | Cette trace | **fait** (GO doc) | — |
-| V | Validations de cadrage (5 axes) | Après 0. **Avant** `accepted` et **avant** F1. **Pas du runtime** | F1 « pour que V passe » |
-| 0b | D-* → `accepted` | V collé + GO **texte** | `accepted` sans dumps |
-| F1 | `task.kind` tenu | **0b** ; fiche 5 champs + GO **lot** | F1 tant que `proposed` |
+| V | Validations de cadrage (5 axes) | **fait** (FAIL batterie) | F1 « pour que V passe » |
+| 0b | D-* → `accepted` | **fait** (GO texte 2026-09-10) | `accepted` sans dumps |
+| F1 | `task.kind` tenu | **fait** — ebc1dd0 (guards existants ; create non câblé) | regex ; F2 par inertie |
 | F2 | Plus de contrat par classe | F1 (actes visés) ou V a chiffré l’aspirateur | Blocklist `CODE_INTENT` seul |
 | F3 | Emit typé (1–3 paths) | F2 clos | God-file SC entier |
 | F4 | Trou utile ≠ `unknown` | F1 + choix produit écrit | G31 clarify avant que `advise` existe |
 
 Transverse : tests par **familles et paraphrases**, pas un cas live.
 
-Critère d’arrêt : Interdit ; V non collé ; `accepted` sans V ; F1 tant que `proposed` ; pas de fiche 5 champs + `Décision: D-…` ; rouge gelé « réparé au passage » ; F3/F4 avant dépendance.
+Critère d’arrêt : Interdit ; V non collé ; `accepted` sans V ; F1 sans GO de lot + fiche 5 champs + `Décision: D-…` ; rouge gelé « réparé au passage » ; F3/F4 avant dépendance.
 
 ---
 
@@ -266,4 +394,4 @@ Critère d’arrêt : Interdit ; V non collé ; `accepted` sans V ; F1 tant que 
 
 - Nouvelle décision : section D-* dans **cette** page + ligne dans la table. Dossier `decisions/` seulement si l’index dépasse une page utile.
 - Lot futur : PLAN + fiche. Cette page ne s’allonge pas d’un changelog de lots.
-- Runtime inchangé tant que les D-* sont `proposed` et qu’aucun GO de lot n’existe.
+- Runtime inchangé **hors F1**. `accepted` n’est pas F2. F1 n’écrit pas de contrat.
