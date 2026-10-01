@@ -8,6 +8,7 @@ import {
   buildEpistemicTargetedClarifyReply,
   classifyEpistemicKnowledgeState,
   evaluateEpistemicUncertaintyResolution,
+  extractObscureReferenceHint,
   resolveEpistemicUncertaintyShortCircuit,
 } from "../src/agent/policies/epistemic/index.js";
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
@@ -91,5 +92,31 @@ describe("epistemic uncertainty resolution v1", () => {
       }),
       null,
     );
+  });
+
+  it("ne promeut pas « Pour » initial comme référence obscure", async () => {
+    const q = "Pour teams 365 je pense à une cours d'initiation";
+    assert.notEqual(extractObscureReferenceHint(q), "Pour");
+    const eval_ = evaluateEpistemicUncertaintyResolution(q, {
+      history: CHAT_HISTORY,
+    });
+    assert.notEqual(eval_.hypothesis, "Pour");
+    assert.doesNotMatch(eval_.reply || "", /Tu parles de Pour \?/i);
+
+    const hit = await runConversationShortCircuit(q, { history: CHAT_HISTORY });
+    assert.doesNotMatch(hit?.reply || "", /Tu parles de Pour \?/i);
+  });
+
+  it("« Pour ce soir » n'est pas une référence obscure", async () => {
+    const q = "Pour ce soir on reste sur le même sujet ?";
+    assert.notEqual(extractObscureReferenceHint(q), "Pour");
+    const eval_ = evaluateEpistemicUncertaintyResolution(q, {
+      history: CHAT_HISTORY,
+    });
+    assert.notEqual(eval_.hypothesis, "Pour");
+    assert.doesNotMatch(eval_.reply || "", /Tu parles de Pour \?/i);
+
+    const hit = await runConversationShortCircuit(q, { history: CHAT_HISTORY });
+    assert.doesNotMatch(hit?.reply || "", /Tu parles de Pour \?/i);
   });
 });

@@ -117,11 +117,12 @@ export function extractObscureReferenceHint(query = "") {
     "Bah",
     "Heu",
     "NXT", // lexique culturel — ne devrait pas arriver ici
+    "Pour",
   ]);
   const contextBag = `${example} ${context}`.toLowerCase();
   const candidates = matches
     .map((m) => m.trim())
-    .filter((m) => m.length >= 2 && !stop.has(m))
+    .filter((m) => m.length >= 2 && !stop.has(m) && norm(m) !== "pour")
     .filter((m) => !contextBag.includes(m.toLowerCase()));
   if (candidates.length) return candidates[0];
   return null;
