@@ -51,6 +51,7 @@ import {
 } from "../policies/code/codeProjectLightPolicy.js";
 import { isExplicitNominalDocumentDeliverable } from "../policies/delivery/constructiveDeliveryPolicy.js";
 import { isFormalLetterTemplateRequest } from "../policies/delivery/formalLetterTemplatePolicy.js";
+import { isExplicitInformationOrDefinitionRequest } from "../utils/intent-guards/informationSeekingIntentGuards.js";
 
 const GUARDS = {
   isIdeationRequest: (query, packet) => isIdeationRequest(query),
@@ -1055,6 +1056,22 @@ export function resolveIntentContract(query = "", packet = {}) {
       if (runGuard(contract.detection.guard, query, packet)) {
         return { contract, matchedBy: `guard:${contract.detection.guard}` };
       }
+    }
+  }
+
+  // Définition / info nommée : acte avant fallback expert_task → CODE_INTENT.
+  if (
+    isExplicitInformationOrDefinitionRequest(query) &&
+    !isCodeIntentRequest(query)
+  ) {
+    const direct = INTENT_CONTRACT_REGISTRY.find(
+      (c) => c.id === "DIRECT_EXPLANATION",
+    );
+    if (direct) {
+      return {
+        contract: direct,
+        matchedBy: "guard:isExplicitInformationOrDefinitionRequest",
+      };
     }
   }
 

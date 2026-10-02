@@ -485,3 +485,28 @@ test("registry: GUIDED_PRODUCT_RECOMMENDATION via guard when compare_choose read
       matchedBy === "meta.intent_contract_id",
   );
 });
+
+test("definition nommée : DIRECT_EXPLANATION, pas CODE_INTENT via expert_task", () => {
+  const query =
+    "je cherche la définition du mot agent dans un système agentique";
+  const { contract, matchedBy } = resolveIntentContract(query, {
+    user_intent: "expert_task",
+  });
+  assert.equal(contract.id, "DIRECT_EXPLANATION");
+  assert.equal(matchedBy, "guard:isExplicitInformationOrDefinitionRequest");
+  assert.notEqual(contract.id, "CODE_INTENT");
+  assert.notEqual(contract.id, "DIAGNOSTIC");
+  assert.notEqual(contract.id, "DOCUMENT_ANALYSIS");
+  assert.notEqual(contract.routing?.skipWebSearch, true);
+});
+
+test("revue code snippet : CODE_INTENT conservé malgré formulation explicative", () => {
+  const query =
+    "Fais une revue de code Python de ce snippet. Commence par les erreurs bloquantes.\ndef broken(): pass";
+  const { contract, matchedBy } = resolveIntentContract(query, {
+    user_intent: "expert_task",
+  });
+  assert.equal(contract.id, "CODE_INTENT");
+  assert.match(matchedBy, /isCodeIntentRequest|guard:/);
+  assert.notEqual(contract.id, "DIRECT_EXPLANATION");
+});
