@@ -1,6 +1,7 @@
 /**
  * Shadow observe — frame + JUST + SC. Lecture seule, jamais relue par le routeur.
- * Lots OBS-ROUTING-FRAME-SC + LOT3-SHADOW-ROUTING-COMPATIBILITY.
+ * Lots OBS-ROUTING-FRAME-SC + LOT3-SHADOW-ROUTING-COMPATIBILITY
+ * + AUDIT-ROUTING-AUTHORITY-CONFLICTS (`routing_authority_conflict`).
  * Pas de 2e NLU, pas de scores, pas de cible métier extraite, pas de targetDetector.
  */
 import { evaluateJustIntent, isSimpleFactualQuestion, JUST_INTENT_THRESHOLDS } from "../policies/intent/justIntentDetectionPolicy.js";
@@ -34,6 +35,7 @@ import {
 } from "../micro/classifiers/conversationTurnType.js";
 
 export const ROUTING_OBSERVE_EVENT = "routing_observe";
+export const ROUTING_AUTHORITY_CONFLICT_EVENT = "routing_authority_conflict";
 
 /** Surface token déjà dans la requête — pas un targetDetector, pas consommé. */
 const SECOND_PERSON_SURFACE_RE =
@@ -689,6 +691,73 @@ export function recordRoutingObserveTelemetry(query = "", ctx = {}) {
   const event = buildRoutingObserveEvent(query, ctx);
   console.log(`[ROUTING_OBSERVE] ${JSON.stringify(event)}`);
   ctx.turnTelemetry?.recordEvent?.(ROUTING_OBSERVE_EVENT, {
+    status: "ok",
+    ...event,
+  });
+  return event;
+}
+
+/**
+ * Conflit d'autorités déjà calculées — pas un 2e NLU, pas de scores.
+ * @param {{
+ *   justIntent?: { domain?: string, action?: string }|null,
+ *   composedPrimary?: string|null,
+ *   socialPattern?: string|null,
+ *   workPresent?: boolean,
+ *   shortCircuitSelected?: string|null,
+ * }} ctx
+ */
+export function hasRoutingAuthorityConflict(ctx = {}) {
+  const just =
+    ctx.justIntent?.domain && ctx.justIntent?.action
+      ? `${ctx.justIntent.domain}/${ctx.justIntent.action}`
+      : null;
+  const socialLabeled =
+    just === "social/social_checkin" ||
+    ctx.composedPrimary === "social_checkin" ||
+    Boolean(ctx.socialPattern);
+  return Boolean(
+    socialLabeled && ctx.workPresent === true && !ctx.shortCircuitSelected,
+  );
+}
+
+/**
+ * @param {object} ctx
+ */
+export function buildRoutingAuthorityConflictEvent(ctx = {}) {
+  const just =
+    ctx.justIntent?.domain && ctx.justIntent?.action
+      ? `${ctx.justIntent.domain}/${ctx.justIntent.action}`
+      : ctx.initial_intent || null;
+  return {
+    event: ROUTING_AUTHORITY_CONFLICT_EVENT,
+    initial_intent: just,
+    composed_primary: ctx.composedPrimary ?? ctx.composed_primary ?? null,
+    social_pattern: ctx.socialPattern ?? ctx.social_pattern ?? null,
+    decomposition_unit: ctx.decompositionUnit ?? ctx.decomposition_unit ?? null,
+    work_present: Boolean(ctx.workPresent ?? ctx.work_present),
+    social_gate_decision:
+      ctx.socialGateDecision ?? ctx.social_gate_decision ?? null,
+    short_circuit_selected:
+      ctx.shortCircuitSelected ?? ctx.short_circuit_selected ?? null,
+    downstream_pipeline:
+      ctx.downstreamPipeline ?? ctx.downstream_pipeline ?? null,
+    downstream_reason: ctx.downstreamReason ?? ctx.downstream_reason ?? null,
+    response_contract: ctx.responseContract ?? ctx.response_contract ?? null,
+    runtime_aligned: false,
+    shadow_consumed: false,
+  };
+}
+
+/**
+ * Journalise le conflit. Ne consomme rien. Ne change aucune route.
+ * @param {object} [ctx]
+ */
+export function recordRoutingAuthorityConflictTelemetry(ctx = {}) {
+  if (!hasRoutingAuthorityConflict(ctx)) return null;
+  const event = buildRoutingAuthorityConflictEvent(ctx);
+  console.log(`[ROUTING_AUTHORITY_CONFLICT] ${JSON.stringify(event)}`);
+  ctx.turnTelemetry?.recordEvent?.(ROUTING_AUTHORITY_CONFLICT_EVENT, {
     status: "ok",
     ...event,
   });
