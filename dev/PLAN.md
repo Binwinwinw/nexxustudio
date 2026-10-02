@@ -4,7 +4,34 @@ Registre de lots. Pas un GO d’exécution. Pas un changelog de version. Pas le 
 
 Un lot technique ne s’ouvre que sur GO qui le **nomme** + fiche (objectif, périmètre, preuve, invariants, risques).
 
-Dernière mise à jour : 2026-08-31 — `DOC_SOURCE_OF_TRUTH_V1` **verif OK**, pas commité. Routing HTML / social / calendar / architecture commité local, pas de push.
+Dernière mise à jour : 2026-09-10 — `fix-requestIntentFrame-tdz-selective-decision-tasks` **clos** (preuve figée, commité dans ebc1dd0 (2026-09-30)).
+
+---
+
+## fix-requestIntentFrame-tdz-selective-decision-tasks
+
+- Statut : **clos** — preuve figée, commité dans ebc1dd0 (2026-09-30). GO lot 2026-09-10
+- Objectif : supprimer le `ReferenceError` TDZ `SELECTIVE_DECISION_TASKS` au chargement de `requestIntentFrame.js`.
+- Périmètre : `server/src/agent/policies/intent/requestIntentFrame.js` — Set local `ADVISE_DECISION_TASKS` (littéraux, pas l’import) pour éviter le TDZ.
+- Hors périmètre : rails / familles d’intent ; F2–F4 ; `compareChooseComposer` (init hors stack du crash) ; refactor du graphe d’import.
+- Preuve : module `LOAD_OK` ; `understandQuery` (cycle) `ENTRY_OK` ; F1 **17/17** ; classification selective-decision **6/6**. Nodemon sert `social_deterministic`. Deux rouges SC (`epistemic_verify_external` / `simple_factual_lookup` vs `compare_choose`) **identiques à HEAD**, hors lot.
+- Invariants : pas de 2e NLU ; pas de perte d’acte advise/compare (`classifySelectiveDecisionIntent` reste appelé).
+- Risques : d’autres inits (`TASK_LABELS` dans `compareChooseComposer.js`) lisent la même constante — hors cycle de ce crash, non touchés.
+- Rollback : remettre l’import `SELECTIVE_DECISION_TASKS` dans le `Set` d’init.
+
+---
+
+## F1_TASK_KIND_EXISTING_GUARDS
+
+- Statut : **verif OK** — commité dans ebc1dd0 (2026-09-30). GO lot 2026-09-10
+- Décision : `D-20260909-frame-acte-autorite` (`accepted`)
+- Objectif : `detectTaskKind` écrit l’acte pour advise / compare / debug / procedure à partir des guards **existants**. Silence de guard → `null`. Pas de regex locale.
+- Périmètre : `server/src/agent/policies/intent/requestIntentFrame.js` (`detectTaskKind`, `detectDomainKind`) ; `server/tests/request-intent-frame-f1-task-kind.test.js`
+- Hors périmètre : contrats (`intentContractRegistry`, F2) ; SC emit (F3) ; incomplétude / G31 (F4) ; JUST consume ; `entities` ; patch téléphone ; `build`/`create` (import `guidedCreation` → cycle JUST / `conversationQueryUnderstanding`)
+- Preuve : `node --test tests/request-intent-frame-f1-task-kind.test.js` — familles advise/compare/debug/procedure ; voisins learn/explain/social/code ; paraphrases hors lexicon restent `null`
+- Invariants : canon 1 (pas de 2e NLU), 6 (JUST shadow), 7 (tests = preuve) ; D-frame-acte-autorite
+- Risques : élargir par regex « conseils » ; importer guided/create et casser le graphe ; réparer les rouges gelés salut+React / React+job
+- Rollback : retirer le câblage `detectTaskKind` + le fichier de test
 
 ---
 
