@@ -41,6 +41,7 @@ const META_FEEDBACK_MARKERS = [
   /\bpourquoi tu reponds\b/i,
   /\bpourquoi tu réponds\b/i,
   /\bj aimerais que tu (?:reflechisses|réfléchisses)\b/i,
+  /\btu\s+ne\s+comprends\b/i,
 ];
 
 const ELLIPTIC_FOLLOWUP_MARKERS =

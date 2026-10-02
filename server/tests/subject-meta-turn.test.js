@@ -85,6 +85,28 @@ describe("conversationTurnType", () => {
       "meta_feedback",
     );
   });
+  it("tu ne comprends → meta_feedback, pas piste", async () => {
+    const q = "en fait, je crois que tu ne comprends toujours rien !!!!";
+
+    const turn = classifyConversationTurn(q);
+    assert.equal(turn.turnType, "meta_feedback");
+    assert.equal(turn.shortCircuit, true);
+
+    const resolved = resolveMetaFeedbackShortCircuit(q);
+    assert.equal(resolved?.path, "meta_feedback_deterministic");
+    assert.match(resolved?.reply ?? "", /Compris — tu signales/);
+
+    assert.equal(lookupRoutingCase(q).winning_rule, "meta_feedback");
+
+    const shortCircuit = await runConversationShortCircuit(q);
+    assert.equal(shortCircuit?.path, "meta_feedback_deterministic");
+    assert.doesNotMatch(shortCircuit?.reply ?? "", /Je vois la piste/);
+
+    for (const negative of ["tu comprends ?", "je ne comprends pas"]) {
+      assert.notEqual(classifyConversationTurn(negative).turnType, "meta_feedback");
+      assert.equal(resolveMetaFeedbackShortCircuit(negative), null);
+    }
+  });
 
   it("batterie live : social / reprise / plainte / Citadelle", async () => {
     const scOpts = {
