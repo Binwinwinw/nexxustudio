@@ -6,6 +6,7 @@ import {
   isIdleConfirmedSocialCheckin,
   isGreetingOnlyIntent,
   isGratitudeClosureIntent,
+  isPhaticSocialCheckinIntent,
 } from "../social/socialPatternPolicy.js";
 import { isOpenExplorationFrame } from "../conversation/openExplorationFramePolicy.js";
 import {
@@ -16,8 +17,36 @@ import { resolveNamedCreateStartShortCircuit } from "../conversation/currentTurn
 import { isAcknowledgmentRequest } from "../../utils/intent-guards/acknowledgmentIntentGuards.js";
 import { resolveMetaFeedbackShortCircuit } from "../../micro/replies/metaFeedbackReplyBuilder.js";
 import { isAttachmentWorkRequest } from "../attachment/index.js";
+import { analyzeConversationIntentFrame } from "../intent/conversationIntentFrame.js";
+import {
+  isExplicitInformationOrDefinitionRequest,
+  isInformationSeekingWithTarget,
+} from "../../utils/intent-guards/informationSeekingIntentGuards.js";
+import { isIdentityIntent } from "../../utils/intent-guards/identityIntentGuards.js";
+import { isCodeIntentRequest } from "../code/codeIntentPolicy.js";
+import { isSubstantiveWorkRequest } from "../../utils/conversation/genericGreetingGuards.js";
 
 export const ROUTING_CASE_DICTIONARY_RULE = "routing_case_dictionary_v1";
+
+const NON_TASK_MAX_CHARS = 48;
+
+/**
+ * Échange court sans tâche utile — pas un lexique, pas une langue.
+ * Plafond aligné sur greeting_only. Les rails sociaux plus prioritaires gagnent.
+ */
+function isNonTaskConversationalAct(query = "", ctx = {}) {
+  const raw = String(query || "").trim();
+  if (!raw || raw.length > NON_TASK_MAX_CHARS) return false;
+  if (isIdentityIntent(raw)) return false;
+  if (isCodeIntentRequest(raw)) return false;
+  if (isSubstantiveWorkRequest(raw)) return false;
+  if (isInformationSeekingWithTarget(raw)) return false;
+  if (isExplicitInformationOrDefinitionRequest(raw)) return false;
+  if (isOpenExplorationFrame(raw, ctx.history || [])) return false;
+  if (analyzeConversationIntentFrame(raw).task.present) return false;
+  if (isPhaticSocialCheckinIntent(raw)) return false;
+  return true;
+}
 
 /**
  * Hiérarchie — plages stables. Nouvelle fiche : choisir une plage, pas un entier au hasard.
@@ -173,6 +202,23 @@ export const ROUTING_CASES = Object.freeze([
     counterQueries: ["comment ça va ?", "créer une carte de visite"],
     detect: (query, ctx = {}) =>
       isOpenExplorationFrame(query, ctx.history || []),
+  },
+  {
+    id: "non_task",
+    priority: 350,
+    path: "social_deterministic",
+    forbidPiste: true,
+    forbidComposer: true,
+    requiresActiveGoalNull: true,
+    reason:
+      "short exchange with no useful task is social listen, not an objective refusal",
+    canonicalQueries: ["boudoum", "sa ka fèt ??"],
+    counterQueries: [
+      "comment ça va ?",
+      "créer une carte de visite",
+      "je cherche des infos sur Trello",
+    ],
+    detect: (query, ctx = {}) => isNonTaskConversationalAct(query, ctx),
   },
 ]);
 
