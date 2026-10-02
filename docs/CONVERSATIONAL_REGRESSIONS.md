@@ -1,13 +1,19 @@
 # Régressions conversationnelles
 
-Dernière mise à jour : 2026-09-12  
-Statut : **8 lots fermés** (Packs 1–7 + identité), batterie harness verte.
+Dernière mise à jour : 2026-09-14  
+Statut : **8 lots fermés** (Packs 1–7 + identité) + follow-ups who-is / formulation 1re personne. Pack 8 **fermé, sans GO**.
 
 **Reprise** : cette fiche est la source pour reprendre le chantier conversationnel. La règle Cursor `.cursor/rules/conversational-regressions.mdc` impose de la lire en début de session. `.memory/` ne fait que pointer ici.
 
 Preuve runtime : `server/tests/conversational-regressions.test.js`  
 Commande : `cd server && npm run test:conversational-regressions`  
 Gate : `cd server && npm run premerge` (étape `test:conversational-regressions`, **avant** le gate skills).
+
+Validation fraîche **2026-09-14** : `npm run test:conversational-regressions` → **47/47**, 0 échec, code de sortie **0**, 8 suites. La batterie identité/social liée **168/168 n’a pas été relancée** cette session.
+
+Hors fiche : `requestIntentFrame.js` est dans `ebc1dd0`. La ref locale `origin/wip/checkpoint-20260824-0117` est `beb5a7d`. Stratégie livrée : D, WIP sans PR (`4165cb3`).
+
+Pack 8 reste **fermé, sans GO**. Livraison : stratégie D (`4165cb3`), conserver la WIP, sans PR vers `origin/main`.
 
 Ne pas recopier le canon input ici. Comportement : [`docs/governance/citadelle-input-invariants.md`](governance/citadelle-input-invariants.md).
 
@@ -89,7 +95,7 @@ Ne pas recopier le canon input ici. Comportement : [`docs/governance/citadelle-i
 
 ## Pack 7 — attributs identité assistant
 
-- **Commit** : à poser — `fix(identity): route assistant attributes to deterministic identity rail`
+- **Commit** : `bfea630` `fix(identity): route assistant attributes to deterministic identity rail`
 - **Scénario** : salut+nom ; date de naissance / âge / créateur / organisation (2e personne) vs tiers (Victor Hugo, mon enfant).
 - **Erreur** : panel manner « assistant de Nexxus Studio » ; `ta date de naissance` → `simple_factual_lookup` + LLM tronqué puis fallback contrat (`Pour répondre à… donnée factuelle directe`).
 - **Correction** : `IDENTITY_NAME_REPLY` figée Citadelle ; `isAssistantSelfAttributeIntent` (birth_date=null, âge, org, créateur inconnu) avant lookup ; tiers `date de naissance de` exclus. Pas de nouvelle classe d’intention.
@@ -100,14 +106,14 @@ Ne pas recopier le canon input ici. Comportement : [`docs/governance/citadelle-i
 
 ## Follow-up — qui est NEXXUS (référent nommé)
 
-- **Commit** : à poser — `fix(identity): resolve named Nexxus who-is queries`
-- **Pas Pack 8.** Pack 7 (`bfea630`) reste fermé.
+- **Commit** : `94caa2c` `fix(identity): resolve named Nexxus who-is queries`
+- **Pas Pack 8.** Pack 8 reste fermé, sans GO. Pack 7 (`bfea630`) reste fermé.
 - **Scénario** : « qui est nexxus ?? », « qui est NEXXUS ? », « c'est qui NEXXUS ? ».
 - **Erreur** : nom propre → unnamed = null ; « qui est » n’est pas un shell `c'est quoi` → `simple_factual_lookup` + fallback contrat.
 - **Correction** : `isIdentityExternalIntent` + référent `Nexxus` → `INTERNAL_REFERENT_REPLIES.Nexxus` dans `resolveUnnamedInternalIdentityHit`, avant lookup. Tiers exclus.
 - **Cas dans la batterie** : T1–T3 who-is ; T4/T5 Pack 7 ; Victor Hugo / cette personne.
 - **Effet** : même contrat que « c'est quoi Nexxus ? ».
-- **Formulation (GO first-person)** : `INTERNAL_REFERENT_REPLIES.Nexxus` = « NEXXUS, c'est moi : l'assistant IA de La Citadelle. » Contrat partagé : « qui est / c'est qui / c'est quoi Nexxus » et le filet unnamed nom/qui-es-tu. Routage `94caa2c` inchangé.
+- **Formulation (GO first-person)** : commit `d0b124f` `fix(identity): use first-person Nexxus self-identification`. `INTERNAL_REFERENT_REPLIES.Nexxus` = « NEXXUS, c'est moi : l'assistant IA de La Citadelle. » Contrat partagé : « qui est / c'est qui / c'est quoi Nexxus » et le filet unnamed nom/qui-es-tu. Routage `94caa2c` inchangé.
 
 ---
 
@@ -138,5 +144,6 @@ Ne pas importer `agent.js` dans cette batterie (hang Ollama). SC déterministe s
 | Pack 4 | `e6731a6` | fix(regressions): add conversational tests harness and documentation |
 | Pack 5 | `6557a02` | fix(french-validation): add linguistic markers dictionary for validation/invalidation |
 | Pack 6 | `a77e097` | fix(social-questions): answer conversational questions directly in social rail |
-| Pack 7 | *(ce commit)* | fix(identity): route assistant attributes to deterministic identity rail |
-| Follow-up who-is | à poser | fix(identity): resolve named Nexxus who-is queries |
+| Pack 7 | `bfea630` | fix(identity): route assistant attributes to deterministic identity rail |
+| Follow-up who-is | `94caa2c` | fix(identity): resolve named Nexxus who-is queries |
+| Formulation 1re personne | `d0b124f` | fix(identity): use first-person Nexxus self-identification |
