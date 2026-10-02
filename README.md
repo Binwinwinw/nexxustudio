@@ -1,4 +1,4 @@
-# Nexxus Studio — La Citadelle
+# La Citadelle
 
 Monorepo local-first pour orchestrer un assistant technique gouverné, avec une interface React/Vite et un backend Express branché sur Ollama.
 
@@ -6,13 +6,14 @@ Le dépôt **`nexxustudio`** correspond au repo GitHub, tandis que **La Citadell
 
 ## Aperçu
 
-Nexxus Studio regroupe une UI opérateur, un pipeline d’agents, des couches de gouvernance/sécurité, des fonctions de knowledge et plusieurs services optionnels autour d’un usage principalement local.
+La Citadelle regroupe une UI opérateur, un pipeline d’agents, des couches de gouvernance/sécurité, des fonctions de knowledge et plusieurs services optionnels autour d’un usage principalement local.
 
 Le front fournit notamment du chat, de l’historique, des vues cockpit/télémétrie et plusieurs panneaux d’administration. Le backend expose des routes pour les sessions, la santé, la forge, la knowledge, l’authentification, la gouvernance, la sécurité et l’observabilité.
 
 ## Stack technique
 
 ### Frontend
+
 - React 19
 - Vite 8
 - JavaScript / JSX
@@ -23,6 +24,7 @@ Le front fournit notamment du chat, de l’historique, des vues cockpit/télém�
 - `recharts`
 
 ### Backend
+
 - Node.js + Express 4
 - ESM (`"type": "module"`)
 - `dotenv`, `helmet`, `cors`, `multer`
@@ -33,6 +35,7 @@ Le front fournit notamment du chat, de l’historique, des vues cockpit/télém�
 - `ajv` et outils de sécurité / validation
 
 ### Services et tooling
+
 - Ollama (LLM local)
 - Chroma
 - Services Python optionnels : AirLLM, creative, OCR
@@ -66,6 +69,7 @@ nexxustudio/
 ## Fonctionnalités visibles
 
 ### Interface
+
 - Chat avec streaming
 - Historique et sessions
 - Cockpit / télémétrie / warmup / traces
@@ -74,6 +78,7 @@ nexxustudio/
 - Vues complémentaires comme l’analyse documentaire, le rendu Markdown pédagogique, Mermaid et certains dashboards
 
 ### API et orchestration
+
 - Authentification
 - Health / ready checks
 - Pipeline agent
@@ -87,6 +92,7 @@ nexxustudio/
 ## Prérequis
 
 Avant de lancer le projet localement, prévoir selon le profil d’usage :
+
 - Node.js et npm
 - Ollama accessible localement
 - Python pour les services optionnels (`airllm`, `creative`, `ocr-service`)
@@ -107,11 +113,13 @@ cd server && npm install
 Créer un fichier `server/.env` à partir de `server/.env.example`.
 
 Variables obligatoires au démarrage :
+
 - `JWT_SECRET`
 - `INTERNAL_API_TOKEN`
 - `LOG_ENCRYPTION_KEY` (32 octets après décodage)
 
 Variables fréquentes selon le setup :
+
 - `ADMIN_PASSWORD`
 - `PORT`
 - `NODE_ENV`
@@ -131,6 +139,7 @@ npm run start
 ```
 
 Autres variantes disponibles :
+
 - `npm run start:fast`
 - `npm run start:balanced`
 - `npm run start:demo`
@@ -141,6 +150,7 @@ Le front démarre sur `http://localhost:5173` et l’API sur `http://localhost:3
 ## Scripts utiles
 
 ### Racine
+
 - `npm run dev` — lance Vite
 - `npm run server` — lance le backend en mode dev
 - `npm run build` — build front
@@ -153,7 +163,9 @@ Le front démarre sur `http://localhost:5173` et l’API sur `http://localhost:3
 Le dépôt contient aussi plusieurs scripts d’exploitation autour de `citadel:*`, `security:*`, `vault:*`, `quality:gate`, `purge:*` et des profils de démarrage multi-process.
 
 ### Serveur
+
 Dans `server/package.json`, on trouve notamment :
+
 - `npm run dev`
 - `npm run start`
 - des suites ciblées comme `test:routing`, `test:security`, `test:golden`, `test:skills`, `test:stability`, `test:completeness`, `test:tools-core`, etc.
@@ -168,6 +180,7 @@ Le projet dispose d’une base de tests importante côté serveur, de quelques t
 - Lint : `npm run lint`
 
 À noter :
+
 - pas de script racine unique `npm test` pour tout lancer ;
 - Prettier n’est pas présent ;
 - TypeScript n’est pas utilisé dans ce dépôt.
@@ -177,12 +190,14 @@ Le projet dispose d’une base de tests importante côté serveur, de quelques t
 Le repo contient des éléments Docker pour certains services locaux, notamment Chroma, AirLLM et l’OCR.
 
 Présent dans le dépôt :
+
 - `docker/knowledge_hub_docker-compose.yml`
 - `ocr-service/Dockerfile`
 - `server/airllm/Dockerfile`
 - script `start:docker`
 
 Non documenté ou non prouvé dans le dépôt :
+
 - pipeline CI/CD de déploiement
 - configuration de production Vercel / Hostinger / Nginx
 - Dockerfile full-stack unique
@@ -191,6 +206,7 @@ Non documenté ou non prouvé dans le dépôt :
 ## Visuels et documentation
 
 Le dépôt contient déjà quelques assets et documents internes utiles :
+
 - `public/favicon.svg`
 - `public/icons.svg`
 - `docs/assets/AI_ORCHESTRATION.png`
