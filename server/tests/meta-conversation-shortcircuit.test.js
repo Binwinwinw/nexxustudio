@@ -143,5 +143,44 @@ describe("meta — intentShortCircuit", () => {
     assert.equal(hit?.skipPlanner, true);
     assert.equal(hit?.skipComposer, true);
     assert.doesNotMatch(hit?.reply || "", /preuves ancr[eé]es/i);
+    assert.equal(hit?.reply?.includes("yela comment ca va ??"), false);
+    assert.equal(
+      hit?.reply?.includes("D'après le fil récent, tu parlais notamment de :"),
+      false,
+    );
+  });
+
+  it("check-in bien-être non cité comme sujet de project_about", async () => {
+    const q = "ok ok qu'est ce qu'on fait ?";
+    const history = [
+      { role: "user", content: "salut mec comment ca va ?" },
+      { role: "assistant", content: "Salut ! Tout va bien ici." },
+    ];
+    assert.equal(classifyMetaConversationIntent(q)?.kind, "project_about");
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.equal(hit?.path, "meta_conversation_deterministic");
+    assert.equal(hit?.metaSubKind, "project_about");
+    assert.equal(hit?.reply?.includes("salut mec comment ca va ?"), false);
+    assert.equal(
+      hit?.reply?.includes("D'après le fil récent, tu parlais notamment de :"),
+      false,
+    );
+  });
+
+  it("check-in phatique non cité comme sujet de project_about", async () => {
+    const q = "ok ok qu'est ce qu'on fait ?";
+    const history = [
+      { role: "user", content: "tu fais quoi ?" },
+      { role: "assistant", content: "Je suis là." },
+    ];
+    assert.equal(classifyMetaConversationIntent(q)?.kind, "project_about");
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.equal(hit?.path, "meta_conversation_deterministic");
+    assert.equal(hit?.metaSubKind, "project_about");
+    assert.equal(hit?.reply?.includes("tu fais quoi ?"), false);
+    assert.equal(
+      hit?.reply?.includes("D'après le fil récent, tu parlais notamment de :"),
+      false,
+    );
   });
 });

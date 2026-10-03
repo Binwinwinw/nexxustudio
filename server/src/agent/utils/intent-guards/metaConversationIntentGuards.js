@@ -4,7 +4,10 @@
  */
 import { normalizeText as normalizeTextBase } from "../parsing-normalization/normalizationGuards.js";
 import { repairSpokenQuEst } from "../../micro/normalization/querySanitizer.js";
-import { isPhaticSocialCheckinIntent } from "../../policies/social/index.js";
+import {
+  isPhaticSocialCheckinIntent,
+  isWellbeingCheckinIntent,
+} from "../../policies/social/index.js";
 import { isIdentityIntent } from "./identityIntentGuards.js";
 import {
   isNexxusCockpitUiDiscussion,
@@ -428,6 +431,7 @@ export function extractRecentThreadTopicHint(history = []) {
     const raw = String(turns[i].content || "").trim();
     if (skip.test(raw)) continue;
     if (isMetaConversationIntent(raw)) continue;
+    if (isPhaticSocialCheckinIntent(raw) || isWellbeingCheckinIntent(raw)) continue;
     const snippet = raw.replace(/\s+/g, " ").slice(0, 140);
     if (snippet.length >= 12) return snippet;
   }
