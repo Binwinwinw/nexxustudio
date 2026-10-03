@@ -25,6 +25,7 @@ import {
   resolveCulturalReferenceHypothesis,
 } from "../social/index.js";
 import { parseFamiliarityQuery } from "../../utils/intent-guards/familiarityIntentGuards.js";
+import { classifyMetaConversationIntent } from "../../utils/intent-guards/metaConversationIntentGuards.js";
 
 export const EPISTEMIC_RESOLUTION_RULE =
   "Nexxus ne prétend jamais savoir ce qu'il ne sait pas ; il essaie d'inférer, puis de clarifier, puis de vérifier, et seulement ensuite de répondre.";
@@ -68,6 +69,31 @@ function norm(text = "") {
     .replace(/[?!.*]+$/g, "")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+const DELTA_FILLER =
+  "(?:le|la|les|un|une|du|des|au|aux|mon|ton|ce|cet|cette|son|leur|de)";
+const DELTA_ANCHOR = "commit|deploiement|release|version|build";
+const FR_MONTH =
+  "janvier|fevrier|mars|avril|mai|juin|juillet|aout|septembre|octobre|novembre|decembre";
+
+/** Ancre explicite de delta interne. Non exporté. */
+function isExplicitInternalDeltaRequest(query = "") {
+  const q = norm(query);
+  if (!q) return false;
+  const lead = `\\bdepuis(?:\\s+${DELTA_FILLER}){0,3}\\s+`;
+  if (new RegExp(`${lead}(?:${DELTA_ANCHOR})\\b`, "i").test(q)) return true;
+  if (new RegExp(`${lead}\\d{4}-\\d{2}-\\d{2}\\b`, "i").test(q)) return true;
+  if (new RegExp(`${lead}\\d{1,2}-\\d{1,2}-\\d{4}\\b`, "i").test(q)) return true;
+  if (new RegExp(`${lead}\\d{1,2}\\s+\\d{1,2}\\s+\\d{4}\\b`, "i").test(q)) return true;
+  if (
+    new RegExp(`${lead}(?:\\d{1,2}|1er)\\s+(?:${FR_MONTH})\\s+\\d{4}\\b`, "i").test(q)
+  ) {
+    return true;
+  }
+  const between = (token) =>
+    new RegExp(`\\bentre\\b.{0,40}\\b${token}\\b.{0,40}\\bet\\b.{0,40}\\b${token}\\b`, "i");
+  return between("version").test(q) || between("release").test(q) || between("build").test(q);
 }
 
 /**
@@ -431,6 +457,12 @@ export function resolveEpistemicUncertaintyShortCircuit(query = "", options = {}
     if (
       !isExplicitWebSearchRequest(query) &&
       !assessKnowledgeFreshnessRisk(query).temporalDisclosureRequired
+    ) {
+      return null;
+    }
+    if (
+      classifyMetaConversationIntent(query)?.kind === "self_analysis" &&
+      !isExplicitInternalDeltaRequest(query)
     ) {
       return null;
     }

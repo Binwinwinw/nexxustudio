@@ -64,6 +64,41 @@ describe("meta — intentShortCircuit", () => {
     assert.equal(hit.metaSubKind, "self_analysis");
     assert.match(hit.reply, /triage|garde-fous|orchestration/i);
     assert.doesNotMatch(hit.reply, /citadel_indexer/i);
+    assert.notEqual(hit.path, "epistemic_verify_external");
+  });
+
+  it("delta commit explicite reste epistemique", async () => {
+    const q = "tes dernières améliorations depuis le commit abc123";
+    const hit = await runConversationShortCircuit(q);
+    assert.notEqual(hit?.metaSubKind, "self_analysis");
+    assert.equal(hit?.path, "epistemic_verify_external");
+    assert.doesNotMatch(hit?.reply || "", /Voici ce que je peux affirmer/);
+  });
+
+  it("delta date ISO reste epistemique", async () => {
+    const q = "tes dernières améliorations depuis 2026-10-01";
+    const hit = await runConversationShortCircuit(q);
+    assert.notEqual(hit?.metaSubKind, "self_analysis");
+    assert.equal(hit?.path, "epistemic_verify_external");
+    assert.doesNotMatch(hit?.reply || "", /Voici ce que je peux affirmer/);
+  });
+
+  it("comparaison versions reste epistemique", async () => {
+    const q = "compare tes améliorations entre la version 1 et la version 2";
+    const hit = await runConversationShortCircuit(q);
+    assert.notEqual(hit?.metaSubKind, "self_analysis");
+    assert.equal(hit?.path, "epistemic_verify_external");
+    assert.doesNotMatch(hit?.reply || "", /Voici ce que je peux affirmer/);
+  });
+
+  it("dernieres ameliorations sans ancre en self_analysis", async () => {
+    const q = "quelles sont tes dernières améliorations ?";
+    assert.equal(classifyMetaConversationIntent(q)?.kind, "self_analysis");
+    const hit = await runConversationShortCircuit(q);
+    assert.equal(hit?.path, "meta_conversation_deterministic");
+    assert.equal(hit?.metaSubKind, "self_analysis");
+    assert.notEqual(hit?.path, "epistemic_verify_external");
+    assert.match(hit?.reply || "", /triage|garde-fous|orchestration/i);
   });
 
   it("identité pure → social_deterministic, pas self_analysis méta", async () => {
