@@ -82,6 +82,26 @@ export function resolveMetaConversationRoute(query, options = {}) {
   return { reply, subKind: hit.kind, tier: "deterministic" };
 }
 
+function normalizeBareProjectPrompt(query = "") {
+  return String(query || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\p{L}\p{N}\s-]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Relance « qu'est-ce qu'on fait », sans sujet projet/produit. Non exporté. */
+function isBareWhatAreWeDoingPrompt(query = "") {
+  const text = normalizeBareProjectPrompt(query);
+  if (!/\bqu est ce qu on fait\b/.test(text)) return false;
+  if (/\b(?:projet|construit|session|fil|citadelle|nexxus)\b/.test(text)) return false;
+  const rest = text.replace(/\bqu est ce qu on fait\b/, " ").trim();
+  if (!rest) return true;
+  return rest.split(/\s+/).every((token) => token === "ok" || token === "alors");
+}
+
 function buildDeterministicMetaReply(kind, query, options = {}) {
   switch (kind) {
     case "capability_gaps":
@@ -111,6 +131,12 @@ function buildDeterministicMetaReply(kind, query, options = {}) {
       return buildTemporalAwarenessReply(options);
     case "project_about": {
       const threadHint = extractRecentThreadTopicHint(options.history || []);
+      if (isBareWhatAreWeDoingPrompt(query)) {
+        if (threadHint) {
+          return `D'après le fil récent, tu parlais notamment de : « ${threadHint} ».`;
+        }
+        return "Tu veux partir sur quoi ?";
+      }
       if (threadHint) {
         return `D'après le fil récent, tu parlais notamment de : « ${threadHint} ». Si tu visais le produit global : ${PROJECT_ABOUT_BASE}`;
       }

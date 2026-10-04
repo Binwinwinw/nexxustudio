@@ -271,4 +271,51 @@ describe("meta — intentShortCircuit", () => {
     assert.equal(hit?.metaSubKind, "project_about");
     assert.match(hit?.reply || "", /organiser mes fichiers/);
   });
+
+  it("relance vague sans hint ne pitch pas le produit", async () => {
+    const q = "ok ok qu'est ce qu'on fait alors ???";
+    const history = [{ role: "assistant", content: "Salut ! Tout va bien ici." }];
+    assert.equal(classifyMetaConversationIntent(q)?.kind, "project_about");
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.equal(hit?.path, "meta_conversation_deterministic");
+    assert.equal(hit?.metaSubKind, "project_about");
+    assert.equal(hit?.skipSovereign, true);
+    assert.ok(hit?.reply && hit.reply.trim().length > 0);
+    assert.equal(
+      hit?.reply?.includes("D'après le fil récent, tu parlais notamment de :"),
+      false,
+    );
+    assert.doesNotMatch(hit?.reply || "", /La Citadelle/);
+    assert.doesNotMatch(hit?.reply || "", /Nexxus Studio/);
+  });
+
+  it("relance vague avec sujet réel ne pitch pas le produit", async () => {
+    const q = "qu'est ce qu'on fait ?";
+    const history = [
+      {
+        role: "user",
+        content: "salut, peux-tu m'aider à organiser mes fichiers ?",
+      },
+      { role: "assistant", content: "Dis-moi le dossier." },
+    ];
+    assert.equal(classifyMetaConversationIntent(q)?.kind, "project_about");
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.equal(hit?.path, "meta_conversation_deterministic");
+    assert.equal(hit?.metaSubKind, "project_about");
+    assert.match(hit?.reply || "", /organiser mes fichiers/);
+    assert.doesNotMatch(hit?.reply || "", /La Citadelle/);
+    assert.doesNotMatch(hit?.reply || "", /Nexxus Studio/);
+  });
+
+  it("demande projet explicite conserve le pitch", async () => {
+    const q = "quel est le projet ?";
+    assert.equal(classifyMetaConversationIntent(q)?.kind, "project_about");
+    const hit = await runConversationShortCircuit(q);
+    assert.equal(hit?.path, "meta_conversation_deterministic");
+    assert.equal(hit?.metaSubKind, "project_about");
+    assert.match(
+      hit?.reply || "",
+      /La Citadelle \/ Nexxus Studio est un système local-first/,
+    );
+  });
 });
