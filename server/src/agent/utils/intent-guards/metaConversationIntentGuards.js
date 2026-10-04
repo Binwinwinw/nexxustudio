@@ -420,6 +420,18 @@ export function threadSuggestsInvestorResearchDeliverables(history = []) {
 }
 
 /**
+ * « salut es tu nexxus ? » — hors taxonomie d'identité, uniquement pour le topic hint.
+ * @param {string} raw
+ */
+function isBareNexxusIdentityCheck(raw = "") {
+  const text = normalizeText(raw);
+  if (!text) return false;
+  return /^(?:(?:salut|bonjour|hello|hey)\s+)?(?:es[-\s]+tu|tu[-\s]+es)\s+nex(?:x)?us$/.test(
+    text,
+  );
+}
+
+/**
  * Extrait un indice de sujet depuis l'historique récent (fil session).
  */
 export function extractRecentThreadTopicHint(history = []) {
@@ -432,6 +444,7 @@ export function extractRecentThreadTopicHint(history = []) {
     if (skip.test(raw)) continue;
     if (isMetaConversationIntent(raw)) continue;
     if (isPhaticSocialCheckinIntent(raw) || isWellbeingCheckinIntent(raw)) continue;
+    if (isAssistantIdentityQuestion(raw) || isBareNexxusIdentityCheck(raw)) continue;
     const snippet = raw.replace(/\s+/g, " ").slice(0, 140);
     if (snippet.length >= 12) return snippet;
   }

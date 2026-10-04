@@ -218,4 +218,57 @@ describe("meta — intentShortCircuit", () => {
       false,
     );
   });
+
+  it("identité nexxus directe non citée comme sujet de project_about", async () => {
+    const q = "ok ok qu'est ce qu'on fait alors ???";
+    const history = [
+      { role: "user", content: "salut es tu nexxus ?" },
+      {
+        role: "assistant",
+        content: "Salut ! Tout va bien ici.",
+      },
+    ];
+    assert.equal(classifyMetaConversationIntent(q)?.kind, "project_about");
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.equal(hit?.path, "meta_conversation_deterministic");
+    assert.equal(hit?.metaSubKind, "project_about");
+    assert.equal(hit?.reply?.includes("salut es tu nexxus ?"), false);
+    assert.equal(
+      hit?.reply?.includes("D'après le fil récent, tu parlais notamment de :"),
+      false,
+    );
+  });
+
+  it("question d'identité déjà reconnue non citée comme sujet de project_about", async () => {
+    const q = "qu'est ce qu'on fait ?";
+    const history = [
+      { role: "user", content: "comment t'appelles tu ?" },
+      { role: "assistant", content: "Je suis NEXXUS." },
+    ];
+    assert.equal(classifyMetaConversationIntent(q)?.kind, "project_about");
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.equal(hit?.path, "meta_conversation_deterministic");
+    assert.equal(hit?.metaSubKind, "project_about");
+    assert.equal(hit?.reply?.includes("comment t'appelles tu ?"), false);
+    assert.equal(
+      hit?.reply?.includes("D'après le fil récent, tu parlais notamment de :"),
+      false,
+    );
+  });
+
+  it("salut introductif conserve un sujet concret de project_about", async () => {
+    const q = "qu'est ce qu'on fait ?";
+    const history = [
+      {
+        role: "user",
+        content: "salut, peux-tu m'aider à organiser mes fichiers ?",
+      },
+      { role: "assistant", content: "Dis-moi le dossier." },
+    ];
+    assert.equal(classifyMetaConversationIntent(q)?.kind, "project_about");
+    const hit = await runConversationShortCircuit(q, { history });
+    assert.equal(hit?.path, "meta_conversation_deterministic");
+    assert.equal(hit?.metaSubKind, "project_about");
+    assert.match(hit?.reply || "", /organiser mes fichiers/);
+  });
 });
