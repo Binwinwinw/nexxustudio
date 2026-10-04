@@ -1984,6 +1984,9 @@ async function runConversationShortCircuitBody(query, options = {}) {
 
   const metaBeforeSocialChat = resolveMetaConversationRoute(effectiveQuery, {
     history,
+    sessionId: options.sessionId,
+    turnTimestamp: options.turnTimestamp,
+    priorState: options.priorState,
   });
   if (
     metaBeforeSocialChat?.tier === "reflective" &&
