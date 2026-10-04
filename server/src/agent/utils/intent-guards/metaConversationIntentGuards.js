@@ -49,6 +49,7 @@ const CAPABILITY_OVERVIEW_PATTERNS = [
   /\bton perimetre\b/,
   /\bwhat can you do\b/,
   /\bque sabes hacer\b/,
+  /^qu est ce qu il est possible de faire$/,
 ];
 
 const HELP_SCOPE_PATTERNS = [

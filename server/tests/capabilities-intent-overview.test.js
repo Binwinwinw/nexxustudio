@@ -3,7 +3,12 @@ import assert from "node:assert/strict";
 
 import { runConversationShortCircuit } from "../src/agent/micro/classifiers/intentShortCircuit.js";
 import { resolveExploratorySubjectAngleShortCircuit } from "../src/agent/policies/conversation/conversationFramingPolicy.js";
-import { classifyMetaConversationIntent } from "../src/agent/utils/intent-guards/metaConversationIntentGuards.js";
+import {
+  classifyMetaConversationIntent,
+  isMetaConversationIntent,
+} from "../src/agent/utils/intent-guards/metaConversationIntentGuards.js";
+import { evaluateJustIntent } from "../src/agent/policies/intent/justIntentDetectionPolicy.js";
+import { resolveClarificationGate } from "../src/agent/policies/routing/clarificationDecisionPolicy.js";
 
 const PAPOTER_HISTORY = [
   { role: "user", content: "salut" },
@@ -99,5 +104,47 @@ describe("CAPABILITIES_INTENT — overview / help_scope", () => {
     const hit = await runConversationShortCircuit(q, { history: [] });
     assert.notEqual(hit?.metaSubKind, "capability_overview");
     assert.notEqual(hit?.metaSubKind, "help_scope");
+  });
+
+  it("IMPERSONAL_FR_V1 A question impersonnelle de capacités", async () => {
+    const q = "qu'est ce qu'il est possible de faire ?";
+    assert.equal(isMetaConversationIntent(q), true);
+    assert.equal(classifyMetaConversationIntent(q)?.kind, "capability_overview");
+
+    const gate = resolveClarificationGate(q, {
+      justIntent: evaluateJustIntent(q),
+      intentTriage: null,
+    });
+    assert.equal(gate.shouldClarify, false);
+    assert.equal(gate.pipelinePath, null);
+    assert.equal(gate.decision?.reason, "meta_conversation_answerable");
+
+    const hit = await runConversationShortCircuit(q, { history: [] });
+    assertCapabilityHit(hit, "capability_overview");
+    assert.doesNotMatch(
+      hit?.reply || "",
+      /Je n'ai pas compris|objectif principal|format que tu attends|tu s'occupes de rien/i,
+    );
+  });
+
+  it("IMPERSONAL_FR_V1 B transcription fichier pas overview", async () => {
+    const q = "est ce possible de faire une transcription du fichier joint ?";
+    assert.notEqual(classifyMetaConversationIntent(q)?.kind, "capability_overview");
+    const hit = await runConversationShortCircuit(q, { history: [] });
+    assert.notEqual(hit?.metaSubKind, "capability_overview");
+  });
+
+  it("IMPERSONAL_FR_V1 C plan de projet pas overview", async () => {
+    const q = "construis-moi un plan de projet";
+    assert.notEqual(classifyMetaConversationIntent(q)?.kind, "capability_overview");
+    const hit = await runConversationShortCircuit(q, { history: [] });
+    assert.notEqual(hit?.metaSubKind, "capability_overview");
+  });
+
+  it("IMPERSONAL_FR_V1 D sentinelle tu peux faire quoi", async () => {
+    const q = "tu peux faire quoi ?";
+    assert.equal(classifyMetaConversationIntent(q)?.kind, "capability_overview");
+    const hit = await runConversationShortCircuit(q, { history: [] });
+    assertCapabilityHit(hit, "capability_overview");
   });
 });
