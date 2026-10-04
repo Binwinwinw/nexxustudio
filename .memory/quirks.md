@@ -145,3 +145,11 @@
 - [identity-self-attr-not-factual] « ta date de naissance / quel âge / qui t'a créé / organisation » = attribut assistant (`isAssistantSelfAttributeIntent`), pas `simple_factual_lookup`. Tiers : `date de naissance de X`. Nom manner : La Citadelle, jamais « Nexxus Studio ».
 
 - [identity-who-is-nexxus-named] « qui est NEXXUS / c'est qui NEXXUS » = `isIdentityExternalIntent` + référent Nexxus → `INTERNAL_REFERENT_REPLIES.Nexxus` dans le filet unnamed (avant lookup). Pas « qui est » générique. Pas Pack 8. Formulation : « NEXXUS, c'est moi : l'assistant IA de La Citadelle. » (contrat partagé avec « c'est quoi Nexxus »).
+
+- [control-harness-validate-response-unwired] `controlHarness.validateResponse` n’est pas sur le chemin de réponse prod. Prod = `buildEmergencyReply` sans ce validateur. Finding `CONTROL_HARNESS_RUNTIME_CONTRADICTION`. Ne pas brancher sans lot 3 roadmap. Registre : `docs/governance/harness-security-roadmap-v1.md`.
+
+- [securitystage-level-deny-string] `SecurityStage` teste `queryRisk.level === 'DENY'` mais `level` est 0–4 (`label === 'DENY'`). Early-return mort. Radar block = 2e scan. Keyword DENY sans radar continue. Hors lot radar.
+
+- [phatic-qu-est-ce-que-false-definition] « qu'est ce que tu fais de bon » = SC phatic OK, mais `parseFamiliarityQuery` définition `qu est ce que (.+)` pose le sujet fantôme « Tu Fais de Bon ». T+1 « ça fait plaisir » (`ca`) → `request_interpreter_confirm`. Diagnostic `CONVERSATION-ROUTING-FAILURES-V1` P0-A. Pas de GO.
+
+- [repo-fouiller-create-blocks-analysis] GitHub URL + « fouiller » + « créer » : `isRepoAnalysisRequest` false (`CREATE_VERB` sans `ANALYSIS_VERB`) → `multi_segment_composite` / `primary_goal_miss`. P0-B. Pas de GO.

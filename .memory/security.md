@@ -23,3 +23,11 @@
 - Politique contenu : login/paywall/captcha → fail-closed.
 - URL **fournie par l'utilisateur** ≠ crawl autonome : pas d'allowlist domaines, mais SSRF toujours on.
 - ADR-011 reste **SERP-only** pour `expert_web_search` ; fetch page = chemin distinct (ADR complémentaire souhaité).
+
+## Harness security — 2026-09-19
+
+- **Registre** : `docs/governance/harness-security-roadmap-v1.md`
+- **Finding CONFIRMED** : `CONTROL_HARNESS_RUNTIME_CONTRADICTION` — `buildEmergencyReply` en prod (`agentPipeline` recoverVisibleResponse) ; `validateResponse` hors chemin utilisateur. Ne pas brancher sans `AUDIT-OUTPUT-VALIDATION-RUNTIME-CONTRACT-V1`.
+- **Séquence** : radar stateful → frontières untrusted → contrat validation sortie → stop/autorité outil. Pas de mega-lot harness.
+- **Lot 1** : `FIX-INJECTION-RADAR-STATEFUL-REGEX-V1` **clos** `d94ef16044e040efad0f6f52b00db43d2800cd90` (`injectionRadar.js` + `injection-radar.test.js`). Sans push/PR. Finding `SECURITYSTAGE_QUERYRISK_LEVEL_DENY_MISMATCH` hors périmètre, GO séparé.
+- **Finding CONFIRMED** : `SECURITYSTAGE_QUERYRISK_LEVEL_DENY_MISMATCH` — `level` numérique vs test `=== 'DENY'`. Branche morte. Keyword DENY sans radar block ne stoppe pas. Hors diff radar.

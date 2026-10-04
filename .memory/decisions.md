@@ -256,10 +256,40 @@
 ## [2026-09-17] PERSIST-ROUTING-METADATA-V1 — allowlist historique
 
 - **Decision**: Propager path / contrat / interruption / resultStatus / turnId via `ai_response.metadata_json` (projection explicite). Reconstruction T+1 dans `mapEventsToConversationHistory`. Cache `lastRoutingResult` un slot, non autoritaire. Legacy sans allowlist → `unknown`. Pas de consume shadow. Routes inchangées. T2 toujours suspect non consommé.
-- **Impact**: `routingResultMetadata.js`, `sessionHistoryService.js`, `runtimeService.js`, `sessionWorkMemory.js`, persist HTTP/job, tests `persist-routing-metadata.test.js`. Pas de commit avant revue.
+- **Impact**: `routingResultMetadata.js`, `sessionHistoryService.js`, `runtimeService.js`, `sessionWorkMemory.js`, persist HTTP/job, tests `persist-routing-metadata.test.js`. Clos : `c2b5093`. Observe : `a7daeab`.
 
 ## [2026-09-18] SPEC-RAW-COMPREHENSION-EXECUTION-CONTRACT-V1 — rôles d’input
 
 - **Decision**: Figer `rawQuery` / `comprehensionQuery` / `executionValue`. Classe A fermée (vue conversationnelle seulement). B = pas d’autocorrect. C = raw only. `pipelineQuery` / P4 `canonicalQuery` / `effectiveQuery` / `enrichedQuery` ne sont pas des rôles automatiques. `runtimeWired=false`. Pas de 2e packet, pas de sanitizer unique, pas de consume. Hazard : `sanitizeQuery("supprime /prod")` ≠ exécution.
 - **Impact**: `docs/governance/raw-comprehension-execution-contract-v1.md`, fixture + spec tests. Runtime inchangé. Pointeur seulement — le canon reste `citadelle-input-invariants.md`.
+
+## [2026-09-18] SPEC-CONSUME-CONTRACT-V1 — contrat, pas de consume
+
+- **Decision**: Promotion shadow **refusée par défaut**. Flag `SHADOW_PROMOTION_CONSUME` off. T2 conversationnel **bloqué** (pas le premier cas). `evaluateShadowPromotion` = spec only, `runtimeWired=false`. `shadow_consumed=false`. Interdit : Pack 8, `assistant_availability`, promotion depuis observe.
+- **Impact**: `docs/governance/consume-contract-v1.md`, `server/tests/fixtures/consume-contract-v1.js`, `server/tests/consume-contract-v1.spec.test.js`. Runtime inchangé. Documenté par `5f77d32`.
+
+## [2026-09-18] AUDIT-ROUTING-AUTHORITY-CONFLICTS — shadow only
+
+- **Decision**: ROOT_CAUSE_STATUS=CONFIRMED pour T2 conversationnel (`casual_status` / `general` / `social_over_work` / `word_guard` / `simple_fast`). Observe n’élit pas la route. `runtimeAligned` télémétrique : `true` seulement si SC hit sur rail compatible, sinon `false` (preuve de miss) ou `unknown` (preuve absente). Événement `routing_authority_conflict` journalisé, `shadow_consumed=false`. Interdit : consume T2, promotion depuis `pipelineTelemetryCtx`, Pack 8, `assistant_availability`.
+- **Impact**: `deliverableContractPolicy.js` (alignement observe), `routingObserveTelemetry.js`, hook non-autoritaire `agentPipeline` word_guard, tests `routing-authority-conflict.test.js`. Rails inchangés.
+
+## [2026-09-19] HARNESS-SECURITY-ROADMAP-V1 — séquence, pas de wiring
+
+- **Decision**: Classification C conservée (harness partiel). Pas de grand lot harness. Séquence : (1) `FIX-INJECTION-RADAR-STATEFUL-REGEX-V1` (2) `SPEC-UNTRUSTED-CONTENT-BOUNDARIES-V1` (3) `AUDIT-OUTPUT-VALIDATION-RUNTIME-CONTRACT-V1` (4) `SPEC-EMERGENCY-STOP-AND-TOOL-AUTHORITY-V1`. Chaque lot = GO séparé. Finding `CONTROL_HARNESS_RUNTIME_CONTRADICTION` CONFIRMED, non corrigé ici. Lot 1 **clos** : `d94ef16044e040efad0f6f52b00db43d2800cd90` local, sans push/PR. Lots 2–4 sans GO. Interdit : orchestrateur nouveau, brancher `validateResponse`, scanner SC/web/RAG, Pack 6/8, consume shadow. Registre hors commit radar (option A dirty / B commit docs distinct).
+- **Impact**: `docs/governance/harness-security-roadmap-v1.md`. Runtime inchangé par le cadrage.
+
+## [2026-09-19] CONVERSATION-ROUTING-FAILURES-V1 — diagnostic, pas de patch
+
+- **Decision**: Quatre pannes distinctes. Pas de méga-lot. Hors radar / SecurityStage / queryRisk / Pack 6 / Pack 8. JUST = shadow, ne pas en déduire la route. P0-A T3 : extracteur `qu est ce que (.+)` (familiarity définition) + interprète `\bca\b` → confirmation fantôme « Tu Fais de Bon ». P0-B T8 : `CREATE_VERB` sans verbe d’analyse → pas `REPO_ANALYSIS`, `primary_goal_miss`. P1-C JUST `\bfais\b`. P1-D dual-acte + open_exploration après phatic. Un seul GO à la fois.
+- **Impact**: aucun runtime. Attendre GO explicite : P0-A | P0-B | P1-C | P1-D.
+
+## [2026-09-19] DIAG-SECURITYSTAGE-QUERYRISK-CONTRACT
+
+- **Decision**: `queryRisk.level` est un nombre (0–4). `queryRisk.label` est la chaîne (`DENY`, etc.). Producteur unique du stage = `queryGuard.classify`. `queryRisk.level === 'DENY'` est une branche morte. Radar `block` stoppe via le 2e scan. Keyword DENY sans radar (`jailbreak`, `ignore instructions`) continue vers Context. Hors Lot 1. Pas de correctif ici.
+- **Impact**: aucun runtime. Finding `SECURITYSTAGE_QUERYRISK_LEVEL_DENY_MISMATCH` CONFIRMED dans le registre.
+
+## [2026-09-17] Prochaine étape — sécurité du consume, pas T2
+
+- **Decision**: Socle télémétrie stabilisé (persist + observe shadow). La prochaine étape architecturale est une **analyse de sécurité du consume** (faux positifs, repli, surface). Interdit : correction directe de T2 ; consume opportuniste ; `assistant_availability`. `shadow_consumed=false` tant qu’un GO dédié n’existe pas.
+- **Impact**: aucun code. Reprise : `c2b5093` persist, `a7daeab` observe. Pack 8 / M4 / TU_DATETIME hors jeu.
 
